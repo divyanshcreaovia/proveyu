@@ -1,0 +1,364 @@
+<div class="bg-white">
+  <!-- Hero Section -->
+  <div class="hero-section py-4 position-relative overflow-hidden">
+    <div class="container-fluid px-4 px-xxl-5 position-relative z-1">
+      <div class="hero-banner-container py-4 px-3 px-lg-5" style="padding-bottom: 6rem !important;">
+        <div class="row align-items-center">
+          <!-- Left Content -->
+        <div class="col-lg-5 col-md-12 mb-5 mb-lg-0 pe-lg-5">
+          <div class="text-uppercase fw-bold text-muted-custom mb-3 fs-8 tracking-wide">
+            The Smarter Way To Work
+          </div>
+          <h1 class="display-4 fw-extrabold text-navy mb-4 lh-1" style="font-weight: 800; font-size: 3.5rem;">
+            Connect. Hire. <span style="color: var(--proveyu-primary);">Grow.</span>
+          </h1>
+          <p class="lead text-muted-custom mb-5 fs-6 lh-lg pe-lg-4" style="color: #4a5568 !important;">
+            Access verified talent, discover new career opportunities and experience trusted hiring — all in one place.
+          </p>
+          <div class="d-flex flex-wrap gap-3">
+            <button class="btn btn-primary-custom d-flex align-items-center gap-2 px-4 py-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              Find Jobs &rarr;
+            </button>
+            <button class="btn btn-outline-custom d-flex align-items-center gap-2 px-4 py-3 bg-white">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              Hire Talent &rarr;
+            </button>
+          </div>
+        </div>
+        
+        <!-- Right Graphic -->
+        <div class="col-lg-7 col-md-12 position-relative">
+          <div class="hero-graphic-wrapper position-relative" style="height: 480px;">
+            
+            <div class="hero-graphic-bg position-relative overflow-hidden h-100">
+              
+              <!-- Carousel Inner -->
+              <div class="carousel-inner h-100">
+                
+                <!-- Slide 1 -->
+                <div class="carousel-item h-100" [class.active]="activeSlide === 0" [style.display]="activeSlide === 0 ? 'block' : 'none'" [style.opacity]="activeSlide === 0 ? '1' : '0'" style="transition: opacity 0.5s ease;">
+                  <img src="images/hero-woman-v3.png" alt="Professional Woman" class="hero-person-photo w-100 h-100">
+                  <div class="floating-card floating-card-1 bg-white p-3 rounded-4 card-shadow d-flex align-items-center gap-3 z-3">
+                    <div class="icon-box bg-light-blue rounded-3 p-2 text-primary">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                    <div><div class="fw-bold fs-8 text-navy mb-0 lh-sm">New<br/>Opportunities<br/>Every Day</div></div>
+                  </div>
+                  <div class="floating-card floating-card-3 bg-white p-2 px-3 rounded-4 card-shadow d-flex align-items-center gap-2 z-3">
+                    <div class="icon-box bg-light-blue rounded-3 p-2 text-primary">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <div class="fw-bold fs-8 text-navy">Top Companies<br/>Hire Talent</div>
+                  </div>
+                  <div class="floating-card floating-card-4 bg-white p-2 px-3 rounded-4 card-shadow d-flex align-items-center gap-2 z-3">
+                    <div class="icon-box bg-light-blue rounded-3 p-2 text-primary">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                    </div>
+                    <div class="fw-bold fs-8 text-navy">Grow<br/>Your Career</div>
+                  </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="carousel-item h-100" [class.active]="activeSlide === 1" [style.display]="activeSlide === 1 ? 'block' : 'none'" [style.opacity]="activeSlide === 1 ? '1' : '0'" style="transition: opacity 0.5s ease;">
+                  <img src="images/hero-woman-v3.png" alt="Professional Woman" class="hero-person-photo w-100 h-100">
+                  <div class="floating-card floating-card-5 bg-white p-4 rounded-4 card-shadow z-3" style="top: 25%; right: 12%; width: 320px;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg></div>
+                        <div class="fw-bold fs-6 text-navy mb-0">Skill Passport</div>
+                      </div>
+                      <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 rounded-pill d-flex align-items-center gap-1" style="font-size: 0.65rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Verified
+                      </span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-end">
+                      <div class="d-flex flex-column gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="bg-success rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 14px; height: 14px;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                          <span class="fs-8 text-navy fw-medium">Technical Skills</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="bg-success rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 14px; height: 14px;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                          <span class="fs-8 text-navy fw-medium">Work Experience</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="bg-success rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 14px; height: 14px;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                          <span class="fs-8 text-navy fw-medium">Background Check</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                          <div class="bg-success rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 14px; height: 14px;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                          <span class="fs-8 text-navy fw-medium">Identity Verified</span>
+                        </div>
+                      </div>
+                      <div class="p-1 border rounded opacity-75">
+                         <!-- SVG QR Code placeholder -->
+                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-navy">
+                           <rect x="3" y="3" width="7" height="7"></rect>
+                           <rect x="14" y="3" width="7" height="7"></rect>
+                           <rect x="14" y="14" width="7" height="7"></rect>
+                           <rect x="3" y="14" width="7" height="7"></rect>
+                           <rect x="5" y="5" width="3" height="3"></rect>
+                           <rect x="16" y="5" width="3" height="3"></rect>
+                           <rect x="16" y="16" width="3" height="3"></rect>
+                           <rect x="5" y="16" width="3" height="3"></rect>
+                         </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+
+            <!-- Carousel Controls placed OUTSIDE overflow-hidden container -->
+            <button class="carousel-control-prev-custom shadow-sm z-3" type="button" (click)="prevSlide()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button class="carousel-control-next-custom shadow-sm z-3" type="button" (click)="nextSlide()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+
+            <!-- Carousel Indicators placed OUTSIDE overflow-hidden container -->
+            <div class="carousel-indicators-custom z-3 d-flex gap-2 mb-3 justify-content-center w-100">
+              <button type="button" class="dot rounded-circle" [class.bg-primary]="activeSlide === 0" [class.active]="activeSlide === 0" [class.bg-light-blue]="activeSlide !== 0" (click)="setSlide(0)"></button>
+              <button type="button" class="dot rounded-circle" [class.bg-primary]="activeSlide === 1" [class.active]="activeSlide === 1" [class.bg-light-blue]="activeSlide !== 1" (click)="setSlide(1)"></button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Banner -->
+  <div class="container-custom position-relative z-2" style="margin-top: -45px; margin-bottom: 30px;">
+    <div class="bg-white rounded-pill card-shadow py-3 px-4 d-flex flex-wrap justify-content-between align-items-center border">
+      <div class="stat-item d-flex align-items-center gap-3 py-2 px-3 flex-grow-1 border-end border-light">
+        <div class="stat-icon text-primary bg-light-blue rounded-circle d-flex align-items-center justify-content-center" style="width:48px; height:48px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </div>
+        <div>
+          <div class="fw-bold fs-5 text-navy lh-1 mb-1">50K+</div>
+          <div class="text-muted-custom fs-8">Job Seekers</div>
+        </div>
+      </div>
+      <div class="stat-item d-flex align-items-center gap-3 py-2 px-4 flex-grow-1 border-end border-light">
+        <div class="stat-icon text-primary bg-light-blue rounded-circle d-flex align-items-center justify-content-center" style="width:48px; height:48px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>
+        </div>
+        <div>
+          <div class="fw-bold fs-5 text-navy lh-1 mb-1">5K+</div>
+          <div class="text-muted-custom fs-8">Companies</div>
+        </div>
+      </div>
+      <div class="stat-item d-flex align-items-center gap-3 py-2 px-4 flex-grow-1 border-end border-light">
+        <div class="stat-icon text-primary bg-light-blue rounded-circle d-flex align-items-center justify-content-center" style="width:48px; height:48px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+        </div>
+        <div>
+          <div class="fw-bold fs-5 text-navy lh-1 mb-1">10K+</div>
+          <div class="text-muted-custom fs-8">Jobs Posted</div>
+        </div>
+      </div>
+      <div class="stat-item d-flex align-items-center gap-3 py-2 px-4 flex-grow-1">
+        <div class="stat-icon text-primary bg-light-blue rounded-circle d-flex align-items-center justify-content-center" style="width:48px; height:48px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        </div>
+        <div>
+          <div class="fw-bold fs-5 text-navy lh-1 mb-1">Verified Profiles</div>
+          <div class="text-muted-custom fs-8">Real People. Real Skills.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- How It Works -->
+<div class="section-how-it-works py-5 bg-white border-bottom">
+  <div class="container-custom">
+    <div class="row align-items-center">
+      <div class="col-lg-4 mb-4 mb-lg-0 pe-lg-5">
+        <div class="text-uppercase fw-bold text-muted-custom fs-8 tracking-wide mb-2">How ProveYu Works</div>
+        <h2 class="fw-extrabold text-navy mb-3" style="font-size: 2.2rem;">Get hired in 3 simple steps</h2>
+        <p class="text-muted-custom fs-6">Our platform makes it easy to find opportunities, showcase your skills and connect with the right people — securely and confidently.</p>
+      </div>
+      <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center step-container gap-3">
+          
+          <!-- Step 1 -->
+          <div class="step-card bg-white p-4 rounded-4 border card-shadow-sm flex-fill">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="step-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-6 shadow-sm" style="width:28px; height:28px;">1</div>
+              <h5 class="fw-bold text-navy mb-0 fs-5">Discover</h5>
+            </div>
+            <p class="text-muted-custom fs-8 mb-0 lh-base">Browse verified job opportunities from top companies and agencies.</p>
+          </div>
+          
+          <!-- Arrow -->
+          <div class="text-primary fs-5 mx-1">&rarr;</div>
+          
+          <!-- Step 2 -->
+          <div class="step-card bg-white p-4 rounded-4 border card-shadow-sm flex-fill">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="step-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-6 shadow-sm" style="width:28px; height:28px;">2</div>
+              <h5 class="fw-bold text-navy mb-0 fs-5">Verify</h5>
+            </div>
+            <p class="text-muted-custom fs-8 mb-0 lh-base">Complete your profile, get verified and build your skill passport.</p>
+          </div>
+          
+          <!-- Arrow -->
+          <div class="text-primary fs-5 mx-1">&rarr;</div>
+          
+          <!-- Step 3 -->
+          <div class="step-card bg-white p-4 rounded-4 border card-shadow-sm flex-fill">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="step-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-6 shadow-sm" style="width:28px; height:28px;">3</div>
+              <h5 class="fw-bold text-navy mb-0 fs-5">Connect</h5>
+            </div>
+            <p class="text-muted-custom fs-8 mb-0 lh-base">Apply, get noticed and take the next step in your career.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Featured Opportunities -->
+<div class="section-jobs py-5" style="background-color: #f7fafc;">
+  <div class="container-custom">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <div>
+        <div class="text-uppercase fw-bold text-muted-custom fs-8 tracking-wide mb-1">Featured Opportunities</div>
+        <h2 class="fw-extrabold text-navy mb-0" style="font-size: 2rem;">Top Jobs Across Industries</h2>
+      </div>
+      <a href="#" class="text-decoration-none fw-bold d-flex align-items-center gap-1" style="color: var(--proveyu-primary); font-size: 0.95rem;">
+        View all jobs &rarr;
+      </a>
+    </div>
+
+    <div class="row g-4 mb-5">
+      <!-- Job Card 1 -->
+      <div class="col-lg-3 col-md-6">
+        <div class="job-card bg-white p-4 rounded-4 card-shadow h-100 d-flex flex-column transition-hover border-0">
+          <div class="d-flex justify-content-between align-items-start mb-4">
+            <div class="company-logo rounded shadow-sm d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px; background: #fff; border: 1px solid #eee; color: #EA4335;">G</div>
+            <span class="badge bg-light text-muted-custom fw-semibold px-2 py-1 rounded" style="font-size: 0.7rem;">Full-time</span>
+          </div>
+          <h5 class="fw-bold text-navy fs-6 mb-1">Software Engineer</h5>
+          <div class="text-muted-custom fs-8 mb-3">Google</div>
+          <div class="d-flex align-items-center gap-1 text-muted-custom fs-8 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            Bengaluru, India
+          </div>
+          <div class="mt-auto border-top pt-3 d-flex justify-content-between align-items-center">
+            <div class="fw-bold text-navy fs-7">₹12L - ₹18L <span class="text-muted-custom fw-normal">/ year</span></div>
+            <span class="text-primary fw-bold">&rarr;</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Job Card 2 -->
+      <div class="col-lg-3 col-md-6">
+        <div class="job-card bg-white p-4 rounded-4 card-shadow h-100 d-flex flex-column transition-hover border-0">
+          <div class="d-flex justify-content-between align-items-start mb-4">
+            <div class="company-logo rounded shadow-sm d-flex align-items-center justify-content-center fw-bold fs-3" style="width: 48px; height: 48px; background: #fff; border: 1px solid #eee; color: #FF9900; font-family: serif;">a</div>
+            <span class="badge bg-light-blue text-primary fw-semibold px-2 py-1 rounded" style="font-size: 0.7rem;">Remote</span>
+          </div>
+          <h5 class="fw-bold text-navy fs-6 mb-1">Backend Developer</h5>
+          <div class="text-muted-custom fs-8 mb-3">Amazon</div>
+          <div class="d-flex align-items-center gap-1 text-muted-custom fs-8 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            Hyderabad, India
+          </div>
+          <div class="mt-auto border-top pt-3 d-flex justify-content-between align-items-center">
+            <div class="fw-bold text-navy fs-7">₹10L - ₹16L <span class="text-muted-custom fw-normal">/ year</span></div>
+            <span class="text-primary fw-bold">&rarr;</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Job Card 3 -->
+      <div class="col-lg-3 col-md-6">
+        <div class="job-card bg-white p-4 rounded-4 card-shadow h-100 d-flex flex-column transition-hover border-0">
+          <div class="d-flex justify-content-between align-items-start mb-4">
+            <div class="company-logo rounded shadow-sm d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px; background: #fff; border: 1px solid #eee; color: #00A4EF;">M</div>
+            <span class="badge bg-success-subtle text-success fw-semibold px-2 py-1 rounded" style="font-size: 0.7rem;">Hybrid</span>
+          </div>
+          <h5 class="fw-bold text-navy fs-6 mb-1">Frontend Developer</h5>
+          <div class="text-muted-custom fs-8 mb-3">Microsoft</div>
+          <div class="d-flex align-items-center gap-1 text-muted-custom fs-8 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            Pune, India
+          </div>
+          <div class="mt-auto border-top pt-3 d-flex justify-content-between align-items-center">
+            <div class="fw-bold text-navy fs-7">₹14L - ₹22L <span class="text-muted-custom fw-normal">/ year</span></div>
+            <span class="text-primary fw-bold">&rarr;</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Job Card 4 -->
+      <div class="col-lg-3 col-md-6">
+        <div class="job-card bg-white p-4 rounded-4 card-shadow h-100 d-flex flex-column transition-hover border-0">
+          <div class="d-flex justify-content-between align-items-start mb-4">
+            <div class="company-logo rounded shadow-sm d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px; background: #fff; border: 1px solid #eee; color: #0082c8;">T</div>
+            <span class="badge bg-light text-muted-custom fw-semibold px-2 py-1 rounded" style="font-size: 0.7rem;">Full-time</span>
+          </div>
+          <h5 class="fw-bold text-navy fs-6 mb-1">System Analyst</h5>
+          <div class="text-muted-custom fs-8 mb-3">TCS</div>
+          <div class="d-flex align-items-center gap-1 text-muted-custom fs-8 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            Chennai, India
+          </div>
+          <div class="mt-auto border-top pt-3 d-flex justify-content-between align-items-center">
+            <div class="fw-bold text-navy fs-7">₹6L - ₹10L <span class="text-muted-custom fw-normal">/ year</span></div>
+            <span class="text-primary fw-bold">&rarr;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Banners -->
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="bg-light-blue rounded-4 p-5 h-100 position-relative overflow-hidden card-shadow border-0">
+          <div class="position-relative z-1">
+            <div class="d-flex align-items-center gap-2 mb-3 text-navy">
+              <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              <h4 class="mb-0 fw-bold">For Job Seekers</h4>
+            </div>
+            <p class="text-muted-custom fs-7 pe-lg-5 mb-4 lh-base">Build your profile, get verified and unlock opportunities with top companies.</p>
+            <button class="btn btn-primary-custom d-inline-flex align-items-center gap-2">
+              Find Jobs &rarr;
+            </button>
+          </div>
+          <div class="position-absolute bottom-0 end-0 p-4 opacity-50 z-0">
+             <!-- Simplified target circle graphic -->
+             <div class="rounded-circle border border-3 border-primary" style="width:80px; height:80px; margin-right: 20px; margin-bottom: 20px;"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="bg-white rounded-4 p-5 h-100 position-relative overflow-hidden card-shadow border">
+          <div class="position-relative z-1">
+            <div class="d-flex align-items-center gap-2 mb-3 text-navy">
+              <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>
+              <h4 class="mb-0 fw-bold">For Recruiters</h4>
+            </div>
+            <p class="text-muted-custom fs-7 pe-lg-5 mb-4 lh-base">Find pre-verified talent, streamline your hiring and build high-performing teams.</p>
+            <button class="btn btn-outline-custom d-inline-flex align-items-center gap-2">
+              Hire Talent &rarr;
+            </button>
+          </div>
+          <div class="position-absolute bottom-0 end-0 p-4 opacity-50 z-0 text-primary">
+             <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 20px; margin-bottom: 20px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

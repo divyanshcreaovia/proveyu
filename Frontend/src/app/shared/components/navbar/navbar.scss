@@ -1,0 +1,16 @@
+.navbar {
+  border-bottom: 1px solid var(--proveyu-border);
+}
+
+.nav-link {
+  font-size: 15px;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: var(--proveyu-primary) !important;
+  }
+}
+
+.logo-icon {
+  background: linear-gradient(135deg, var(--proveyu-primary) 0%, #0099ff 100%);
+}
