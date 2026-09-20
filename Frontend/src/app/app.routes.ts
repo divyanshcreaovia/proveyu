@@ -26,6 +26,41 @@ export const routes: Routes = [
     loadComponent: () => import('./features/public/pages/login/login').then(m => m.Login)
   },
   {
+    path: 'candidate',
+    loadComponent: () => import('./features/candidate/layout/candidate-layout/candidate-layout').then(m => m.CandidateLayout),
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/candidate/pages/dashboard/dashboard').then(m => m.Dashboard)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./features/candidate/pages/profile/profile').then(m => m.Profile)
+      },
+      {
+        path: 'book-slot',
+        loadComponent: () => import('./features/candidate/pages/book-slot/book-slot').then(m => m.BookSlot)
+      },
+      {
+        path: 'my-passport',
+        loadComponent: () => import('./features/candidate/pages/my-passport/my-passport').then(m => m.MyPassport)
+      },
+      {
+        path: 'interview-invites',
+        loadComponent: () => import('./features/candidate/pages/interview-invites/interview-invites').then(m => m.InterviewInvites)
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./features/candidate/pages/settings/settings').then(m => m.Settings)
+      }
+    ]
+  },
+  {
     path: '**',
     redirectTo: ''
   }

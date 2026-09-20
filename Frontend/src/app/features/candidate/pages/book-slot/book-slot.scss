@@ -1,0 +1,23 @@
+.cursor-pointer {
+  cursor: pointer;
+}
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}
+.exam-card {
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  }
+}
+.hover-bg {
+  transition: background-color 0.2s ease;
+  &:hover {
+    background-color: var(--proveyu-bg-light);
+  }
+}
+.stepper-wrapper {
+  .step-circle {
+    transition: all 0.3s ease;
+  }
+}

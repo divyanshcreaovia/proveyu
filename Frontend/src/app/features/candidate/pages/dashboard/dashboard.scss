@@ -1,0 +1,23 @@
+.event-card {
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    background-color: var(--proveyu-bg-light);
+    transform: translateX(4px);
+  }
+}
+
+.interview-card {
+  transition: transform 0.2s ease;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+}
+
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

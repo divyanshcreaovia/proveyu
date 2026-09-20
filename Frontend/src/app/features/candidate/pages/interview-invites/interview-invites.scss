@@ -1,0 +1,35 @@
+.hide-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--proveyu-border);
+    border-radius: 10px;
+  }
+}
+
+.max-w-75 {
+  max-width: 85%;
+}
+
+.message-bubble {
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}

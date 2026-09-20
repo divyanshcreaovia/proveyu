@@ -1,1 +1,148 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <!-- Greeting Section -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Good Morning, Rahul! 👋</h2>
+      <p class="text-muted-custom mb-0">Keep going! You're one step closer to your dream career.</p>
+    </div>
+    <button class="btn btn-primary-custom">View Profile</button>
+  </div>
+
+  <!-- Quick Stats Grid -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-4 col-lg-2" *ngFor="let stat of stats">
+      <div class="card card-shadow border-0 h-100 p-3 stat-pill-card text-center">
+        <div class="mb-2">
+          <i [class]="'bi ' + stat.icon + ' fs-3 ' + stat.color"></i>
+        </div>
+        <div class="text-muted-custom small fw-medium mb-1">{{ stat.label }}</div>
+        <div class="fs-4 fw-bold text-navy">{{ stat.value }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="row g-4 mb-4">
+    <!-- Upcoming Events -->
+    <div class="col-lg-7">
+      <div class="card card-shadow border-0 h-100 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold text-navy mb-0">Upcoming Events</h5>
+          <a href="#" class="text-decoration-none small fw-medium">View Calendar <i class="bi bi-chevron-right"></i></a>
+        </div>
+        <div class="d-flex flex-column gap-3">
+          <div class="event-card border rounded p-3 d-flex align-items-center justify-content-between" *ngFor="let event of upcomingEvents">
+            <div class="d-flex align-items-center gap-3">
+              <div class="event-icon bg-light-blue rounded p-2 text-primary">
+                <i class="bi bi-calendar-event fs-5"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold text-navy mb-1">{{ event.title }}</h6>
+                <div class="text-muted-custom small"><i class="bi bi-clock me-1"></i> {{ event.date }} • {{ event.time }}</div>
+              </div>
+            </div>
+            <div>
+              <span class="badge rounded-pill px-3 py-2 border border-light {{ event.statusColor }}">{{ event.status }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills Progress -->
+    <div class="col-lg-5">
+      <div class="card card-shadow border-0 h-100 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold text-navy mb-0">Skills Progress</h5>
+          <a href="#" class="text-decoration-none small fw-medium">View All Skills <i class="bi bi-chevron-right"></i></a>
+        </div>
+        
+        <div class="d-flex flex-column gap-4">
+          <div class="skill-item" *ngFor="let skill of skillsProgress">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="fw-medium text-navy">{{ skill.name }}</span>
+              <span class="fw-bold">{{ skill.progress }}%</span>
+            </div>
+            <div class="progress rounded-pill bg-light-blue" style="height: 8px;">
+              <div class="progress-bar rounded-pill {{ skill.color }}" role="progressbar" [style.width]="skill.progress + '%'" [attr.aria-valuenow]="skill.progress" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Grid (Activity & Interviews) -->
+  <div class="row g-4 mb-4">
+    <!-- Activity Chart Placeholder -->
+    <div class="col-lg-8">
+      <div class="card card-shadow border-0 h-100 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold text-navy mb-0">Your Activity (Test Performance)</h5>
+          <select class="form-select form-select-sm w-auto border-0 bg-light-blue fw-medium shadow-none">
+            <option>Last 30 Days</option>
+            <option>Last 3 Months</option>
+          </select>
+        </div>
+        <!-- Mockup of a chart -->
+        <div class="chart-placeholder d-flex align-items-end justify-content-between pt-4 pb-2 px-3 border-bottom mt-auto" style="height: 200px;">
+          <div class="bg-primary rounded-top" style="width: 8%; height: 30%; opacity: 0.8;"></div>
+          <div class="bg-primary rounded-top" style="width: 8%; height: 50%; opacity: 0.8;"></div>
+          <div class="bg-primary rounded-top" style="width: 8%; height: 40%; opacity: 0.8;"></div>
+          <div class="bg-primary rounded-top" style="width: 8%; height: 70%; opacity: 0.8;"></div>
+          <div class="bg-primary rounded-top" style="width: 8%; height: 60%; opacity: 0.8;"></div>
+          <div class="bg-primary rounded-top" style="width: 8%; height: 85%; opacity: 1;"></div>
+          <div class="bg-primary rounded-top" style="width: 8%; height: 65%; opacity: 0.8;"></div>
+          <div class="bg-primary rounded-top" style="width: 8%; height: 90%; opacity: 1;"></div>
+        </div>
+        <div class="d-flex justify-content-between mt-2 text-muted-custom small px-3">
+          <span>Sep 1</span>
+          <span>Sep 7</span>
+          <span>Sep 14</span>
+          <span>Sep 21</span>
+          <span>Sep 30</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending Interviews -->
+    <div class="col-lg-4">
+      <div class="card card-shadow border-0 h-100 p-4 text-white overflow-hidden position-relative" style="background: linear-gradient(135deg, var(--proveyu-primary) 0%, #0044cc 100%);">
+        <h5 class="fw-bold mb-4 text-white position-relative z-1">Pending Interviews</h5>
+        
+        <div class="position-relative z-1 d-flex flex-column gap-3 h-100">
+          <div class="interview-card bg-white text-navy rounded p-3 card-shadow cursor-pointer transition-all">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <div class="fw-bold fs-6">Software Engineer</div>
+                <div class="text-muted-custom small">Microsoft</div>
+              </div>
+              <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="MS" width="24" height="24">
+            </div>
+            <div class="d-flex gap-2 mt-3">
+              <button class="btn btn-sm btn-primary-custom flex-grow-1 py-1" style="font-size: 0.8rem;">Accept</button>
+              <button class="btn btn-sm btn-outline-secondary flex-grow-1 py-1" style="font-size: 0.8rem;">Decline</button>
+            </div>
+          </div>
+
+          <div class="interview-card bg-white text-navy rounded p-3 card-shadow cursor-pointer transition-all">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <div class="fw-bold fs-6">SDE-1</div>
+                <div class="text-muted-custom small">Google</div>
+              </div>
+              <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" width="24" height="24">
+            </div>
+            <div class="d-flex gap-2 mt-3">
+              <button class="btn btn-sm btn-primary-custom flex-grow-1 py-1" style="font-size: 0.8rem;">Accept</button>
+              <button class="btn btn-sm btn-outline-secondary flex-grow-1 py-1" style="font-size: 0.8rem;">Decline</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Decorative bg -->
+        <i class="bi bi-briefcase position-absolute text-white" style="font-size: 10rem; opacity: 0.05; bottom: -20px; right: -20px; transform: rotate(-15deg);"></i>
+      </div>
+    </div>
+  </div>
+</div>

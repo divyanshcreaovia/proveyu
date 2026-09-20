@@ -1,0 +1,54 @@
+.sidebar-wrapper {
+  width: 260px;
+  min-width: 260px;
+  border-right: 1px solid var(--proveyu-border);
+  position: sticky;
+  top: 81px;
+  height: calc(100vh - 81px);
+  z-index: 900;
+  overflow-y: auto;
+  transition: width 0.3s ease, min-width 0.3s ease;
+  background-color: white;
+
+  &.collapsed {
+    width: 80px;
+    min-width: 80px;
+    
+    .sidebar-brand {
+      justify-content: center !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    
+    .nav-link {
+      justify-content: center;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      
+      span {
+        display: none;
+      }
+    }
+  }
+  
+  .sidebar-nav {
+    .nav-link {
+      transition: all 0.2s ease-in-out;
+      
+      &:hover {
+        background-color: var(--proveyu-bg-light);
+        color: var(--proveyu-primary) !important;
+      }
+      
+      &.active {
+        background-color: var(--proveyu-primary);
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(0, 87, 255, 0.25);
+        
+        i {
+          color: white !important;
+        }
+      }
+    }
+  }
+}
