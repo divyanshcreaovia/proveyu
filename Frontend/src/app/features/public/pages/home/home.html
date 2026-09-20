@@ -1,364 +1,691 @@
 <div class="bg-white">
-  <!-- Hero Section -->
-  <div class="hero-section py-4 position-relative overflow-hidden">
-    <div class="container-fluid px-4 px-xxl-5 position-relative z-1">
-      <div class="hero-banner-container py-4 px-3 px-lg-5" style="padding-bottom: 6rem !important;">
-        <div class="row align-items-center">
-          <!-- Left Content -->
-        <div class="col-lg-5 col-md-12 mb-5 mb-lg-0 pe-lg-5">
-          <div class="text-uppercase fw-bold text-muted-custom mb-3 fs-8 tracking-wide">
-            The Smarter Way To Work
+  <!-- HERO SECTION FROM REFERENCE -->
+  <section class="hero-section">
+    <div class="container-custom">
+      <div class="hero-container">
+
+        <!-- Left Text Column -->
+        <div class="hero-text-col">
+          <div class="pill-badge">
+            <span>100% In-Person Assessment Infrastructure</span>
           </div>
-          <h1 class="display-4 fw-extrabold text-navy mb-4 lh-1" style="font-weight: 800; font-size: 3.5rem;">
-            Connect. Hire. <span style="color: var(--proveyu-primary);">Grow.</span>
+
+          <h1 class="hero-title">
+            Proof Over Resumes.<br>
+            <span class="gradient-text">Hire on Proven Ability.</span>
           </h1>
-          <p class="lead text-muted-custom mb-5 fs-6 lh-lg pe-lg-4" style="color: #4a5568 !important;">
-            Access verified talent, discover new career opportunities and experience trusted hiring — all in one place.
+
+          <p class="hero-subtitle">
+            ProveYu replaces unverified resume claims with invigilated, in-person skill assessments at partner exam
+            centres. Candidates get a multi-dimensional Skill Passport; recruiters get un-cheatable merit signal.
           </p>
-          <div class="d-flex flex-wrap gap-3">
-            <button class="btn btn-primary-custom d-flex align-items-center gap-2 px-4 py-3">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              Find Jobs &rarr;
-            </button>
-            <button class="btn btn-outline-custom d-flex align-items-center gap-2 px-4 py-3 bg-white">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-              Hire Talent &rarr;
-            </button>
+
+          <!-- Dual Primary CTAs -->
+          <div class="d-flex flex-wrap gap-3 mb-4">
+            <a routerLink="/select-role"
+              class="btn btn-primary-custom d-flex align-items-center gap-2 px-4 py-3 text-decoration-none shadow">
+              <span>I'm a Candidate — Get Verified</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
+            <a routerLink="/select-role"
+              class="btn btn-outline-custom d-flex align-items-center gap-2 px-4 py-3 bg-white text-decoration-none">
+              <span>I'm Hiring — Access Verified Talent</span>
+            </a>
+          </div>
+
+          <!-- Hero Trust Stats Row -->
+          <div class="hero-trust-row">
+            <div class="trust-stat">
+              <span class="stat-num">100%</span>
+              <span class="stat-lbl">In-Person Supervision</span>
+            </div>
+            <div class="trust-divider"></div>
+            <div class="trust-stat">
+              <span class="stat-num">Air-Gapped</span>
+              <span class="stat-lbl">Terminal Lockdown</span>
+            </div>
+            <div class="trust-divider"></div>
+            <div class="trust-stat">
+              <span class="stat-num">0%</span>
+              <span class="stat-lbl">Proxy Cheating Vulnerability</span>
+            </div>
           </div>
         </div>
-        
-        <!-- Right Graphic -->
-        <div class="col-lg-7 col-md-12 position-relative">
-          <div class="hero-graphic-wrapper position-relative" style="height: 480px;">
-            
-            <div class="hero-graphic-bg position-relative overflow-hidden h-100">
-              
-              <!-- Carousel Inner -->
-              <div class="carousel-inner h-100">
-                
-                <!-- Slide 1 -->
-                <div class="carousel-item h-100" [class.active]="activeSlide === 0" [style.display]="activeSlide === 0 ? 'block' : 'none'" [style.opacity]="activeSlide === 0 ? '1' : '0'" style="transition: opacity 0.5s ease;">
-                  <img src="images/hero-woman-v3.png" alt="Professional Woman" class="hero-person-photo w-100 h-100">
-                  <div class="floating-card floating-card-1 bg-white p-3 rounded-4 card-shadow d-flex align-items-center gap-3 z-3">
-                    <div class="icon-box bg-light-blue rounded-3 p-2 text-primary">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    </div>
-                    <div><div class="fw-bold fs-8 text-navy mb-0 lh-sm">New<br/>Opportunities<br/>Every Day</div></div>
-                  </div>
-                  <div class="floating-card floating-card-3 bg-white p-2 px-3 rounded-4 card-shadow d-flex align-items-center gap-2 z-3">
-                    <div class="icon-box bg-light-blue rounded-3 p-2 text-primary">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                    </div>
-                    <div class="fw-bold fs-8 text-navy">Top Companies<br/>Hire Talent</div>
-                  </div>
-                  <div class="floating-card floating-card-4 bg-white p-2 px-3 rounded-4 card-shadow d-flex align-items-center gap-2 z-3">
-                    <div class="icon-box bg-light-blue rounded-3 p-2 text-primary">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-                    </div>
-                    <div class="fw-bold fs-8 text-navy">Grow<br/>Your Career</div>
-                  </div>
-                </div>
 
-                <!-- Slide 2 -->
-                <div class="carousel-item h-100" [class.active]="activeSlide === 1" [style.display]="activeSlide === 1 ? 'block' : 'none'" [style.opacity]="activeSlide === 1 ? '1' : '0'" style="transition: opacity 0.5s ease;">
-                  <img src="images/hero-woman-v3.png" alt="Professional Woman" class="hero-person-photo w-100 h-100">
-                  <div class="floating-card floating-card-5 bg-white p-4 rounded-4 card-shadow z-3" style="top: 25%; right: 12%; width: 320px;">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                      <div class="d-flex align-items-center gap-2">
-                        <div class="text-primary"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg></div>
-                        <div class="fw-bold fs-6 text-navy mb-0">Skill Passport</div>
-                      </div>
-                      <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 rounded-pill d-flex align-items-center gap-1" style="font-size: 0.65rem;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Verified
-                      </span>
+        <!-- Right Hero Passport & Candidate Showcase Flip Card -->
+        <div class="hero-visual-col">
+          <div class="hero-flip-container" [class.flipped]="isHeroCardFlipped" (click)="toggleHeroFlip()">
+            <div class="hero-flip-inner">
+
+              <!-- FRONT SIDE: ProveYu Skill Passport Card -->
+              <div class="hero-flip-front">
+                <div class="passport-preview-card h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-dashed">
+                    <div class="d-flex align-items-center gap-2 fw-extrabold text-primary fs-7 tracking-wide">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                      </svg>
+                      <span>PROVEYU SKILL PASSPORT</span>
                     </div>
-                    
-                    <div class="d-flex justify-content-between align-items-end">
-                      <div class="d-flex flex-column gap-2">
-                        <div class="d-flex align-items-center gap-2">
-                          <div class="bg-success rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 14px; height: 14px;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-                          <span class="fs-8 text-navy fw-medium">Technical Skills</span>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                          <div class="bg-success rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 14px; height: 14px;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-                          <span class="fs-8 text-navy fw-medium">Work Experience</span>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                          <div class="bg-success rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 14px; height: 14px;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-                          <span class="fs-8 text-navy fw-medium">Background Check</span>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                          <div class="bg-success rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 14px; height: 14px;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-                          <span class="fs-8 text-navy fw-medium">Identity Verified</span>
+                    <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fs-8 fw-bold">Top 3% Verified</span>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-3 mb-4">
+                    <div
+                      class="rounded-circle text-white d-flex align-items-center justify-content-center fw-extrabold fs-4 shadow"
+                      style="width: 58px; height: 58px; flex-shrink: 0; background: linear-gradient(135deg, #0057ff 0%, #0a1b3f 100%);">
+                      RS
+                    </div>
+                    <div>
+                      <h3 class="h5 fw-bold text-navy mb-0">Rahul Sharma</h3>
+                      <span class="fs-7 text-primary fw-semibold d-block">Universal Fresher Competency</span>
+                      <span class="fs-8 text-muted d-block">TCS iON Center, Koramangala</span>
+                    </div>
+                    <div
+                      class="ms-auto rounded-circle text-white d-flex flex-column align-items-center justify-content-center text-center p-2 shadow"
+                      style="width: 62px; height: 62px; flex-shrink: 0; background: linear-gradient(135deg, #0057ff 0%, #0044cc 100%);">
+                      <span class="fw-extrabold fs-5 lh-1">92</span>
+                      <span class="fs-8 fw-bold lh-1 mt-1" style="font-size: 0.55rem !important;">SCORE</span>
+                    </div>
+                  </div>
+
+                  <div class="d-flex flex-column gap-3 mb-4">
+                    <div class="row align-items-center g-2 fs-7 fw-semibold text-navy">
+                      <div class="col-5">Core Logic & Algorithms</div>
+                      <div class="col-5">
+                        <div class="progress" style="height: 8px;">
+                          <div class="progress-bar bg-primary" style="width: 95%"></div>
                         </div>
                       </div>
-                      <div class="p-1 border rounded opacity-75">
-                         <!-- SVG QR Code placeholder -->
-                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-navy">
-                           <rect x="3" y="3" width="7" height="7"></rect>
-                           <rect x="14" y="3" width="7" height="7"></rect>
-                           <rect x="14" y="14" width="7" height="7"></rect>
-                           <rect x="3" y="14" width="7" height="7"></rect>
-                           <rect x="5" y="5" width="3" height="3"></rect>
-                           <rect x="16" y="5" width="3" height="3"></rect>
-                           <rect x="16" y="16" width="3" height="3"></rect>
-                           <rect x="5" y="16" width="3" height="3"></rect>
-                         </svg>
+                      <div class="col-2 text-end text-primary fw-bold">95%</div>
+                    </div>
+
+                    <div class="row align-items-center g-2 fs-7 fw-semibold text-navy">
+                      <div class="col-5">QA & Test Automation</div>
+                      <div class="col-5">
+                        <div class="progress" style="height: 8px;">
+                          <div class="progress-bar bg-primary" style="width: 94%"></div>
+                        </div>
                       </div>
+                      <div class="col-2 text-end text-primary fw-bold">94%</div>
+                    </div>
+
+                    <div class="row align-items-center g-2 fs-7 fw-semibold text-navy">
+                      <div class="col-5">Java Backend Development</div>
+                      <div class="col-5">
+                        <div class="progress" style="height: 8px;">
+                          <div class="progress-bar bg-primary" style="width: 88%"></div>
+                        </div>
+                      </div>
+                      <div class="col-2 text-end text-primary fw-bold">88%</div>
+                    </div>
+                  </div>
+
+                  <div class="p-3 bg-light-blue rounded-3 border border-primary border-opacity-25 mb-3 fs-7 text-navy">
+                    <strong>Primary Fit:</strong> QA / Automation Engineer | <strong>Secondary:</strong> Java
+                    Microservices
+                  </div>
+
+                  <div class="d-flex align-items-center justify-content-between text-primary fs-7 fw-bold">
+                    <div class="d-flex align-items-center gap-2">
+                      <span
+                        class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center p-1"
+                        style="width: 20px; height: 20px; font-size: 11px;">✓</span>
+                      <span>Invigilator Supervision Log #TCS-BLR-04 Confirmed</span>
                     </div>
                   </div>
                 </div>
-                
+              </div>
+
+              <!-- BACK SIDE: Candidate Showcase Image (hero-woman-v3.png) -->
+              <div class="hero-flip-back">
+                <div class="passport-preview-card h-100 p-0 overflow-hidden d-flex flex-column position-relative">
+                  <div
+                    class="position-absolute top-0 start-0 w-100 p-3 d-flex justify-content-between align-items-center"
+                    style="z-index: 5; background: linear-gradient(180deg, rgba(10,27,63,0.85) 0%, transparent 100%);">
+                    <span class="badge bg-success rounded-pill px-3 py-1 fs-8 fw-bold">100% In-Person Verified</span>
+                    <span class="badge bg-white text-navy rounded-pill px-3 py-1 fs-8 fw-bold">Proof of Merit</span>
+                  </div>
+
+                  <img src="images/hero-woman-v3.png" alt="ProveYu Verified Candidate"
+                    class="w-100 h-100 object-fit-cover" style="border-radius: 18px; object-position: top center;">
+
+                  <div
+                    class="position-absolute bottom-0 start-0 w-100 p-3 text-white d-flex justify-content-between align-items-center"
+                    style="z-index: 5; background: linear-gradient(0deg, rgba(10,27,63,0.92) 0%, transparent 100%);">
+                    <div>
+                      <div class="fw-bold fs-6 mb-0">Verified Candidate Profile</div>
+                      <div class="fs-8 opacity-75">Air-Gapped Lab Exam Centre Audit</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: 3 Interactive Feature Cards with Image Hover -->
+  <section class="py-5 bg-light-blue position-relative overflow-hidden">
+    <!-- Top-Right Decorative Thread Line -->
+    <svg class="position-absolute top-0 end-0 d-none d-lg-block pe-none" width="220" height="220" viewBox="0 0 220 220"
+      fill="none" style="z-index: 10; margin-top: 10px; margin-right: 10px;">
+      <path d="M 205 15 Q 120 25 90 95 T 15 160" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none"
+        opacity="0.45" />
+      <polygon points="23,150 10,165 26,166" fill="#0057ff" opacity="0.75" />
+    </svg>
+
+    <div class="container-custom py-4 position-relative" style="z-index: 1;">
+      <div class="text-center mb-5">
+        <div class="section-header-banner mx-auto">
+          <h2 class="h2 fw-bold text-navy mb-2">How ProveYu Eliminates Hiring Risk</h2>
+          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
+            Replacing unverified resume claims with 3-stage physical invigilation, air-gapped coding labs, and
+            tamper-proof skill passports.
+          </p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Card 1 -->
+        <div class="col-lg-4">
+          <div class="card card-shadow border-0 h-100 p-4 bg-white arch-card-hover">
+            <h3 class="h5 fw-bold text-navy mb-3 text-center">Biometric & Physical Check-In</h3>
+
+            <div class="arch-img-container shadow-sm">
+              <!-- Default Image -->
+              <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=600"
+                alt="Identity Verification"
+                class="w-100 h-100 object-fit-cover arch-img-default position-absolute top-0 start-0">
+              <!-- Hover Image -->
+              <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=600"
+                alt="Biometric Audit Gate"
+                class="w-100 h-100 object-fit-cover arch-img-hover position-absolute top-0 start-0 opacity-0">
+
+              <div
+                class="position-absolute bottom-0 start-0 w-100 p-2 text-center text-white bg-dark bg-opacity-50 fs-8 fw-semibold backdrop-blur">
+                Stage 1: Photo & Biometric Gate
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="col-lg-4">
+          <div class="card card-shadow border-0 h-100 p-4 bg-white arch-card-hover">
+            <h3 class="h5 fw-bold text-navy mb-3 text-center">Air-Gapped Assessment Terminals</h3>
+
+            <div class="arch-img-container shadow-sm">
+              <!-- Default Image -->
+              <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=600"
+                alt="Assessment Lab Terminal"
+                class="w-100 h-100 object-fit-cover arch-img-default position-absolute top-0 start-0">
+              <!-- Hover Image -->
+              <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=600"
+                alt="Lockdown Terminal Hub"
+                class="w-100 h-100 object-fit-cover arch-img-hover position-absolute top-0 start-0 opacity-0">
+
+              <div
+                class="position-absolute bottom-0 start-0 w-100 p-2 text-center text-white bg-dark bg-opacity-50 fs-8 fw-semibold backdrop-blur">
+                Stage 2: Air-Gapped Terminal
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="col-lg-4">
+          <div class="card card-shadow border-0 h-100 p-4 bg-white arch-card-hover">
+            <h3 class="h5 fw-bold text-navy mb-3 text-center">Tamper-Proof Skill Passport</h3>
+
+            <div class="arch-img-container shadow-sm">
+              <!-- Default Image -->
+              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600"
+                alt="Skill Passport Analytics"
+                class="w-100 h-100 object-fit-cover arch-img-default position-absolute top-0 start-0">
+              <!-- Hover Image -->
+              <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600"
+                alt="Verified Skill Passport Data"
+                class="w-100 h-100 object-fit-cover arch-img-hover position-absolute top-0 start-0 opacity-0">
+
+              <div
+                class="position-absolute bottom-0 start-0 w-100 p-2 text-center text-white bg-dark bg-opacity-50 fs-8 fw-semibold backdrop-blur">
+                Stage 3: Verified Skill Matrix
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: ProveYu for Colleges & Universities -->
+  <section class="py-5 bg-white border-top border-bottom position-relative overflow-hidden">
+    <!-- Top-Left Decorative Dashed Thread Line & Arrow -->
+    <svg class="position-absolute top-0 start-0 d-none d-lg-block pe-none" width="230" height="230"
+      viewBox="0 0 230 230" fill="none" style="z-index: 10;">
+      <path d="M 15 15 Q 95 25 125 105 T 210 180" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none"
+        opacity="0.45" />
+      <polygon points="203,170 214,183 199,184" fill="#0057ff" opacity="0.75" />
+    </svg>
+
+    <div class="container-custom py-4 position-relative" style="z-index: 1;">
+      <div class="text-center mb-5">
+        <div class="section-header-banner mx-auto">
+          <span
+            class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold mb-3">Institutional
+            Partnerships</span>
+          <h2 class="h2 fw-bold text-navy mb-3">ProveYu for Colleges & Universities</h2>
+          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
+            Turn Placement Season Into a Verified Merit System. Boost drive shortlists, eliminate un-cheatable proxy
+            risks, and give students a 2nd hiring channel.
+          </p>
+        </div>
+      </div>
+
+      <div class="row g-5 align-items-center">
+        <!-- Left Side: Problem, 2-Month Flow & Key Benefits -->
+        <div class="col-lg-6">
+          <!-- Problem Card -->
+          <div
+            class="card card-shadow border p-4 rounded-4 bg-white mb-4 position-relative">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="point-pill-btn point-pill-neutral">THE PLACEMENT VULNERABILITY</span>
+              <span class="fw-bold text-navy fs-5">30% Missed Talent</span>
+            </div>
+            <h3 class="h5 fw-bold text-navy mb-2">Placement % is Capped by Visibility, Not Talent</h3>
+            <p class="text-muted-custom fs-7 mb-0">
+              Students panic-prepare last minute, companies rely on stale resume claims, and drive shortlists miss 30%
+              of deserving candidates who get placed elsewhere.
+            </p>
+          </div>
+
+          <!-- Solution: 2-Month Flow Cards -->
+          <div class="card card-shadow border p-4 rounded-4 bg-white mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <span class="point-pill-btn point-pill-neutral">PROVEYU PRE-PLACEMENT FLOW</span>
+              <span class="fs-8 text-uppercase tracking-wide fw-bold text-primary">Automated Merit System</span>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="p-3 bg-light-blue rounded-3 h-100 border">
+                  <div class="fs-8 fw-bold text-primary text-uppercase mb-1">Pre-Placement Month 1</div>
+                  <h4 class="fs-7 fw-bold text-navy mb-1">Test & Measure</h4>
+                  <p class="text-muted-custom fs-8 mb-0">First assessment. Students get instant skill diagnosis; T&P
+                    gets verified merit rankings.</p>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="p-3 bg-light-blue rounded-3 h-100 border">
+                  <div class="fs-8 fw-bold text-primary text-uppercase mb-1">Pre-Placement Month 2</div>
+                  <h4 class="fs-7 fw-bold text-navy mb-1">Improve & Re-Test</h4>
+                  <p class="text-muted-custom fs-8 mb-0">Recovery shot for low scorers. T&P holds fresh, verified data
+                    before recruiters arrive.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Key Benefits List -->
+          <div class="card card-shadow border p-4 rounded-4 bg-white mb-4">
+            <h4 class="fs-8 fw-extrabold text-uppercase tracking-wide text-primary mb-3">Key Placement Advantages</h4>
+            <div class="d-flex flex-column gap-3">
+              <!-- Benefit 1 -->
+              <div class="p-3 bg-light-blue rounded-3 border d-flex align-items-start gap-3">
+                <span class="badge bg-primary bg-opacity-10 text-primary fw-extrabold rounded-pill px-2.5 py-1.5 fs-8" style="min-width: 34px; text-align: center;">01</span>
+                <div>
+                  <h5 class="fs-7 fw-bold text-navy mb-1">Placement % Increase</h5>
+                  <p class="text-muted-custom fs-8 mb-0">Expected +5–8% growth via drive shortlists + ProveYu discovery channel.</p>
+                </div>
+              </div>
+
+              <!-- Benefit 2 -->
+              <div class="p-3 bg-light-blue rounded-3 border d-flex align-items-start gap-3">
+                <span class="badge bg-primary bg-opacity-10 text-primary fw-extrabold rounded-pill px-2.5 py-1.5 fs-8" style="min-width: 34px; text-align: center;">02</span>
+                <div>
+                  <h5 class="fs-7 fw-bold text-navy mb-1">Tier-B Discovery Channel</h5>
+                  <p class="text-muted-custom fs-8 mb-0">Second-chance opportunities for deserving students directly on ProveYu platform.</p>
+                </div>
+              </div>
+
+              <!-- Benefit 3 -->
+              <div class="p-3 bg-light-blue rounded-3 border d-flex align-items-start gap-3">
+                <span class="badge bg-primary bg-opacity-10 text-primary fw-extrabold rounded-pill px-2.5 py-1.5 fs-8" style="min-width: 34px; text-align: center;">03</span>
+                <div>
+                  <h5 class="fs-7 fw-bold text-navy mb-1">T&P Efficiency</h5>
+                  <p class="text-muted-custom fs-8 mb-0">Takes only 30 minutes extra per cycle (entire invigilation & grading is automated).</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA Button -->
+          <div class="d-flex flex-wrap align-items-center gap-3">
+            <a routerLink="/select-role" class="btn btn-primary-custom px-4 py-3 text-decoration-none shadow">
+              Schedule a 15-Min College Demo &rarr;
+            </a>
+            <span class="fs-8 text-muted">Limited pilot slots for this season</span>
+          </div>
+        </div>
+
+        <!-- Right Side: Timeline & Stats Card -->
+        <div class="col-lg-6">
+          <div class="card card-shadow border-0 p-4 p-md-5 rounded-4 bg-white">
+            <h3 class="h5 fw-bold text-navy mb-4 text-center">Your College Placement Calendar</h3>
+
+            <!-- Timeline -->
+            <div class="college-timeline position-relative ps-4 mb-4">
+              <!-- Timeline item 1 -->
+              <div class="timeline-step mb-4 position-relative">
+                <div
+                  class="step-badge rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center position-absolute"
+                  style="left: -41px; top: 0; width: 32px; height: 32px; font-size: 0.85rem;">1</div>
+                <span class="badge bg-primary bg-opacity-10 text-primary fs-8 fw-semibold mb-1">Step 01 — Pre-Placement
+                  Prep</span>
+                <h4 class="fs-7 fw-bold text-navy mb-1">Month 1 & 2 Pre-Placement Readiness</h4>
+                <p class="text-muted-custom fs-8 mb-0">Month 1 assessment provides objective readiness feedback to
+                  identify top performers early. In Month 2, students who missed the merit cut get a second recovery
+                  shot—giving T&P fresh, verified data before any company arrives.</p>
+              </div>
+
+              <!-- Timeline item 2 -->
+              <div class="timeline-step mb-4 position-relative">
+                <div
+                  class="step-badge rounded-circle bg-success text-white fw-bold d-flex align-items-center justify-content-center position-absolute"
+                  style="left: -41px; top: 0; width: 32px; height: 32px; font-size: 0.85rem;">2</div>
+                <span class="badge bg-success bg-opacity-10 text-success fs-8 fw-semibold mb-1">Step 02 — Placement
+                  Drives</span>
+                <h4 class="fs-7 fw-bold text-navy mb-1">Placement Drives & Continuous Merit Data</h4>
+                <p class="text-muted-custom fs-8 mb-0">Once placement drives begin, monthly assessments continue to keep
+                  students prepared throughout the entire cycle. Companies get updated merit data every cycle instead of
+                  stale resumes from 6 months back.</p>
+              </div>
+
+              <!-- Bonus Box -->
+              <div class="p-3 bg-light-blue rounded-3 border border-primary border-opacity-25 fs-8 text-navy">
+                <strong class="text-primary">Bonus:</strong> Qualified students are also listed on ProveYu's hiring
+                network. So they're not waiting for just your college drive—they get discovered by companies and
+                agencies directly too.
               </div>
             </div>
 
-            <!-- Carousel Controls placed OUTSIDE overflow-hidden container -->
-            <button class="carousel-control-prev-custom shadow-sm z-3" type="button" (click)="prevSlide()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </button>
-            <button class="carousel-control-next-custom shadow-sm z-3" type="button" (click)="nextSlide()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
-
-            <!-- Carousel Indicators placed OUTSIDE overflow-hidden container -->
-            <div class="carousel-indicators-custom z-3 d-flex gap-2 mb-3 justify-content-center w-100">
-              <button type="button" class="dot rounded-circle" [class.bg-primary]="activeSlide === 0" [class.active]="activeSlide === 0" [class.bg-light-blue]="activeSlide !== 0" (click)="setSlide(0)"></button>
-              <button type="button" class="dot rounded-circle" [class.bg-primary]="activeSlide === 1" [class.active]="activeSlide === 1" [class.bg-light-blue]="activeSlide !== 1" (click)="setSlide(1)"></button>
+            <!-- College Impact Stats Box -->
+            <div class="p-3.5 p-md-4 rounded-4 text-white text-center shadow"
+              style="background: linear-gradient(135deg, #0a1b3f 0%, #0057ff 100%);">
+              <div class="row g-3">
+                <div class="col-4">
+                  <div class="h3 fw-extrabold mb-0">+5–8%</div>
+                  <div class="fs-8 text-white fw-medium">Placement Improvement</div>
+                </div>
+                <div class="col-4 border-start border-end border-white border-opacity-25">
+                  <div class="h3 fw-extrabold mb-0">30 Min</div>
+                  <div class="fs-8 text-white fw-medium">Extra Work Per Cycle</div>
+                </div>
+                <div class="col-4">
+                  <div class="h3 fw-extrabold mb-0">200-400%</div>
+                  <div class="fs-8 text-white fw-medium">Expected ROI</div>
+                </div>
+              </div>
             </div>
-
-          </div>
-        </div>
-      </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Stats Banner -->
-  <div class="container-custom position-relative z-2" style="margin-top: -45px; margin-bottom: 30px;">
-    <div class="bg-white rounded-pill card-shadow py-3 px-4 d-flex flex-wrap justify-content-between align-items-center border">
-      <div class="stat-item d-flex align-items-center gap-3 py-2 px-3 flex-grow-1 border-end border-light">
-        <div class="stat-icon text-primary bg-light-blue rounded-circle d-flex align-items-center justify-content-center" style="width:48px; height:48px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-        </div>
-        <div>
-          <div class="fw-bold fs-5 text-navy lh-1 mb-1">50K+</div>
-          <div class="text-muted-custom fs-8">Job Seekers</div>
-        </div>
-      </div>
-      <div class="stat-item d-flex align-items-center gap-3 py-2 px-4 flex-grow-1 border-end border-light">
-        <div class="stat-icon text-primary bg-light-blue rounded-circle d-flex align-items-center justify-content-center" style="width:48px; height:48px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>
-        </div>
-        <div>
-          <div class="fw-bold fs-5 text-navy lh-1 mb-1">5K+</div>
-          <div class="text-muted-custom fs-8">Companies</div>
-        </div>
-      </div>
-      <div class="stat-item d-flex align-items-center gap-3 py-2 px-4 flex-grow-1 border-end border-light">
-        <div class="stat-icon text-primary bg-light-blue rounded-circle d-flex align-items-center justify-content-center" style="width:48px; height:48px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-        </div>
-        <div>
-          <div class="fw-bold fs-5 text-navy lh-1 mb-1">10K+</div>
-          <div class="text-muted-custom fs-8">Jobs Posted</div>
-        </div>
-      </div>
-      <div class="stat-item d-flex align-items-center gap-3 py-2 px-4 flex-grow-1">
-        <div class="stat-icon text-primary bg-light-blue rounded-circle d-flex align-items-center justify-content-center" style="width:48px; height:48px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-        </div>
-        <div>
-          <div class="fw-bold fs-5 text-navy lh-1 mb-1">Verified Profiles</div>
-          <div class="text-muted-custom fs-8">Real People. Real Skills.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- How It Works -->
-<div class="section-how-it-works py-5 bg-white border-bottom">
-  <div class="container-custom">
-    <div class="row align-items-center">
-      <div class="col-lg-4 mb-4 mb-lg-0 pe-lg-5">
-        <div class="text-uppercase fw-bold text-muted-custom fs-8 tracking-wide mb-2">How ProveYu Works</div>
-        <h2 class="fw-extrabold text-navy mb-3" style="font-size: 2.2rem;">Get hired in 3 simple steps</h2>
-        <p class="text-muted-custom fs-6">Our platform makes it easy to find opportunities, showcase your skills and connect with the right people — securely and confidently.</p>
-      </div>
-      <div class="col-lg-8">
-        <div class="d-flex justify-content-between align-items-center step-container gap-3">
-          
-          <!-- Step 1 -->
-          <div class="step-card bg-white p-4 rounded-4 border card-shadow-sm flex-fill">
-            <div class="d-flex align-items-center gap-3 mb-3">
-              <div class="step-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-6 shadow-sm" style="width:28px; height:28px;">1</div>
-              <h5 class="fw-bold text-navy mb-0 fs-5">Discover</h5>
-            </div>
-            <p class="text-muted-custom fs-8 mb-0 lh-base">Browse verified job opportunities from top companies and agencies.</p>
-          </div>
-          
-          <!-- Arrow -->
-          <div class="text-primary fs-5 mx-1">&rarr;</div>
-          
-          <!-- Step 2 -->
-          <div class="step-card bg-white p-4 rounded-4 border card-shadow-sm flex-fill">
-            <div class="d-flex align-items-center gap-3 mb-3">
-              <div class="step-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-6 shadow-sm" style="width:28px; height:28px;">2</div>
-              <h5 class="fw-bold text-navy mb-0 fs-5">Verify</h5>
-            </div>
-            <p class="text-muted-custom fs-8 mb-0 lh-base">Complete your profile, get verified and build your skill passport.</p>
-          </div>
-          
-          <!-- Arrow -->
-          <div class="text-primary fs-5 mx-1">&rarr;</div>
-          
-          <!-- Step 3 -->
-          <div class="step-card bg-white p-4 rounded-4 border card-shadow-sm flex-fill">
-            <div class="d-flex align-items-center gap-3 mb-3">
-              <div class="step-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-6 shadow-sm" style="width:28px; height:28px;">3</div>
-              <h5 class="fw-bold text-navy mb-0 fs-5">Connect</h5>
-            </div>
-            <p class="text-muted-custom fs-8 mb-0 lh-base">Apply, get noticed and take the next step in your career.</p>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
+  </section>
 
-<!-- Featured Opportunities -->
-<div class="section-jobs py-5" style="background-color: #f7fafc;">
-  <div class="container-custom">
-    <div class="d-flex justify-content-between align-items-end mb-4">
-      <div>
-        <div class="text-uppercase fw-bold text-muted-custom fs-8 tracking-wide mb-1">Featured Opportunities</div>
-        <h2 class="fw-extrabold text-navy mb-0" style="font-size: 2rem;">Top Jobs Across Industries</h2>
-      </div>
-      <a href="#" class="text-decoration-none fw-bold d-flex align-items-center gap-1" style="color: var(--proveyu-primary); font-size: 0.95rem;">
-        View all jobs &rarr;
-      </a>
-    </div>
+  <!-- SECTION 3: Diagnostic Analysis (Problem vs Solution) -->
+  <section class="py-5 bg-white position-relative overflow-hidden">
+    <!-- Top-Right Decorative Dashed Thread Line & Arrow -->
+    <svg class="position-absolute top-0 end-0 d-none d-lg-block pe-none" width="230" height="230" viewBox="0 0 230 230"
+      fill="none" style="z-index: 10;">
+      <path d="M 215 15 Q 135 25 105 105 T 20 180" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6"
+        fill="none" opacity="0.45" />
+      <polygon points="27,170 16,183 31,184" fill="#0057ff" opacity="0.75" />
+    </svg>
 
-    <div class="row g-4 mb-5">
-      <!-- Job Card 1 -->
-      <div class="col-lg-3 col-md-6">
-        <div class="job-card bg-white p-4 rounded-4 card-shadow h-100 d-flex flex-column transition-hover border-0">
-          <div class="d-flex justify-content-between align-items-start mb-4">
-            <div class="company-logo rounded shadow-sm d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px; background: #fff; border: 1px solid #eee; color: #EA4335;">G</div>
-            <span class="badge bg-light text-muted-custom fw-semibold px-2 py-1 rounded" style="font-size: 0.7rem;">Full-time</span>
-          </div>
-          <h5 class="fw-bold text-navy fs-6 mb-1">Software Engineer</h5>
-          <div class="text-muted-custom fs-8 mb-3">Google</div>
-          <div class="d-flex align-items-center gap-1 text-muted-custom fs-8 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            Bengaluru, India
-          </div>
-          <div class="mt-auto border-top pt-3 d-flex justify-content-between align-items-center">
-            <div class="fw-bold text-navy fs-7">₹12L - ₹18L <span class="text-muted-custom fw-normal">/ year</span></div>
-            <span class="text-primary fw-bold">&rarr;</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Job Card 2 -->
-      <div class="col-lg-3 col-md-6">
-        <div class="job-card bg-white p-4 rounded-4 card-shadow h-100 d-flex flex-column transition-hover border-0">
-          <div class="d-flex justify-content-between align-items-start mb-4">
-            <div class="company-logo rounded shadow-sm d-flex align-items-center justify-content-center fw-bold fs-3" style="width: 48px; height: 48px; background: #fff; border: 1px solid #eee; color: #FF9900; font-family: serif;">a</div>
-            <span class="badge bg-light-blue text-primary fw-semibold px-2 py-1 rounded" style="font-size: 0.7rem;">Remote</span>
-          </div>
-          <h5 class="fw-bold text-navy fs-6 mb-1">Backend Developer</h5>
-          <div class="text-muted-custom fs-8 mb-3">Amazon</div>
-          <div class="d-flex align-items-center gap-1 text-muted-custom fs-8 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            Hyderabad, India
-          </div>
-          <div class="mt-auto border-top pt-3 d-flex justify-content-between align-items-center">
-            <div class="fw-bold text-navy fs-7">₹10L - ₹16L <span class="text-muted-custom fw-normal">/ year</span></div>
-            <span class="text-primary fw-bold">&rarr;</span>
-          </div>
+    <div class="container-custom py-4 position-relative" style="z-index: 1;">
+      <div class="text-center mb-5">
+        <div class="section-header-banner mx-auto">
+          <h2 class="h2 fw-bold text-navy mb-3">Why Online Assessments Fail & Physical Verification Wins</h2>
+          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
+            Online proctoring software only monitors camera feeds. It cannot detect screen relays, secondary keyboards,
+            or live AI helpers. In-person invigilation provides un-cheatable merit signal.
+          </p>
         </div>
       </div>
 
-      <!-- Job Card 3 -->
-      <div class="col-lg-3 col-md-6">
-        <div class="job-card bg-white p-4 rounded-4 card-shadow h-100 d-flex flex-column transition-hover border-0">
-          <div class="d-flex justify-content-between align-items-start mb-4">
-            <div class="company-logo rounded shadow-sm d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px; background: #fff; border: 1px solid #eee; color: #00A4EF;">M</div>
-            <span class="badge bg-success-subtle text-success fw-semibold px-2 py-1 rounded" style="font-size: 0.7rem;">Hybrid</span>
-          </div>
-          <h5 class="fw-bold text-navy fs-6 mb-1">Frontend Developer</h5>
-          <div class="text-muted-custom fs-8 mb-3">Microsoft</div>
-          <div class="d-flex align-items-center gap-1 text-muted-custom fs-8 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            Pune, India
-          </div>
-          <div class="mt-auto border-top pt-3 d-flex justify-content-between align-items-center">
-            <div class="fw-bold text-navy fs-7">₹14L - ₹22L <span class="text-muted-custom fw-normal">/ year</span></div>
-            <span class="text-primary fw-bold">&rarr;</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Job Card 4 -->
-      <div class="col-lg-3 col-md-6">
-        <div class="job-card bg-white p-4 rounded-4 card-shadow h-100 d-flex flex-column transition-hover border-0">
-          <div class="d-flex justify-content-between align-items-start mb-4">
-            <div class="company-logo rounded shadow-sm d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 48px; height: 48px; background: #fff; border: 1px solid #eee; color: #0082c8;">T</div>
-            <span class="badge bg-light text-muted-custom fw-semibold px-2 py-1 rounded" style="font-size: 0.7rem;">Full-time</span>
-          </div>
-          <h5 class="fw-bold text-navy fs-6 mb-1">System Analyst</h5>
-          <div class="text-muted-custom fs-8 mb-3">TCS</div>
-          <div class="d-flex align-items-center gap-1 text-muted-custom fs-8 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            Chennai, India
-          </div>
-          <div class="mt-auto border-top pt-3 d-flex justify-content-between align-items-center">
-            <div class="fw-bold text-navy fs-7">₹6L - ₹10L <span class="text-muted-custom fw-normal">/ year</span></div>
-            <span class="text-primary fw-bold">&rarr;</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CTA Banners -->
-    <div class="row g-4">
-      <div class="col-md-6">
-        <div class="bg-light-blue rounded-4 p-5 h-100 position-relative overflow-hidden card-shadow border-0">
-          <div class="position-relative z-1">
-            <div class="d-flex align-items-center gap-2 mb-3 text-navy">
-              <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-              <h4 class="mb-0 fw-bold">For Job Seekers</h4>
+      <!-- Outstanding Stat Cards Strip with Split Image & Content -->
+      <div class="row g-4 mb-4">
+        <!-- Card 1 -->
+        <div class="col-lg-4 col-md-6">
+          <div
+            class="stat-pill-card card-shadow border-0 rounded-4 h-100 p-2.5 bg-white d-flex align-items-center gap-3">
+            <div class="stat-img-wrapper rounded-3 overflow-hidden" style="width: 52%; height: 120px; flex-shrink: 0;">
+              <img src="https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&q=80&w=500"
+                alt="Resume Inflation" class="w-100 h-100 object-fit-cover">
             </div>
-            <p class="text-muted-custom fs-7 pe-lg-5 mb-4 lh-base">Build your profile, get verified and unlock opportunities with top companies.</p>
-            <button class="btn btn-primary-custom d-inline-flex align-items-center gap-2">
-              Find Jobs &rarr;
-            </button>
+            <div class="stat-content-wrapper py-1 pe-2">
+              <div class="stat-badge-num text-danger lh-1 mb-1" style="font-size: 1.8rem;">60%</div>
+              <div class="fw-bold text-navy fs-7 lh-sm mb-2">Resume Claim Inflation</div>
+              <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2.5 py-1 fs-8">Unverified
+                Candidates</span>
+            </div>
           </div>
-          <div class="position-absolute bottom-0 end-0 p-4 opacity-50 z-0">
-             <!-- Simplified target circle graphic -->
-             <div class="rounded-circle border border-3 border-primary" style="width:80px; height:80px; margin-right: 20px; margin-bottom: 20px;"></div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="col-lg-4 col-md-6">
+          <div
+            class="stat-pill-card card-shadow border-0 rounded-4 h-100 p-2.5 bg-white d-flex align-items-center gap-3">
+            <div class="stat-img-wrapper rounded-3 overflow-hidden" style="width: 52%; height: 120px; flex-shrink: 0;">
+              <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=500"
+                alt="Remote Proxy Risk" class="w-100 h-100 object-fit-cover">
+            </div>
+            <div class="stat-content-wrapper py-1 pe-2">
+              <div class="stat-badge-num text-success lh-1 mb-1" style="font-size: 1.8rem;">0%</div>
+              <div class="fw-bold text-navy fs-7 lh-sm mb-2">Remote Proxy Risk</div>
+              <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2.5 py-1 fs-8">Air-Gapped
+                Labs</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="col-lg-4 col-md-12">
+          <div
+            class="stat-pill-card card-shadow border-0 rounded-4 h-100 p-2.5 bg-white d-flex align-items-center gap-3">
+            <div class="stat-img-wrapper rounded-3 overflow-hidden" style="width: 52%; height: 120px; flex-shrink: 0;">
+              <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=500"
+                alt="Tech Bandwidth Saved" class="w-100 h-100 object-fit-cover">
+            </div>
+            <div class="stat-content-wrapper py-1 pe-2">
+              <div class="stat-badge-num text-primary lh-1 mb-1" style="font-size: 1.8rem;">15+ Hrs</div>
+              <div class="fw-bold text-navy fs-7 lh-sm mb-2">Tech Bandwidth Saved</div>
+              <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2.5 py-1 fs-8">Per Engineering
+                Team</span>
+            </div>
           </div>
         </div>
       </div>
-      
-      <div class="col-md-6">
-        <div class="bg-white rounded-4 p-5 h-100 position-relative overflow-hidden card-shadow border">
-          <div class="position-relative z-1">
-            <div class="d-flex align-items-center gap-2 mb-3 text-navy">
-              <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>
-              <h4 class="mb-0 fw-bold">For Recruiters</h4>
+
+      <div class="row g-4">
+        <!-- Broken Remote -->
+        <div class="col-lg-6">
+          <div class="comparison-card card-shadow border rounded-4 bg-light p-3 p-md-4 position-relative h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h3 class="h5 fw-bold text-navy mb-0">Remote Online Proctoring</h3>
+              <span class="text-uppercase tracking-wide fs-8 fw-bold text-muted">Vulnerability Analysis</span>
             </div>
-            <p class="text-muted-custom fs-7 pe-lg-5 mb-4 lh-base">Find pre-verified talent, streamline your hiring and build high-performing teams.</p>
-            <button class="btn btn-outline-custom d-inline-flex align-items-center gap-2">
-              Hire Talent &rarr;
-            </button>
+
+            <p class="text-muted-custom fs-7 mb-3 pb-2 border-bottom">Webcam algorithms miss secondary monitors, HDMI
+              relays, under-desk keyboards, and live AI coding helpers.</p>
+
+            <div class="d-flex flex-column gap-2">
+              <!-- Point 1 -->
+              <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-white border">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="point-pill-btn point-pill-danger">POINT 01</span>
+                  <h4 class="fs-7 fw-bold text-navy mb-0">Resume Inflation & Overstated Claims</h4>
+                </div>
+                <p class="text-muted-custom fs-8 mb-0 ps-1">Up to 60% of resumes contain exaggerated project experience,
+                  forcing hiring teams to waste time on unqualified candidates.</p>
+              </div>
+
+              <!-- Point 2 -->
+              <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-white border">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="point-pill-btn point-pill-danger">POINT 02</span>
+                  <h4 class="fs-7 fw-bold text-navy mb-0">Remote Proxy Test-Takers & AI Assistance</h4>
+                </div>
+                <p class="text-muted-custom fs-8 mb-0 ps-1">Webcam algorithms miss secondary monitors, HDMI relays,
+                  under-desk keyboards, and live AI coding helpers.</p>
+              </div>
+
+              <!-- Point 3 -->
+              <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-white border">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="point-pill-btn point-pill-danger">POINT 03</span>
+                  <h4 class="fs-7 fw-bold text-navy mb-0">College Brand & Referral Gatekeeping</h4>
+                </div>
+                <p class="text-muted-custom fs-8 mb-0 ps-1">ATS filters auto-reject deserving candidates from tier-2/3
+                  colleges before anyone evaluates their actual coding ability.</p>
+              </div>
+            </div>
           </div>
-          <div class="position-absolute bottom-0 end-0 p-4 opacity-50 z-0 text-primary">
-             <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 20px; margin-bottom: 20px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </div>
+
+        <!-- ProveYu Standard -->
+        <div class="col-lg-6">
+          <div class="comparison-card card-shadow border rounded-4 bg-white p-3 p-md-4 position-relative h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h3 class="h5 fw-bold text-navy mb-0">Physical Exam Lab Invigilation</h3>
+              <span class="text-uppercase tracking-wide fs-8 fw-bold text-primary">ProveYu Standard</span>
+            </div>
+
+            <p class="text-muted-custom fs-7 mb-3 pb-2 border-bottom">Supervised at existing high-stakes exam
+              infrastructure (TCS iON / JEE test hubs) with photo ID scans and biometric checks.</p>
+
+            <div class="d-flex flex-column gap-2">
+              <!-- Point 1 -->
+              <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-light-blue border">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="point-pill-btn point-pill-success">POINT 01</span>
+                  <h4 class="fs-7 fw-bold text-navy mb-0">Physical Exam Lab Invigilation</h4>
+                </div>
+                <p class="text-muted-custom fs-8 mb-0 ps-1">Supervised at existing high-stakes exam infrastructure with
+                  photo ID scans, biometric checks, and CCTV control.</p>
+              </div>
+
+              <!-- Point 2 -->
+              <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-light-blue border">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="point-pill-btn point-pill-success">POINT 02</span>
+                  <h4 class="fs-7 fw-bold text-navy mb-0">Multi-Dimensional Skill Passport</h4>
+                </div>
+                <p class="text-muted-custom fs-8 mb-0 ps-1">Comprehensive competency breakdown across logic, scenario
+                  QA, Spring Boot backend, and hands-on debugging.</p>
+              </div>
+
+              <!-- Point 3 -->
+              <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-light-blue border">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="point-pill-btn point-pill-success">POINT 03</span>
+                  <h4 class="fs-7 fw-bold text-navy mb-0">Direct Tech Interview Shortcut</h4>
+                </div>
+                <p class="text-muted-custom fs-8 mb-0 ps-1">Verified candidates bypass preliminary online screening
+                  tests completely and proceed directly to final technical rounds.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- SECTION 4: How It Works Pipeline -->
+  <section class="py-5 bg-light-blue position-relative overflow-hidden">
+    <!-- Top-Left Decorative Thread Arrow -->
+    <svg class="position-absolute top-0 start-0 d-none d-lg-block pe-none" width="220" height="220"
+      viewBox="0 0 220 220" fill="none" style="z-index: 10;">
+      <path d="M 15 15 Q 95 25 125 105 T 205 175" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none"
+        opacity="0.45" />
+      <polygon points="198,165 209,178 194,179" fill="#0057ff" opacity="0.75" />
+    </svg>
+
+    <div class="container-custom py-4 position-relative" style="z-index: 1;">
+      <div class="text-center mb-5">
+        <div class="section-header-banner mx-auto">
+          <h2 class="h2 fw-bold text-navy mb-3">How ProveYu Works for Candidates & Recruiters</h2>
+          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
+            From registration to direct interview in 4 connected, invigilated steps.
+          </p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-3">
+          <div class="card card-shadow border-0 h-100 p-4 bg-white text-center">
+            <span class="badge bg-primary rounded-pill px-3 py-2 fw-bold me-auto mb-3">Step 01</span>
+            <h3 class="h5 fw-bold text-navy mb-2">Register & Pick Track</h3>
+            <p class="text-muted-custom fs-7 mb-0">Select your domain (Java, QA, Python, Web) or opt for the Universal
+              Fresher Competency test track.</p>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card card-shadow border-0 h-100 p-4 bg-white text-center">
+            <span class="badge bg-primary rounded-pill px-3 py-2 fw-bold me-auto mb-3">Step 02</span>
+            <h3 class="h5 fw-bold text-navy mb-2">Book In-Person Centre</h3>
+            <p class="text-muted-custom fs-7 mb-0">Pick a date and partner exam centre (TCS iON / JEE labs) near your
+              city. Receive your digital Admit Card.</p>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card card-shadow border-0 h-100 p-4 bg-white text-center">
+            <span class="badge bg-primary rounded-pill px-3 py-2 fw-bold me-auto mb-3">Step 03</span>
+            <h3 class="h5 fw-bold text-navy mb-2">Invigilated Assessment</h3>
+            <p class="text-muted-custom fs-7 mb-0">Attempt practical, scenario-based coding tasks supervised by human
+              invigilators and evaluated by experts.</p>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card card-shadow border border-primary border-2 h-100 p-4 bg-white text-center">
+            <span class="badge bg-success rounded-pill px-3 py-2 fw-bold me-auto mb-3">Step 04</span>
+            <h3 class="h5 fw-bold text-navy mb-2">Receive Passport & Get Hired</h3>
+            <p class="text-muted-custom fs-7 mb-0">Your multi-dimensional Skill Passport is generated. Recruiters send
+              direct interview invites with zero screening.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: Bottom CTA -->
+  <section class="py-5 bg-white">
+    <div class="container-custom py-4">
+      <div class="card card-shadow border-0 text-center p-5 text-white"
+        style="background: linear-gradient(135deg, #0a1b3f 0%, #979797 100%); border-radius: 24px;">
+        <h2 class="display-6 fw-extrabold mb-3">Ready to Replace Resumes with Real Proof?</h2>
+        <p class="lead text-white mx-auto mb-4" style="max-width: 600px;">Join thousands of candidates and top hiring
+          partners on ProveYu today.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+          <a routerLink="/select-role"
+            class="btn btn-light text-primary fw-bold px-4 py-3 rounded-pill text-decoration-none">Get Started Now
+            &rarr;</a>
+          <a routerLink="/login" class="btn btn-outline-light fw-bold px-4 py-3 rounded-pill text-decoration-none">Sign
+            In to Account</a>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>

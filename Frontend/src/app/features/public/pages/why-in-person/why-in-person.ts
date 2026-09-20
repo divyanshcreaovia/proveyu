@@ -3,10 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-navbar',
+  selector: 'app-why-in-person',
   imports: [CommonModule, RouterModule],
-  templateUrl: './navbar.html',
-  styleUrl: './navbar.scss',
+  templateUrl: './why-in-person.html',
+  styleUrl: './why-in-person.scss',
 })
-export class Navbar {}
-
+export class WhyInPerson {}

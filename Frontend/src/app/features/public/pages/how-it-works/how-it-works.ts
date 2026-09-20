@@ -3,10 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-navbar',
+  selector: 'app-how-it-works',
   imports: [CommonModule, RouterModule],
-  templateUrl: './navbar.html',
-  styleUrl: './navbar.scss',
+  templateUrl: './how-it-works.html',
+  styleUrl: './how-it-works.scss',
 })
-export class Navbar {}
-
+export class HowItWorks {}

@@ -1,34 +1,33 @@
+@use "bootstrap/scss/bootstrap" with ($body-color: #1e293b,
+  $font-family-base: ('Inter', sans-serif));
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-$primary: #0057ff;
+$primary: #273247db;
 
 :root {
   /* ProveYu Core Palette */
-  --proveyu-primary: #{$primary}; 
+  --proveyu-primary: #{$primary};
   --proveyu-primary-hover: #0047d9;
-  --proveyu-navy: #0a1b3f; 
-  --proveyu-bg-light: #f4f8ff; 
-  --proveyu-success: #22c55e; 
+  --proveyu-navy: #0a1b3f;
+  --proveyu-bg-light: #f8fafc;
+  --proveyu-success: #22c55e;
   --proveyu-success-bg: #dcfce7;
-  
+
   --proveyu-text-main: #1e293b;
   --proveyu-text-muted: #64748b;
   --proveyu-border: #e2e8f0;
   --proveyu-card-bg: #ffffff;
 }
 
-/* Bootstrap Variable Overrides */
-$body-color: #1e293b;
-$font-family-base: 'Inter', sans-serif;
-
-@import "bootstrap/scss/bootstrap";
-
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   font-family: 'Inter', sans-serif;
   color: var(--proveyu-text-main);
-  background-color: #fafbfc; /* very light gray/blue for body */
+  background-color: #fafbfc;
+  /* very light gray/blue for body */
   -webkit-font-smoothing: antialiased;
 }
 
@@ -89,7 +88,130 @@ html, body {
 
 /* Base Shadows */
 .card-shadow {
-  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.02);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.02);
   border-radius: 16px;
+}
+
+.py-5 {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+
+/* Diagnostic Analysis & Stat Pill Card System */
+.stat-pill-card {
+  background: #ffffff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 87, 255, 0.08) !important;
+
+    .stat-img-wrapper img {
+      transform: scale(1.08);
+    }
+  }
+
+  .stat-img-wrapper img {
+    transition: transform 0.4s ease;
+  }
+}
+
+.stat-badge-num {
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.point-item-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    transform: translateX(5px);
+    box-shadow: 0 6px 20px rgba(0, 87, 255, 0.06);
+  }
+}
+
+.point-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.725rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  border-radius: 6px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+
+  &.point-pill-primary {
+    background: rgba(0, 87, 255, 0.08);
+    color: var(--proveyu-primary);
+    border: 1px solid rgba(0, 87, 255, 0.25);
+  }
+
+  &.point-pill-danger,
+  &.point-pill-success,
+  &.point-pill-neutral {
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+  }
+}
+
+.section-header-banner {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid var(--proveyu-border);
+  border-radius: 20px;
+  padding: 1.5rem 2rem;
+  display: inline-block;
+  max-width: 1200px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(10, 27, 63, 0.03);
+}
+
+.pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.95rem;
+  background: rgba(0, 87, 255, 0.08);
+  border: 1px solid rgba(0, 87, 255, 0.25);
+  border-radius: 50px;
+  color: var(--proveyu-navy);
+  font-size: 0.775rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 1px 4px rgba(0, 87, 255, 0.06);
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+  animation: dotPulse 2s infinite;
+}
+
+@keyframes dotPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+  }
+
+  70% {
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #0057ff 0%, #0044cc 50%, #0a1b3f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

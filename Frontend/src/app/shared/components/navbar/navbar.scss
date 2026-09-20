@@ -4,10 +4,16 @@
 
 .nav-link {
   font-size: 15px;
-  transition: color 0.2s ease;
+  font-weight: 600;
+  color: var(--proveyu-navy);
+  transition: color 0.2s ease, border-color 0.2s ease;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 4px;
   
-  &:hover {
+  &:hover,
+  &.active {
     color: var(--proveyu-primary) !important;
+    border-bottom-color: var(--proveyu-primary);
   }
 }
 

@@ -18,138 +18,350 @@
   font-size: 0.8rem;
 }
 
-.hero-banner-container {
-  /* Very light, blending from white to a soft green */
-     background: linear-gradient(244deg, #ffffff 0%, #deecf4 100%);
+.py-5 {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
 }
 
-.hero-graphic-bg {
+/* HERO SECTION ENTIRE DESIGN FROM REFERENCE */
+.hero-section {
   position: relative;
-  overflow: hidden;
-  /* Very light, blending from white to a soft blue */
-  background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%);
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  border-radius: 2rem;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08); /* Shadow for the carousel itself */
+  z-index: 1;
+  padding: 2.3rem 0 3.5rem 0;
+  background:
+    radial-gradient(circle at 70% 20%, rgba(0, 87, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 20% 80%, rgba(10, 27, 63, 0.04) 0%, transparent 50%);
+  border-bottom: 1px solid var(--proveyu-border);
 }
 
-.hero-person-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; 
-  object-position: center; 
-  /* Mathematically perfectly sized mask to hide the 480x480 image's hard square edges */
-  -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 70%);
-  -webkit-mask-size: 480px 480px;
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  
-  mask-image: radial-gradient(circle, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 70%);
-  mask-size: 480px 480px;
-  mask-position: center;
-  mask-repeat: no-repeat;
+.hero-container {
+  display: grid;
+  grid-template-columns: 1fr 1.12fr;
+  gap: 2.75rem;
+  align-items: center;
 }
 
-.floating-card {
-  position: absolute;
-  z-index: 10;
-  animation: float 6s ease-in-out infinite;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important; /* Stronger shadow for the small cards */
-}
-
-.floating-card-1 {
-  top: 15%;
-  left: 15%;
-  animation-delay: 0s;
-}
-
-.floating-card-2 {
-  bottom: 10%;
-  right: 15%;
-  animation-delay: 2s;
-}
-
-.floating-card-3 {
-  top: 35%;
-  right: 12%;
-  animation-delay: 1s;
-}
-
-.floating-card-4 {
-  bottom: 25%;
-  left: 18%;
-  animation-delay: 3s;
-}
-
-.floating-card-5 {
-  top: 10%;
-  right: 15%;
-  animation-delay: 4s;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-  100% {
-    transform: translateY(0px);
+@media (max-width: 992px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
   }
 }
 
-.card-shadow-sm {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+.pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.95rem;
+  background: rgba(0, 87, 255, 0.08);
+  border: 1px solid rgba(0, 87, 255, 0.25);
+  border-radius: 50px;
+  color: var(--proveyu-navy);
+  font-size: 0.775rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1.35rem;
+  box-shadow: 0 1px 4px rgba(0, 87, 255, 0.06);
 }
 
-.transition-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.transition-hover:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.08);
-}
-
-.carousel-control-prev-custom,
-.carousel-control-next-custom {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 45px;
-  height: 45px;
-  background-color: white;
-  border: none;
+.badge-dot {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+  animation: dotPulse 2s infinite;
+}
+
+@keyframes dotPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+  }
+
+  70% {
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+.hero-title {
+  font-size: 3.4rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.25rem;
+  color: var(--proveyu-navy);
+  line-height: 1.12;
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.4rem;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #0057ff 0%, #0044cc 50%, #0a1b3f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: var(--proveyu-text-muted);
+  margin-bottom: 2.25rem;
+  max-width: 600px;
+  line-height: 1.65;
+}
+
+.hero-trust-row {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 1.75rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--proveyu-border);
+}
+
+@media (max-width: 576px) {
+  .hero-trust-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .trust-divider {
+    display: none;
+  }
+}
+
+.trust-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-num {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--proveyu-navy);
+  letter-spacing: -0.02em;
+}
+
+.stat-lbl {
+  font-size: 0.775rem;
+  color: var(--proveyu-text-muted);
+  font-weight: 500;
+}
+
+.trust-divider {
+  width: 1px;
+  height: 32px;
+  background: var(--proveyu-border);
+}
+
+/* HERO VISUAL CARD (PASSPORT SHOWCASE) */
+.passport-preview-card {
+  background: #ffffff;
+  border: 2px solid var(--proveyu-primary);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 20px 45px rgba(0, 87, 255, 0.12);
+  color: var(--proveyu-text-main);
+  position: relative;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.passport-preview-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 25px 55px rgba(0, 87, 255, 0.2);
+}
+
+/* Section 2 Card Image Hover Effect */
+.arch-card-hover {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
   cursor: pointer;
-  transition: background-color 0.2s;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 45px rgba(0, 87, 255, 0.15) !important;
+
+    .arch-img-default {
+      opacity: 0 !important;
+      transform: scale(1.08);
+    }
+
+    .arch-img-hover {
+      opacity: 1 !important;
+      transform: scale(1.08);
+    }
+
+    .arch-badge-tag {
+      background-color: var(--proveyu-primary) !important;
+      color: #ffffff !important;
+    }
+  }
 }
 
-.carousel-control-prev-custom {
-  left: -22px;
+.arch-img-container {
+  height: 240px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+
+  .arch-img-default,
+  .arch-img-hover {
+    transition: opacity 0.45s ease-in-out, transform 0.45s ease-in-out;
+  }
 }
 
-.carousel-control-next-custom {
-  right: -22px;
+/* DIAGNOSTIC ANALYSIS (PROBLEM VS SOLUTION) STYLING */
+.stat-pill-card {
+  background: #ffffff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 87, 255, 0.08) !important;
+
+    .stat-img-wrapper img {
+      transform: scale(1.08);
+    }
+  }
+
+  .stat-img-wrapper img {
+    transition: transform 0.4s ease;
+  }
+
+  &.stat-pill-danger {
+    border-color: rgba(220, 38, 38, 0.2) !important;
+  }
+
+  &.stat-pill-success {
+    border-color: rgba(34, 197, 94, 0.2) !important;
+  }
+
+  &.stat-pill-primary {
+    border-color: rgba(0, 87, 255, 0.2) !important;
+  }
 }
 
-.carousel-control-prev-custom:hover,
-.carousel-control-next-custom:hover {
-  background-color: var(--proveyu-bg-light);
+.stat-badge-num {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
-.carousel-indicators-custom {
+.badge-button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.775rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 50px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+
+  &.badge-button-danger {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid rgba(220, 38, 38, 0.3);
+  }
+
+  &.badge-button-success {
+    background: #dcfce7;
+    color: #16a34a;
+    border: 1px solid rgba(22, 163, 74, 0.3);
+  }
+}
+
+.point-item-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    transform: translateX(5px);
+    box-shadow: 0 6px 20px rgba(0, 87, 255, 0.06);
+  }
+}
+
+.point-pill-btn {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  border-radius: 6px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+
+  &.point-pill-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.25);
+  }
+
+  &.point-pill-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+  }
+}
+
+/* SECTION HEADER BANNER (LIGHT GREYISH FADE CONTAINER) */
+.section-header-banner {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid var(--proveyu-border);
+  border-radius: 20px;
+  padding: 1.5rem 2rem;
+  display: inline-block;
+  max-width: 1200px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(10, 27, 63, 0.03);
+}
+
+/* HERO 3D FLIP CARD ANIMATION STYLING */
+.hero-flip-container {
+  perspective: 1200px;
+  width: 100%;
+  cursor: pointer;
+
+  &.flipped .hero-flip-inner {
+    transform: rotateY(180deg);
+  }
+}
+
+.hero-flip-inner {
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+  transition: transform 0.85s cubic-bezier(0.34, 1.45, 0.64, 1);
+  transform-style: preserve-3d;
+}
+
+.hero-flip-front,
+.hero-flip-back {
   position: absolute;
-  bottom: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-.carousel-indicators-custom .dot {
-  width: 10px;
-  height: 10px;
-  display: block;
-  cursor: pointer;
+.hero-flip-front {
+  z-index: 2;
+  transform: rotateY(0deg);
+}
+
+.hero-flip-back {
+  transform: rotateY(180deg);
+}
+
+.college-timeline {
+  border-left: 2px dashed rgba(0, 87, 255, 0.25);
+  margin-left: 1.25rem;
 }
