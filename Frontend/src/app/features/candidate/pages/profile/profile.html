@@ -104,41 +104,41 @@
             <div class="row g-4 mb-4">
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Full Name <span class="text-danger">*</span></label>
-                <input type="text" class="form-control py-2 bg-light-blue border-0" [(ngModel)]="candidateInfo.fullName">
+                <input type="text" class="form-control py-2" [(ngModel)]="candidateInfo.fullName">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Email Address (Read Only)</label>
-                <input type="email" class="form-control py-2 bg-light border-0 text-muted" [(ngModel)]="candidateInfo.email" readonly>
+                <input type="email" class="form-control py-2" [(ngModel)]="candidateInfo.email" readonly>
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Phone Number <span class="text-danger">*</span></label>
-                <input type="tel" class="form-control py-2 bg-light-blue border-0" [(ngModel)]="candidateInfo.phone">
+                <input type="tel" class="form-control py-2" [(ngModel)]="candidateInfo.phone">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Location / City <span class="text-danger">*</span></label>
-                <input type="text" class="form-control py-2 bg-light-blue border-0" [(ngModel)]="candidateInfo.location">
+                <input type="text" class="form-control py-2" [(ngModel)]="candidateInfo.location">
               </div>
               <div class="col-md-12">
                 <label class="form-label text-muted-custom small fw-medium">Headline</label>
-                <input type="text" class="form-control py-2 bg-light-blue border-0" [(ngModel)]="candidateInfo.headline">
+                <input type="text" class="form-control py-2" [(ngModel)]="candidateInfo.headline">
               </div>
 
               <div class="col-md-4">
                 <label class="form-label text-muted-custom small fw-medium"><i class="bi bi-linkedin text-primary me-1"></i> LinkedIn URL</label>
-                <input type="text" class="form-control py-2 bg-light-blue border-0 small" [(ngModel)]="candidateInfo.linkedin">
+                <input type="text" class="form-control py-2 small" [(ngModel)]="candidateInfo.linkedin">
               </div>
               <div class="col-md-4">
                 <label class="form-label text-muted-custom small fw-medium"><i class="bi bi-github me-1"></i> GitHub URL</label>
-                <input type="text" class="form-control py-2 bg-light-blue border-0 small" [(ngModel)]="candidateInfo.github">
+                <input type="text" class="form-control py-2 small" [(ngModel)]="candidateInfo.github">
               </div>
               <div class="col-md-4">
                 <label class="form-label text-muted-custom small fw-medium"><i class="bi bi-globe me-1"></i> Portfolio</label>
-                <input type="text" class="form-control py-2 bg-light-blue border-0 small" [(ngModel)]="candidateInfo.portfolio">
+                <input type="text" class="form-control py-2 small" [(ngModel)]="candidateInfo.portfolio">
               </div>
 
               <div class="col-12">
                 <label class="form-label text-muted-custom small fw-medium">About Me</label>
-                <textarea class="form-control py-3 bg-light-blue border-0" rows="4" [(ngModel)]="candidateInfo.bio"></textarea>
+                <textarea class="form-control py-3" rows="4" [(ngModel)]="candidateInfo.bio"></textarea>
               </div>
             </div>
             
@@ -158,24 +158,24 @@
             </div>
 
             <!-- Add Education Form -->
-            <div class="card p-3 mb-4 bg-light-blue border-0" *ngIf="showEducationForm">
+            <div class="card p-3 mb-4 card-bordered" *ngIf="showEducationForm">
               <h6 class="fw-bold text-navy mb-3">Add Education</h6>
               <div class="row g-3">
                 <div class="col-md-6">
                   <label class="form-label small text-muted-custom">Degree / Course</label>
-                  <input type="text" class="form-control bg-white border-0" placeholder="e.g. B.Tech Computer Science" [(ngModel)]="newEducation.degree">
+                  <input type="text" class="form-control" placeholder="e.g. B.Tech Computer Science" [(ngModel)]="newEducation.degree">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small text-muted-custom">Institution</label>
-                  <input type="text" class="form-control bg-white border-0" placeholder="e.g. NIT Karnataka" [(ngModel)]="newEducation.institution">
+                  <input type="text" class="form-control" placeholder="e.g. NIT Karnataka" [(ngModel)]="newEducation.institution">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small text-muted-custom">Passing Year</label>
-                  <input type="text" class="form-control bg-white border-0" placeholder="e.g. 2020 - 2024" [(ngModel)]="newEducation.year">
+                  <input type="text" class="form-control" placeholder="e.g. 2020 - 2024" [(ngModel)]="newEducation.year">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small text-muted-custom">Grade / Score</label>
-                  <input type="text" class="form-control bg-white border-0" placeholder="e.g. 8.8 CGPA" [(ngModel)]="newEducation.score">
+                  <input type="text" class="form-control" placeholder="e.g. 8.8 CGPA" [(ngModel)]="newEducation.score">
                 </div>
               </div>
               <div class="d-flex gap-2 justify-content-end mt-3">
@@ -186,11 +186,11 @@
 
             <!-- Education List -->
             <div class="d-flex flex-column gap-3">
-              <div class="card p-3 border-0 bg-light-blue d-flex flex-row justify-content-between align-items-start" *ngFor="let edu of educationList">
+              <div class="card p-3 card-bordered d-flex flex-row justify-content-between align-items-start" *ngFor="let edu of educationList">
                 <div>
                   <h6 class="fw-bold text-navy mb-1">{{ edu.degree }}</h6>
                   <div class="text-muted-custom small">{{ edu.institution }} • ({{ edu.year }})</div>
-                  <span class="badge bg-white text-navy border mt-2 px-2 py-1">{{ edu.score }}</span>
+                  <span class="badge bg-light text-navy border mt-2 px-2 py-1">{{ edu.score }}</span>
                 </div>
                 <button class="btn btn-link text-danger p-0 border-0 shadow-none" (click)="deleteEducation(edu.id)">
                   <i class="bi bi-trash"></i>
@@ -209,24 +209,24 @@
             </div>
 
             <!-- Add Experience Form -->
-            <div class="card p-3 mb-4 bg-light-blue border-0" *ngIf="showExperienceForm">
+            <div class="card p-3 mb-4 card-bordered" *ngIf="showExperienceForm">
               <h6 class="fw-bold text-navy mb-3">Add Work Experience</h6>
               <div class="row g-3">
                 <div class="col-md-6">
                   <label class="form-label small text-muted-custom">Company</label>
-                  <input type="text" class="form-control bg-white border-0" placeholder="e.g. Microsoft" [(ngModel)]="newExperience.company">
+                  <input type="text" class="form-control" placeholder="e.g. Microsoft" [(ngModel)]="newExperience.company">
                 </div>
                 <div class="col-md-6">
                   <label class="form-label small text-muted-custom">Job Title / Role</label>
-                  <input type="text" class="form-control bg-white border-0" placeholder="e.g. Software Engineering Intern" [(ngModel)]="newExperience.role">
+                  <input type="text" class="form-control" placeholder="e.g. Software Engineering Intern" [(ngModel)]="newExperience.role">
                 </div>
                 <div class="col-md-12">
                   <label class="form-label small text-muted-custom">Duration</label>
-                  <input type="text" class="form-control bg-white border-0" placeholder="e.g. Jan 2024 - Jun 2024" [(ngModel)]="newExperience.duration">
+                  <input type="text" class="form-control" placeholder="e.g. Jan 2024 - Jun 2024" [(ngModel)]="newExperience.duration">
                 </div>
                 <div class="col-md-12">
                   <label class="form-label small text-muted-custom">Description</label>
-                  <textarea class="form-control bg-white border-0" rows="3" [(ngModel)]="newExperience.description"></textarea>
+                  <textarea class="form-control" rows="3" [(ngModel)]="newExperience.description"></textarea>
                 </div>
               </div>
               <div class="d-flex gap-2 justify-content-end mt-3">
@@ -237,7 +237,7 @@
 
             <!-- Experience List -->
             <div class="d-flex flex-column gap-3">
-              <div class="card p-3 border-0 bg-light-blue d-flex flex-row justify-content-between align-items-start" *ngFor="let exp of experienceList">
+              <div class="card p-3 card-bordered d-flex flex-row justify-content-between align-items-start" *ngFor="let exp of experienceList">
                 <div>
                   <h6 class="fw-bold text-navy mb-1">{{ exp.role }}</h6>
                   <div class="text-primary fw-medium small mb-1">{{ exp.company }} • {{ exp.duration }}</div>
@@ -255,12 +255,12 @@
             <h5 class="fw-bold text-navy mb-4">Skills</h5>
 
             <div class="d-flex gap-2 mb-4">
-              <input type="text" class="form-control py-2 bg-light-blue border-0" placeholder="Add a skill (e.g. React, Java, Docker)..." [(ngModel)]="newSkillInput" (keyup.enter)="addSkill()">
+              <input type="text" class="form-control py-2" placeholder="Add a skill (e.g. React, Java, Docker)..." [(ngModel)]="newSkillInput" (keyup.enter)="addSkill()">
               <button class="btn btn-primary-custom px-4" (click)="addSkill()">Add</button>
             </div>
 
             <div class="d-flex flex-wrap gap-2">
-              <div class="badge bg-light-blue text-navy border px-3 py-2 fs-6 d-flex align-items-center gap-2" *ngFor="let skill of skillsList; let i = index">
+              <div class="badge bg-light text-navy border px-3 py-2 fs-6 d-flex align-items-center gap-2" *ngFor="let skill of skillsList; let i = index">
                 <span>{{ skill.name }}</span>
                 <span class="badge bg-white text-muted border small">{{ skill.level }}</span>
                 <button class="btn btn-link text-danger p-0 border-0 shadow-none ms-1" (click)="removeSkill(i)"><i class="bi bi-x"></i></button>
@@ -275,11 +275,11 @@
             <div class="row g-4 mb-4">
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Desired Role</label>
-                <input type="text" class="form-control py-2 bg-light-blue border-0" [(ngModel)]="preferences.desiredRole">
+                <input type="text" class="form-control py-2" [(ngModel)]="preferences.desiredRole">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Job Type</label>
-                <select class="form-select py-2 bg-light-blue border-0" [(ngModel)]="preferences.jobType">
+                <select class="form-select py-2" [(ngModel)]="preferences.jobType">
                   <option>Full-time</option>
                   <option>Internship</option>
                   <option>Contract</option>
@@ -287,15 +287,15 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Preferred Locations</label>
-                <input type="text" class="form-control py-2 bg-light-blue border-0" [(ngModel)]="preferences.preferredLocations">
+                <input type="text" class="form-control py-2" [(ngModel)]="preferences.preferredLocations">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Expected CTC</label>
-                <input type="text" class="form-control py-2 bg-light-blue border-0" [(ngModel)]="preferences.expectedCtc">
+                <input type="text" class="form-control py-2" [(ngModel)]="preferences.expectedCtc">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Notice Period</label>
-                <input type="text" class="form-control py-2 bg-light-blue border-0" [(ngModel)]="preferences.noticePeriod">
+                <input type="text" class="form-control py-2" [(ngModel)]="preferences.noticePeriod">
               </div>
             </div>
 
@@ -308,7 +308,7 @@
           <div *ngIf="activeTab === 'resume'">
             <h5 class="fw-bold text-navy mb-4">Resume & Attachments</h5>
 
-            <div class="card p-4 text-center bg-light-blue border-0 mb-4">
+            <div class="card p-4 text-center card-bordered mb-4">
               <div class="mb-3">
                 <i class="bi bi-file-earmark-pdf text-danger fs-1"></i>
               </div>
