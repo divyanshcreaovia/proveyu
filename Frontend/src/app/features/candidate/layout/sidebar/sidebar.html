@@ -1,19 +1,42 @@
-<div class="sidebar-wrapper d-flex flex-column bg-white card-shadow h-100" [class.collapsed]="isCollapsed">
-  <div class="sidebar-brand p-3 d-flex align-items-center justify-content-end">
-    <button class="btn btn-link text-navy p-0 border-0 shadow-none" (click)="toggleSidebar()">
+<div class="sidebar-wrapper d-flex flex-column h-100" [class.collapsed]="isCollapsed">
+  <!-- Brand Header -->
+  <div class="sidebar-brand px-4 pt-4 pb-3 d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center brand-logo" *ngIf="!isCollapsed">
+      <img src="images/logo1.png" alt="ProveYu Logo" style="height: 38px; width: auto; object-fit: contain;">
+    </div>
+    <button class="btn btn-link text-muted p-0 border-0 shadow-none" (click)="toggleSidebar()" title="Toggle sidebar">
       <i class="bi bi-list fs-4"></i>
     </button>
   </div>
 
-  <div class="sidebar-nav flex-grow-1 px-3 py-2 overflow-auto">
-    <ul class="nav flex-column gap-1">
-      <li class="nav-item" *ngFor="let item of navItems">
-        <a [routerLink]="item.route" routerLinkActive="active"
-           class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded text-muted-custom fw-medium transition-all" [title]="isCollapsed ? item.label : ''">
-          <i [class]="'bi ' + item.icon + ' fs-5'"></i>
-          <span class="text-truncate">{{ item.label }}</span>
-        </a>
-      </li>
-    </ul>
+  <!-- Navigation -->
+  <div class="sidebar-nav flex-grow-1 px-3 py-2 overflow-auto d-flex flex-column justify-content-between">
+    <div>
+      <div class="menu-label px-3 py-2 text-uppercase text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 0.08em;" *ngIf="!isCollapsed">
+        MAIN MENU
+      </div>
+      <ul class="nav flex-column gap-1">
+        <li class="nav-item" *ngFor="let item of navItems">
+          <a [routerLink]="item.route" routerLinkActive="active"
+             class="nav-link d-flex align-items-center gap-3 px-3 py-2-5 rounded-pill text-secondary fw-semibold transition-all" [title]="isCollapsed ? item.label : ''">
+            <i [class]="'bi ' + item.icon + ' fs-6 nav-icon'"></i>
+            <span class="text-truncate" *ngIf="!isCollapsed">{{ item.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="pt-4 pb-3 border-top-light">
+      <ul class="nav flex-column gap-1">
+        <li class="nav-item" *ngFor="let item of bottomItems">
+          <a [routerLink]="item.route" routerLinkActive="active"
+             class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded-pill text-secondary fw-medium transition-all" [title]="isCollapsed ? item.label : ''">
+            <i [class]="'bi ' + item.icon + ' fs-6 nav-icon'"></i>
+            <span class="text-truncate" *ngIf="!isCollapsed">{{ item.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>

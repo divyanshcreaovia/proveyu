@@ -17,14 +17,18 @@ export class Sidebar {
   }
 
   navItems = [
-    { label: 'Dashboard', icon: 'bi-grid-1x2', route: '/candidate/dashboard' },
-    { label: 'Profile', icon: 'bi-person', route: '/candidate/profile' },
-    { label: 'Book Exam', icon: 'bi-calendar-plus', route: '/candidate/book-slot' },
-    { label: 'My Passport', icon: 'bi-pass', route: '/candidate/my-passport' },
-    { label: 'Prep Guide', icon: 'bi-book', route: '/candidate/prep-guide' },
-    { label: 'Interview Invites', icon: 'bi-envelope-paper', route: '/candidate/interview-invites' },
-    { label: 'Results', icon: 'bi-award', route: '/candidate/results' },
-    { label: 'Offers', icon: 'bi-briefcase', route: '/candidate/offers' },
-    { label: 'Settings', icon: 'bi-gear', route: '/candidate/settings' }
+    { label: 'Overview', icon: 'bi-grid-fill', route: '/candidate/dashboard' },
+    { label: 'Profile', icon: 'bi-person-fill', route: '/candidate/profile' },
+    { label: 'Book Exam', icon: 'bi-calendar-event-fill', route: '/candidate/book-slot' },
+    { label: 'My Passport', icon: 'bi-pass-fill', route: '/candidate/my-passport' },
+    // { label: 'Prep Guide', icon: 'bi-journal-bookmark-fill', route: '/candidate/prep-guide' },
+    { label: 'Interview Invites', icon: 'bi-envelope-paper-fill', route: '/candidate/interview-invites' },
+    // { label: 'Results & Offers', icon: 'bi-award-fill', route: '/candidate/results' },
+  ];
+
+  bottomItems = [
+    { label: 'Support', icon: 'bi-headset', route: '/candidate/support' },
+    { label: 'Settings', icon: 'bi-gear-fill', route: '/candidate/settings' },
+    { label: 'Log out', icon: 'bi-box-arrow-right', route: '/login' }
   ];
 }

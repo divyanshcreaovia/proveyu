@@ -1,297 +1,770 @@
-<div class="booking-container" style="max-width: 1000px; margin: 0 auto;">
-  <!-- Stepper Header -->
-  <div class="stepper-wrapper mb-5 position-relative">
-    <div class="progress position-absolute top-50 start-0 translate-middle-y w-100" style="height: 2px; z-index: 1;">
-      <div class="progress-bar bg-primary" role="progressbar" [style.width]="((currentStep - 1) / 2) * 100 + '%'"></div>
-    </div>
-    
-    <div class="d-flex justify-content-between position-relative" style="z-index: 2;">
-      <!-- Step 1 -->
-      <div class="step-item text-center">
-        <div class="step-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 text-white bg-primary fw-bold" style="width: 32px; height: 32px;">
-          <i class="bi bi-check" *ngIf="currentStep > 1"></i>
-          <span *ngIf="currentStep === 1">1</span>
-        </div>
-        <div class="small fw-medium" [class.text-primary]="currentStep >= 1" [class.text-muted]="currentStep < 1">Select Domain</div>
-      </div>
-      <!-- Step 2 -->
-      <div class="step-item text-center">
-        <div class="step-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 fw-bold" style="width: 32px; height: 32px;"
-             [class.bg-primary]="currentStep >= 2" [class.text-white]="currentStep >= 2" [class.bg-light]="currentStep < 2" [class.border]="currentStep < 2" [class.text-muted]="currentStep < 2">
-          <i class="bi bi-check" *ngIf="currentStep > 2"></i>
-          <span *ngIf="currentStep <= 2">2</span>
-        </div>
-        <div class="small fw-medium" [class.text-primary]="currentStep >= 2" [class.text-muted]="currentStep < 2">Choose Date & Location</div>
-      </div>
-      <!-- Step 3 -->
-      <div class="step-item text-center">
-        <div class="step-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 fw-bold" style="width: 32px; height: 32px;"
-             [class.bg-primary]="currentStep >= 3" [class.text-white]="currentStep >= 3" [class.bg-light]="currentStep < 3" [class.border]="currentStep < 3" [class.text-muted]="currentStep < 3">
-          <span>3</span>
-        </div>
-        <div class="small fw-medium" [class.text-primary]="currentStep >= 3" [class.text-muted]="currentStep < 3">Payment</div>
-      </div>
-    </div>
-  </div>
+<div class="booking-page-wrapper">
+  <div class="booking-container">
 
-  <!-- Step 1 Content -->
-  <div *ngIf="currentStep === 1">
-    <div class="mb-4">
-      <h4 class="fw-bold text-navy mb-1">Step 1: Select Exam Domain</h4>
-      <p class="text-muted-custom">Choose the exam you want to appear for</p>
-    </div>
+    <!-- Stepper Navigation Bar -->
+    <nav aria-label="Progress" class="stepper-card">
+      <div class="stepper-inner">
 
-    <div class="row g-4">
-      <div class="col-md-6 col-lg-4" *ngFor="let exam of exams">
-        <div class="card card-shadow border-0 h-100 p-4 position-relative cursor-pointer exam-card transition-all"
-             [class.border-primary]="selectedExam?.id === exam.id" [class.border]="selectedExam?.id === exam.id"
-             style="border-width: 2px !important;" (click)="selectExam(exam)">
-          
-          <div class="d-flex align-items-start gap-3 mb-3">
-            <div class="rounded p-2 bg-light-blue" [class]="exam.color">
-              <i class="bi fs-4" [class]="exam.icon"></i>
-            </div>
-            <div>
-              <h6 class="fw-bold text-navy mb-1">{{ exam.name }}</h6>
-              <div class="text-muted-custom small">{{ exam.duration }} • {{ exam.difficulty }}</div>
-            </div>
+        <!-- Step 1 Indicator -->
+        <div class="step-item" [class.active]="currentStep === 1" [class.completed]="currentStep > 1" (click)="goToStep(1)">
+          <div class="step-circle">
+            <svg *ngIf="currentStep > 1" class="icon-check" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+            </svg>
+            <span *ngIf="currentStep === 1">1</span>
           </div>
-          
-          <div class="fs-5 fw-bold text-navy mb-2">₹ {{ exam.price }}</div>
-          <p class="text-muted-custom small mb-4">{{ exam.desc }}</p>
-          
-          <div class="mt-auto">
-            <button class="btn w-100" [class.btn-primary-custom]="selectedExam?.id === exam.id" [class.btn-outline-custom]="selectedExam?.id !== exam.id" (click)="selectExam(exam)">
-              {{ selectedExam?.id === exam.id ? 'Selected' : 'Select' }}
-            </button>
+          <div class="step-label-box">
+            <span class="step-title">Step 1: Exam & Slot Selection</span>
+            <span class="step-desc">Domain, Location, Date & Time</span>
           </div>
         </div>
-      </div>
-    </div>
-    
-    <div class="d-flex justify-content-end mt-4">
-      <button class="btn btn-primary-custom px-5" [disabled]="!selectedExam" (click)="nextStep()">Next</button>
-    </div>
-  </div>
 
-  <!-- Step 2 Content (Date & Location) -->
-  <div *ngIf="currentStep === 2">
-    <div class="mb-4">
-      <h4 class="fw-bold text-navy mb-1">Step 2: Choose Date & Location</h4>
-      <p class="text-muted-custom">Select your preferred date, time and test center.</p>
-    </div>
-    
-    <div class="row g-4">
-      <div class="col-lg-7">
-        <div class="card card-shadow border-0 p-4 h-100">
-          <h6 class="fw-bold text-navy mb-3"><i class="bi bi-calendar me-2"></i> September 2024</h6>
-          <!-- Simple Mock Calendar -->
-          <div class="calendar-grid mb-4">
-            <div class="d-flex justify-content-between text-muted-custom small fw-medium mb-2 px-2">
-              <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
-            </div>
-            <div class="d-flex flex-wrap text-center" style="gap: 2%;">
-              <!-- Mock days -->
-              <div class="p-2 text-muted" style="width: 12%">1</div>
-              <div class="p-2 text-muted" style="width: 12%">2</div>
-              <div class="p-2 text-muted" style="width: 12%">3</div>
-              <div class="p-2 text-muted" style="width: 12%">4</div>
-              <div class="p-2 text-muted" style="width: 12%">5</div>
-              <div class="p-2 text-muted" style="width: 12%">6</div>
-              <div class="p-2 text-muted" style="width: 12%">7</div>
-              
-              <div class="p-2" style="width: 12%">8</div>
-              <div class="p-2" style="width: 12%">9</div>
-              <div class="p-2" style="width: 12%">10</div>
-              <div class="p-2" style="width: 12%">11</div>
-              <div class="p-2" style="width: 12%">12</div>
-              <div class="p-2" style="width: 12%">13</div>
-              <div class="p-2" style="width: 12%">14</div>
+        <!-- Progress Line Connector -->
+        <div class="progress-connector">
+          <div class="progress-connector-fill" [style.width]="currentStep === 1 ? '50%' : '100%'"></div>
+        </div>
 
-              <div class="p-2" style="width: 12%">15</div>
-              <div class="p-2" style="width: 12%">16</div>
-              <div class="p-2" style="width: 12%">17</div>
-              <div class="p-2" style="width: 12%">18</div>
-              <div class="p-2" style="width: 12%">19</div>
-              <div class="p-2 bg-primary text-white rounded-circle shadow-sm cursor-pointer" style="width: 12%">20</div>
-              <div class="p-2" style="width: 12%">21</div>
-            </div>
-          </div>
-          
-          <h6 class="fw-bold text-navy mb-3">Available Time Slots</h6>
-          <div class="d-flex gap-3 mb-4">
-            <button class="btn btn-outline-custom flex-grow-1">9:00 AM</button>
-            <button class="btn btn-primary-custom flex-grow-1">1:00 PM</button>
-            <button class="btn btn-outline-custom flex-grow-1">5:00 PM</button>
-          </div>
-          
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label text-muted-custom small fw-medium">Select City</label>
-              <select class="form-select bg-light-blue border-0 py-2">
-                <option>Bengaluru</option>
-                <option>Hyderabad</option>
-                <option>Pune</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label text-muted-custom small fw-medium">Select Test Center</label>
-              <select class="form-select bg-light-blue border-0 py-2">
-                <option>Bengaluru - Koramangala Center</option>
-                <option>Bengaluru - Whitefield Center</option>
-              </select>
-              <div class="text-success small mt-1"><i class="bi bi-info-circle me-1"></i> Seats Available: 12</div>
-            </div>
+        <!-- Step 2 Indicator -->
+        <div class="step-item" [class.active]="currentStep === 2" [class.disabled]="!selectedExam" (click)="goToStep(2)">
+          <div class="step-circle">2</div>
+          <div class="step-label-box">
+            <span class="step-title">Step 2: Review & Payment</span>
+            <span class="step-desc">Summary & Instant Confirmation</span>
           </div>
         </div>
+
       </div>
-      
-      <div class="col-lg-5">
-        <div class="card card-shadow border-0 p-4 h-100 bg-light-blue">
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <h6 class="fw-bold text-navy mb-0">Selected Slot Summary</h6>
-            <button class="btn btn-link text-primary p-0 text-decoration-none small">Edit</button>
-          </div>
-          
-          <div class="d-flex flex-column gap-3 bg-white p-3 rounded card-shadow border border-light">
-            <div class="d-flex align-items-start gap-3">
-              <i class="bi bi-file-text text-primary mt-1"></i>
-              <div>
-                <div class="text-muted-custom small">Exam</div>
-                <div class="fw-bold text-navy">{{ selectedExam?.name || 'DSA' }}</div>
+    </nav>
+
+    <!-- STEP 1 VIEW: Exam & Slot Selection -->
+    <div class="booking-layout-grid" *ngIf="currentStep === 1">
+
+      <!-- LEFT COLUMN: Domain & Slot Selection (65%) -->
+      <main class="left-selection-column">
+
+        <!-- Section 1: Assessment Domain Selection -->
+        <section class="card-section" data-purpose="domain-selection">
+          <div class="section-header">
+            <div class="header-left">
+              <div class="header-icon-box indigo-tint">
+                <svg class="icon-svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path d="M9 11l3 3L22 4"></path>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
               </div>
+              <h2 class="section-title">1. Select Assessment Domain</h2>
             </div>
-            <div class="d-flex align-items-start gap-3">
-              <i class="bi bi-calendar-event text-primary mt-1"></i>
-              <div>
-                <div class="text-muted-custom small">Date</div>
-                <div class="fw-bold text-navy">20 Sep 2024</div>
-              </div>
-            </div>
-            <div class="d-flex align-items-start gap-3">
-              <i class="bi bi-clock text-primary mt-1"></i>
-              <div>
-                <div class="text-muted-custom small">Time</div>
-                <div class="fw-bold text-navy">1:00 PM - 2:30 PM</div>
-              </div>
-            </div>
-            <div class="d-flex align-items-start gap-3">
-              <i class="bi bi-geo-alt text-primary mt-1"></i>
-              <div>
-                <div class="text-muted-custom small">Location</div>
-                <div class="fw-bold text-navy">Koramangala, Bengaluru</div>
-              </div>
-            </div>
+            <span class="badge-count">{{ filteredExams.length }} Domains Available</span>
           </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="d-flex justify-content-between mt-4">
-      <button class="btn btn-outline-custom px-4" (click)="prevStep()">Back</button>
-      <button class="btn btn-primary-custom px-5" (click)="nextStep()">Next: Payment</button>
-    </div>
-  </div>
 
-  <!-- Step 3 Content (Payment) -->
-  <div *ngIf="currentStep === 3">
-    <div class="row g-4">
-      <div class="col-lg-5">
-        <div class="card card-shadow border-0 p-4 h-100">
-          <h5 class="fw-bold text-navy mb-4">Order Summary</h5>
-          
-          <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
-            <div>
-              <div class="fw-bold text-navy">{{ selectedExam?.name || 'DSA' }} Exam</div>
-              <div class="text-muted-custom small">20 Sep 2024 • 1:00 PM - 2:30 PM</div>
-              <div class="text-muted-custom small">Koramangala, Bengaluru</div>
+          <!-- Search Input & Filter Categories -->
+          <div class="search-filter-wrapper">
+            <div class="search-input-box">
+              <svg class="search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <input type="text" class="search-control" placeholder="Search for a domain or skill (e.g. DSA, React, Cloud)..." [(ngModel)]="searchQuery" (focus)="isDropdownOpen = true">
             </div>
-            <div class="fw-bold">₹ {{ selectedExam?.price || 999 }}</div>
-          </div>
-          
-          <div class="d-flex justify-content-between mb-4 pt-2">
-            <h5 class="fw-bold text-navy mb-0">Total Amount</h5>
-            <h5 class="fw-bold text-primary mb-0">₹ {{ selectedExam?.price || 999 }}</h5>
-          </div>
-          
-          <div class="mb-3">
-            <label class="form-label text-muted-custom small fw-medium">Apply Promo Code</label>
-            <div class="input-group">
-              <input type="text" class="form-control bg-light-blue border-0 py-2" placeholder="Enter code">
-              <button class="btn btn-outline-primary border-start-0 bg-light-blue" type="button">Apply</button>
+
+            <!-- Categories Chips Scrollbar -->
+            <div class="categories-chip-row">
+              <button type="button" class="chip-btn" *ngFor="let cat of categories" [class.active]="selectedCategory === cat" (click)="selectedCategory = cat; isDropdownOpen = true">
+                {{ cat }}
+              </button>
             </div>
           </div>
-        </div>
-      </div>
-      
-      <div class="col-lg-7">
-        <div class="card card-shadow border-0 p-4 h-100">
-          <h5 class="fw-bold text-navy mb-4">Payment Method</h5>
-          
-          <div class="d-flex flex-column gap-3">
-            <!-- Razorpay Option -->
-            <label class="border rounded p-3 d-flex align-items-center gap-3 cursor-pointer border-primary bg-light-blue">
-              <input type="radio" name="payment" class="form-check-input mt-0" checked>
-              <div>
-                <div class="fw-bold text-navy">Razorpay (UPI, Cards, Wallets)</div>
-                <div class="d-flex gap-2 mt-2">
-                  <span class="badge bg-white text-dark border">UPI</span>
-                  <span class="badge bg-white text-dark border">VISA</span>
-                  <span class="badge bg-white text-dark border">MasterCard</span>
+
+          <!-- Selected Active Exam Summary Card -->
+          <div class="active-exam-card" (click)="toggleDropdown()">
+            <div class="exam-card-main">
+              <div class="exam-card-left">
+                <div class="exam-icon-circle">
+                  <i [class]="selectedExam ? ('bi ' + selectedExam.icon) : 'bi bi-journal-plus'"></i>
+                </div>
+                <div class="exam-meta-box">
+                  <div class="exam-title-row">
+                    <span class="exam-name-text">{{ selectedExam ? selectedExam.name : 'Select Assessment Domain' }}</span>
+                    <span class="exam-code-tag">{{ selectedExam ? selectedExam.code : 'Choose Domain' }}</span>
+                  </div>
+                  <div class="exam-info-row">
+                    <span class="info-item" *ngIf="selectedExam">
+                      <svg class="info-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                      {{ selectedExam.duration }}
+                    </span>
+                    <span class="info-item emerald" *ngIf="selectedExam">
+                      <svg class="info-icon text-emerald" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <path d="m9 12 2 2 4-4"></path>
+                      </svg>
+                      {{ selectedExam.mode }}
+                    </span>
+                    <span class="info-item" *ngIf="!selectedExam">
+                      Click to expand available domain assessments
+                    </span>
+                  </div>
                 </div>
               </div>
-            </label>
-            
-            <!-- Credit Card Option -->
-            <label class="border rounded p-3 d-flex align-items-center gap-3 cursor-pointer hover-bg">
-              <input type="radio" name="payment" class="form-check-input mt-0">
-              <div class="fw-medium text-navy">Credit / Debit Card</div>
-            </label>
-            
-            <!-- Net Banking -->
-            <label class="border rounded p-3 d-flex align-items-center gap-3 cursor-pointer hover-bg">
-              <input type="radio" name="payment" class="form-check-input mt-0">
-              <div class="fw-medium text-navy">Net Banking</div>
-            </label>
-          </div>
-          
-          <button class="btn btn-primary-custom w-100 mt-4 py-3 fs-6" (click)="nextStep()">Pay ₹ {{ selectedExam?.price || 999 }} Now</button>
-        </div>
-      </div>
-    </div>
-    
-    <div class="mt-4">
-      <button class="btn btn-outline-custom px-4" (click)="prevStep()">Back</button>
-    </div>
-  </div>
 
-  <!-- Step 4 Content (Confirmation) -->
-  <div *ngIf="currentStep === 4" class="text-center py-5">
-    <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle mb-4" style="width: 80px; height: 80px;">
-      <i class="bi bi-check-lg fs-1"></i>
-    </div>
-    <h3 class="fw-bold text-navy mb-2">Booking Confirmed!</h3>
-    <p class="text-muted-custom mb-5">Your exam has been successfully booked. Please check your email for the confirmation details.</p>
-    
-    <div class="card card-shadow border-0 text-start mx-auto d-inline-block w-100 p-4" style="max-width: 500px;">
-      <div class="text-muted-custom small mb-1">Booking ID</div>
-      <div class="fw-bold text-navy mb-3">PYV20240920B001</div>
-      
-      <div class="row g-3">
-        <div class="col-6">
-          <div class="text-muted-custom small">Exam</div>
-          <div class="fw-medium">{{ selectedExam?.name || 'DSA' }}</div>
+              <!-- Price & Dropdown Toggle Button -->
+              <div class="exam-card-right">
+                <div class="price-display">
+                  <span class="price-amount">{{ selectedExam ? ('₹ ' + selectedExam.price) : '₹ 0' }}</span>
+                  <span class="price-label">Exam Fee</span>
+                </div>
+                <button type="button" class="btn-toggle-dropdown" aria-label="Toggle exam list">
+                  <svg class="icon-chevron" [class.rotate]="isDropdownOpen" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Expanded Active Selection Bar (When an exam is selected) -->
+            <div class="expanded-selection-bar" *ngIf="selectedExam">
+              <div class="selection-bar-header">
+                <span>Selected Assessment Domain</span>
+                <button type="button" class="btn-close-dropdown" (click)="isDropdownOpen = !isDropdownOpen; $event.stopPropagation()">
+                  {{ isDropdownOpen ? 'Close Dropdown' : 'Change Domain' }}
+                </button>
+              </div>
+              <div class="selection-confirmation-box">
+                <div class="box-left">
+                  <div class="box-icon">
+                    <i [class]="'bi ' + selectedExam.icon"></i>
+                  </div>
+                  <div class="box-details">
+                    <div class="title-row">
+                      <span class="title">{{ selectedExam.name }}</span>
+                      <span class="code">{{ selectedExam.code }}</span>
+                    </div>
+                    <span class="subtitle">{{ selectedExam.duration }} • ₹ {{ selectedExam.price }}</span>
+                  </div>
+                </div>
+                <div class="box-actions">
+                  <button type="button" class="btn-view-info" (click)="openExamModal(selectedExam, $event)">
+                    <svg class="info-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" x2="12" y1="16" y2="12"></line>
+                      <line x1="12" x2="12.01" y1="8" y2="8"></line>
+                    </svg>
+                    View Info
+                  </button>
+                  <button type="button" class="btn-selected-badge">
+                    <span>Selected</span>
+                    <svg class="check-icon" fill="currentColor" viewBox="0 0 20 20">
+                      <path clip-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" fill-rule="evenodd"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dropdown List of Available Domains (Long Detailed Cards) -->
+          <div class="domain-dropdown-container" *ngIf="isDropdownOpen">
+            <div class="dropdown-header">
+              <span class="dropdown-title">Select Assessment Domain</span>
+              <button type="button" class="btn-link-close" (click)="isDropdownOpen = false">Close</button>
+            </div>
+            <div class="domain-cards-scroll">
+              <div class="domain-card-item" *ngFor="let exam of filteredExams" [class.selected]="selectedExam && selectedExam.id === exam.id" (click)="selectExam(exam)">
+                <div class="domain-card-content">
+                  <div class="domain-card-left">
+                    <div class="domain-icon-box">
+                      <i [class]="'bi ' + exam.icon"></i>
+                    </div>
+                    <div class="domain-details font-inter">
+                      <div class="domain-heading-row">
+                        <span class="domain-name">{{ exam.name }}</span>
+                        <span class="domain-code">{{ exam.code }}</span>
+                        <span class="domain-passrate">{{ exam.passRate }}</span>
+                      </div>
+                      <p class="domain-desc">{{ exam.desc }}</p>
+                      <div class="domain-tags-row">
+                        <span class="skill-tag" *ngFor="let s of exam.skills">#{{ s }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="domain-card-right">
+                    <div class="price-box">
+                      <span class="price-val">₹ {{ exam.price }}</span>
+                      <span class="price-dur">{{ exam.duration }}</span>
+                    </div>
+                    <div class="action-buttons-group">
+                      <button type="button" class="btn-info-sm" (click)="openExamModal(exam, $event)">
+                        Info
+                      </button>
+                      <button type="button" class="btn-select-exam" [class.active]="selectedExam && selectedExam.id === exam.id">
+                        {{ (selectedExam && selectedExam.id === exam.id) ? 'Selected' : 'Select' }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="no-results-box" *ngIf="filteredExams.length === 0">
+                <i class="bi bi-search search-empty-icon"></i>
+                <p>No assessment domains match your search query "{{ searchQuery }}".</p>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Section 2: Test Center, Date & Time Slot -->
+        <section class="card-section" data-purpose="slot-selection">
+          <div class="section-header">
+            <div class="header-left">
+              <div class="header-icon-box indigo-tint">
+                <svg class="icon-svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              </div>
+              <h2 class="section-title">2. Choose Test Center, Date & Time Slot</h2>
+            </div>
+          </div>
+
+          <!-- Location Row: City & Center Dropdowns -->
+          <div class="location-form-grid">
+            <div class="form-group city-select">
+              <label class="form-label">Select City</label>
+              <select class="form-control-select" [(ngModel)]="selectedCity">
+                <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
+              </select>
+            </div>
+            <div class="form-group center-select">
+              <label class="form-label">Select Test Center Location</label>
+              <select class="form-control-select" [(ngModel)]="selectedCenter">
+                <option *ngFor="let ctr of centers" [value]="ctr.name">
+                  {{ ctr.name }} ({{ ctr.seats }} seats available)
+                </option>
+              </select>
+              <div class="verified-badge-line">
+                <svg class="emerald-check-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" fill-rule="evenodd"></path>
+                </svg>
+                <span>Verified AI-Proctored Exam Facility</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exam Date Selection Row -->
+          <div class="date-selection-row">
+            <label class="form-label">Select Exam Date</label>
+            <div class="date-grid">
+              <button type="button" class="date-option-card" *ngFor="let d of availableDates" [class.selected]="selectedDate.fullDate === d.fullDate" (click)="selectedDate = d">
+                <span class="day-name">{{ d.dayName }}</span>
+                <span class="date-number">{{ d.dateNum }}</span>
+                <span class="month-name">{{ d.month }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Available Time Slot Selection Row -->
+          <div class="timeslot-selection-row">
+            <div class="timeslot-label-header">
+              <label class="form-label mb-0">Select Available Time Slot</label>
+              <span class="timezone-note">All timings are in IST (UTC+05:30)</span>
+            </div>
+
+            <div class="timeslot-grid">
+              <div class="slot-card" *ngFor="let slot of timeSlots" [class.selected]="selectedTimeSlot === slot.time" (click)="selectedTimeSlot = slot.time">
+                <div class="slot-card-top">
+                  <span class="slot-time-text">{{ slot.time }}</span>
+                  <span class="slot-badge" [class.active-badge]="selectedTimeSlot === slot.time">
+                    {{ selectedTimeSlot === slot.time ? 'Selected' : slot.period }}
+                  </span>
+                </div>
+                <div class="slot-card-bottom">
+                  <span>{{ slot.seatsLeft }} seats left</span>
+                  <span *ngIf="slot.note" class="slot-note-text">{{ slot.note }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+      </main>
+
+      <!-- RIGHT COLUMN: Sticky Booking Summary Sidebar (35%) -->
+      <aside class="right-sticky-summary">
+
+        <!-- Booking Summary Card -->
+        <div class="card-section summary-card" data-purpose="booking-summary-card">
+          <div class="section-header">
+            <div class="header-left">
+              <div class="header-icon-box indigo-tint">
+                <svg class="icon-svg" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                </svg>
+              </div>
+              <h3 class="section-title">Booking Summary</h3>
+            </div>
+          </div>
+
+          <!-- Summary Block Details -->
+          <div class="summary-body">
+            <!-- Assessment Domain -->
+            <div class="summary-block">
+              <div class="block-icon dark">
+                <i [class]="selectedExam ? ('bi ' + selectedExam.icon) : 'bi bi-journal'"></i>
+              </div>
+              <div class="block-content">
+                <span class="block-label">Assessment Domain</span>
+                <p class="block-value">{{ selectedExam ? selectedExam.name : 'Not Selected' }}</p>
+                <div class="block-badge-wrap">
+                  <span class="badge-code">{{ selectedExam ? selectedExam.code : 'Pending Selection' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Date & Time -->
+            <div class="summary-block border-top">
+              <div class="block-icon indigo">
+                <svg class="icon-svg" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect>
+                  <line x1="16" x2="16" y1="2" y2="6"></line>
+                  <line x1="8" x2="8" y1="2" y2="6"></line>
+                  <line x1="3" x2="21" y1="10" y2="10"></line>
+                </svg>
+              </div>
+              <div class="block-content">
+                <span class="block-label">Date & Time</span>
+                <p class="block-value">{{ selectedDate.fullDate }}</p>
+                <p class="block-subvalue">{{ selectedTimeSlot }}</p>
+              </div>
+            </div>
+
+            <!-- Venue Location -->
+            <div class="summary-block border-top">
+              <div class="block-icon purple">
+                <svg class="icon-svg" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              </div>
+              <div class="block-content">
+                <span class="block-label">Test Center Venue</span>
+                <p class="block-value venue-title">{{ selectedCenter }}</p>
+                <p class="block-subvalue">{{ selectedCity }}, Karnataka</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fee Calculation & CTA -->
+          <div class="summary-footer">
+            <div class="fee-row">
+              <span class="fee-label">Total Fee</span>
+              <span class="fee-amount">{{ selectedExam ? ('₹ ' + selectedExam.price) : '₹ 0' }}</span>
+            </div>
+
+            <button type="button" class="btn-proceed-cta" [disabled]="!selectedExam" [style.opacity]="!selectedExam ? '0.6' : '1'" (click)="goToStep(2)">
+              <span>{{ selectedExam ? 'Proceed to Payment' : 'Select Domain to Proceed' }}</span>
+              <svg class="icon-arrow-right" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <line x1="5" x2="19" y1="12" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+
+            <div class="security-caption">
+              <svg class="lock-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect height="11" rx="2" ry="2" width="18" x="3" y="11"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span>Encrypted 256-bit checkout session</span>
+            </div>
+          </div>
         </div>
-        <div class="col-6">
-          <div class="text-muted-custom small">Date & Time</div>
-          <div class="fw-medium">20 Sep 2024 • 1:00 PM</div>
+
+        <!-- Help / Reschedule Flexibility Info Widget -->
+        <div class="help-info-box">
+          <div class="info-box-icon">
+            <svg class="icon-svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" x2="12.01" y1="17" y2="17"></line>
+            </svg>
+          </div>
+          <div class="info-box-text">
+            <h4 class="info-title">Need reschedule flexibility?</h4>
+            <p class="info-desc">Free reschedule is supported up to 24 hours before your chosen exam slot.</p>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+
+    <!-- STEP 2 VIEW: Review & Checkout -->
+    <div class="step2-checkout-container" *ngIf="currentStep === 2 && !isConfirmed">
+
+      <div class="checkout-layout-grid">
+
+        <!-- LEFT COLUMN: Order Breakdown & Price Details (5 Cols) -->
+        <section class="left-order-column">
+
+          <div class="card-section" data-purpose="order-breakdown-card">
+            <div class="section-header">
+              <div class="header-left">
+                <div class="header-icon-box indigo-tint">
+                  <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  </svg>
+                </div>
+                <h2 class="section-title">Order Breakdown</h2>
+              </div>
+              <span class="badge-count">Single Slot</span>
+            </div>
+
+            <!-- Exam Selected Summary Box -->
+            <div class="selected-breakdown-box" *ngIf="selectedExam">
+              <div class="breakdown-box-top">
+                <div class="exam-title-meta">
+                  <h3 class="exam-title">{{ selectedExam.name }}</h3>
+                  <p class="exam-code-sub">
+                    <span class="dot-indicator"></span>
+                    {{ selectedExam.code }} • {{ selectedExam.duration }} Assessment
+                  </p>
+                </div>
+                <span class="exam-price-tag">₹ {{ selectedExam.price }}</span>
+              </div>
+            </div>
+
+            <!-- Slot Metadata Rows -->
+            <div class="metadata-rows">
+              <div class="meta-item">
+                <span class="meta-label">
+                  <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  </svg>
+                  Date:
+                </span>
+                <span class="meta-value">{{ selectedDate.fullDate }}</span>
+              </div>
+
+              <div class="meta-item">
+                <span class="meta-label">
+                  <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  </svg>
+                  Time Slot:
+                </span>
+                <span class="meta-value">{{ selectedTimeSlot }} (IST)</span>
+              </div>
+
+              <div class="meta-item border-none">
+                <span class="meta-label">
+                  <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                    <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  </svg>
+                  Venue / Test Center:
+                </span>
+                <span class="meta-value venue-val">{{ selectedCenter }}, {{ selectedCity }}</span>
+              </div>
+            </div>
+
+            <!-- Promo Code Input Group -->
+            <div class="promo-code-section">
+              <label class="form-label uppercase-label">Apply Promo Code</label>
+              <div class="promo-input-group">
+                <input type="text" class="promo-control" placeholder="Enter coupon code" [(ngModel)]="promoCode" [disabled]="promoApplied">
+                <button type="button" class="btn-apply-promo" (click)="applyPromo()" [disabled]="promoApplied">
+                  {{ promoApplied ? 'Applied ✓' : 'Apply' }}
+                </button>
+              </div>
+              <p class="promo-success-msg" *ngIf="promoApplied">
+                <svg class="check-msg-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path clip-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill-rule="evenodd"></path>
+                </svg>
+                Coupon 'PROVEYU10' applied (₹100 off on checkout)
+              </p>
+            </div>
+
+            <!-- Price Breakdown Calculation -->
+            <div class="price-calculation-block">
+              <div class="calc-row">
+                <span>Assessment Slot Fee</span>
+                <span class="val">₹ {{ selectedExam ? selectedExam.price : 0 }}.00</span>
+              </div>
+              <div class="calc-row" *ngIf="promoApplied">
+                <span>Promo Discount (PROVEYU10)</span>
+                <span class="val discount">- ₹ {{ discountAmount }}.00</span>
+              </div>
+              <div class="calc-row">
+                <span>Proctoring & Facility Fee</span>
+                <span class="val emerald">FREE (Waived)</span>
+              </div>
+              <div class="calc-row">
+                <span>Taxes (GST 18%)</span>
+                <span class="val text-muted">Included in price</span>
+              </div>
+
+              <!-- Grand Total Payable -->
+              <div class="grand-total-row">
+                <div class="total-label-box">
+                  <span class="total-heading">Total Payable:</span>
+                  <span class="total-subtext">All taxes and test fees inclusive</span>
+                </div>
+                <span class="grand-total-amount">₹ {{ finalPrice }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Verified Seat Reservation Guarantee Badge -->
+          <div class="guarantee-badge-box">
+            <div class="badge-icon-box">
+              <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </div>
+            <div class="badge-text-box">
+              <p class="title">Guaranteed Seat Reservation</p>
+              <p class="desc">Your workstation at iON Digital Zone is reserved instantly upon transaction confirmation.</p>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- RIGHT COLUMN: Payment Method Selection & CTAs (7 Cols) -->
+        <section class="right-payment-column">
+
+          <div class="card-section" data-purpose="payment-selection-card">
+            <div class="section-header">
+              <div class="header-left">
+                <div class="header-icon-box indigo-tint">
+                  <svg class="icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  </svg>
+                </div>
+                <h2 class="section-title">Select Payment Method</h2>
+              </div>
+              <span class="badge-ssl">
+                <svg class="lock-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path clip-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" fill-rule="evenodd"></path>
+                </svg>
+                Secure 256-bit SSL
+              </span>
+            </div>
+
+            <!-- Payment Gateways Stack -->
+            <div class="payment-options-stack">
+              <!-- Option 1: Razorpay Instant Checkout -->
+              <label class="payment-option-card" [class.selected]="selectedPaymentMethod === 'razorpay'" (click)="selectedPaymentMethod = 'razorpay'">
+                <div class="option-left">
+                  <input type="radio" name="payment_method" class="radio-control" [checked]="selectedPaymentMethod === 'razorpay'">
+                  <div class="option-info">
+                    <div class="option-header-row">
+                      <span class="option-title">Razorpay Instant Checkout</span>
+                      <span class="tag-fastest">Fastest</span>
+                    </div>
+                    <p class="option-desc">Google Pay, PhonePe, Paytm, BHIM UPI, QR & Cards</p>
+                  </div>
+                </div>
+                <div class="option-right-badges">
+                  <span class="pay-chip">UPI</span>
+                  <span class="pay-chip visa">VISA</span>
+                </div>
+              </label>
+
+              <!-- Option 2: Credit or Debit Card -->
+              <label class="payment-option-card" [class.selected]="selectedPaymentMethod === 'card'" (click)="selectedPaymentMethod = 'card'">
+                <div class="option-left">
+                  <input type="radio" name="payment_method" class="radio-control" [checked]="selectedPaymentMethod === 'card'">
+                  <div class="option-info">
+                    <span class="option-title">Credit or Debit Card</span>
+                    <p class="option-desc">All major Indian & International cards supported</p>
+                  </div>
+                </div>
+                <div class="option-right-icon">
+                  <i class="bi bi-credit-card fs-4"></i>
+                </div>
+              </label>
+
+              <!-- Option 3: Net Banking -->
+              <label class="payment-option-card" [class.selected]="selectedPaymentMethod === 'netbanking'" (click)="selectedPaymentMethod = 'netbanking'">
+                <div class="option-left">
+                  <input type="radio" name="payment_method" class="radio-control" [checked]="selectedPaymentMethod === 'netbanking'">
+                  <div class="option-info">
+                    <span class="option-title">Net Banking</span>
+                    <p class="option-desc">HDFC, ICICI, SBI, Axis & 50+ partner banks</p>
+                  </div>
+                </div>
+                <div class="option-right-icon">
+                  <i class="bi bi-bank fs-4"></i>
+                </div>
+              </label>
+
+              <!-- Option 4: Digital Wallets & PayLater -->
+              <label class="payment-option-card" [class.selected]="selectedPaymentMethod === 'wallets'" (click)="selectedPaymentMethod = 'wallets'">
+                <div class="option-left">
+                  <input type="radio" name="payment_method" class="radio-control" [checked]="selectedPaymentMethod === 'wallets'">
+                  <div class="option-info">
+                    <span class="option-title">Wallets & PayLater</span>
+                    <p class="option-desc">Amazon Pay, Mobikwik, Simpl & Cred Pay</p>
+                  </div>
+                </div>
+                <div class="option-right-icon">
+                  <i class="bi bi-wallet2 fs-4"></i>
+                </div>
+              </label>
+            </div>
+
+            <!-- Candidate Notice -->
+            <div class="candidate-notice-box">
+              <p class="notice-heading">Candidate Instructions:</p>
+              <ul class="notice-list">
+                <li>Please bring 1 valid Government Issued Photo ID Card to the test venue.</li>
+                <li>Reporting time is strictly 30 minutes prior to the start time (02:00 PM).</li>
+              </ul>
+            </div>
+
+            <!-- Action Buttons Bar -->
+            <div class="checkout-actions-bar">
+              <button type="button" class="btn-secondary-back" (click)="goToStep(1)">
+                <svg class="icon-back-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+                Back to Step 1
+              </button>
+
+              <button type="button" class="btn-primary-pay" (click)="completeBooking()">
+                <span>Pay ₹ {{ finalPrice }} & Confirm Booking</span>
+                <svg class="icon-forward-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Security Badges Footer -->
+            <div class="security-badges-row">
+              <span class="sec-item">
+                <svg class="check-icon-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+                Instant Booking Confirmation
+              </span>
+              <span class="dot-separator">•</span>
+              <span class="sec-item">
+                <svg class="check-icon-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+                Encrypted Checkout
+              </span>
+              <span class="dot-separator">•</span>
+              <span class="sec-item">Official TCS iON Test Partner</span>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </div>
+
+    <!-- BOOKING CONFIRMED PASS VIEW -->
+    <div class="confirmation-pass-card" *ngIf="isConfirmed">
+      <div class="check-icon-circle shadow-md">
+        <svg class="icon-check" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+        </svg>
+      </div>
+
+      <h2 class="confirm-title">Slot Booking Confirmed!</h2>
+      <p class="confirm-subtitle">Your assessment slot has been successfully reserved. Admit card & receipt sent to your registered email.</p>
+
+      <div class="pass-details-box">
+        <div class="pass-header">
+          <div>
+            <span class="pass-label">BOOKING PASS ID</span>
+            <span class="pass-id">PYV-20240924-B001</span>
+          </div>
+          <span class="badge-status-confirmed">CONFIRMED</span>
+        </div>
+
+        <div class="pass-grid">
+          <div class="pass-item">
+            <span class="label">Assessment Domain</span>
+            <span class="value">{{ selectedExam ? selectedExam.name : '' }}</span>
+            <span class="subvalue">{{ selectedExam ? selectedExam.code : '' }}</span>
+          </div>
+          <div class="pass-item">
+            <span class="label">Date & Slot</span>
+            <span class="value">{{ selectedDate.fullDate }}</span>
+            <span class="subvalue">{{ selectedTimeSlot }}</span>
+          </div>
+          <div class="pass-item full-width">
+            <span class="label">Test Center Venue</span>
+            <span class="value">{{ selectedCenter }}, {{ selectedCity }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="confirm-actions-row">
+        <button type="button" class="btn-download-admit" routerLink="/candidate/my-passport">
+          <i class="bi bi-download"></i> Download Admit Card
+        </button>
+        <button type="button" class="btn-return-dashboard" routerLink="/candidate/dashboard">
+          Return to Dashboard
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- EXAM DETAILS MODAL -->
+<div class="modal-backdrop" *ngIf="isModalOpen" (click)="closeExamModal()">
+  <div class="modal-dialog-custom" (click)="$event.stopPropagation()">
+    <div class="modal-header-custom">
+      <div class="title-with-badge">
+        <h3 class="modal-title">{{ selectedDetailExam?.name }}</h3>
+        <span class="badge-code">{{ selectedDetailExam?.code }}</span>
+      </div>
+      <button type="button" class="btn-close-modal" (click)="closeExamModal()">✕</button>
+    </div>
+
+    <div class="modal-body-custom">
+      <p class="modal-desc">{{ selectedDetailExam?.desc }}</p>
+
+      <div class="modal-info-grid">
+        <div class="info-card">
+          <span class="lbl">Duration</span>
+          <span class="val">{{ selectedDetailExam?.duration }}</span>
+        </div>
+        <div class="info-card">
+          <span class="lbl">Proctoring</span>
+          <span class="val">{{ selectedDetailExam?.mode }}</span>
+        </div>
+        <div class="info-card">
+          <span class="lbl">Fee</span>
+          <span class="val">₹ {{ selectedDetailExam?.price }}</span>
+        </div>
+        <div class="info-card">
+          <span class="lbl">Pass Rate</span>
+          <span class="val text-emerald">{{ selectedDetailExam?.passRate }}</span>
+        </div>
+      </div>
+
+      <div class="skills-section">
+        <span class="skills-heading">Evaluated Skills & Topics</span>
+        <div class="skills-pills">
+          <span class="pill" *ngFor="let skill of selectedDetailExam?.skills">
+            # {{ skill }}
+          </span>
         </div>
       </div>
     </div>
-    
-    <div class="mt-5 d-flex justify-content-center gap-3">
-      <button class="btn btn-outline-custom px-4">Download Receipt</button>
-      <button class="btn btn-primary-custom px-4">View Passport</button>
+
+    <div class="modal-footer-custom">
+      <button type="button" class="btn-modal-close" (click)="closeExamModal()">Close</button>
+      <button type="button" class="btn-modal-select" (click)="selectExam(selectedDetailExam!); closeExamModal()">Select This Domain</button>
     </div>
   </div>
 </div>

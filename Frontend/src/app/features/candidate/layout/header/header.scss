@@ -1,18 +1,29 @@
 .candidate-header {
-  border-bottom: 1px solid var(--proveyu-border);
-  position: sticky;
-  top: 81px;
-  z-index: 899;
-  
-  .search-wrapper {
-    input {
-      font-size: 0.9rem;
-      &::placeholder {
-        color: var(--proveyu-text-muted);
-      }
+  background-color: transparent;
+
+  .circle-action-btn {
+    width: 42px;
+    height: 42px;
+    transition: all 0.2s ease-in-out;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    
+    &:hover {
+      background-color: #f1f3f9;
+      transform: translateY(-1px);
     }
   }
-  
+
+  .profile-dropdown-pill {
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background-color: #f8f9fc;
+    }
+  }
+
   .cursor-pointer {
     cursor: pointer;
   }

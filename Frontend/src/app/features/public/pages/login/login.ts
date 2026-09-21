@@ -65,10 +65,11 @@ export class Login {
       event.preventDefault();
     }
     this.isLoggingIn = true;
-    this.loginSuccessMessage = 'Login successful! Redirecting to dashboard...';
+    this.loginSuccessMessage = 'Login successful! Redirecting to Candidate Dashboard...';
 
     setTimeout(() => {
-      this.router.navigate(['/']).then(() => {
+      const targetRoute = this.selectedRole === 'candidate' ? '/candidate/dashboard' : '/candidate/dashboard';
+      this.router.navigate([targetRoute]).then(() => {
         this.isLoggingIn = false;
       });
     }, 400);

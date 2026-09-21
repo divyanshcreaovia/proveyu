@@ -1,22 +1,76 @@
-.nav-tabs {
-  .nav-link {
-    color: var(--proveyu-text-muted);
-    border-bottom: 2px solid transparent !important;
-    
-    &.active {
-      color: var(--proveyu-primary) !important;
-      border-bottom-color: var(--proveyu-primary) !important;
-    }
-    
-    &:hover:not(.active) {
-      color: var(--proveyu-navy);
-      border-bottom-color: var(--proveyu-border) !important;
+.profile-container {
+  font-family: 'Inter', sans-serif;
+
+  .grapeslab-card {
+    border-radius: 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+  }
+
+  .shadow-xs {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .border-start-md {
+    @media (min-width: 768px) {
+      border-left: 1px solid #ebedf2;
     }
   }
-}
 
-.border-start-lg {
-  @media (min-width: 992px) {
-    border-left: 1px solid var(--proveyu-border);
+  .border-start-lg {
+    @media (min-width: 992px) {
+      border-left: 1px solid #ebedf2;
+    }
+  }
+
+  .skill-pill {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: #f8f9fc;
+    border: 1px solid #e8ecf2;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  .toast-notification {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  /* Active Link Underline Styling for Profile Tabs */
+  .nav-tabs {
+    .nav-link {
+      color: #64748b;
+      font-size: 0.95rem;
+      border: none !important;
+      border-bottom: 3px solid transparent !important;
+      border-radius: 0 !important;
+      padding-bottom: 0.85rem !important;
+      margin-bottom: -1px;
+      transition: color 0.2s ease, border-color 0.2s ease;
+
+      &:hover {
+        color: #16122b;
+        border-color: rgba(22, 18, 43, 0.2) !important;
+      }
+
+      &.active {
+        color: #16122b !important;
+        font-weight: 700 !important;
+        border-bottom: 3px solid #16122b !important;
+        background-color: transparent !important;
+      }
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 }

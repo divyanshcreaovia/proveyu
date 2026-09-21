@@ -1,70 +1,249 @@
-<div class="dashboard-container">
-  <!-- Greeting Section -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="fw-bold mb-1">Good Morning, Rahul! 👋</h2>
-      <p class="text-muted-custom mb-0">Keep going! You're one step closer to your dream career.</p>
-    </div>
-    <button class="btn btn-primary-custom">View Profile</button>
-  </div>
+<div class="grapeslab-dashboard-container py-2 w-100" style="width: 100%;">
 
-  <!-- Quick Stats Grid -->
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-md-4 col-lg-2" *ngFor="let stat of stats">
-      <div class="card card-shadow border-0 h-100 p-3 stat-pill-card text-center">
-        <div class="mb-2">
-          <i [class]="'bi ' + stat.icon + ' fs-3 ' + stat.color"></i>
+  <!-- 1. Important Notifications & Alerts Banner -->
+  <div class="alert-notifications-wrapper mb-4 w-100" *ngIf="notifications.length > 0">
+    <div class="d-flex flex-column gap-2">
+      <div
+        class="alert-pill-item p-3 rounded-4 bg-white shadow-xs border d-flex flex-wrap align-items-center justify-content-between gap-2"
+        *ngFor="let notif of notifications">
+        <div class="d-flex align-items-center gap-3">
+          <div class="alert-icon rounded-circle p-2 d-flex align-items-center justify-content-center"
+            [ngClass]="notif.type === 'urgent' ? 'bg-danger-subtle text-danger' : 'bg-primary-subtle text-primary'">
+            <i [class]="notif.type === 'urgent' ? 'bi bi-bell-fill' : 'bi bi-info-circle-fill'"></i>
+          </div>
+          <span class="fw-semibold text-dark fs-6">{{ notif.text }}</span>
         </div>
-        <div class="text-muted-custom small fw-medium mb-1">{{ stat.label }}</div>
-        <div class="fs-4 fw-bold text-navy">{{ stat.value }}</div>
+        <button class="btn btn-sm rounded-pill px-3 py-1-5 fw-bold"
+          [ngClass]="notif.type === 'urgent' ? 'btn-dark' : 'btn-outline-dark'">
+          {{ notif.action }}
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Main Content Grid -->
-  <div class="row g-4 mb-4">
-    <!-- Upcoming Events -->
-    <div class="col-lg-7">
-      <div class="card card-shadow border-0 h-100 p-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h5 class="fw-bold text-navy mb-0">Upcoming Events</h5>
-          <a href="#" class="text-decoration-none small fw-medium">View Calendar <i class="bi bi-chevron-right"></i></a>
+  <!-- 2. Top Row: 5 Equal Professional Metric Cards (Single Horizontal Row) -->
+  <div class="row g-3 mb-4 w-100 m-0">
+    <div class="col-12 px-0 px-lg-2">
+      <div class="top-stat-grid">
+        <div class="stat-card-item p-3 p-xl-4 rounded-4 border shadow-xs d-flex flex-column justify-content-between position-relative transition-all" 
+             *ngFor="let stat of statCards"
+             [ngClass]="stat.bgClass"
+             [style.border-top-color]="stat.accentColor"
+             [routerLink]="stat.route">
+          
+          <!-- Top row: Icon Badge + Label & Action Arrow -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <div class="stat-icon-badge rounded-circle p-2 d-flex align-items-center justify-content-center"
+                   [ngClass]="stat.badgeColor">
+                <i [class]="'bi ' + stat.icon"></i>
+              </div>
+              <span class="fw-bold text-dark small" style="font-size: 0.82rem;">{{ stat.label }}</span>
+            </div>
+            <div class="circle-arrow-btn rounded-circle border d-flex align-items-center justify-content-center bg-white text-dark shadow-xs">
+              <i class="bi bi-arrow-up-right fw-bold"></i>
+            </div>
+          </div>
+
+          <!-- Metric Value -->
+          <div class="stat-value fw-extrabold text-dark fs-3 mb-1 tracking-tight">
+            {{ stat.value }}
+          </div>
+
+          <!-- Subtext -->
+          <div class="stat-subtext small fw-semibold text-truncate" [style.color]="stat.accentColor" title="{{ stat.subtext }}">
+            {{ stat.subtext }}
+          </div>
         </div>
-        <div class="d-flex flex-column gap-3">
-          <div class="event-card border rounded p-3 d-flex align-items-center justify-content-between" *ngFor="let event of upcomingEvents">
-            <div class="d-flex align-items-center gap-3">
-              <div class="event-icon bg-light-blue rounded p-2 text-primary">
-                <i class="bi bi-calendar-event fs-5"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Middle Grid: Quick Actions & Next Exam Card -->
+  <div class="row g-4 mb-4 w-100 m-0">
+    <!-- Next Exam Highlight Card -->
+    <div class="col-xl-7 col-lg-7 px-0 px-lg-2">
+      <div
+        class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs h-100 d-flex flex-column justify-content-between">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex align-items-center gap-2">
+            <div
+              class="icon-square rounded-circle bg-warning-subtle text-dark p-2 d-flex align-items-center justify-content-center"
+              style="width: 38px; height: 38px;">
+              <i class="bi bi-clock-history fs-5"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-0 fs-5">Next Scheduled Exam</h5>
+          </div>
+          <span class="badge bg-warning text-dark rounded-pill px-3 py-1-5 fw-bold">Upcoming</span>
+        </div>
+
+        <div class="p-3 bg-light rounded-4 my-2 border">
+          <h6 class="fw-bold text-dark fs-5 mb-2">{{ nextExam.subject }}</h6>
+          <div class="row g-2 text-secondary small">
+            <div class="col-md-6">
+              <i class="bi bi-calendar3 me-1 text-dark"></i> <strong>Date:</strong> {{ nextExam.date }} ({{
+              nextExam.time }})
+            </div>
+            <div class="col-md-6">
+              <i class="bi bi-geo-alt me-1 text-dark"></i> <strong>Center:</strong> {{ nextExam.center }}
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mt-2">
+          <button class="btn btn-dark rounded-pill px-4 py-2 fw-bold shadow-xs" routerLink="/candidate/my-passport">
+            <i class="bi bi-download me-1"></i> Download Admit Card
+          </button>
+          <button class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold" routerLink="/candidate/book-slot">
+            Reschedule Slot
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Completion & Quick Actions Grid -->
+    <div class="col-xl-5 col-lg-5 px-0 px-lg-2 mt-3 mt-lg-0">
+      <div
+        class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs h-100 d-flex flex-column justify-content-between">
+        <!-- Profile Completion -->
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="fw-bold text-dark mb-0 fs-5">Profile Completion</h5>
+            <span class="fw-extrabold text-success fs-5">{{ candidateProfile.completionPercentage }}%</span>
+          </div>
+          <div class="progress rounded-pill bg-light mb-3" style="height: 10px;">
+            <div class="progress-bar bg-success rounded-pill" role="progressbar"
+              [style.width]="candidateProfile.completionPercentage + '%'"></div>
+          </div>
+          <div class="missing-items-list mb-3">
+            <span class="text-muted small d-block mb-1 fw-semibold">Pending Items:</span>
+            <div class="d-flex flex-column gap-1">
+              <small class="text-secondary d-flex align-items-center gap-2" *ngFor="let item of missingProfileItems">
+                <i class="bi bi-exclamation-circle text-warning"></i> {{ item }}
+              </small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions Buttons -->
+        <div>
+          <span class="text-muted small d-block mb-2 fw-bold text-uppercase"
+            style="letter-spacing: 0.05em; font-size: 0.7rem;">Quick Actions</span>
+          <div class="row g-2">
+            <div class="col-6" *ngFor="let action of quickActions">
+              <button
+                class="btn btn-sm rounded-pill w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 transition-all"
+                [ngClass]="action.bg" [routerLink]="action.route">
+                <i [class]="'bi ' + action.icon"></i> {{ action.label }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Performance Snapshot & Skills Analysis Charts (Highcharts) -->
+  <div class="row g-4 mb-4 w-100 m-0">
+    <!-- Highcharts Performance Spline Area Chart -->
+    <div class="col-xl-7 col-lg-7 px-0 px-lg-2">
+      <div class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs h-100 d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="fw-bold text-dark mb-0 fs-5">Performance Snapshot</h5>
+            <small class="text-muted">Test Score Growth vs Batch Benchmark</small>
+          </div>
+          <span class="badge bg-dark text-white rounded-pill px-3 py-1-5 fw-bold">Highcharts Enabled</span>
+        </div>
+
+        <div class="chart-wrapper flex-grow-1 w-100">
+          <highcharts-chart [options]="performanceChartOptions" style="width: 100%; height: 240px; display: block;">
+          </highcharts-chart>
+        </div>
+      </div>
+    </div>
+
+    <!-- Highcharts Skill Competency Column Chart -->
+    <div class="col-xl-5 col-lg-5 px-0 px-lg-2 mt-3 mt-lg-0">
+      <div class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs h-100 d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h5 class="fw-bold text-dark mb-0 fs-5">Skill Competencies</h5>
+            <small class="text-muted">Domain Proficiency Breakdown</small>
+          </div>
+        </div>
+
+        <div class="chart-wrapper flex-grow-1 w-100">
+          <highcharts-chart [options]="skillsRadarOptions" style="width: 100%; height: 240px; display: block;">
+          </highcharts-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Strengths & Improvements + Recent Activity Timeline -->
+  <div class="row g-4 mb-4 w-100 m-0">
+    <!-- Actionable Insights (Strengths & Improvements) -->
+    <div class="col-xl-7 col-lg-7 px-0 px-lg-2">
+      <div
+        class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs h-100 d-flex flex-column justify-content-between">
+        <h5 class="fw-bold text-dark mb-3 fs-5">Actionable Strengths & Improvements</h5>
+
+        <div class="row g-3">
+          <!-- Strengths -->
+          <div class="col-md-6">
+            <div class="p-3 rounded-4 bg-success-subtle border border-success-subtle h-100">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                <h6 class="fw-bold text-dark mb-0 fs-6">Top Strengths</h6>
               </div>
-              <div>
-                <h6 class="fw-bold text-navy mb-1">{{ event.title }}</h6>
-                <div class="text-muted-custom small"><i class="bi bi-clock me-1"></i> {{ event.date }} • {{ event.time }}</div>
+              <div class="d-flex flex-column gap-2">
+                <div *ngFor="let s of insights.strengths">
+                  <span class="fw-bold text-dark small d-block">{{ s.title }}</span>
+                  <small class="text-secondary" style="font-size: 0.78rem;">{{ s.desc }}</small>
+                </div>
               </div>
+            </div>
+          </div>
+
+          <!-- Improvements -->
+          <div class="col-md-6">
+            <div class="p-3 rounded-4 bg-warning-subtle border border-warning-subtle h-100">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-lightning-charge-fill text-warning fs-5"></i>
+                <h6 class="fw-bold text-dark mb-0 fs-6">Areas for Growth</h6>
+              </div>
+              <div class="d-flex flex-column gap-2">
+                <div *ngFor="let imp of insights.improvements">
+                  <span class="fw-bold text-dark small d-block">{{ imp.title }}</span>
+                  <small class="text-secondary" style="font-size: 0.78rem;">{{ imp.desc }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity Timeline -->
+    <div class="col-xl-5 col-lg-5 px-0 px-lg-2 mt-3 mt-lg-0">
+      <div
+        class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs h-100 d-flex flex-column justify-content-between">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold text-dark mb-0 fs-5">Recent Activity Feed</h5>
+          <span class="text-muted small">Live Updates</span>
+        </div>
+
+        <div class="activity-timeline d-flex flex-column gap-3 my-auto py-1">
+          <div class="d-flex align-items-start gap-3" *ngFor="let act of recentActivities">
+            <div
+              class="timeline-icon rounded-circle bg-light p-2 d-flex align-items-center justify-content-center shadow-xs"
+              style="width: 36px; height: 36px;">
+              <i [class]="act.icon"></i>
             </div>
             <div>
-              <span class="badge rounded-pill px-3 py-2 border border-light {{ event.statusColor }}">{{ event.status }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Skills Progress -->
-    <div class="col-lg-5">
-      <div class="card card-shadow border-0 h-100 p-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h5 class="fw-bold text-navy mb-0">Skills Progress</h5>
-          <a href="#" class="text-decoration-none small fw-medium">View All Skills <i class="bi bi-chevron-right"></i></a>
-        </div>
-        
-        <div class="d-flex flex-column gap-4">
-          <div class="skill-item" *ngFor="let skill of skillsProgress">
-            <div class="d-flex justify-content-between mb-1">
-              <span class="fw-medium text-navy">{{ skill.name }}</span>
-              <span class="fw-bold">{{ skill.progress }}%</span>
-            </div>
-            <div class="progress rounded-pill bg-light-blue" style="height: 8px;">
-              <div class="progress-bar rounded-pill {{ skill.color }}" role="progressbar" [style.width]="skill.progress + '%'" [attr.aria-valuenow]="skill.progress" aria-valuemin="0" aria-valuemax="100"></div>
+              <span class="fw-semibold text-dark d-block" style="font-size: 0.85rem;">{{ act.text }}</span>
+              <small class="text-muted" style="font-size: 0.75rem;">{{ act.time }}</small>
             </div>
           </div>
         </div>
@@ -72,77 +251,51 @@
     </div>
   </div>
 
-  <!-- Bottom Grid (Activity & Interviews) -->
-  <div class="row g-4 mb-4">
-    <!-- Activity Chart Placeholder -->
-    <div class="col-lg-8">
-      <div class="card card-shadow border-0 h-100 p-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h5 class="fw-bold text-navy mb-0">Your Activity (Test Performance)</h5>
-          <select class="form-select form-select-sm w-auto border-0 bg-light-blue fw-medium shadow-none">
-            <option>Last 30 Days</option>
-            <option>Last 3 Months</option>
-          </select>
-        </div>
-        <!-- Mockup of a chart -->
-        <div class="chart-placeholder d-flex align-items-end justify-content-between pt-4 pb-2 px-3 border-bottom mt-auto" style="height: 200px;">
-          <div class="bg-primary rounded-top" style="width: 8%; height: 30%; opacity: 0.8;"></div>
-          <div class="bg-primary rounded-top" style="width: 8%; height: 50%; opacity: 0.8;"></div>
-          <div class="bg-primary rounded-top" style="width: 8%; height: 40%; opacity: 0.8;"></div>
-          <div class="bg-primary rounded-top" style="width: 8%; height: 70%; opacity: 0.8;"></div>
-          <div class="bg-primary rounded-top" style="width: 8%; height: 60%; opacity: 0.8;"></div>
-          <div class="bg-primary rounded-top" style="width: 8%; height: 85%; opacity: 1;"></div>
-          <div class="bg-primary rounded-top" style="width: 8%; height: 65%; opacity: 0.8;"></div>
-          <div class="bg-primary rounded-top" style="width: 8%; height: 90%; opacity: 1;"></div>
-        </div>
-        <div class="d-flex justify-content-between mt-2 text-muted-custom small px-3">
-          <span>Sep 1</span>
-          <span>Sep 7</span>
-          <span>Sep 14</span>
-          <span>Sep 21</span>
-          <span>Sep 30</span>
-        </div>
+  <!-- 6. Exam History Table -->
+  <div class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs w-100 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold text-dark mb-0 fs-5">Exam History & Performance</h5>
+        <small class="text-muted">Verified Test Reports & Percentiles</small>
       </div>
+      <button class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1-5 fw-semibold"
+        routerLink="/candidate/my-passport">
+        View All Reports
+      </button>
     </div>
 
-    <!-- Pending Interviews -->
-    <div class="col-lg-4">
-      <div class="card card-shadow border-0 h-100 p-4 text-white overflow-hidden position-relative" style="background: linear-gradient(135deg, var(--proveyu-primary) 0%, #0044cc 100%);">
-        <h5 class="fw-bold mb-4 text-white position-relative z-1">Pending Interviews</h5>
-        
-        <div class="position-relative z-1 d-flex flex-column gap-3 h-100">
-          <div class="interview-card bg-white text-navy rounded p-3 card-shadow cursor-pointer transition-all">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <div>
-                <div class="fw-bold fs-6">Software Engineer</div>
-                <div class="text-muted-custom small">Microsoft</div>
-              </div>
-              <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="MS" width="24" height="24">
-            </div>
-            <div class="d-flex gap-2 mt-3">
-              <button class="btn btn-sm btn-primary-custom flex-grow-1 py-1" style="font-size: 0.8rem;">Accept</button>
-              <button class="btn btn-sm btn-outline-secondary flex-grow-1 py-1" style="font-size: 0.8rem;">Decline</button>
-            </div>
-          </div>
-
-          <div class="interview-card bg-white text-navy rounded p-3 card-shadow cursor-pointer transition-all">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <div>
-                <div class="fw-bold fs-6">SDE-1</div>
-                <div class="text-muted-custom small">Google</div>
-              </div>
-              <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" width="24" height="24">
-            </div>
-            <div class="d-flex gap-2 mt-3">
-              <button class="btn btn-sm btn-primary-custom flex-grow-1 py-1" style="font-size: 0.8rem;">Accept</button>
-              <button class="btn btn-sm btn-outline-secondary flex-grow-1 py-1" style="font-size: 0.8rem;">Decline</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Decorative bg -->
-        <i class="bi bi-briefcase position-absolute text-white" style="font-size: 10rem; opacity: 0.05; bottom: -20px; right: -20px; transform: rotate(-15deg);"></i>
-      </div>
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr class="text-muted small border-bottom">
+            <th class="fw-bold">EXAM NAME</th>
+            <th class="fw-bold">COMPLETION DATE</th>
+            <th class="fw-bold">SCORE</th>
+            <th class="fw-bold">PERCENTILE</th>
+            <th class="fw-bold">STATUS</th>
+            <th class="fw-bold text-end">ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let exam of examHistory" class="border-bottom-light">
+            <td class="fw-bold text-dark py-3">{{ exam.name }}</td>
+            <td class="text-secondary small">{{ exam.date }}</td>
+            <td class="fw-extrabold text-dark">{{ exam.score }}</td>
+            <td class="fw-bold text-primary">{{ exam.percentile }}</td>
+            <td>
+              <span class="badge rounded-pill bg-success-subtle text-success px-3 py-1-5 fw-bold border-0">
+                {{ exam.status }}
+              </span>
+            </td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-light border rounded-pill px-3 py-1 fw-semibold text-dark shadow-xs">
+                Scorecard
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
+
 </div>

@@ -1,30 +1,29 @@
-<header class="candidate-header bg-white card-shadow px-4 py-3 d-flex align-items-center justify-content-between">
-  <!-- Search Bar -->
-  <div class="search-wrapper position-relative" style="max-width: 400px; width: 100%;">
-    <i class="bi bi-search position-absolute text-muted-custom" style="top: 50%; left: 1rem; transform: translateY(-50%);"></i>
-    <input type="text" class="form-control bg-light-blue border-0 ps-5 py-2 rounded-pill shadow-none" placeholder="Search anything...">
+<header class="candidate-header d-flex align-items-center justify-content-between py-3 px-4">
+  <!-- Title -->
+  <div class="header-title-section">
+    <h2 class="fw-bold mb-0 text-dark fs-3 tracking-tight">{{ title }}</h2>
   </div>
 
   <!-- Profile & Actions -->
-  <div class="header-actions d-flex align-items-center gap-4">
-    <!-- Notification Bell -->
-    <button class="btn btn-link text-muted-custom p-0 position-relative">
-      <i class="bi bi-bell fs-5"></i>
-      <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-        <span class="visually-hidden">New alerts</span>
-      </span>
+  <div class="header-actions d-flex align-items-center gap-3">
+    <!-- Message Button -->
+    <button class="circle-action-btn border-0 shadow-xs rounded-circle d-flex align-items-center justify-content-center bg-white" title="Messages">
+      <i class="bi bi-envelope text-secondary fs-6"></i>
     </button>
     
-    <!-- Profile Dropdown -->
-    <div class="profile-dropdown d-flex align-items-center gap-2 cursor-pointer">
-      <div class="avatar rounded-circle overflow-hidden border" style="width: 40px; height: 40px;">
-        <img src="https://ui-avatars.com/api/?name=Rahul+Sharma&background=0D8ABC&color=fff" alt="Candidate" class="w-100 h-100 object-fit-cover">
+    <!-- Notification Bell -->
+    <button class="circle-action-btn border-0 shadow-xs rounded-circle d-flex align-items-center justify-content-center bg-white position-relative" title="Notifications">
+      <i class="bi bi-bell text-secondary fs-6"></i>
+      <span class="position-absolute p-1 bg-danger rounded-circle" style="top: 8px; right: 8px;"></span>
+    </button>
+    
+    <!-- Profile Dropdown Pill -->
+    <div class="profile-dropdown-pill d-flex align-items-center gap-2 ps-1 pe-2 py-1 bg-white rounded-pill shadow-xs cursor-pointer ms-1">
+      <div class="avatar rounded-circle overflow-hidden" style="width: 36px; height: 36px;">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" alt="Rahul Sharma" class="w-100 h-100 object-fit-cover">
       </div>
-      <div class="profile-info d-none d-md-block">
-        <div class="fw-bold text-navy lh-1">Rahul Sharma</div>
-        <small class="text-muted-custom" style="font-size: 0.75rem;">Candidate</small>
-      </div>
-      <i class="bi bi-chevron-down text-muted-custom ms-1" style="font-size: 0.8rem;"></i>
+      <span class="fw-bold text-dark me-1" style="font-size: 0.9rem;">Rahul Sharma</span>
+      <i class="bi bi-chevron-down text-muted" style="font-size: 0.75rem;"></i>
     </div>
   </div>
 </header>

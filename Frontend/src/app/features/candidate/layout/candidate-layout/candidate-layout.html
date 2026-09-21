@@ -1,7 +1,8 @@
-<div class="app-layout d-flex bg-light-blue" style="min-height: calc(100vh - 114px);">
+<div class="app-layout d-flex vh-100 overflow-hidden" style="background-color: var(--grapeslab-bg, #f3f4f8);">
   <app-sidebar></app-sidebar>
-  <div class="main-content flex-grow-1 d-flex flex-column" style="min-width: 0;">
-    <main class="content-wrapper p-4 flex-grow-1" style="max-width: 1400px; margin: 0 auto; width: 100%;">
+  <div class="main-content flex-grow-1 d-flex flex-column h-100 overflow-hidden" style="min-width: 0;">
+    <app-header [title]="activeTitle"></app-header>
+    <main class="content-wrapper px-4 pb-5 flex-grow-1 overflow-y-auto w-100" style="width: 100%;">
       <router-outlet></router-outlet>
     </main>
   </div>
