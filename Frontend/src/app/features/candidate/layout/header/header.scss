@@ -1,0 +1,19 @@
+.candidate-header {
+  border-bottom: 1px solid var(--proveyu-border);
+  position: sticky;
+  top: 81px;
+  z-index: 899;
+  
+  .search-wrapper {
+    input {
+      font-size: 0.9rem;
+      &::placeholder {
+        color: var(--proveyu-text-muted);
+      }
+    }
+  }
+  
+  .cursor-pointer {
+    cursor: pointer;
+  }
+}

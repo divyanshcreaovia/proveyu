@@ -1,0 +1,22 @@
+.nav-tabs {
+  .nav-link {
+    color: var(--proveyu-text-muted);
+    border-bottom: 2px solid transparent !important;
+    
+    &.active {
+      color: var(--proveyu-primary) !important;
+      border-bottom-color: var(--proveyu-primary) !important;
+    }
+    
+    &:hover:not(.active) {
+      color: var(--proveyu-navy);
+      border-bottom-color: var(--proveyu-border) !important;
+    }
+  }
+}
+
+.border-start-lg {
+  @media (min-width: 992px) {
+    border-left: 1px solid var(--proveyu-border);
+  }
+}

@@ -1,1 +1,128 @@
-<p>my-passport works!</p>
+<div class="passport-container">
+  <!-- Exam Status Header -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <h3 class="fw-bold text-navy mb-0">DSA - Online Assessment</h3>
+      <span class="badge bg-warning text-dark border px-3 py-2 rounded-pill">Scheduled</span>
+    </div>
+    <div class="text-muted-custom fw-medium">
+      <i class="bi bi-clock-history me-1"></i> Exam in 3 days
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left Column: Details & Actions -->
+    <div class="col-lg-7">
+      <div class="card card-shadow border-0 p-4 mb-4">
+        <div class="row g-4">
+          <div class="col-sm-4">
+            <div class="text-muted-custom small mb-1">Date</div>
+            <div class="fw-bold text-navy">22 Sep 2024</div>
+          </div>
+          <div class="col-sm-4">
+            <div class="text-muted-custom small mb-1">Time</div>
+            <div class="fw-bold text-navy">1:00 PM - 2:30 PM</div>
+          </div>
+          <div class="col-sm-4">
+            <div class="text-muted-custom small mb-1">Duration</div>
+            <div class="fw-bold text-navy">90 minutes</div>
+          </div>
+          <div class="col-sm-4">
+            <div class="text-muted-custom small mb-1">Mode</div>
+            <div class="fw-bold text-navy">Online</div>
+          </div>
+          <div class="col-sm-4">
+            <div class="text-muted-custom small mb-1">Proctoring</div>
+            <div class="fw-bold text-navy">AI + Human</div>
+          </div>
+          <div class="col-sm-4">
+            <div class="text-muted-custom small mb-1">Negative Marking</div>
+            <div class="fw-bold text-navy">No</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="d-flex gap-3 mb-4 flex-wrap">
+        <button class="btn btn-primary-custom flex-grow-1"><i class="bi bi-download me-2"></i> Download Admit Card</button>
+        <button class="btn btn-outline-custom flex-grow-1">Reschedule</button>
+        <button class="btn btn-outline-custom flex-grow-1">View Instructions</button>
+      </div>
+
+      <!-- Admit Card Preview -->
+      <h5 class="fw-bold text-navy mb-3">Admit Card Preview</h5>
+      <div class="card card-shadow border border-light p-4 admit-card bg-white position-relative overflow-hidden">
+        <div class="position-absolute top-0 end-0 bg-primary text-white px-4 py-1" style="border-bottom-left-radius: 10px;">
+          <small class="fw-bold">PROVEYU PASSPORT</small>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-start mb-4 pt-2">
+          <h4 class="fw-bold text-navy mb-0">ProveYu</h4>
+          <div class="text-end">
+            <div class="small text-muted-custom fw-bold">ADMIT CARD</div>
+            <div class="small fw-bold text-navy">Exam: DSA</div>
+          </div>
+        </div>
+        
+        <div class="row align-items-center">
+          <div class="col-4 col-sm-3 text-center">
+            <img src="https://ui-avatars.com/api/?name=Rahul+Sharma&background=0D8ABC&color=fff&size=100" alt="Candidate" class="rounded border" style="width: 80px; height: 80px;">
+          </div>
+          <div class="col-8 col-sm-6 ps-sm-4 border-start-sm">
+            <div class="mb-2">
+              <small class="text-muted-custom d-block lh-1">Name</small>
+              <span class="fw-bold text-navy fs-5">Rahul Sharma</span>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <small class="text-muted-custom d-block lh-1">Date</small>
+                <span class="fw-medium text-navy small">22 Sep 2024</span>
+              </div>
+              <div class="col-6">
+                <small class="text-muted-custom d-block lh-1">Time</small>
+                <span class="fw-medium text-navy small">1:00 PM</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-3 text-center text-sm-end mt-4 mt-sm-0">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=PYV20240920B001" alt="QR" width="80" height="80" class="border p-1">
+          </div>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+          <div class="small"><span class="text-muted-custom">Booking ID:</span> <span class="fw-bold">PYV20240920B001</span></div>
+          <div class="small text-primary fw-medium"><i class="bi bi-shield-check me-1"></i> Verified</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Instructions -->
+    <div class="col-lg-5">
+      <div class="card card-shadow border-0 p-4 bg-light-blue h-100">
+        <h5 class="fw-bold text-navy mb-4"><i class="bi bi-exclamation-circle text-primary me-2"></i> Important Instructions</h5>
+        
+        <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
+          <li class="d-flex align-items-start gap-2">
+            <i class="bi bi-check2-circle text-success mt-1"></i>
+            <span class="text-muted-custom small">Carry a valid ID proof (Aadhar/PAN/Driving License)</span>
+          </li>
+          <li class="d-flex align-items-start gap-2">
+            <i class="bi bi-check2-circle text-success mt-1"></i>
+            <span class="text-muted-custom small">Reach 30 minutes before the exam time</span>
+          </li>
+          <li class="d-flex align-items-start gap-2">
+            <i class="bi bi-x-circle text-danger mt-1"></i>
+            <span class="text-muted-custom small">No electronic devices allowed except laptop/desktop</span>
+          </li>
+          <li class="d-flex align-items-start gap-2">
+            <i class="bi bi-check2-circle text-success mt-1"></i>
+            <span class="text-muted-custom small">Ensure stable internet connection (min 2 Mbps)</span>
+          </li>
+          <li class="d-flex align-items-start gap-2">
+            <i class="bi bi-check2-circle text-success mt-1"></i>
+            <span class="text-muted-custom small">Follow the proctor's instructions strictly. Any violation may lead to disqualification.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

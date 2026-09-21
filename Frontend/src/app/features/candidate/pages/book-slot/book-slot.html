@@ -1,1 +1,297 @@
-<p>book-slot works!</p>
+<div class="booking-container" style="max-width: 1000px; margin: 0 auto;">
+  <!-- Stepper Header -->
+  <div class="stepper-wrapper mb-5 position-relative">
+    <div class="progress position-absolute top-50 start-0 translate-middle-y w-100" style="height: 2px; z-index: 1;">
+      <div class="progress-bar bg-primary" role="progressbar" [style.width]="((currentStep - 1) / 2) * 100 + '%'"></div>
+    </div>
+    
+    <div class="d-flex justify-content-between position-relative" style="z-index: 2;">
+      <!-- Step 1 -->
+      <div class="step-item text-center">
+        <div class="step-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 text-white bg-primary fw-bold" style="width: 32px; height: 32px;">
+          <i class="bi bi-check" *ngIf="currentStep > 1"></i>
+          <span *ngIf="currentStep === 1">1</span>
+        </div>
+        <div class="small fw-medium" [class.text-primary]="currentStep >= 1" [class.text-muted]="currentStep < 1">Select Domain</div>
+      </div>
+      <!-- Step 2 -->
+      <div class="step-item text-center">
+        <div class="step-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 fw-bold" style="width: 32px; height: 32px;"
+             [class.bg-primary]="currentStep >= 2" [class.text-white]="currentStep >= 2" [class.bg-light]="currentStep < 2" [class.border]="currentStep < 2" [class.text-muted]="currentStep < 2">
+          <i class="bi bi-check" *ngIf="currentStep > 2"></i>
+          <span *ngIf="currentStep <= 2">2</span>
+        </div>
+        <div class="small fw-medium" [class.text-primary]="currentStep >= 2" [class.text-muted]="currentStep < 2">Choose Date & Location</div>
+      </div>
+      <!-- Step 3 -->
+      <div class="step-item text-center">
+        <div class="step-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 fw-bold" style="width: 32px; height: 32px;"
+             [class.bg-primary]="currentStep >= 3" [class.text-white]="currentStep >= 3" [class.bg-light]="currentStep < 3" [class.border]="currentStep < 3" [class.text-muted]="currentStep < 3">
+          <span>3</span>
+        </div>
+        <div class="small fw-medium" [class.text-primary]="currentStep >= 3" [class.text-muted]="currentStep < 3">Payment</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 1 Content -->
+  <div *ngIf="currentStep === 1">
+    <div class="mb-4">
+      <h4 class="fw-bold text-navy mb-1">Step 1: Select Exam Domain</h4>
+      <p class="text-muted-custom">Choose the exam you want to appear for</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4" *ngFor="let exam of exams">
+        <div class="card card-shadow border-0 h-100 p-4 position-relative cursor-pointer exam-card transition-all"
+             [class.border-primary]="selectedExam?.id === exam.id" [class.border]="selectedExam?.id === exam.id"
+             style="border-width: 2px !important;" (click)="selectExam(exam)">
+          
+          <div class="d-flex align-items-start gap-3 mb-3">
+            <div class="rounded p-2 bg-light-blue" [class]="exam.color">
+              <i class="bi fs-4" [class]="exam.icon"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold text-navy mb-1">{{ exam.name }}</h6>
+              <div class="text-muted-custom small">{{ exam.duration }} • {{ exam.difficulty }}</div>
+            </div>
+          </div>
+          
+          <div class="fs-5 fw-bold text-navy mb-2">₹ {{ exam.price }}</div>
+          <p class="text-muted-custom small mb-4">{{ exam.desc }}</p>
+          
+          <div class="mt-auto">
+            <button class="btn w-100" [class.btn-primary-custom]="selectedExam?.id === exam.id" [class.btn-outline-custom]="selectedExam?.id !== exam.id" (click)="selectExam(exam)">
+              {{ selectedExam?.id === exam.id ? 'Selected' : 'Select' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="d-flex justify-content-end mt-4">
+      <button class="btn btn-primary-custom px-5" [disabled]="!selectedExam" (click)="nextStep()">Next</button>
+    </div>
+  </div>
+
+  <!-- Step 2 Content (Date & Location) -->
+  <div *ngIf="currentStep === 2">
+    <div class="mb-4">
+      <h4 class="fw-bold text-navy mb-1">Step 2: Choose Date & Location</h4>
+      <p class="text-muted-custom">Select your preferred date, time and test center.</p>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <div class="card card-shadow border-0 p-4 h-100">
+          <h6 class="fw-bold text-navy mb-3"><i class="bi bi-calendar me-2"></i> September 2024</h6>
+          <!-- Simple Mock Calendar -->
+          <div class="calendar-grid mb-4">
+            <div class="d-flex justify-content-between text-muted-custom small fw-medium mb-2 px-2">
+              <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+            </div>
+            <div class="d-flex flex-wrap text-center" style="gap: 2%;">
+              <!-- Mock days -->
+              <div class="p-2 text-muted" style="width: 12%">1</div>
+              <div class="p-2 text-muted" style="width: 12%">2</div>
+              <div class="p-2 text-muted" style="width: 12%">3</div>
+              <div class="p-2 text-muted" style="width: 12%">4</div>
+              <div class="p-2 text-muted" style="width: 12%">5</div>
+              <div class="p-2 text-muted" style="width: 12%">6</div>
+              <div class="p-2 text-muted" style="width: 12%">7</div>
+              
+              <div class="p-2" style="width: 12%">8</div>
+              <div class="p-2" style="width: 12%">9</div>
+              <div class="p-2" style="width: 12%">10</div>
+              <div class="p-2" style="width: 12%">11</div>
+              <div class="p-2" style="width: 12%">12</div>
+              <div class="p-2" style="width: 12%">13</div>
+              <div class="p-2" style="width: 12%">14</div>
+
+              <div class="p-2" style="width: 12%">15</div>
+              <div class="p-2" style="width: 12%">16</div>
+              <div class="p-2" style="width: 12%">17</div>
+              <div class="p-2" style="width: 12%">18</div>
+              <div class="p-2" style="width: 12%">19</div>
+              <div class="p-2 bg-primary text-white rounded-circle shadow-sm cursor-pointer" style="width: 12%">20</div>
+              <div class="p-2" style="width: 12%">21</div>
+            </div>
+          </div>
+          
+          <h6 class="fw-bold text-navy mb-3">Available Time Slots</h6>
+          <div class="d-flex gap-3 mb-4">
+            <button class="btn btn-outline-custom flex-grow-1">9:00 AM</button>
+            <button class="btn btn-primary-custom flex-grow-1">1:00 PM</button>
+            <button class="btn btn-outline-custom flex-grow-1">5:00 PM</button>
+          </div>
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label text-muted-custom small fw-medium">Select City</label>
+              <select class="form-select bg-light-blue border-0 py-2">
+                <option>Bengaluru</option>
+                <option>Hyderabad</option>
+                <option>Pune</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-muted-custom small fw-medium">Select Test Center</label>
+              <select class="form-select bg-light-blue border-0 py-2">
+                <option>Bengaluru - Koramangala Center</option>
+                <option>Bengaluru - Whitefield Center</option>
+              </select>
+              <div class="text-success small mt-1"><i class="bi bi-info-circle me-1"></i> Seats Available: 12</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-5">
+        <div class="card card-shadow border-0 p-4 h-100 bg-light-blue">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h6 class="fw-bold text-navy mb-0">Selected Slot Summary</h6>
+            <button class="btn btn-link text-primary p-0 text-decoration-none small">Edit</button>
+          </div>
+          
+          <div class="d-flex flex-column gap-3 bg-white p-3 rounded card-shadow border border-light">
+            <div class="d-flex align-items-start gap-3">
+              <i class="bi bi-file-text text-primary mt-1"></i>
+              <div>
+                <div class="text-muted-custom small">Exam</div>
+                <div class="fw-bold text-navy">{{ selectedExam?.name || 'DSA' }}</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-start gap-3">
+              <i class="bi bi-calendar-event text-primary mt-1"></i>
+              <div>
+                <div class="text-muted-custom small">Date</div>
+                <div class="fw-bold text-navy">20 Sep 2024</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-start gap-3">
+              <i class="bi bi-clock text-primary mt-1"></i>
+              <div>
+                <div class="text-muted-custom small">Time</div>
+                <div class="fw-bold text-navy">1:00 PM - 2:30 PM</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-start gap-3">
+              <i class="bi bi-geo-alt text-primary mt-1"></i>
+              <div>
+                <div class="text-muted-custom small">Location</div>
+                <div class="fw-bold text-navy">Koramangala, Bengaluru</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="d-flex justify-content-between mt-4">
+      <button class="btn btn-outline-custom px-4" (click)="prevStep()">Back</button>
+      <button class="btn btn-primary-custom px-5" (click)="nextStep()">Next: Payment</button>
+    </div>
+  </div>
+
+  <!-- Step 3 Content (Payment) -->
+  <div *ngIf="currentStep === 3">
+    <div class="row g-4">
+      <div class="col-lg-5">
+        <div class="card card-shadow border-0 p-4 h-100">
+          <h5 class="fw-bold text-navy mb-4">Order Summary</h5>
+          
+          <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+            <div>
+              <div class="fw-bold text-navy">{{ selectedExam?.name || 'DSA' }} Exam</div>
+              <div class="text-muted-custom small">20 Sep 2024 • 1:00 PM - 2:30 PM</div>
+              <div class="text-muted-custom small">Koramangala, Bengaluru</div>
+            </div>
+            <div class="fw-bold">₹ {{ selectedExam?.price || 999 }}</div>
+          </div>
+          
+          <div class="d-flex justify-content-between mb-4 pt-2">
+            <h5 class="fw-bold text-navy mb-0">Total Amount</h5>
+            <h5 class="fw-bold text-primary mb-0">₹ {{ selectedExam?.price || 999 }}</h5>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label text-muted-custom small fw-medium">Apply Promo Code</label>
+            <div class="input-group">
+              <input type="text" class="form-control bg-light-blue border-0 py-2" placeholder="Enter code">
+              <button class="btn btn-outline-primary border-start-0 bg-light-blue" type="button">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-7">
+        <div class="card card-shadow border-0 p-4 h-100">
+          <h5 class="fw-bold text-navy mb-4">Payment Method</h5>
+          
+          <div class="d-flex flex-column gap-3">
+            <!-- Razorpay Option -->
+            <label class="border rounded p-3 d-flex align-items-center gap-3 cursor-pointer border-primary bg-light-blue">
+              <input type="radio" name="payment" class="form-check-input mt-0" checked>
+              <div>
+                <div class="fw-bold text-navy">Razorpay (UPI, Cards, Wallets)</div>
+                <div class="d-flex gap-2 mt-2">
+                  <span class="badge bg-white text-dark border">UPI</span>
+                  <span class="badge bg-white text-dark border">VISA</span>
+                  <span class="badge bg-white text-dark border">MasterCard</span>
+                </div>
+              </div>
+            </label>
+            
+            <!-- Credit Card Option -->
+            <label class="border rounded p-3 d-flex align-items-center gap-3 cursor-pointer hover-bg">
+              <input type="radio" name="payment" class="form-check-input mt-0">
+              <div class="fw-medium text-navy">Credit / Debit Card</div>
+            </label>
+            
+            <!-- Net Banking -->
+            <label class="border rounded p-3 d-flex align-items-center gap-3 cursor-pointer hover-bg">
+              <input type="radio" name="payment" class="form-check-input mt-0">
+              <div class="fw-medium text-navy">Net Banking</div>
+            </label>
+          </div>
+          
+          <button class="btn btn-primary-custom w-100 mt-4 py-3 fs-6" (click)="nextStep()">Pay ₹ {{ selectedExam?.price || 999 }} Now</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-4">
+      <button class="btn btn-outline-custom px-4" (click)="prevStep()">Back</button>
+    </div>
+  </div>
+
+  <!-- Step 4 Content (Confirmation) -->
+  <div *ngIf="currentStep === 4" class="text-center py-5">
+    <div class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle mb-4" style="width: 80px; height: 80px;">
+      <i class="bi bi-check-lg fs-1"></i>
+    </div>
+    <h3 class="fw-bold text-navy mb-2">Booking Confirmed!</h3>
+    <p class="text-muted-custom mb-5">Your exam has been successfully booked. Please check your email for the confirmation details.</p>
+    
+    <div class="card card-shadow border-0 text-start mx-auto d-inline-block w-100 p-4" style="max-width: 500px;">
+      <div class="text-muted-custom small mb-1">Booking ID</div>
+      <div class="fw-bold text-navy mb-3">PYV20240920B001</div>
+      
+      <div class="row g-3">
+        <div class="col-6">
+          <div class="text-muted-custom small">Exam</div>
+          <div class="fw-medium">{{ selectedExam?.name || 'DSA' }}</div>
+        </div>
+        <div class="col-6">
+          <div class="text-muted-custom small">Date & Time</div>
+          <div class="fw-medium">20 Sep 2024 • 1:00 PM</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-5 d-flex justify-content-center gap-3">
+      <button class="btn btn-outline-custom px-4">Download Receipt</button>
+      <button class="btn btn-primary-custom px-4">View Passport</button>
+    </div>
+  </div>
+</div>

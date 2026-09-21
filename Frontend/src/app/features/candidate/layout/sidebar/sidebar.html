@@ -1,0 +1,19 @@
+<div class="sidebar-wrapper d-flex flex-column bg-white card-shadow h-100" [class.collapsed]="isCollapsed">
+  <div class="sidebar-brand p-3 d-flex align-items-center justify-content-end">
+    <button class="btn btn-link text-navy p-0 border-0 shadow-none" (click)="toggleSidebar()">
+      <i class="bi bi-list fs-4"></i>
+    </button>
+  </div>
+
+  <div class="sidebar-nav flex-grow-1 px-3 py-2 overflow-auto">
+    <ul class="nav flex-column gap-1">
+      <li class="nav-item" *ngFor="let item of navItems">
+        <a [routerLink]="item.route" routerLinkActive="active"
+           class="nav-link d-flex align-items-center gap-3 px-3 py-2 rounded text-muted-custom fw-medium transition-all" [title]="isCollapsed ? item.label : ''">
+          <i [class]="'bi ' + item.icon + ' fs-5'"></i>
+          <span class="text-truncate">{{ item.label }}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

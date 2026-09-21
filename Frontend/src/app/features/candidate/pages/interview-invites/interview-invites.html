@@ -1,1 +1,150 @@
-<p>interview-invites works!</p>
+<div class="interviews-container h-100 d-flex flex-column">
+  <div class="mb-4">
+    <h3 class="fw-bold text-navy mb-1">Interview Invitations</h3>
+    <p class="text-muted-custom mb-0">Manage your interview requests and chat with recruiters.</p>
+  </div>
+
+  <div class="row g-4 flex-grow-1" style="min-height: 600px;">
+    <!-- Left Pane: List -->
+    <div class="col-lg-4 col-xl-4 d-flex flex-column h-100">
+      <div class="card card-shadow border-0 h-100 d-flex flex-column overflow-hidden">
+        <div class="p-3 border-bottom bg-white z-1">
+          <ul class="nav nav-pills gap-2 flex-nowrap overflow-auto hide-scrollbar">
+            <li class="nav-item">
+              <button class="nav-link rounded-pill py-1 px-3 small fw-medium" [class.active]="filter === 'all'" (click)="filter = 'all'">All</button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link rounded-pill py-1 px-3 small fw-medium" [class.active]="filter === 'pending'" (click)="filter = 'pending'">Pending (2)</button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link rounded-pill py-1 px-3 small fw-medium" [class.active]="filter === 'accepted'" (click)="filter = 'accepted'">Accepted (1)</button>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="flex-grow-1 overflow-auto p-3 bg-light-blue custom-scrollbar">
+          <div class="d-flex flex-column gap-3">
+            <div *ngFor="let item of interviews" 
+                 class="card border-0 p-3 cursor-pointer transition-all card-shadow"
+                 [class.border-primary]="selectedInterview.id === item.id"
+                 [class.border]="selectedInterview.id === item.id"
+                 style="border-width: 2px !important;"
+                 (click)="selectInterview(item)">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="bg-white rounded p-1 shadow-sm d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                    <img [src]="item.logo" alt="Logo" class="img-fluid" style="max-height: 20px;">
+                  </div>
+                  <h6 class="fw-bold text-navy mb-0">{{ item.company }}</h6>
+                </div>
+                <span class="badge rounded-pill {{ item.statusClass }} border border-light" style="font-size: 0.7rem;">{{ item.statusText }}</span>
+              </div>
+              <div class="ps-5">
+                <div class="fw-medium text-navy small">{{ item.role }}</div>
+                <div class="text-muted-custom" style="font-size: 0.75rem;">{{ item.level }} Level</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Pane: Chat & Details -->
+    <div class="col-lg-8 col-xl-8 d-flex flex-column h-100">
+      <div class="card card-shadow border-0 h-100 d-flex flex-column overflow-hidden">
+        
+        <!-- Chat Header -->
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white z-1">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar rounded-circle overflow-hidden border" style="width: 48px; height: 48px;">
+              <img src="https://ui-avatars.com/api/?name=Sarah+Smith&background=random" alt="Recruiter" class="w-100 h-100 object-fit-cover">
+            </div>
+            <div>
+              <div class="fw-bold text-navy mb-0 lh-1">Sarah Smith</div>
+              <div class="text-muted-custom small">Technical Recruiter at {{ selectedInterview.company }}</div>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-outline-primary rounded-pill px-3">View Job Description</button>
+        </div>
+
+        <div class="row g-0 flex-grow-1 overflow-hidden">
+          <!-- Chat Area -->
+          <div class="col-md-7 border-end d-flex flex-column h-100 bg-light-blue">
+            <div class="chat-messages flex-grow-1 p-4 overflow-auto custom-scrollbar d-flex flex-column gap-3">
+              <div class="text-center text-muted-custom small mb-2">Today</div>
+              
+              <div *ngFor="let msg of messages" class="d-flex flex-column" [class.align-items-end]="msg.sender === 'candidate'" [class.align-items-start]="msg.sender === 'recruiter'">
+                <div class="message-bubble p-3 rounded-4 shadow-sm max-w-75"
+                     [class.bg-white]="msg.sender === 'recruiter'" [class.text-navy]="msg.sender === 'recruiter'"
+                     [class.bg-primary]="msg.sender === 'candidate'" [class.text-white]="msg.sender === 'candidate'"
+                     [ngStyle]="{'border-bottom-left-radius': msg.sender === 'recruiter' ? '0' : '', 'border-bottom-right-radius': msg.sender === 'candidate' ? '0' : ''}">
+                  {{ msg.text }}
+                </div>
+                <div class="text-muted-custom mt-1" style="font-size: 0.7rem;">
+                  {{ msg.time }} <i class="bi bi-check2-all text-primary ms-1" *ngIf="msg.sender === 'candidate'"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="chat-input p-3 bg-white border-top">
+              <div class="input-group bg-light-blue rounded-pill p-1 border">
+                <button class="btn btn-link text-muted-custom shadow-none border-0 px-3"><i class="bi bi-paperclip"></i></button>
+                <input type="text" class="form-control border-0 bg-transparent shadow-none" placeholder="Type your message..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage()">
+                <button class="btn btn-primary rounded-circle shadow-sm" style="width: 36px; height: 36px; padding: 0;" (click)="sendMessage()">
+                  <i class="bi bi-send-fill" style="font-size: 0.8rem; margin-left: -2px;"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Interview Details Sidebar -->
+          <div class="col-md-5 h-100 overflow-auto bg-white p-4 custom-scrollbar">
+            <h6 class="fw-bold text-navy mb-4 border-bottom pb-2">Interview Details</h6>
+            
+            <div class="d-flex flex-column gap-4">
+              <div>
+                <div class="text-muted-custom small mb-1">Company</div>
+                <div class="d-flex align-items-center gap-2">
+                  <img [src]="selectedInterview.logo" alt="Logo" height="16">
+                  <div class="fw-bold text-navy">{{ selectedInterview.company }}</div>
+                </div>
+              </div>
+              
+              <div>
+                <div class="text-muted-custom small mb-1">Role</div>
+                <div class="fw-bold text-navy">{{ selectedInterview.role }}</div>
+              </div>
+
+              <div>
+                <div class="text-muted-custom small mb-1">Location</div>
+                <div class="fw-bold text-navy"><i class="bi bi-globe-americas me-1 text-primary"></i> Remote</div>
+              </div>
+              
+              <div>
+                <div class="text-muted-custom small mb-1">Interview Type</div>
+                <div class="fw-bold text-navy"><i class="bi bi-camera-video me-1 text-primary"></i> Video Call (60 min)</div>
+              </div>
+
+              <div>
+                <div class="text-muted-custom small mb-1">Topics to Prepare</div>
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                  <span class="badge bg-light-blue text-navy border">Data Structures</span>
+                  <span class="badge bg-light-blue text-navy border">Algorithms</span>
+                  <span class="badge bg-light-blue text-navy border">System Design</span>
+                </div>
+              </div>
+
+              <div class="mt-4 border-top pt-4">
+                <button class="btn btn-primary-custom w-100 mb-2">Accept Interview</button>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-custom flex-grow-1 py-2">Reschedule</button>
+                  <button class="btn btn-outline-danger flex-grow-1 py-2" style="border-radius: 50px;">Decline</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
