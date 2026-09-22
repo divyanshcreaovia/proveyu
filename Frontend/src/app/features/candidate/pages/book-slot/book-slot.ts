@@ -178,8 +178,22 @@ export class BookSlot implements OnInit {
 
   selectExam(exam: ExamDomain) {
     this.selectedExam = exam;
+    if (!this.selectedCity) {
+      this.selectedCity = 'Bengaluru';
+    }
+    if (!this.selectedCenter) {
+      this.selectedCenter = 'iON Digital Zone, Koramangala Center';
+    }
     this.calculateTotal();
     this.isDropdownOpen = false;
+  }
+
+  deselectExam(event?: Event) {
+    if (event) event.stopPropagation();
+    this.selectedExam = null;
+    this.selectedCity = '';
+    this.selectedCenter = '';
+    this.calculateTotal();
   }
 
   toggleDropdown() {

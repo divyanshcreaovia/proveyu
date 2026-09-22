@@ -38,8 +38,36 @@ body {
   font-family: 'Inter', sans-serif;
   color: var(--proveyu-text-main);
   background-color: #fafbfc;
-  /* very light gray/blue for body */
+  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enable smooth scrolling across all scroll containers */
+.overflow-y-auto,
+.overflow-auto,
+.content-wrapper,
+.sidebar-nav,
+main {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom Sleek Smooth Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.02);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.3);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(39, 50, 71, 0.5);
 }
 
 /* Custom Container to match gapping */
@@ -225,4 +253,226 @@ body {
   background: linear-gradient(135deg, #0057ff 0%, #0044cc 50%, #0a1b3f 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Global Hardware-Accelerated Route View Transitions */
+::view-transition-old(root) {
+  animation: smoothFadeOut 0.22s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+::view-transition-new(root) {
+  animation: smoothFadeInUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes smoothFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+}
+
+@keyframes smoothFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tab Switching Transitions */
+.tab-pane,
+.tab-content > div,
+.candidate-tab-content,
+.tab-fade-in {
+  animation: tabContentEnter 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+@keyframes tabContentEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Navigation Tabs Active Indicator & Smooth Transitions */
+.nav-tabs {
+  .nav-link {
+    position: relative;
+    transition: color 0.25s ease, background-color 0.25s ease;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2.5px;
+      background-color: var(--proveyu-primary, #0057ff);
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 4px;
+    }
+
+    &.active {
+      color: var(--proveyu-navy, #0a1b3f) !important;
+      font-weight: 600 !important;
+
+      &::after {
+        width: 100%;
+        left: 0;
+      }
+    }
+  }
+}
+
+/* Global Print & PDF Export Rules for Skill Passport Document (Evenly Balanced 1-Page Fit) */
+@media print {
+  app-sidebar,
+  app-header,
+  .floating-passport-bar,
+  .passport-select-card,
+  .passport-client-trusted-card,
+  button,
+  .btn,
+  nav,
+  header,
+  .sidebar-nav {
+    display: none !important;
+  }
+
+  html,
+  body,
+  .app-layout,
+  .main-content,
+  .content-wrapper,
+  .passport-container {
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    height: auto !important;
+    position: static !important;
+    box-shadow: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .passport-container {
+    padding: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 0.79rem !important;
+    zoom: 0.835;
+  }
+
+  /* Force Bootstrap grid columns to stay multi-column in PDF print mode */
+  .row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+
+  .col-lg-8 {
+    flex: 0 0 65% !important;
+    max-width: 65% !important;
+    width: 65% !important;
+  }
+
+  .col-lg-4 {
+    flex: 0 0 35% !important;
+    max-width: 35% !important;
+    width: 35% !important;
+  }
+
+  .col-6 {
+    flex: 0 0 25% !important;
+    max-width: 25% !important;
+    width: 25% !important;
+  }
+
+  .col-md-3 {
+    flex: 0 0 25% !important;
+    max-width: 25% !important;
+    width: 25% !important;
+  }
+
+  .col-md-4 {
+    flex: 0 0 33.333333% !important;
+    max-width: 33.333333% !important;
+    width: 33.333333% !important;
+  }
+
+  .card,
+  .header-passport-card,
+  .passport-section-card,
+  .kpi-card {
+    box-shadow: none !important;
+    border: 1px solid #cbd5e1 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    padding: 0.55rem 0.8rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  .avatar {
+    width: 54px !important;
+    height: 54px !important;
+  }
+
+  .display-6 {
+    font-size: 1.35rem !important;
+  }
+
+  .fs-4 {
+    font-size: 1.15rem !important;
+  }
+
+  .fs-5 {
+    font-size: 1.0rem !important;
+  }
+
+  .fs-6 {
+    font-size: 0.88rem !important;
+  }
+
+  .p-3, .p-md-4 {
+    padding: 0.55rem 0.8rem !important;
+  }
+
+  .mb-3, .my-3 {
+    margin-bottom: 0.35rem !important;
+  }
+
+  .pb-3, .pb-2-5 {
+    padding-bottom: 0.35rem !important;
+  }
+
+  .gap-3 {
+    gap: 0.35rem !important;
+  }
+
+  .gap-2 {
+    gap: 0.25rem !important;
+  }
+
+  .skill-eval-block,
+  .verification-item {
+    padding-bottom: 0.3rem !important;
+    margin-bottom: 0.3rem !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 5mm 7mm;
+  }
 }

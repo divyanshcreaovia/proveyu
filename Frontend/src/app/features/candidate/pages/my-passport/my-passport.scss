@@ -1,11 +1,251 @@
-.admit-card {
-  background-image: radial-gradient(rgba(0, 87, 255, 0.05) 1px, transparent 1px);
-  background-size: 20px 20px;
-  background-position: -10px -10px;
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif !important;
 }
 
-.border-start-sm {
-  @media (min-width: 576px) {
-    border-left: 1px solid var(--proveyu-border);
+.passport-container,
+.passport-container *:not(.font-monospace):not(code):not(pre) {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+.passport-container {
+  color: var(--proveyu-text-main, #0f172a);
+
+  .text-emerald {
+    color: #10b981 !important;
+  }
+
+  .bg-emerald {
+    background-color: #10b981 !important;
+  }
+
+  .bg-emerald-subtle {
+    background-color: #ecfdf5 !important;
+  }
+
+  .bg-purple {
+    background-color: #7c3aed !important;
+  }
+
+  .bg-purple-subtle {
+    background-color: #f3e8ff !important;
+    color: #7c3aed !important;
+  }
+
+  .border-purple-subtle {
+    border-color: #e9d5ff !important;
+  }
+
+  .text-purple {
+    color: #7c3aed !important;
+  }
+
+  .bg-slate {
+    background-color: #334155 !important;
+  }
+
+  .bg-amber-subtle {
+    background-color: #fef3c7 !important;
+    color: #d97706 !important;
+  }
+
+  .border-amber-subtle {
+    border-color: #fde68a !important;
+  }
+
+  .text-amber {
+    color: #d97706 !important;
+  }
+
+  .gap-1-5 {
+    gap: 0.375rem !important;
+  }
+
+  .skill-item-card {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: #cbd5e1 !important;
+      box-shadow: 0 4px 16px rgba(10, 27, 63, 0.04) !important;
+    }
+  }
+
+  .tracking-tight {
+    letter-spacing: -0.02em;
+  }
+
+  .py-0-5 {
+    padding-top: 0.15rem !important;
+    padding-bottom: 0.15rem !important;
+  }
+
+  .py-1-5 {
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.35rem !important;
+  }
+
+  .px-2-5 {
+    padding-left: 0.65rem !important;
+    padding-right: 0.65rem !important;
+  }
+
+  .p-2-5 {
+    padding: 0.75rem !important;
+  }
+
+  /* Inner Card Borders */
+  .card-bordered {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+
+  .border-start-lg {
+    @media (min-width: 992px) {
+      border-left: 1px solid #e2e8f0 !important;
+    }
+  }
+
+  .header-passport-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(10, 27, 63, 0.04) !important;
+  }
+
+  .kpi-card {
+    border-radius: 14px;
+    border: 1px solid #e2e8f0 !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(10, 27, 63, 0.06) !important;
+    }
+
+    .kpi-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: #64748b;
+    }
+
+    .kpi-bottom-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+  }
+
+  .passport-select-card {
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02) !important;
+    border-radius: 14px !important;
+  }
+
+  .passport-icon-box {
+    background-color: #eff2fe !important;
+    border: 1px solid rgba(99, 102, 241, 0.12);
+  }
+
+  .passport-select-input,
+  .form-select {
+    border: 1px solid #cbd5e1 !important;
+    background-color: #ffffff !important;
+    color: #0a1b3f !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    border-radius: 10px !important;
+    padding-left: 1rem !important;
+    padding-right: 3rem !important;
+    background-position: right 1rem center !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      border-color: #94a3b8 !important;
+    }
+
+    &:focus {
+      border-color: #6366f1 !important;
+      background-color: #ffffff !important;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+    }
+  }
+
+  .passport-section-card {
+    scroll-margin-top: 72px;
+  }
+
+  /* Floating Bottom Action Bar */
+  .floating-passport-bar {
+    z-index: 1050;
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid #e2e8f0 !important;
+    box-shadow: 0 -4px 24px rgba(10, 27, 63, 0.08) !important;
+  }
+}
+
+/* Executive Skill Passport PDF Resume Print Styling */
+@media print {
+  /* Hide all outer dashboard layouts, headers, sidebars, buttons, and dropdown bars */
+  app-navbar,
+  app-sidebar,
+  app-header,
+  .floating-passport-bar,
+  .passport-select-card,
+  button,
+  .btn,
+  nav,
+  header {
+    display: none !important;
+  }
+
+  /* Reset body and layout wrappers so ONLY the passport document prints */
+  html,
+  body,
+  .app-layout,
+  .main-content,
+  .content-wrapper,
+  .passport-container {
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    height: auto !important;
+    position: static !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Resume Document Formatting */
+  .passport-container {
+    padding: 0.5rem !important;
+  }
+
+  .card,
+  .header-passport-card,
+  .passport-section-card,
+  .kpi-card {
+    box-shadow: none !important;
+    border: 1px solid #cbd5e1 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 8mm 10mm;
   }
 }

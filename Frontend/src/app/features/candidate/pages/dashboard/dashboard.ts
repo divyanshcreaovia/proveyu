@@ -28,56 +28,46 @@ export class Dashboard implements OnInit {
     completionPercentage: 85
   };
 
-  // 2. 5 Top Professional Metric Cards
+  // 2. 5 Top Professional Metric Cards (Matching Reference Image)
   statCards = [
     {
-      label: 'Upcoming Exams',
+      label: 'UPCOMING EXAMS',
       value: '1 Scheduled',
       subtext: 'DSA Assessment on 24 Sep',
-      icon: 'bi-calendar-check-fill',
-      bgClass: 'card-theme-indigo',
-      badgeColor: 'badge-theme-indigo',
-      accentColor: '#4f46e5',
+      accentColor: '#7c3aed',
+      textColor: '#0f172a',
       route: '/candidate/book-slot'
     },
     {
-      label: 'Exams Taken',
+      label: 'EXAMS TAKEN',
       value: '8 Exams',
       subtext: '6 Passed (75% Pass Rate)',
-      icon: 'bi-journal-check',
-      bgClass: 'card-theme-emerald',
-      badgeColor: 'badge-theme-emerald',
       accentColor: '#10b981',
+      textColor: '#0f172a',
       route: '/candidate/my-passport'
     },
     {
-      label: 'Active Invites',
+      label: 'ACTIVE INVITES',
       value: '3 Invites',
       subtext: 'Google, Microsoft & TCS',
-      icon: 'bi-envelope-paper-fill',
-      bgClass: 'card-theme-purple',
-      badgeColor: 'badge-theme-purple',
-      accentColor: '#7c3aed',
+      accentColor: '#c026d3',
+      textColor: '#0f172a',
       route: '/candidate/interview-invites'
     },
     {
-      label: 'Performance Tier',
+      label: 'PERFORMANCE TIER',
       value: '92.4 %ile',
       subtext: 'Top 8% All India Rank',
-      icon: 'bi-graph-up-arrow',
-      bgClass: 'card-theme-blue',
-      badgeColor: 'badge-theme-blue',
       accentColor: '#0284c7',
+      textColor: '#0284c7',
       route: '/candidate/my-passport'
     },
     {
-      label: 'Passport Identity',
+      label: 'PASSPORT IDENTITY',
       value: 'Silver Tier',
       subtext: 'ID: PY-8842-5678',
-      icon: 'bi-patch-check-fill',
-      bgClass: 'card-theme-slate',
-      badgeColor: 'badge-theme-slate',
-      accentColor: '#0f172a',
+      accentColor: '#475569',
+      textColor: '#0f172a',
       route: '/candidate/my-passport'
     }
   ];
@@ -95,7 +85,7 @@ export class Dashboard implements OnInit {
   // 4. Quick Actions
   quickActions = [
     { label: 'Book Exam', icon: 'bi-calendar-plus', route: '/candidate/book-slot', bg: 'bg-dark text-white' },
-    { label: 'My Passport', icon: 'bi-pass', route: '/candidate/my-passport', bg: 'bg-white text-dark border' },
+    { label: 'Skill Passport', icon: 'bi-pass', route: '/candidate/my-passport', bg: 'bg-white text-dark border' },
     { label: 'Edit Profile', icon: 'bi-person-gear', route: '/candidate/profile', bg: 'bg-white text-dark border' },
     { label: 'Prep Guide', icon: 'bi-journal-bookmark', route: '/candidate/prep-guide', bg: 'bg-white text-dark border' }
   ];
@@ -130,8 +120,7 @@ export class Dashboard implements OnInit {
 
   // 8. Notifications & Alerts
   notifications = [
-    { type: 'urgent', text: 'Admit Card for DSA Assessment on 24 Sep is ready for download.', action: 'Download Admit Card' },
-    { type: 'info', text: 'Microsoft invited you for Software Engineer interview round.', action: 'View Invitation' }
+    { type: 'urgent', text: 'Admit Card for DSA Assessment on 24 Sep is ready for download.', action: 'Download Admit Card' }
   ];
 
   // 9. Profile Completion Missing Items

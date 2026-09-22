@@ -13,11 +13,11 @@ $slate-200: #e2e8f0;
 $slate-100: #f1f5f9;
 $slate-50:  #f8fafc;
 
-$purple-700: #6b21a8;
-$purple-600: #7c3aed;
-$purple-500: #8b5cf6;
-$purple-100: #f3e8ff;
-$purple-50:  #faf5ff;
+$purple-700: #4338ca;
+$purple-600: #4f46e5;
+$purple-500: #6366f1;
+$purple-100: #f0efff;
+$purple-50:  #f8fafc;
 
 $emerald-600: #10b981;
 $emerald-50:  #ecfdf5;
@@ -541,8 +541,8 @@ $amber-50:  #fffbeb;
 }
 
 .special-highlight-card {
-  background-color: rgba(243, 232, 255, 0.4);
-  border: 1px solid rgba(192, 132, 252, 0.4);
+  background-color: #f0efff;
+  border: 1px solid rgba(99, 102, 241, 0.2);
   border-radius: 0.75rem;
   padding: 1rem;
   display: flex;
@@ -553,7 +553,7 @@ $amber-50:  #fffbeb;
   .highlight-icon-box {
     width: 2rem;
     height: 2rem;
-    border-radius: 0.5rem;
+    border-radius: 50%;
     background-color: $purple-600;
     color: #ffffff;
     display: flex;
@@ -577,7 +577,7 @@ $amber-50:  #fffbeb;
 
     .highlight-desc {
       font-size: 0.75rem;
-      color: rgba(107, 33, 168, 0.9);
+      color: #334155;
       margin-top: 0.25rem;
       margin-bottom: 0;
       line-height: 1.4;

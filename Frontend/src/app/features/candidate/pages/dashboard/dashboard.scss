@@ -22,59 +22,16 @@
 
 .stat-card-item {
   border: 1px solid #e2e8f0 !important;
-  border-top-width: 4px !important;
-  border-radius: 20px !important;
-  background-color: #ffffff;
-  min-height: 145px;
+  border-radius: 16px !important;
+  background-color: #ffffff !important;
+  min-height: 130px;
   cursor: pointer;
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.08) !important;
-
-    .circle-arrow-btn {
-      background-color: #0f172a !important;
-      color: #ffffff !important;
-      border-color: #0f172a !important;
-      transform: rotate(45deg);
-    }
-  }
-
-  .stat-icon-badge {
-    width: 32px;
-    height: 32px;
-    font-size: 0.95rem;
-    flex-shrink: 0;
-  }
-
-  .circle-arrow-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 0.75rem;
-    transition: all 0.2s ease;
-  }
-
-  /* Color Themes */
-  &.card-theme-indigo {
-    background: linear-gradient(180deg, #ffffff 0%, #f5f7ff 100%);
-    .badge-theme-indigo { background-color: #e0e7ff; color: #4f46e5; }
-  }
-  &.card-theme-emerald {
-    background: linear-gradient(180deg, #ffffff 0%, #ecfdf5 100%);
-    .badge-theme-emerald { background-color: #d1fae5; color: #10b981; }
-  }
-  &.card-theme-purple {
-    background: linear-gradient(180deg, #ffffff 0%, #faf5ff 100%);
-    .badge-theme-purple { background-color: #f3e8ff; color: #7c3aed; }
-  }
-  &.card-theme-blue {
-    background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
-    .badge-theme-blue { background-color: #e0f2fe; color: #0284c7; }
-  }
-  &.card-theme-slate {
-    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-    .badge-theme-slate { background-color: #0f172a; color: #ffffff; }
+    transform: translateY(-2px);
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
   }
 }
 

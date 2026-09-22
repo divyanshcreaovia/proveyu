@@ -98,7 +98,7 @@
         <div class="col-lg-8">
 
           <!-- TAB 1: Personal Information -->
-          <div *ngIf="activeTab === 'personal'">
+          <div *ngIf="activeTab === 'personal'" class="tab-fade-in">
             <h5 class="fw-bold text-navy mb-4">Personal Information</h5>
             
             <div class="row g-4 mb-4">
@@ -149,7 +149,7 @@
           </div>
 
           <!-- TAB 2: Education -->
-          <div *ngIf="activeTab === 'education'">
+          <div *ngIf="activeTab === 'education'" class="tab-fade-in">
             <div class="d-flex justify-content-between align-items-center mb-4">
               <h5 class="fw-bold text-navy mb-0">Education</h5>
               <button class="btn btn-sm btn-primary-custom" (click)="showEducationForm = !showEducationForm">
@@ -200,7 +200,7 @@
           </div>
 
           <!-- TAB 3: Professional Experience -->
-          <div *ngIf="activeTab === 'professional'">
+          <div *ngIf="activeTab === 'professional'" class="tab-fade-in">
             <div class="d-flex justify-content-between align-items-center mb-4">
               <h5 class="fw-bold text-navy mb-0">Professional Experience</h5>
               <button class="btn btn-sm btn-primary-custom" (click)="showExperienceForm = !showExperienceForm">
@@ -251,7 +251,7 @@
           </div>
 
           <!-- TAB 4: Skills -->
-          <div *ngIf="activeTab === 'skills'">
+          <div *ngIf="activeTab === 'skills'" class="tab-fade-in">
             <h5 class="fw-bold text-navy mb-4">Skills</h5>
 
             <div class="d-flex gap-2 mb-4">
@@ -269,7 +269,7 @@
           </div>
 
           <!-- TAB 5: Career Preferences -->
-          <div *ngIf="activeTab === 'preferences'">
+          <div *ngIf="activeTab === 'preferences'" class="tab-fade-in">
             <h5 class="fw-bold text-navy mb-4">Career Preferences</h5>
 
             <div class="row g-4 mb-4">
@@ -305,7 +305,7 @@
           </div>
 
           <!-- TAB 6: Resume -->
-          <div *ngIf="activeTab === 'resume'">
+          <div *ngIf="activeTab === 'resume'" class="tab-fade-in">
             <h5 class="fw-bold text-navy mb-4">Resume & Attachments</h5>
 
             <div class="card p-4 text-center card-bordered mb-4">

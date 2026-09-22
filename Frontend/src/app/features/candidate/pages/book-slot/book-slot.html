@@ -14,8 +14,8 @@
             <span *ngIf="currentStep === 1">1</span>
           </div>
           <div class="step-label-box">
-            <span class="step-title">Step 1: Exam & Slot Selection</span>
-            <span class="step-desc">Domain, Location, Date & Time</span>
+            <span class="step-title">Step 1: Exam & Location Selection</span>
+            <span class="step-desc">Domain & Test Center Preference</span>
           </div>
         </div>
 
@@ -37,7 +37,7 @@
     </nav>
 
     <!-- STEP 1 VIEW: Exam & Slot Selection -->
-    <div class="booking-layout-grid" *ngIf="currentStep === 1">
+    <div class="booking-layout-grid tab-fade-in" *ngIf="currentStep === 1">
 
       <!-- LEFT COLUMN: Domain & Slot Selection (65%) -->
       <main class="left-selection-column">
@@ -158,6 +158,9 @@
                       <path clip-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" fill-rule="evenodd"></path>
                     </svg>
                   </button>
+                  <button type="button" class="btn-deselect-exam" (click)="deselectExam($event)">
+                    Deselect
+                  </button>
                 </div>
               </div>
             </div>
@@ -214,7 +217,7 @@
 
         </section>
 
-        <!-- Section 2: Test Center, Date & Time Slot -->
+        <!-- Section 2: Preferred Test Center Location -->
         <section class="card-section" data-purpose="slot-selection">
           <div class="section-header">
             <div class="header-left">
@@ -224,26 +227,34 @@
                   <circle cx="12" cy="10" r="3"></circle>
                 </svg>
               </div>
-              <h2 class="section-title">2. Choose Test Center, Date & Time Slot</h2>
+              <h2 class="section-title">2. Choose Preferred City & Test Center</h2>
             </div>
           </div>
 
+          <!-- Locked Hint when No Exam is Selected -->
+          <div *ngIf="!selectedExam" class="p-3 rounded-3 bg-light border border-secondary-subtle font-inter text-navy small mb-3">
+            <span class="fw-bold text-dark d-block mb-0-5">Selection Required:</span>
+            <span>Please select an Assessment Domain in Step 1 above first to unlock city & test center location selection.</span>
+          </div>
+
           <!-- Location Row: City & Center Dropdowns -->
-          <div class="location-form-grid">
+          <div class="location-form-grid mb-3" [class.opacity-50]="!selectedExam">
             <div class="form-group city-select">
               <label class="form-label">Select City</label>
-              <select class="form-control-select" [(ngModel)]="selectedCity">
+              <select class="form-control-select" [(ngModel)]="selectedCity" [disabled]="!selectedExam">
+                <option value="" disabled>-- Choose City --</option>
                 <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
               </select>
             </div>
             <div class="form-group center-select">
               <label class="form-label">Select Test Center Location</label>
-              <select class="form-control-select" [(ngModel)]="selectedCenter">
+              <select class="form-control-select" [(ngModel)]="selectedCenter" [disabled]="!selectedExam">
+                <option value="" disabled>-- Choose Test Center --</option>
                 <option *ngFor="let ctr of centers" [value]="ctr.name">
-                  {{ ctr.name }} ({{ ctr.seats }} seats available)
+                  {{ ctr.name }}
                 </option>
               </select>
-              <div class="verified-badge-line">
+              <div class="verified-badge-line" *ngIf="selectedExam">
                 <svg class="emerald-check-icon" fill="currentColor" viewBox="0 0 20 20">
                   <path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" fill-rule="evenodd"></path>
                 </svg>
@@ -252,39 +263,12 @@
             </div>
           </div>
 
-          <!-- Exam Date Selection Row -->
-          <div class="date-selection-row">
-            <label class="form-label">Select Exam Date</label>
-            <div class="date-grid">
-              <button type="button" class="date-option-card" *ngFor="let d of availableDates" [class.selected]="selectedDate.fullDate === d.fullDate" (click)="selectedDate = d">
-                <span class="day-name">{{ d.dayName }}</span>
-                <span class="date-number">{{ d.dateNum }}</span>
-                <span class="month-name">{{ d.month }}</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Available Time Slot Selection Row -->
-          <div class="timeslot-selection-row">
-            <div class="timeslot-label-header">
-              <label class="form-label mb-0">Select Available Time Slot</label>
-              <span class="timezone-note">All timings are in IST (UTC+05:30)</span>
-            </div>
-
-            <div class="timeslot-grid">
-              <div class="slot-card" *ngFor="let slot of timeSlots" [class.selected]="selectedTimeSlot === slot.time" (click)="selectedTimeSlot = slot.time">
-                <div class="slot-card-top">
-                  <span class="slot-time-text">{{ slot.time }}</span>
-                  <span class="slot-badge" [class.active-badge]="selectedTimeSlot === slot.time">
-                    {{ selectedTimeSlot === slot.time ? 'Selected' : slot.period }}
-                  </span>
-                </div>
-                <div class="slot-card-bottom">
-                  <span>{{ slot.seatsLeft }} seats left</span>
-                  <span *ngIf="slot.note" class="slot-note-text">{{ slot.note }}</span>
-                </div>
-              </div>
-            </div>
+          <!-- Admit Card Preference Notice (Icon-less as requested) -->
+          <div class="admit-card-notice-box p-3 rounded-3 bg-white border border-secondary-subtle mt-3 font-inter">
+            <h6 class="fw-bold text-navy mb-1" style="font-size: 0.85rem; letter-spacing: -0.01em;">Exam Date & Time Slot Allotment</h6>
+            <p class="text-secondary mb-0 lh-sm" style="font-size: 0.78rem;">
+              Exam date slots and time slots will be asked prior to Admit Card publishing so that you can select and book your preferred date and time from the available slots.
+            </p>
           </div>
 
         </section>
@@ -323,20 +307,17 @@
               </div>
             </div>
 
-            <!-- Date & Time -->
+            <!-- Schedule Allotment Notice -->
             <div class="summary-block border-top">
               <div class="block-icon indigo">
                 <svg class="icon-svg" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                  <rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect>
-                  <line x1="16" x2="16" y1="2" y2="6"></line>
-                  <line x1="8" x2="8" y1="2" y2="6"></line>
-                  <line x1="3" x2="21" y1="10" y2="10"></line>
+                  <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
               </div>
               <div class="block-content">
-                <span class="block-label">Date & Time</span>
-                <p class="block-value">{{ selectedDate.fullDate }}</p>
-                <p class="block-subvalue">{{ selectedTimeSlot }}</p>
+                <span class="block-label">Date & Time Slot</span>
+                <p class="block-value">Assigned on Admit Card</p>
+                <p class="block-subvalue">Based on City & Center Preference</p>
               </div>
             </div>
 
@@ -381,27 +362,12 @@
           </div>
         </div>
 
-        <!-- Help / Reschedule Flexibility Info Widget -->
-        <div class="help-info-box">
-          <div class="info-box-icon">
-            <svg class="icon-svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" x2="12.01" y1="17" y2="17"></line>
-            </svg>
-          </div>
-          <div class="info-box-text">
-            <h4 class="info-title">Need reschedule flexibility?</h4>
-            <p class="info-desc">Free reschedule is supported up to 24 hours before your chosen exam slot.</p>
-          </div>
-        </div>
-
       </aside>
 
     </div>
 
     <!-- STEP 2 VIEW: Review & Checkout -->
-    <div class="step2-checkout-container" *ngIf="currentStep === 2 && !isConfirmed">
+    <div class="step2-checkout-container tab-fade-in" *ngIf="currentStep === 2 && !isConfirmed">
 
       <div class="checkout-layout-grid">
 
@@ -440,32 +406,22 @@
               <div class="meta-item">
                 <span class="meta-label">
                   <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                    <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                    <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
                   </svg>
-                  Date:
+                  Preferred Test Center:
                 </span>
-                <span class="meta-value">{{ selectedDate.fullDate }}</span>
-              </div>
-
-              <div class="meta-item">
-                <span class="meta-label">
-                  <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                  </svg>
-                  Time Slot:
-                </span>
-                <span class="meta-value">{{ selectedTimeSlot }} (IST)</span>
+                <span class="meta-value venue-val">{{ selectedCenter }}, {{ selectedCity }}</span>
               </div>
 
               <div class="meta-item border-none">
                 <span class="meta-label">
                   <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                    <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
                   </svg>
-                  Venue / Test Center:
+                  Date & Slot Allotment:
                 </span>
-                <span class="meta-value venue-val">{{ selectedCenter }}, {{ selectedCity }}</span>
+                <span class="meta-value">Assigned upon Admit Card Publishing</span>
               </div>
             </div>
 
@@ -669,7 +625,7 @@
     </div>
 
     <!-- BOOKING CONFIRMED PASS VIEW -->
-    <div class="confirmation-pass-card" *ngIf="isConfirmed">
+    <div class="confirmation-pass-card tab-fade-in" *ngIf="isConfirmed">
       <div class="check-icon-circle shadow-md">
         <svg class="icon-check" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
@@ -695,13 +651,13 @@
             <span class="subvalue">{{ selectedExam ? selectedExam.code : '' }}</span>
           </div>
           <div class="pass-item">
-            <span class="label">Date & Slot</span>
-            <span class="value">{{ selectedDate.fullDate }}</span>
-            <span class="subvalue">{{ selectedTimeSlot }}</span>
+            <span class="label">Preferred Location</span>
+            <span class="value">{{ selectedCity }}</span>
+            <span class="subvalue">{{ selectedCenter }}</span>
           </div>
           <div class="pass-item full-width">
-            <span class="label">Test Center Venue</span>
-            <span class="value">{{ selectedCenter }}, {{ selectedCity }}</span>
+            <span class="label">Admit Card Allotment Notice</span>
+            <span class="value">Exact exam date, time slot & hall ticket details will be issued on your Admit Card.</span>
           </div>
         </div>
       </div>

@@ -57,6 +57,10 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () => import('./features/candidate/pages/settings/settings').then(m => m.Settings)
+      },
+      {
+        path: 'support',
+        loadComponent: () => import('./features/candidate/pages/support/support').then(m => m.Support)
       }
     ]
   },

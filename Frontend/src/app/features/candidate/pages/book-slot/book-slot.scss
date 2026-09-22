@@ -297,21 +297,22 @@ $purple-50: #faf5ff;
     }
 
     .header-icon-box {
-      width: 1.75rem;
-      height: 1.75rem;
-      border-radius: 0.5rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
 
       &.indigo-tint {
-        background-color: $indigo-50;
-        color: $indigo-600;
+        background-color: #f0efff;
+        color: #4f46e5;
+        border: 1px solid rgba(99, 102, 241, 0.18);
       }
 
       .icon-svg {
-        width: 1rem;
-        height: 1rem;
+        width: 1.15rem;
+        height: 1.15rem;
       }
     }
 
@@ -713,6 +714,25 @@ $purple-50: #faf5ff;
         width: 0.875rem;
         height: 0.875rem;
         color: $emerald-500;
+      }
+    }
+
+    .btn-deselect-exam {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #dc2626;
+      background-color: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: #fee2e2;
+        color: #b91c1c;
       }
     }
   }

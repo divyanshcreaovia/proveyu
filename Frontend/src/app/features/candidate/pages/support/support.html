@@ -1,0 +1,373 @@
+<div class="support-page-wrapper py-2 w-100" style="width: 100%;">
+
+  <!-- Row 1: Left Hero Banner & Right Support Availability Card (Matching Image 1) -->
+  <div class="row g-4 mb-4 w-100 m-0">
+    <!-- Left Hero Card (8 Cols) -->
+    <div class="col-xl-8 col-lg-8 px-0 px-lg-2">
+      <div
+        class="grapeslab-card bg-white p-4 p-md-4-5 rounded-4 border card-bordered shadow-xs h-100 d-flex flex-column justify-content-between">
+        <div>
+          <!-- Purple Tag with Horizontal Line Divider -->
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="uppercase-tag fw-extrabold"
+              style="color: #7c3aed; font-size: 0.72rem; letter-spacing: 0.08em;">SUPPORT CENTER</span>
+            <span style="height: 1px; width: 35px; background-color: #cbd5e1; display: inline-block;"></span>
+          </div>
+
+          <div class="row align-items-center g-4">
+            <div class="col-md-7">
+              <h2 class="fw-extrabold text-navy mb-2 fs-2" style="letter-spacing: -0.025em; color: #0f172a;">How can we
+                help you today?</h2>
+              <p class="text-muted-custom small mb-4" style="font-size: 0.88rem; color: #64748b;">Search for answers,
+                explore guides, or reach out to our support team.</p>
+
+              <!-- Search Bar with Vibrant Purple Button -->
+              <div class="search-bar-inner-box position-relative mb-3">
+                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"
+                  style="font-size: 1rem;"></i>
+                <input type="text" class="form-control rounded-3 ps-5 pe-5 py-2-5 border text-dark font-inter"
+                  placeholder="Search FAQs, e.g. admit card, test centers, reschedule, scorecard..."
+                  [(ngModel)]="searchQuery"
+                  style="font-size: 0.85rem; border-color: #e2e8f0; padding-right: 100px !important;">
+                <button
+                  class="btn btn-purple-primary position-absolute top-50 end-0 translate-middle-y me-1-5 px-3 py-1-5 rounded-2 fw-bold text-white shadow-xs"
+                  style="background-color: #7c3aed; border: none; font-size: 0.82rem;">
+                  Search
+                </button>
+              </div>
+
+              <!-- Popular Tags Row -->
+              <div class="d-flex align-items-center gap-1.5 flex-wrap" style="font-size: 0.78rem;">
+                <span class="text-muted fw-bold me-1">Popular:</span>
+                <span class="badge tag-pill-item cursor-pointer" *ngFor="let tag of popularTags"
+                  (click)="setPopularTag(tag)">
+                  {{ tag }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Right Lavender Callout Box (Exact Image 1 layout) -->
+            <div class="col-md-5">
+              <div class="p-3.5 rounded-4 h-100 d-flex flex-column justify-content-center"
+                style="background-color: #f8f5ff; border: 1px solid #ede9fe;padding: 10px;">
+                <span class="uppercase-tag fw-bold mb-1.5 d-block"
+                  style="color: #7c3aed; font-size: 0.65rem; letter-spacing: 0.08em;">GET THE RIGHT SUPPORT</span>
+                <h6 class="fw-extrabold mb-3" style="font-size: 0.98rem; color: #1e1b4b; line-height: 1.3;">We're here
+                  when you need us.</h6>
+
+                <div class="d-flex flex-column gap-2" style="font-size: 0.8rem; color: #4338ca;">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-check-circle-fill" style="color: #7c3aed; font-size: 0.88rem;"></i>
+                    <span class="fw-semibold text-dark" style="font-size: 0.8rem;">Verified support team</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-check-circle-fill" style="color: #7c3aed; font-size: 0.88rem;"></i>
+                    <span class="fw-semibold text-dark" style="font-size: 0.8rem;">Average response &lt; 2 hours</span>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-check-circle-fill" style="color: #7c3aed; font-size: 0.88rem;"></i>
+                    <span class="fw-semibold text-dark" style="font-size: 0.8rem;">Track your tickets in
+                      real-time</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Support Availability Card (4 Cols) -->
+    <div class="col-xl-4 col-lg-4 px-0 px-lg-2 mt-3 mt-lg-0">
+      <div
+        class="grapeslab-card bg-white p-4 rounded-4 border card-bordered shadow-xs h-100 d-flex flex-column justify-content-between">
+        <div>
+          <!-- Header -->
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h6 class="fw-bold text-navy mb-0" style="font-size: 0.95rem;">Support Availability</h6>
+            <span
+              class="badge rounded-pill px-2.5 py-1 text-emerald font-inter fw-bold d-inline-flex align-items-center gap-1"
+              style="background-color: #dcfce7; color: #16a34a; font-size: 0.72rem;">
+              <span class="badge-dot" style="width: 6px; height: 6px; background-color: #16a34a;"></span> Available Now
+            </span>
+          </div>
+
+          <!-- Main Metric Title with Purple 24/7 -->
+          <div class="mb-3">
+            <h3 class="fw-extrabold mb-1 display-6 fs-3" style="letter-spacing: -0.02em;">
+              <span style="color: #7c3aed;">24/7</span> <span class="text-navy">Support</span>
+            </h3>
+            <p class="text-muted-custom small mb-0" style="font-size: 0.82rem;">We typically respond within 2 hours</p>
+          </div>
+        </div>
+
+        <!-- Bottom 3 Metric Columns -->
+        <div class="pt-3 border-top mt-auto" style="border-color: #f1f5f9 !important;">
+          <div class="row g-2 text-center">
+            <div class="col-4 border-end">
+              <div class="fw-extrabold text-navy font-monospace fs-5">2h</div>
+              <div class="text-muted-custom" style="font-size: 0.68rem;">Avg. response time</div>
+            </div>
+            <div class="col-4 border-end">
+              <div class="fw-extrabold text-navy font-monospace fs-5">98%</div>
+              <div class="text-muted-custom" style="font-size: 0.68rem;">Resolution rate</div>
+            </div>
+            <div class="col-4">
+              <div class="fw-extrabold text-navy font-monospace fs-5">4.8/5</div>
+              <div class="text-muted-custom" style="font-size: 0.68rem;">Candidate rating</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Browse Help Topics (6 Cards Row) -->
+  <div class="grapeslab-card bg-white p-4 rounded-4 border card-bordered shadow-xs mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-3.5">
+      <h5 class="fw-extrabold text-navy mb-0 fs-5">Browse Help Topics</h5>
+      <a class="text-decoration-none fw-bold small d-inline-flex align-items-center gap-1 cursor-pointer"
+        style="color: #6366f1; font-size: 0.85rem;" (click)="selectedCategory = 'All'">
+        View All Topics <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- 6 Grid Cards Row -->
+    <div class="row g-3" style="margin: 0px;">
+      <div class="col-xl-2 col-lg-4 col-md-4 col-6" *ngFor="let topic of browseTopics">
+        <div class="topic-card-item p-3 rounded-4 border h-100 cursor-pointer transition-all"
+          [style.border-color]="'#e2e8f0'" (click)="selectedCategory = topic.title">
+          <div class="rounded-3 p-2-5 d-inline-flex align-items-center justify-content-center mb-2.5"
+            [style.background-color]="topic.bg" [style.color]="topic.color" style="width: 38px; height: 38px;">
+            <i [class]="'bi ' + topic.icon + ' fs-5'"></i>
+          </div>
+          <h6 class="fw-bold text-navy mb-1" style="font-size: 0.85rem; line-height: 1.25;">{{ topic.title }}</h6>
+          <p class="text-muted-custom mb-0 lh-sm" style="font-size: 0.74rem; color: #64748b;">{{ topic.desc }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Middle Grid - FAQs (Left 65%) & Submit Support Request (Right 35%) matching Image 2 -->
+  <div class="row g-4 mb-4 w-100 m-0">
+    <!-- Left Column: Frequently Asked Questions -->
+    <div class="col-xl-7 col-lg-7 px-0 px-lg-2">
+      <div
+        class="grapeslab-card bg-white p-4 p-md-4-5 rounded-4 border card-bordered shadow-xs h-100 d-flex flex-column">
+        <div>
+          <!-- Header & Category Filters (Subtext: "Get quick answers to common questions.") -->
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 pb-1">
+            <div>
+              <h5 class="fw-extrabold text-navy mb-1 fs-5" style="color: #0f172a;">Frequently Asked Questions</h5>
+              <p class="text-muted-custom small mb-0" style="font-size: 0.84rem; color: #64748b;">Get quick answers to
+                common questions.</p>
+            </div>
+
+            <!-- Category Filter Pills -->
+            <div class="d-flex align-items-center overflow-auto py-1" style="gap: 10px !important;">
+              <button class="btn btn-sm rounded-pill px-3 py-1-5 fw-bold font-inter text-nowrap transition-all"
+                *ngFor="let cat of filterCategories" (click)="selectedCategory = cat"
+                style="font-size: 0.76rem; border-color: #cbd5e1;"
+                [style.background-color]="selectedCategory === cat ? '#16122b' : '#ffffff'"
+                [style.color]="selectedCategory === cat ? '#ffffff' : '#475569'">
+                {{ cat }}
+              </button>
+            </div>
+          </div>
+
+          <!-- FAQ Accordion List container -->
+          <div class="faq-accordion-container rounded-4 border p-3.5"
+            style="border-color: #e2e8f0 !important; background-color: #ffffff;">
+            <div class="faq-accordion-list d-flex flex-column gap-1">
+              <div class="faq-accordion-row py-3 px-3 rounded-3 transition-all cursor-pointer"
+                *ngFor="let faq of filteredFaqs; let last = last" [class.border-bottom]="!last"
+                style="border-color: #f1f5f9 !important;" (click)="toggleFaq(faq)">
+                <div class="d-flex align-items-center justify-content-between gap-3">
+                  <span class="faq-question-text fw-semibold font-inter"
+                    [style.color]="faq.isOpen ? '#0f172a' : '#334155'" style="font-size: 0.88rem; line-height: 1.45;">
+                    {{ faq.question }}
+                  </span>
+                  <div
+                    class="chevron-badge flex-shrink-0 d-inline-flex align-items-center justify-content-center rounded-circle transition-all"
+                    [style.background-color]="faq.isOpen ? '#16122b' : '#f1f5f9'"
+                    [style.color]="faq.isOpen ? '#ffffff' : '#64748b'"
+                    style="width: 28px; height: 28px; font-size: 0.75rem;">
+                    <i [class]="faq.isOpen ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                  </div>
+                </div>
+
+                <!-- Expanded Answer Container Box -->
+                <div class="faq-answer-body mt-3 rounded-3 text-secondary lh-base transition-all" *ngIf="faq.isOpen"
+                  style="font-size: 0.86rem; background-color: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #7c3aed; color: #334155; line-height: 1.65; padding: 16px 20px !important; border-radius: 6px 12px 12px 6px;"
+                  (click)="$event.stopPropagation()">
+                  <div class="d-flex align-items-start gap-2.5">
+                    <i class="bi bi-info-circle-fill me-1 flex-shrink-0"
+                      style="color: #7c3aed; font-size: 1rem; margin-top: 1px;"></i>
+                    <div>{{ faq.answer }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Empty FAQs state -->
+              <div class="text-center py-5" *ngIf="filteredFaqs.length === 0">
+                <i class="bi bi-search text-muted fs-3 mb-2 d-block"></i>
+                <p class="text-muted small mb-0">No questions found matching your search.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Submit a Support Request Form -->
+    <div class="col-xl-5 col-lg-5 px-0 px-lg-2 mt-3 mt-lg-0">
+      <div
+        class="grapeslab-card bg-white p-4 rounded-4 border card-bordered shadow-xs h-100 d-flex flex-column justify-content-between">
+        <div *ngIf="!ticketSubmitted">
+          <h5 class="fw-extrabold text-navy mb-0 fs-5" style="color: #0f172a;">Submit a Support Request</h5>
+          <p class="text-muted-custom small mb-3.5" style="font-size: 0.82rem; color: #64748b;">Raise a ticket and our
+            team will get back to you shortly.</p>
+
+          <form (ngSubmit)="submitTicket()" class="d-flex flex-column gap-2.5">
+            <div>
+              <label class="form-label text-dark fw-bold mb-1" style="font-size: 0.78rem; color: #0f172a;">Full
+                Name</label>
+              <input type="text" class="form-control rounded-3 py-2 px-3 border font-inter text-dark"
+                [(ngModel)]="ticketForm.name" name="name" required style="font-size: 0.85rem; border-color: #cbd5e1;">
+            </div>
+
+            <div>
+              <label class="form-label text-dark fw-bold mb-1" style="font-size: 0.78rem; color: #0f172a;">Registered
+                Email</label>
+              <input type="email" class="form-control rounded-3 py-2 px-3 border font-inter text-dark"
+                [(ngModel)]="ticketForm.email" name="email" required style="font-size: 0.85rem; border-color: #cbd5e1;">
+            </div>
+
+            <div>
+              <label class="form-label text-dark fw-bold mb-1" style="font-size: 0.78rem; color: #0f172a;">Issue
+                Category</label>
+              <select class="form-select rounded-3 py-2 px-3 border font-inter text-dark"
+                [(ngModel)]="ticketForm.category" name="category" style="font-size: 0.85rem; border-color: #cbd5e1;">
+                <option value="" disabled>Select a category</option>
+                <option value="Exam Booking & Slot Allotment">Exam Booking & Slot Allotment</option>
+                <option value="Admit Card & Test Venue">Admit Card & Test Venue</option>
+                <option value="Skill Passport & Scores">Skill Passport & Scores</option>
+                <option value="Technical & Proctoring">Technical & Proctoring</option>
+                <option value="Account & Profile">Account & Profile</option>
+                <option value="Other Queries">Other Queries</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label text-dark fw-bold mb-1"
+                style="font-size: 0.78rem; color: #0f172a;">Subject</label>
+              <input type="text" class="form-control rounded-3 py-2 px-3 border font-inter text-dark"
+                placeholder="e.g. Admit card download issue" [(ngModel)]="ticketForm.subject" name="subject" required
+                style="font-size: 0.85rem; border-color: #cbd5e1;">
+            </div>
+
+            <div>
+              <label class="form-label text-dark fw-bold mb-1" style="font-size: 0.78rem; color: #0f172a;">Detailed
+                Description</label>
+              <textarea class="form-control rounded-3 py-2 px-3 border font-inter text-dark" rows="3"
+                placeholder="Describe your issue in detail..." [(ngModel)]="ticketForm.message" name="message" required
+                style="font-size: 0.85rem; border-color: #cbd5e1;"></textarea>
+            </div>
+
+            <button type="submit"
+              class="btn btn-navy rounded-3 py-2-5 px-4 fw-bold text-white w-100 shadow-xs mt-2 d-flex align-items-center justify-content-center gap-2"
+              [disabled]="!ticketForm.subject || !ticketForm.message"
+              style="background-color: #16122b; border: none; font-size: 0.88rem;">
+              <i class="bi bi-send-fill" style="font-size: 0.82rem;"></i> Submit Ticket
+            </button>
+          </form>
+        </div>
+
+        <!-- Submitted View -->
+        <div class="text-center py-4 my-auto" *ngIf="ticketSubmitted">
+          <div
+            class="badge rounded-circle p-3 bg-success-subtle text-success mb-3 d-inline-flex align-items-center justify-content-center"
+            style="width: 56px; height: 56px;">
+            <i class="bi bi-check-circle-fill fs-3"></i>
+          </div>
+          <h5 class="fw-extrabold text-navy mb-1">Ticket Submitted Successfully!</h5>
+          <p class="text-muted-custom small mb-3" style="font-size: 0.82rem;">Ref ID: <strong
+              class="text-navy font-monospace">{{ ticketId }}</strong></p>
+          <button class="btn btn-outline-dark rounded-3 px-4 py-2 fw-bold" (click)="resetTicketForm()"
+            style="font-size: 0.82rem;">
+            Submit Another Ticket
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: Bottom 3 Contact Channel Cards (Matching Target Image 2) -->
+  <div class="row g-4 mb-4 w-100 m-0">
+    <!-- Card 1: Email Support -->
+    <div class="col-md-4 px-0 px-md-2">
+      <div
+        class="grapeslab-card bg-white p-4 rounded-4 border card-bordered shadow-xs h-100 d-flex align-items-center justify-content-between transition-all cursor-pointer">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-3 p-3 d-flex align-items-center justify-content-center flex-shrink-0"
+            style="background-color: #ede9fe; color: #7c3aed; width: 50px; height: 50px; border-radius: 14px !important;">
+            <i class="bi bi-envelope-fill fs-5"></i>
+          </div>
+          <div>
+            <h6 class="fw-bold text-navy mb-0.5" style="font-size: 0.88rem; color: #0f172a;">Email Support</h6>
+            <a href="mailto:support@proveyu.com" class="text-decoration-none fw-bold d-block"
+              style="color: #7c3aed; font-size: 0.84rem;">support@proveyu.com</a>
+            <div class="text-muted-custom mt-0.5" style="font-size: 0.74rem; color: #64748b;">Guaranteed 24-hour
+              response</div>
+          </div>
+        </div>
+        <i class="bi bi-arrow-right ms-2 fs-5" style="color: #334155;"></i>
+      </div>
+    </div>
+
+    <!-- Card 2: Toll-Free Helpline -->
+    <div class="col-md-4 px-0 px-md-2">
+      <div
+        class="grapeslab-card bg-white p-4 rounded-4 border card-bordered shadow-xs h-100 d-flex align-items-center justify-content-between transition-all cursor-pointer">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-3 p-3 d-flex align-items-center justify-content-center flex-shrink-0"
+            style="background-color: #dcfce7; color: #10b981; width: 50px; height: 50px; border-radius: 14px !important;">
+            <i class="bi bi-telephone-fill fs-5"></i>
+          </div>
+          <div>
+            <h6 class="fw-bold text-navy mb-0.5" style="font-size: 0.88rem; color: #0f172a;">Toll-Free Candidate
+              Helpline</h6>
+            <span class="fw-bold text-navy font-monospace d-block"
+              style="font-size: 0.84rem; color: #0f172a;">1800-419-PROVEYU</span>
+            <div class="text-muted-custom mt-0.5" style="font-size: 0.74rem; color: #64748b;">Mon - Sat, 9:00 AM - 6:00
+              PM IST</div>
+          </div>
+        </div>
+        <i class="bi bi-arrow-right ms-2 fs-5" style="color: #334155;"></i>
+      </div>
+    </div>
+
+    <!-- Card 3: Test Center Helpdesk -->
+    <div class="col-md-4 px-0 px-md-2">
+      <div
+        class="grapeslab-card bg-white p-4 rounded-4 border card-bordered shadow-xs h-100 d-flex align-items-center justify-content-between transition-all cursor-pointer">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-3 p-3 d-flex align-items-center justify-content-center flex-shrink-0"
+            style="background-color: #fef08a; color: #ca8a04; width: 50px; height: 50px; border-radius: 14px !important;">
+            <i class="bi bi-geo-alt-fill fs-5"></i>
+          </div>
+          <div>
+            <h6 class="fw-bold text-navy mb-0.5" style="font-size: 0.88rem; color: #0f172a;">Test Center Venue Helpdesk
+            </h6>
+            <span class="fw-bold text-navy d-block" style="font-size: 0.84rem; color: #0f172a;">iON Digital Zone Partner
+              Desk</span>
+            <div class="text-muted-custom mt-0.5" style="font-size: 0.74rem; color: #64748b;">On-site support at exam
+              centers</div>
+          </div>
+        </div>
+        <i class="bi bi-arrow-right ms-2 fs-5" style="color: #334155;"></i>
+      </div>
+    </div>
+  </div>
+
+</div>

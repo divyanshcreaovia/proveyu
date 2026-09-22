@@ -18,11 +18,12 @@ export class CandidateLayout implements OnInit {
     '/candidate/dashboard': 'Overview',
     '/candidate/profile': 'Profile',
     '/candidate/book-slot': 'Book Exam',
-    '/candidate/my-passport': 'My Passport',
+    '/candidate/my-passport': 'Skill Passport',
     '/candidate/prep-guide': 'Prep Guide',
     '/candidate/interview-invites': 'Interview Invites',
     '/candidate/results': 'Results & Offers',
     '/candidate/settings': 'Settings',
+    '/candidate/support': 'Support & Help Desk',
   };
 
   constructor(private router: Router) {}
