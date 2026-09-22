@@ -14,8 +14,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.*;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,15 +26,32 @@ public class FileStorageService {
 
     private final Path fileStorageLocation;
     private final Path admitCardStorageLocation;
+    private final Path chatStorageLocation;
+    private final long chatMaxFileSizeBytes;
+    private final String chatAllowedExtensions;
+    private final Set<String> allowedExtensionsSet;
 
-    public FileStorageService(@Value("${file.upload-dir:uploads/resumes}") String uploadDir) {
+    public FileStorageService(
+            @Value("${file.upload-dir:uploads/resumes}") String uploadDir,
+            @Value("${chat.file.upload-dir:uploads/chat}") String chatUploadDir,
+            @Value("${chat.file.max-file-size-bytes:10485760}") long chatMaxFileSizeBytes,
+            @Value("${chat.file.allowed-extensions:.pdf,.doc,.docx,.jpg,.jpeg,.png}") String chatAllowedExtensions) {
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
         this.admitCardStorageLocation = Paths.get("uploads/admit_cards").toAbsolutePath().normalize();
+        this.chatStorageLocation = Paths.get(chatUploadDir).toAbsolutePath().normalize();
+        this.chatMaxFileSizeBytes = chatMaxFileSizeBytes;
+        this.chatAllowedExtensions = chatAllowedExtensions;
+        this.allowedExtensionsSet = Arrays.stream(chatAllowedExtensions.split(","))
+                .map(String::trim)
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+
         try {
             Files.createDirectories(this.fileStorageLocation);
             Files.createDirectories(this.admitCardStorageLocation);
-            log.info("[FILE STORAGE] Initialized upload directories: resumes=[{}], admitCards=[{}]",
-                    this.fileStorageLocation, this.admitCardStorageLocation);
+            Files.createDirectories(this.chatStorageLocation);
+            log.info("[FILE STORAGE] Initialized upload directories: resumes=[{}], admitCards=[{}], chat=[{}]",
+                    this.fileStorageLocation, this.admitCardStorageLocation, this.chatStorageLocation);
         } catch (Exception ex) {
             log.error("[FILE STORAGE ERROR] Could not create storage directories: {}", ex.getMessage());
             throw new DomainException("Could not create file upload storage directories", HttpStatus.INTERNAL_SERVER_ERROR, "FILE_STORAGE_INIT_ERROR");
@@ -118,6 +138,87 @@ public class FileStorageService {
             }
         } catch (MalformedURLException ex) {
             throw new DomainException("Admit Card file not found or unreadable", HttpStatus.NOT_FOUND, "ADMIT_CARD_NOT_FOUND");
+        }
+    }
+
+    public StoredChatFile storeChatFile(MultipartFile file, UUID senderId) {
+        if (file == null || file.isEmpty()) {
+            throw new DomainException("Uploaded chat file is empty", HttpStatus.BAD_REQUEST, "EMPTY_FILE");
+        }
+
+        if (file.getSize() > this.chatMaxFileSizeBytes) {
+            long maxMb = this.chatMaxFileSizeBytes / (1024 * 1024);
+            throw new DomainException("File size exceeds maximum allowed limit of " + maxMb + "MB", HttpStatus.BAD_REQUEST, "FILE_TOO_LARGE");
+        }
+
+        String rawOriginalFilename = file.getOriginalFilename();
+        if (!StringUtils.hasText(rawOriginalFilename)) {
+            rawOriginalFilename = "attachment";
+        }
+        String originalFilename = StringUtils.cleanPath(rawOriginalFilename);
+
+        if (originalFilename.contains("..") || originalFilename.contains("/") || originalFilename.contains("\\")) {
+            throw new DomainException("Filename contains invalid path sequence", HttpStatus.BAD_REQUEST, "INVALID_PATH_SEQUENCE");
+        }
+
+        String fileExtension = "";
+        int dotIndex = originalFilename.lastIndexOf('.');
+        if (dotIndex >= 0) {
+            fileExtension = originalFilename.substring(dotIndex).toLowerCase();
+        }
+
+        if (!this.allowedExtensionsSet.contains(fileExtension)) {
+            throw new DomainException("File format '" + fileExtension + "' is not supported. Allowed formats: " + this.chatAllowedExtensions,
+                    HttpStatus.BAD_REQUEST, "INVALID_FILE_TYPE");
+        }
+
+        String safeFileName = "chat_" + senderId.toString() + "_" + UUID.randomUUID() + fileExtension;
+
+        try {
+            Path targetLocation = this.chatStorageLocation.resolve(safeFileName).normalize();
+            if (!targetLocation.startsWith(this.chatStorageLocation)) {
+                throw new DomainException("Security violation: Target file path is outside allowed storage directory",
+                        HttpStatus.BAD_REQUEST, "INVALID_PATH_SEQUENCE");
+            }
+
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            String contentType = file.getContentType();
+            if (!StringUtils.hasText(contentType)) {
+                contentType = "application/octet-stream";
+            }
+
+            log.info("[CHAT FILE STORAGE SUCCESS] Chat attachment saved: path=[{}] size=[{} bytes] sender=[{}]",
+                    targetLocation, file.getSize(), senderId);
+
+            return new StoredChatFile(safeFileName, originalFilename, file.getSize(), contentType);
+        } catch (IOException ex) {
+            log.error("[CHAT FILE STORAGE ERROR] Failed to store chat file=[{}]: {}", safeFileName, ex.getMessage());
+            throw new DomainException("Could not store chat file. Please try again!", HttpStatus.INTERNAL_SERVER_ERROR, "FILE_STORE_ERROR");
+        }
+    }
+
+    public Resource loadChatFileAsResource(String fileName) {
+        if (!StringUtils.hasText(fileName) || fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
+            throw new DomainException("Invalid file name requested", HttpStatus.BAD_REQUEST, "INVALID_FILE_NAME");
+        }
+
+        try {
+            Path filePath = this.chatStorageLocation.resolve(fileName).normalize();
+            if (!filePath.startsWith(this.chatStorageLocation)) {
+                throw new DomainException("Unauthorized file path traversal attempt", HttpStatus.FORBIDDEN, "FORBIDDEN_FILE_PATH");
+            }
+
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists() && resource.isReadable()) {
+                return resource;
+            } else {
+                throw new DomainException("Requested chat attachment not found", HttpStatus.NOT_FOUND, "FILE_NOT_FOUND");
+            }
+        } catch (MalformedURLException ex) {
+            throw new DomainException("Chat file not found or unreadable", HttpStatus.NOT_FOUND, "FILE_NOT_FOUND");
         }
     }
 }
