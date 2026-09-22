@@ -8,9 +8,9 @@ spring:
       - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://192.168.0.68:3307/PROVEYU?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/PROVEYU?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8}
     username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:Proveyu@321@}
+    password: ${SPRING_DATASOURCE_PASSWORD:Test2123}
     driver-class-name: ${SPRING_DATASOURCE_DRIVER:com.mysql.cj.jdbc.Driver}
     hikari:
       maximum-pool-size: ${HIKARI_MAX_POOL_SIZE:20}
@@ -37,7 +37,7 @@ spring:
     host: ${SPRING_MAIL_HOST:smtpout.secureserver.net}
     port: ${SPRING_MAIL_PORT:465}
     username: ${SPRING_MAIL_USERNAME:info@proveyu.com}
-    password: ${SPRING_MAIL_PASSWORD:info@Dcore1}
+    password: ${SPRING_MAIL_PASSWORD:info@1234}
     protocol: smtps
     properties:
       mail:
@@ -66,18 +66,18 @@ file:
   upload-dir: ${FILE_UPLOAD_DIR:uploads/resumes}
 
 jwt:
-  secret: ${JWT_SECRET:ProveyuSuperSecretSigningKeyForJWTAuthentication2026SecureKey!}
+  secret: ${JWT_SECRET:ui43uui44389483}
   expiration-ms: ${JWT_EXPIRATION_MS:86400000}
 
 razorpay:
-  key_id: ${RAZORPAY_KEY_ID:rzp_test_proveyu_key}
-  key_secret: ${RAZORPAY_KEY_SECRET:proveyu_test_secret_321}
-  webhook_secret: ${RAZORPAY_WEBHOOK_SECRET:proveyu_webhook_secret_321}
+  key_id: ${RAZORPAY_KEY_ID:rururuur}
+  key_secret: ${RAZORPAY_KEY_SECRET:jvkhhje}
+  webhook_secret: ${RAZORPAY_WEBHOOK_SECRET:hdreuh}
   mock_mode: ${RAZORPAY_MOCK_MODE:true}
 
 uan:
   verification_url: ${UAN_VERIFICATION_URL:https://api.epfo.gov.in/uan/verify}
-  api_key: ${UAN_VERIFICATION_API_KEY:mock_uan_key_321}
+  api_key: ${UAN_VERIFICATION_API_KEY:urrru}
 
 logging:
   level:
