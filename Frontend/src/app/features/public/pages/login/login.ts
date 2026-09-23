@@ -65,10 +65,14 @@ export class Login {
       event.preventDefault();
     }
     this.isLoggingIn = true;
-    this.loginSuccessMessage = 'Login successful! Redirecting to Candidate Dashboard...';
+    const isRecruiter = this.isRecruiterSelected();
+
+    this.loginSuccessMessage = isRecruiter
+      ? 'Login successful! Redirecting to Recruiter Portal...'
+      : 'Login successful! Redirecting to Candidate Dashboard...';
 
     setTimeout(() => {
-      const targetRoute = this.selectedRole === 'candidate' ? '/candidate/dashboard' : '/candidate/dashboard';
+      const targetRoute = isRecruiter ? '/recruiter/dashboard' : '/candidate/dashboard';
       this.router.navigate([targetRoute]).then(() => {
         this.isLoggingIn = false;
       });

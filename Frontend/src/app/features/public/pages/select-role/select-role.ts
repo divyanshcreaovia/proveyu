@@ -188,7 +188,11 @@ export class SelectRole {
   submitRegistration() {
     this.isSubmitted = true;
     setTimeout(() => {
-      this.router.navigate(['/']);
-    }, 2200);
+      if (this.viewState === 'recruiter_wizard') {
+        this.router.navigate(['/recruiter']);
+      } else {
+        this.router.navigate(['/candidate']);
+      }
+    }, 1800);
   }
 }

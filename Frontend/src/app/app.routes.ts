@@ -65,6 +65,45 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'recruiter',
+    loadComponent: () => import('./features/recruiter/layout/recruiter-layout/recruiter-layout').then(m => m.RecruiterLayout),
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/recruiter/pages/dashboard/dashboard').then(m => m.Dashboard)
+      },
+      {
+        path: 'post-requirement',
+        loadComponent: () => import('./features/recruiter/pages/post-requirement/post-requirement').then(m => m.PostRequirement)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./features/recruiter/pages/profile/profile').then(m => m.Profile)
+      },
+      {
+        path: 'candidate-detail',
+        loadComponent: () => import('./features/recruiter/pages/candidate-detail/candidate-detail').then(m => m.CandidateDetail)
+      },
+      {
+        path: 'chat',
+        loadComponent: () => import('./features/recruiter/pages/chat/chat').then(m => m.Chat)
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./features/recruiter/pages/settings/settings').then(m => m.Settings)
+      },
+      {
+        path: 'support',
+        loadComponent: () => import('./features/recruiter/pages/support/support').then(m => m.Support)
+      }
+    ]
+  },
+  {
     path: '**',
     redirectTo: ''
   }

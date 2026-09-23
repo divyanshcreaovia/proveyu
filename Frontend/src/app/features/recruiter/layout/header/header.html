@@ -1,0 +1,75 @@
+<header class="recruiter-header d-flex align-items-center justify-content-between py-3 px-4 position-relative">
+  <!-- Title -->
+  <div class="header-title-section">
+    <h2 class="fw-bold mb-0 text-dark fs-3 tracking-tight">{{ title }}</h2>
+  </div>
+
+  <!-- Profile & Notification Actions -->
+  <div class="header-actions d-flex align-items-center gap-3">
+
+    <!-- Notification Bell Button & Dropdown Container -->
+    <div class="dropdown-wrapper position-relative">
+      <button
+        class="circle-action-btn border-0 shadow-xs rounded-circle d-flex align-items-center justify-content-center bg-white position-relative cursor-pointer"
+        [class.active-btn]="isNotificationOpen"
+        (click)="toggleNotifications($event)"
+        title="Notifications">
+        <i class="bi bi-bell text-secondary fs-6"></i>
+        <span *ngIf="unreadNotificationsCount > 0" class="badge-dot-indicator position-absolute bg-danger rounded-circle"></span>
+      </button>
+
+      <!-- Scrollable Professional Notifications Panel -->
+      <div class="header-dropdown-menu notifications-dropdown bg-white rounded-4 border shadow-lg position-absolute end-0 mt-2 p-0 overflow-hidden"
+        *ngIf="isNotificationOpen">
+        
+        <!-- Dropdown Header -->
+        <div class="dropdown-header border-bottom d-flex align-items-center justify-content-between" style="padding: 14px 20px !important; background-color: #f8fafc;">
+          <div class="d-flex align-items-center gap-2">
+            <h6 class="fw-bold text-navy mb-0" style="font-size: 0.95rem; color: #0f172a;">Notifications</h6>
+            <span class="badge rounded-pill bg-danger-subtle text-danger fw-bold" style="font-size: 0.72rem;" *ngIf="unreadNotificationsCount > 0">
+              {{ unreadNotificationsCount }} New
+            </span>
+          </div>
+          <a class="text-decoration-none fw-bold small cursor-pointer transition-all"
+            style="font-size: 0.76rem; color: #7c3aed;"
+            *ngIf="unreadNotificationsCount > 0"
+            (click)="markAllRead($event)">
+            Mark all read
+          </a>
+        </div>
+
+        <!-- Scrollable Notifications Body -->
+        <div class="dropdown-body overflow-auto py-1" style="max-height: 330px;">
+          <div class="dropdown-item-row p-3 px-4 border-bottom d-flex gap-3 align-items-start transition-all cursor-pointer"
+            *ngFor="let notif of notifications"
+            [class.unread-bg]="notif.unread"
+            (click)="markSingleRead(notif, $event)">
+            
+            <div class="rounded-3 p-2 d-flex align-items-center justify-content-center flex-shrink-0 mt-0.5"
+              [style.background-color]="notif.iconBg" [style.color]="notif.iconColor" style="width: 38px; height: 38px; border-radius: 10px;">
+              <i [class]="'bi ' + notif.icon + ' fs-6'"></i>
+            </div>
+            
+            <div class="flex-grow-1 overflow-hidden">
+              <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+                <span class="fw-bold text-navy text-truncate" style="font-size: 0.84rem; color: #0f172a;">{{ notif.title }}</span>
+                <span class="text-muted small text-nowrap font-inter ms-auto" style="font-size: 0.7rem; color: #64748b;">{{ notif.time }}</span>
+              </div>
+              <p class="text-muted-custom mb-0 lh-sm" style="font-size: 0.78rem; color: #475569; line-height: 1.35;">{{ notif.desc }}</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Recruiter Profile Pill (Avatar + Name ONLY, no dropdown chevron icon) -->
+    <div class="profile-pill-box d-flex align-items-center gap-2.5 bg-white rounded-pill shadow-xs border" style="padding: 6px 16px 6px 8px !important;">
+      <div class="avatar rounded-circle overflow-hidden border border-2 border-white shadow-2xs" style="width: 36px; height: 36px;">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80" alt="Priya Verma" class="w-100 h-100 object-fit-cover">
+      </div>
+      <span class="fw-bold text-dark font-inter" style="font-size: 0.88rem; color: #0f172a;">Priya Verma</span>
+    </div>
+
+  </div>
+</header>

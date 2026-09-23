@@ -1,0 +1,312 @@
+<div class="post-requirement-container">
+
+  <!-- Toast Notification -->
+  <div class="toast-notification" *ngIf="saveNotification">
+    <div class="toast-alert" role="alert">
+      <i class="bi bi-check-circle-fill"></i>
+      <span>{{ saveNotification }}</span>
+    </div>
+  </div>
+
+  <!-- Structured Top Header (Title + Subtitle + Action Button) -->
+  <div class="page-header">
+    <div class="header-titles">
+      <p class="page-subtitle">Post and manage verified job requirements matched with candidate invigilated skill passports.</p>
+    </div>
+    <button class="btn btn-primary-custom" (click)="openModal()">
+      <i class="bi bi-plus-circle-fill"></i>
+      <span>Post New Verified Requirement</span>
+    </button>
+  </div>
+
+  <!-- Top 4 Stats Overview Cards -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-tag">TOTAL REQUIREMENTS</div>
+      <div class="stat-value text-navy">{{ postedRequirements.length }}</div>
+      <div class="stat-subtext">Active in Pipeline</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-tag">ACTIVE LISTINGS</div>
+      <div class="stat-value text-success">{{ postedRequirements.length }}</div>
+      <div class="stat-subtext text-success">&#10003; 100% Verified</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-tag">VERIFIED MATCHES</div>
+      <div class="stat-value text-navy">74</div>
+      <div class="stat-subtext">Invigilated Passports</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-tag">AVG SCORE CUTOFF</div>
+      <div class="stat-value text-navy">84%</div>
+      <div class="stat-subtext">Minimum Threshold</div>
+    </div>
+  </div>
+
+  <!-- Posted Requirements Main Outer Card Container -->
+  <div class="main-card">
+    
+    <!-- Section Header Box -->
+    <div class="main-card-header">
+      <div class="header-left">
+        <div class="header-icon-box">
+          <i class="bi bi-briefcase-fill"></i>
+        </div>
+        <div>
+          <h5 class="header-title">Active Verified Requirements</h5>
+          <div class="header-subtitle">Requirements matched with candidate coding lab invigilation metrics</div>
+        </div>
+      </div>
+
+      <div class="active-badge">
+        <span class="badge-dot-green"></span>
+        <span class="badge-text">{{ postedRequirements.length }} Active Listings</span>
+      </div>
+    </div>
+
+    <!-- Requirements Cards Stack -->
+    <div class="requirements-stack">
+      <div class="requirement-item-card" *ngFor="let req of postedRequirements">
+        
+        <div class="card-inner-flex">
+          
+          <!-- LEFT SIDE: Dark Circle Icon + 3 Clean Info Lines -->
+          <div class="req-left-content">
+            
+            <!-- Dark Icon Circle (48px x 48px) -->
+            <div class="req-icon-circle">
+              <i class="bi bi-briefcase-fill"></i>
+            </div>
+
+            <!-- Info Stack (3 Lines Separated Cleanly) -->
+            <div class="req-info-stack">
+              
+              <!-- Line 1: Job Title + Verified Active Badge + Min Score Badge -->
+              <div class="req-line-1">
+                <span class="req-title">{{ req.jobTitle }}</span>
+                <span class="badge-verified-active">
+                  <i class="bi bi-check-circle-fill"></i> Verified Active
+                </span>
+                <span class="badge-min-score">
+                  Min Score: {{ req.minScoreThreshold }}+
+                </span>
+              </div>
+
+              <!-- Line 2: Company | Track | Experience -->
+              <div class="req-line-2">
+                <span class="req-company"><i class="bi bi-building"></i>{{ req.targetClient }}</span>
+                <span class="pipe-separator">|</span>
+                <span class="req-track"><i class="bi bi-layers"></i>{{ req.domainTrack }}</span>
+                <span class="pipe-separator">|</span>
+                <span class="req-exp"><i class="bi bi-briefcase"></i>{{ req.experienceLevel }}</span>
+              </div>
+
+              <!-- Line 3: Location | Salary | Date -->
+              <div class="req-line-3">
+                <span class="req-loc"><i class="bi bi-geo-alt-fill"></i>{{ req.location }}</span>
+                <span class="pipe-separator">|</span>
+                <span class="req-salary"><i class="bi bi-currency-rupee"></i>{{ req.salaryPackage }}</span>
+                <span class="pipe-separator">|</span>
+                <span class="req-date"><i class="bi bi-calendar3"></i>Posted {{ req.postedDate }}</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- RIGHT SIDE: Vertical Separator + Matches Count + View Matches Button + Delete Icon -->
+          <div class="req-right-content">
+            
+            <!-- Vertical Divider Line -->
+            <div class="vertical-divider-line"></div>
+
+            <!-- People Icon & Verified Matches Stats -->
+            <div class="matches-stat-box">
+              <i class="bi bi-people-fill matches-icon"></i>
+              <div class="matches-text-col">
+                <div class="matches-count">{{ req.candidateMatchesCount }}</div>
+                <div class="matches-label">Verified Matches</div>
+                <div class="matches-sublabel">Passport Score &ge; {{ req.minScoreThreshold }}</div>
+              </div>
+            </div>
+
+            <!-- View Matches Button (Pill with Arrow) -->
+            <a routerLink="/recruiter/candidate-detail" class="btn btn-view-matches" title="View Matches">
+              <span>View Matches</span>
+              <i class="bi bi-arrow-right"></i>
+            </a>
+
+            <!-- Delete Trash Circle Icon Button -->
+            <button class="btn btn-delete-circle" 
+                    (click)="deleteRequirement(req.id)" 
+                    title="Close Requirement">
+              <i class="bi bi-trash3-fill"></i>
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal Dialog Backdrop (Post New Verified Requirement) -->
+  <div class="modal-backdrop-custom" *ngIf="showModal" (click)="closeModal()"></div>
+
+  <!-- Modal Dialog (Redesigned & Professional) -->
+  <div class="modal-dialog-custom" *ngIf="showModal">
+    
+    <!-- Modal Header -->
+    <div class="modal-header-custom">
+      <div class="modal-header-content">
+        <div class="modal-icon-badge">
+          <i class="bi bi-patch-check-fill"></i>
+        </div>
+        <div>
+          <h5 class="modal-title">Post New Verified Requirement</h5>
+          <p class="modal-subtitle">Define job criteria to auto-match with 100% invigilated candidate passports</p>
+        </div>
+      </div>
+      <button type="button" class="btn-close-custom" (click)="closeModal()" aria-label="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body Form -->
+    <div class="modal-body-custom">
+      <form (ngSubmit)="submitRequirement()">
+        
+        <!-- Section 1: Hiring Entity Selection (In-House vs Client/Agency) -->
+        <div class="form-section mb-4">
+          <div class="section-label-header">
+            <span class="section-number">1</span>
+            <span class="section-title">Hiring Entity Type</span>
+          </div>
+          <div class="hiring-type-toggle">
+            <button type="button" 
+                    class="toggle-pill" 
+                    [class.active]="hiringType === 'in-house'" 
+                    (click)="setHiringType('in-house')">
+              <i class="bi bi-building-fill-check"></i>
+              <span>Direct In-House Hiring</span>
+            </button>
+            <button type="button" 
+                    class="toggle-pill" 
+                    [class.active]="hiringType === 'client'" 
+                    (click)="setHiringType('client')">
+              <i class="bi bi-people-fill"></i>
+              <span>Client / Agency Partner</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 2: Role Details -->
+        <div class="form-section">
+          <div class="section-label-header">
+            <span class="section-number">2</span>
+            <span class="section-title">Role & Organization Details</span>
+          </div>
+
+          <div class="modal-form-grid">
+            
+            <!-- Job Title -->
+            <div class="form-col-full">
+              <label class="form-label">Job Title <span class="required-star">*</span></label>
+              <div class="input-with-icon">
+                <i class="bi bi-briefcase input-icon"></i>
+                <input type="text" class="form-control" [(ngModel)]="newRequirement.jobTitle" name="jobTitle" placeholder="e.g. Associate QA Automation Engineer">
+              </div>
+            </div>
+
+            <!-- Domain Track -->
+            <div class="form-col-half">
+              <label class="form-label">Domain Track <span class="required-star">*</span></label>
+              <div class="input-with-icon">
+                <i class="bi bi-layers input-icon"></i>
+                <select class="form-select" [(ngModel)]="newRequirement.domainTrack" name="domainTrack">
+                  <option value="QA & Testing">QA & Testing</option>
+                  <option value="Java Spring Boot Microservices">Java Spring Boot Microservices</option>
+                  <option value="Full Stack Engineering">Full Stack Engineering</option>
+                  <option value="Frontend React / Angular">Frontend React / Angular</option>
+                  <option value="DevOps & Cloud">DevOps & Cloud</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Company / Target Client Name (Dynamic based on hiringType) -->
+            <div class="form-col-half">
+              <label class="form-label">
+                {{ hiringType === 'in-house' ? 'Hiring Organization / Company Name' : 'Target Client / Agency Name' }}
+                <span class="required-star">*</span>
+              </label>
+              <div class="input-with-icon">
+                <i class="bi bi-building input-icon"></i>
+                <input type="text" 
+                       class="form-control" 
+                       [(ngModel)]="newRequirement.targetClient" 
+                       name="targetClient" 
+                       [placeholder]="hiringType === 'in-house' ? 'e.g. ProveYu Tech Labs' : 'e.g. CloudScale Technologies'">
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="form-col-half">
+              <label class="form-label">Work Location <span class="required-star">*</span></label>
+              <div class="input-with-icon">
+                <i class="bi bi-geo-alt input-icon"></i>
+                <input type="text" class="form-control" [(ngModel)]="newRequirement.location" name="location" placeholder="e.g. Bengaluru / Remote">
+              </div>
+            </div>
+
+            <!-- Salary / CTC Package -->
+            <div class="form-col-half">
+              <label class="form-label">Salary Package <span class="required-star">*</span></label>
+              <div class="input-with-icon">
+                <i class="bi bi-currency-rupee input-icon"></i>
+                <input type="text" class="form-control" [(ngModel)]="newRequirement.salaryPackage" name="salaryPackage" placeholder="e.g. ₹8 - 10 LPA">
+              </div>
+            </div>
+
+            <!-- Min Passport Score Threshold -->
+            <div class="form-col-half">
+              <label class="form-label">Min Passport Score Cutoff <span class="required-star">*</span></label>
+              <div class="input-with-icon input-group-custom">
+                <i class="bi bi-speedometer2 input-icon"></i>
+                <input type="number" class="form-control" [(ngModel)]="newRequirement.minScoreThreshold" name="minScoreThreshold" placeholder="85" min="50" max="100">
+                <span class="input-group-badge">/ 100</span>
+              </div>
+            </div>
+
+            <!-- Experience Level -->
+            <div class="form-col-half">
+              <label class="form-label">Experience Level <span class="required-star">*</span></label>
+              <div class="input-with-icon">
+                <i class="bi bi-award input-icon"></i>
+                <select class="form-select" [(ngModel)]="newRequirement.experienceLevel" name="experienceLevel">
+                  <option value="Fresher / 0-1 Yrs">Fresher / 0-1 Yrs</option>
+                  <option value="Junior / 1-3 Yrs">Junior / 1-3 Yrs</option>
+                  <option value="Mid-Senior / 3-5 Yrs">Mid-Senior / 3-5 Yrs</option>
+                  <option value="Senior / 5+ Yrs">Senior / 5+ Yrs</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer-custom">
+      <button type="button" class="btn btn-outline-custom" (click)="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-primary-custom" (click)="submitRequirement()">
+        <span>Publish Requirement</span>
+        <i class="bi bi-arrow-right"></i>
+      </button>
+    </div>
+
+  </div>
+
+</div>

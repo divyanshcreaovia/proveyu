@@ -1,0 +1,363 @@
+<div class="profile-container">
+
+  <!-- Save Toast Notification -->
+  <div class="toast-notification position-fixed bottom-0 end-0 p-3 z-3" *ngIf="saveNotification">
+    <div class="alert alert-dark rounded-4 shadow-lg border-0 d-flex align-items-center gap-3 text-white px-4 py-3 mb-0" role="alert">
+      <i class="bi bi-check-circle-fill text-success fs-5"></i>
+      <span class="fw-semibold">{{ saveNotification }}</span>
+    </div>
+  </div>
+
+  <!-- Recruiter Profile Header Card (Identical Theme to Candidate Profile Header) -->
+  <div class="card card-shadow border-0 mb-4 p-4">
+    <div class="row align-items-center">
+      <div class="col-md-7 d-flex align-items-center gap-4">
+        <div class="position-relative flex-shrink-0">
+          <div class="avatar rounded-circle overflow-hidden border border-2 border-white shadow-sm" style="width: 100px; height: 100px;">
+            <img [src]="recruiterInfo.avatar" [alt]="recruiterInfo.contactName" class="w-100 h-100 object-fit-cover">
+          </div>
+          <button class="btn btn-sm btn-light border position-absolute bottom-0 end-0 rounded-circle p-2 shadow-sm" style="transform: translate(25%, 25%);" (click)="changeAvatar()" title="Change Logo/Avatar">
+            <i class="bi bi-camera-fill text-primary"></i>
+          </button>
+        </div>
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <h4 class="fw-bold text-navy mb-0">{{ recruiterInfo.companyName }}</h4>
+            <span class="badge bg-light-blue text-navy border px-2 py-1">Verified Agency Partner</span>
+          </div>
+          <div class="text-muted-custom small mb-3">
+            <i class="bi bi-person me-1"></i> {{ recruiterInfo.contactName }} <span class="mx-2">|</span>
+            <i class="bi bi-envelope me-1"></i> {{ recruiterInfo.workEmail }} <span class="mx-2">|</span>
+            <i class="bi bi-telephone me-1"></i> {{ recruiterInfo.phone }} <span class="mx-2">|</span>
+            <i class="bi bi-geo-alt me-1"></i> {{ recruiterInfo.city }}
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-primary-custom px-4" (click)="saveProfile()">Save Changes</button>
+            <button class="btn btn-sm btn-outline-custom px-4" (click)="shareProfile()">Share Profile</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verification Completion Score -->
+      <div class="col-md-5 border-start-md ps-md-5 mt-4 mt-md-0">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="fw-bold text-navy">Organization Verification</span>
+          <span class="fw-bold text-success">{{ completionScore }}%</span>
+        </div>
+        <div class="progress rounded-pill bg-light-blue" style="height: 10px;">
+          <div class="progress-bar bg-success rounded-pill" role="progressbar" [style.width]="completionScore + '%'" [attr.aria-valuenow]="completionScore" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <p class="text-muted-custom small mt-3 mb-0">
+          Complete corporate domain & GSTIN verification to publish hiring requirements to invigilated candidates.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Content Card -->
+  <div class="card card-shadow border-0">
+    <!-- Clean Nav Tabs -->
+    <div class="border-bottom px-4 pt-3">
+      <ul class="nav nav-tabs border-0 gap-4" id="profileTabs">
+        <li class="nav-item">
+          <button class="nav-link bg-transparent border-0 fw-medium pb-3 px-1 transition-all" 
+                  [class.active]="activeTab === 'company'" 
+                  (click)="activeTab = 'company'">Company & Representative</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link bg-transparent border-0 fw-medium pb-3 px-1 transition-all" 
+                  [class.active]="activeTab === 'hiring'" 
+                  (click)="activeTab = 'hiring'">Hiring Requirements</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link bg-transparent border-0 fw-medium pb-3 px-1 transition-all" 
+                  [class.active]="activeTab === 'verification'" 
+                  (click)="activeTab = 'verification'">Verification & Badges</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link bg-transparent border-0 fw-medium pb-3 px-1 transition-all" 
+                  [class.active]="activeTab === 'team'" 
+                  (click)="activeTab = 'team'">Agency Team</button>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Tab Content Body -->
+    <div class="p-4 p-md-5">
+      <div class="row">
+        <!-- Left Main Form Column -->
+        <div class="col-lg-8">
+
+          <!-- TAB 1: Company & Representative -->
+          <div *ngIf="activeTab === 'company'" class="tab-fade-in">
+            <h5 class="fw-bold text-navy mb-4">Organization & Contact Info</h5>
+            
+            <div class="row g-4 mb-4">
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Company / Agency Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control py-2" [(ngModel)]="recruiterInfo.companyName">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Representative Full Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control py-2" [(ngModel)]="recruiterInfo.contactName">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Work Email Address (Read Only)</label>
+                <input type="email" class="form-control py-2" [(ngModel)]="recruiterInfo.workEmail" readonly>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Direct Phone Number <span class="text-danger">*</span></label>
+                <input type="tel" class="form-control py-2" [(ngModel)]="recruiterInfo.phone">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Hiring HQ / Location <span class="text-danger">*</span></label>
+                <input type="text" class="form-control py-2" [(ngModel)]="recruiterInfo.city">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Organization Type</label>
+                <select class="form-select py-2" [(ngModel)]="recruiterInfo.orgType">
+                  <option value="agency">Placement Agency / Staffing</option>
+                  <option value="startup">Tech Startup (Seed to Series C)</option>
+                  <option value="corporate">Enterprise Corporate</option>
+                  <option value="services">IT Services & Consulting</option>
+                </select>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label text-muted-custom small fw-medium">Company Website URL</label>
+                <input type="url" class="form-control py-2" [(ngModel)]="recruiterInfo.website">
+              </div>
+              <div class="col-md-12">
+                <label class="form-label text-muted-custom small fw-medium">Company Tagline / Headline</label>
+                <input type="text" class="form-control py-2" [(ngModel)]="recruiterInfo.headline">
+              </div>
+              <div class="col-12">
+                <label class="form-label text-muted-custom small fw-medium">About Organization & Hiring Focus</label>
+                <textarea class="form-control py-3" rows="4" [(ngModel)]="recruiterInfo.about"></textarea>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-3 pt-3 border-top mt-2">
+              <button class="btn btn-outline-custom">Cancel</button>
+              <button class="btn btn-primary-custom px-4" (click)="saveProfile()">Save Changes</button>
+            </div>
+          </div>
+
+          <!-- TAB 2: Hiring Requirements -->
+          <div *ngIf="activeTab === 'hiring'" class="tab-fade-in">
+            <h5 class="fw-bold text-navy mb-4">Hiring Target & Preferences</h5>
+
+            <div class="row g-4 mb-4">
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Monthly Hiring Volume Target</label>
+                <select class="form-select py-2" [(ngModel)]="hiringPreferences.hiringVolume">
+                  <option value="1-5">1–5 hires / month</option>
+                  <option value="5-20">5–20 hires / month</option>
+                  <option value="20+">20+ hires / month (Volume Hiring)</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Candidate Experience Level Target</label>
+                <select class="form-select py-2" [(ngModel)]="hiringPreferences.candidateLevel">
+                  <option value="fresher">Freshers (0 Exp)</option>
+                  <option value="junior">Junior Engineers (1–3 Yrs)</option>
+                  <option value="all">All Invigilated Candidates</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Primary Verification Track Focus</label>
+                <select class="form-select py-2" [(ngModel)]="hiringPreferences.primaryTrack">
+                  <option value="universal">Universal Competency Passport</option>
+                  <option value="java">Java Spring Boot Microservices</option>
+                  <option value="qa">QA & Test Automation</option>
+                  <option value="fullstack">Full Stack Engineering</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Target Placement Cities</label>
+                <input type="text" class="form-control py-2" [(ngModel)]="hiringPreferences.preferredCities">
+              </div>
+              <div class="col-12">
+                <label class="form-label text-muted-custom small fw-medium">Custom Hiring Criteria Notes</label>
+                <textarea class="form-control py-3" rows="3" [(ngModel)]="hiringPreferences.customNotes"></textarea>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-3 pt-3 border-top mt-2">
+              <button class="btn btn-primary-custom px-4" (click)="saveProfile()">Save Preferences</button>
+            </div>
+          </div>
+
+          <!-- TAB 3: Verification & Badges -->
+          <div *ngIf="activeTab === 'verification'" class="tab-fade-in">
+            <h5 class="fw-bold text-navy mb-4">Verification Badges & Corporate Compliance</h5>
+
+            <div class="d-flex flex-column gap-3 mb-4">
+              <!-- Domain Check -->
+              <div class="card p-3 card-bordered">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle p-2 bg-light-blue text-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                      <i class="bi bi-shield-check fs-5"></i>
+                    </div>
+                    <div>
+                      <h6 class="fw-bold text-navy mb-0">Corporate Work Domain Check</h6>
+                      <div class="text-muted-custom small">Domain: <strong class="text-dark">{{ verificationData.domainName }}</strong></div>
+                    </div>
+                  </div>
+                  <span class="badge bg-light text-navy border px-2.5 py-1 fw-bold">✓ Verified Domain</span>
+                </div>
+                <div class="mt-2 pt-2 border-top">
+                  <label class="form-label text-muted-custom small fw-medium">Work Domain</label>
+                  <input type="text" class="form-control py-2" [(ngModel)]="verificationData.domainName" placeholder="e.g. apexplacements.com">
+                </div>
+              </div>
+
+              <!-- GSTIN Check -->
+              <div class="card p-3 card-bordered">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle p-2 bg-light-blue text-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                      <i class="bi bi-building-check fs-5"></i>
+                    </div>
+                    <div>
+                      <h6 class="fw-bold text-navy mb-0">GSTIN / Business License Validation</h6>
+                      <div class="text-muted-custom small">GSTIN ID: <strong class="text-dark font-monospace">{{ verificationData.gstNumber }}</strong></div>
+                    </div>
+                  </div>
+                  <span class="badge bg-light text-navy border px-2.5 py-1 fw-bold">✓ Verified Business</span>
+                </div>
+                <div class="mt-2 pt-2 border-top">
+                  <label class="form-label text-muted-custom small fw-medium">GSTIN ID</label>
+                  <input type="text" class="form-control py-2 font-monospace" [(ngModel)]="verificationData.gstNumber" placeholder="e.g. 29ABCDE1234F1ZH">
+                </div>
+              </div>
+
+              <!-- CIN Check -->
+              <div class="card p-3 card-bordered">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle p-2 bg-light-blue text-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                      <i class="bi bi-patch-check-fill fs-5"></i>
+                    </div>
+                    <div>
+                      <h6 class="fw-bold text-navy mb-0">Corporate Registration (CIN)</h6>
+                      <div class="text-muted-custom small">CIN: <strong class="text-dark font-monospace">{{ verificationData.cinNumber }}</strong></div>
+                    </div>
+                  </div>
+                  <span class="badge bg-light text-navy border px-2.5 py-1 fw-bold">✓ Verified Corporate</span>
+                </div>
+                <div class="mt-2 pt-2 border-top">
+                  <label class="form-label text-muted-custom small fw-medium">Corporate Registration Number (CIN)</label>
+                  <input type="text" class="form-control py-2 font-monospace" [(ngModel)]="verificationData.cinNumber" placeholder="Enter CIN Number (e.g. U72900KA2022PTC123456)">
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-3 pt-3 border-top mt-2">
+              <button class="btn btn-primary-custom px-4" (click)="saveProfile()">Save Verification</button>
+            </div>
+          </div>
+
+          <!-- TAB 4: Agency Team (Identical Layout & CSS as Candidate Profile Education / Experience Lists) -->
+          <div *ngIf="activeTab === 'team'" class="tab-fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h5 class="fw-bold text-navy mb-0">Agency Team</h5>
+              <button class="btn btn-sm btn-primary-custom" (click)="showMemberForm = !showMemberForm">
+                + Invite Recruiter
+              </button>
+            </div>
+
+            <!-- Add Team Member Form -->
+            <div class="card p-3 mb-4 card-bordered" *ngIf="showMemberForm">
+              <h6 class="fw-bold text-navy mb-3">Invite New Recruiter</h6>
+
+              <!-- Photo Upload Field -->
+              <div class="mb-3">
+                <label class="form-label small text-muted-custom fw-medium">Profile Photo / Avatar</label>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="avatar rounded-circle overflow-hidden border bg-light flex-shrink-0" style="width: 48px; height: 48px;">
+                    <img *ngIf="newMember.avatar" [src]="newMember.avatar" alt="Avatar" class="w-100 h-100 object-fit-cover">
+                    <i *ngIf="!newMember.avatar" class="bi bi-person-fill text-muted fs-4 d-flex align-items-center justify-content-center h-100"></i>
+                  </div>
+                  <input type="file" accept="image/*" class="form-control form-control-sm" (change)="onMemberAvatarChange($event)">
+                </div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small text-muted-custom">Full Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control py-2" placeholder="e.g. Sanya Kapoor" [(ngModel)]="newMember.name">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small text-muted-custom">Work Email <span class="text-danger">*</span></label>
+                  <input type="email" class="form-control py-2" placeholder="sanya@apexplacements.com" [(ngModel)]="newMember.email">
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label small text-muted-custom">Team Role</label>
+                  <select class="form-select py-2" [(ngModel)]="newMember.role">
+                    <option value="Agency Lead & Admin">Agency Lead & Admin</option>
+                    <option value="Senior Tech Recruiter">Senior Tech Recruiter</option>
+                    <option value="Invigilation Specialist">Invigilation Specialist</option>
+                    <option value="Hiring Manager">Hiring Manager</option>
+                  </select>
+                </div>
+              </div>
+              <div class="d-flex gap-2 justify-content-end mt-3">
+                <button class="btn btn-sm btn-outline-custom" (click)="showMemberForm = false">Cancel</button>
+                <button class="btn btn-sm btn-primary-custom" (click)="addTeamMember()">Send Invitation</button>
+              </div>
+            </div>
+
+            <!-- Team Members List (Exact Candidate Card Layout) -->
+            <div class="d-flex flex-column gap-3">
+              <div class="card p-3 card-bordered d-flex flex-row justify-content-between align-items-center" *ngFor="let member of teamMembers">
+                <div class="d-flex align-items-center gap-3">
+                  <img [src]="member.avatar" [alt]="member.name" class="rounded-circle object-fit-cover shadow-sm flex-shrink-0" style="width: 44px; height: 44px;">
+                  <div>
+                    <h6 class="fw-bold text-navy mb-1">{{ member.name }}</h6>
+                    <div class="text-muted-custom small">
+                      <span class="badge bg-light text-navy border me-2 py-1 px-2">{{ member.role }}</span>
+                      <i class="bi bi-envelope me-1"></i>{{ member.email }}
+                    </div>
+                  </div>
+                </div>
+                <button class="btn btn-link text-danger p-0 border-0 shadow-none ms-2" (click)="deleteTeamMember(member.id)" title="Remove Member">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Profile Summary Sidebar (Identical to Candidate Profile Sidebar) -->
+        <div class="col-lg-4 ps-lg-5 mt-5 mt-lg-0 border-start-lg">
+          <h6 class="fw-bold text-navy mb-4">Organization Summary</h6>
+          
+          <div class="d-flex flex-column gap-4">
+            <div class="d-flex gap-3">
+              <div class="bg-light-blue rounded-circle d-flex align-items-center justify-content-center text-primary flex-shrink-0" style="width: 40px; height: 40px;">
+                <i class="bi bi-building fs-5"></i>
+              </div>
+              <div>
+                <div class="fw-bold text-navy">Organization</div>
+                <div class="text-muted-custom small">{{ recruiterInfo.companyName }}</div>
+              </div>
+            </div>
+            
+            <div class="d-flex gap-3">
+              <div class="bg-light-blue rounded-circle d-flex align-items-center justify-content-center text-primary flex-shrink-0" style="width: 40px; height: 40px;">
+                <i class="bi bi-people fs-5"></i>
+              </div>
+              <div>
+                <div class="fw-bold text-navy">Hiring Team</div>
+                <div class="text-muted-custom small">{{ teamMembers.length }} Active Recruiter Seats</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

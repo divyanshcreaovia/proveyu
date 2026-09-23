@@ -14,7 +14,7 @@ import { filter } from 'rxjs/operators';
 })
 export class App implements OnInit {
   protected readonly title = signal('proveyu-frontend');
-  isCandidateRoute = false;
+  isPortalRoute = false;
 
   constructor(private router: Router) {}
 
@@ -28,6 +28,6 @@ export class App implements OnInit {
   }
 
   private checkRoute(url: string) {
-    this.isCandidateRoute = url.includes('/candidate');
+    this.isPortalRoute = url.includes('/candidate') || url.includes('/recruiter');
   }
 }

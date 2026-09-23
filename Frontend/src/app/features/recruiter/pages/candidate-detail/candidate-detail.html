@@ -1,1 +1,191 @@
-<p>candidate-detail works!</p>
+<div class="candidate-detail-container">
+
+  <!-- Toast Notification -->
+  <div class="toast-notification" *ngIf="saveNotification">
+    <div class="toast-alert" role="alert">
+      <i class="bi bi-check-circle-fill"></i>
+      <span>{{ saveNotification }}</span>
+    </div>
+  </div>
+
+
+
+  <!-- Search & Filter Bar -->
+  <div class="filter-toolbar-card">
+    
+    <!-- Search Box -->
+    <div class="search-box">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text" class="form-control search-input" placeholder="Search candidates, college, track or city..." [(ngModel)]="searchQuery">
+    </div>
+
+    <!-- Filter Dropdowns -->
+    <div class="filters-row">
+      
+      <!-- Track Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Track</label>
+        <select class="form-select filter-select" [(ngModel)]="selectedTrack">
+          <option value="All">All Tracks</option>
+          <option value="Universal">Universal Fresher Competency</option>
+          <option value="Java">Java Backend (Spring Boot)</option>
+          <option value="QA">QA & Automation Testing</option>
+          <option value="Python">Python Backend & Data</option>
+          <option value="Full Stack">Full Stack Node & React</option>
+        </select>
+      </div>
+
+      <!-- Min Score Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Min Score</label>
+        <select class="form-select filter-select" [(ngModel)]="minScoreFilter">
+          <option [ngValue]="0">All Scores</option>
+          <option [ngValue]="90">90+ Top Tier</option>
+          <option [ngValue]="85">85+ Verified Cutoff</option>
+          <option [ngValue]="80">80+ Qualified</option>
+        </select>
+      </div>
+
+      <!-- Sort By Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Sort by</label>
+        <select class="form-select filter-select" [(ngModel)]="sortBy">
+          <option value="Relevance">Relevance</option>
+          <option value="ScoreHigh">Score: High to Low</option>
+          <option value="ScoreLow">Score: Low to High</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Candidate Profiles Grid (Exact UI match to User Reference Screenshot) -->
+  <div class="candidate-grid">
+    <div class="candidate-card" *ngFor="let candidate of filteredCandidates">
+      
+      <!-- Top Section: Badges & Score Box -->
+      <div class="card-top-row">
+        <div class="badges-group">
+          <!-- Percentile Badge (Top 1%, Top 3%, Top 5%, Top 10%) -->
+          <span class="badge-percentile" [class.gold-badge]="candidate.percentileBadge === 'Top 10%'">
+            {{ candidate.percentileBadge }}
+          </span>
+          <!-- Tier Badge -->
+          <span class="badge-tier">
+            {{ candidate.tierBadge }}
+          </span>
+        </div>
+
+        <!-- Score Badge Box -->
+        <div class="score-container">
+          <span class="score-label">Score</span>
+          <span class="score-value">{{ candidate.score }}</span>
+        </div>
+      </div>
+
+      <!-- Candidate Name & College Info -->
+      <h5 class="candidate-name">{{ candidate.name }}</h5>
+      <div class="candidate-meta">{{ candidate.collegeExp }}</div>
+
+      <!-- Primary Track & Location Light Grey Box -->
+      <div class="track-loc-box">
+        <div class="track-col">
+          <span class="box-label">Primary Track</span>
+          <span class="box-value">{{ candidate.primaryTrack }}</span>
+        </div>
+        <div class="loc-col">
+          <span class="box-label">Location</span>
+          <span class="box-value">{{ candidate.location }}</span>
+        </div>
+      </div>
+
+      <!-- Skill Scores Row -->
+      <div class="skills-row">
+        <span class="skill-pill" *ngFor="let s of candidate.skillsBreakdown">
+          <span class="skill-name">{{ s.label }}</span>
+          <span class="skill-score">{{ s.score }}</span>
+        </span>
+      </div>
+
+      <!-- Action Buttons Footer -->
+      <div class="card-actions-row">
+        <!-- View Skill Passport -->
+        <button class="btn btn-view-passport" (click)="openPassport(candidate)">
+          View Skill Passport
+        </button>
+
+        <div class="right-actions">
+          <!-- Shortlist -->
+          <button class="btn btn-shortlist" [class.active]="candidate.isShortlisted" (click)="toggleShortlist(candidate)">
+            {{ candidate.isShortlisted ? '✓ Shortlisted' : 'Shortlist' }}
+          </button>
+
+          <!-- Chat -->
+          <button class="btn btn-chat" (click)="openChat(candidate)">
+            Chat
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Passport Preview Modal Backdrop -->
+  <div class="modal-backdrop-custom" *ngIf="showPassportModal" (click)="closePassport()"></div>
+
+  <!-- Passport Preview Modal -->
+  <div class="modal-dialog-custom" *ngIf="showPassportModal && selectedCandidateForPassport">
+    <div class="modal-header-dark">
+      <div>
+        <div class="uppercase-tag-emerald">PROVEYU SKILL PASSPORT</div>
+        <h5 class="modal-candidate-name">{{ selectedCandidateForPassport.name }}</h5>
+      </div>
+      <button type="button" class="btn-close-white" (click)="closePassport()"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <div class="modal-body-custom">
+      <div class="passport-meta-box">
+        <div>
+          <div class="meta-label">Passport Serial Number</div>
+          <div class="meta-value-serial">{{ selectedCandidateForPassport.passportId }}</div>
+        </div>
+        <div class="text-end">
+          <div class="meta-label">Overall Verified Score</div>
+          <div class="meta-value-score">{{ selectedCandidateForPassport.score }} / 100</div>
+        </div>
+      </div>
+
+      <h6 class="modal-section-heading">Skill Competency Breakdown</h6>
+      <div class="skills-breakdown-grid">
+        <div class="skill-breakdown-card" *ngFor="let s of selectedCandidateForPassport.skillsBreakdown">
+          <div class="breakdown-score">{{ s.score }}</div>
+          <div class="breakdown-label">{{ s.label }}</div>
+        </div>
+      </div>
+
+      <h6 class="modal-section-heading">In-Person Invigilation Audit</h6>
+      <ul class="audit-list">
+        <li class="audit-item">
+          <span class="audit-label">Test Center:</span>
+          <span class="audit-val">{{ selectedCandidateForPassport.verifiedCenter }} ({{ selectedCandidateForPassport.location }})</span>
+        </li>
+        <li class="audit-item">
+          <span class="audit-label">Biometric & Identity Check:</span>
+          <span class="audit-val-success">&#10003; Verified & Cleared</span>
+        </li>
+        <li class="audit-item">
+          <span class="audit-label">Invigilator Code Review:</span>
+          <span class="audit-val-success">&#10003; Plagiarism-Free (100% Unique Code)</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="modal-footer-custom">
+      <button type="button" class="btn btn-outline-custom" (click)="closePassport()">Close</button>
+      <button type="button" class="btn btn-emerald-custom" (click)="sendInvite(selectedCandidateForPassport)">
+        &#9889; Send Direct Interview Invite
+      </button>
+    </div>
+  </div>
+
+</div>
