@@ -47,9 +47,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout() {
-        // In a stateless JWT setup, real invalidation requires a blocklist (e.g., Redis).
-        // For now, returning success and relying on frontend to drop the token.
+    public ResponseEntity<ApiResponse<Void>> logout(@RequestHeader(value = "Authorization", required = false) String bearerToken) {
+        authService.logout(bearerToken);
         return ResponseEntity.ok(ApiResponse.success(null, "Logged out successfully"));
     }
 }

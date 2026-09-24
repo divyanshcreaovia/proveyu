@@ -7,6 +7,7 @@ import com.proveyu.shared.error.DomainException;
 import com.proveyu.shared.security.JwtTokenProvider;
 import com.proveyu.shared.security.PayloadDecryptionUtils;
 import com.proveyu.shared.email.EmailService;
+import com.proveyu.shared.security.TokenBlacklistService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -30,6 +32,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PayloadDecryptionUtils payloadDecryptionUtils;
     private final EmailService emailService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -155,5 +158,16 @@ public class AuthService {
         userRepository.save(user);
 
         log.info("[AUTH RESET_PASSWORD] Password updated successfully for user id=[{}] email=[{}]", user.getId(), user.getEmail());
+    }
+
+    public void logout(String bearerToken) {
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            String token = bearerToken.substring(7);
+            if (jwtTokenProvider.validateToken(token)) {
+                Date expirationDate = jwtTokenProvider.getExpirationDateFromToken(token);
+                tokenBlacklistService.blacklistToken(token, expirationDate.getTime());
+                log.info("[AUTH LOGOUT] Token successfully blacklisted and user logged out.");
+            }
+        }
     }
 }
