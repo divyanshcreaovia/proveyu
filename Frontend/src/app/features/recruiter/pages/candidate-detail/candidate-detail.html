@@ -1,15 +1,5 @@
 <div class="candidate-detail-container">
 
-  <!-- Toast Notification -->
-  <div class="toast-notification" *ngIf="saveNotification">
-    <div class="toast-alert" role="alert">
-      <i class="bi bi-check-circle-fill"></i>
-      <span>{{ saveNotification }}</span>
-    </div>
-  </div>
-
-
-
   <!-- Search & Filter Bar -->
   <div class="filter-toolbar-card">
     
@@ -56,11 +46,21 @@
         </select>
       </div>
 
+      <!-- View Switcher (Grid vs Table) -->
+      <div class="view-toggle-btn-group">
+        <button type="button" class="btn-toggle-switch" [class.active]="viewMode === 'grid'" (click)="setViewMode('grid')" title="Grid View">
+          <i class="bi bi-grid-3x3-gap-fill me-1"></i> Grid
+        </button>
+        <button type="button" class="btn-toggle-switch" [class.active]="viewMode === 'table'" (click)="setViewMode('table')" title="Table View">
+          <i class="bi bi-table me-1"></i> Table
+        </button>
+      </div>
+
     </div>
   </div>
 
-  <!-- Candidate Profiles Grid (Exact UI match to User Reference Screenshot) -->
-  <div class="candidate-grid">
+  <!-- Candidate Profiles Grid View -->
+  <div class="candidate-grid" *ngIf="viewMode === 'grid'">
     <div class="candidate-card" *ngFor="let candidate of filteredCandidates">
       
       <!-- Top Section: Badges & Score Box -->
@@ -127,6 +127,79 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- Candidate Profiles Table View -->
+  <div class="candidate-table-container" *ngIf="viewMode === 'table'">
+    <div class="table-responsive">
+      <table class="table candidate-table align-middle">
+        <thead>
+          <tr>
+            <th>Candidate Profile</th>
+            <th>Rank & Tier</th>
+            <th>Score</th>
+            <th>Primary Track</th>
+            <th>Location</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let candidate of filteredCandidates">
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="candidate-avatar">
+                  {{ candidate.name.charAt(0) }}
+                </div>
+                <div>
+                  <div class="fw-bold text-dark candidate-table-name">{{ candidate.name }}</div>
+                  <div class="small text-muted candidate-table-meta">{{ candidate.collegeExp }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="d-flex gap-1 flex-wrap">
+                <span class="badge-percentile" [class.gold-badge]="candidate.percentileBadge === 'Top 10%'">
+                  {{ candidate.percentileBadge }}
+                </span>
+                <span class="badge-tier">
+                  {{ candidate.tierBadge }}
+                </span>
+              </div>
+            </td>
+            <td>
+              <span class="score-value">{{ candidate.score }}</span>
+            </td>
+            <td>
+              <div class="track-badge-pill">
+                <span class="fw-semibold text-dark font-size-sm">{{ candidate.primaryTrack }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="location-pill">{{ candidate.location }}</span>
+            </td>
+            <td class="text-end">
+              <div class="d-inline-flex gap-1">
+                <button class="btn btn-view-passport" (click)="openPassport(candidate)">
+                  View Passport
+                </button>
+                <button class="btn btn-shortlist" [class.active]="candidate.isShortlisted" (click)="toggleShortlist(candidate)">
+                  {{ candidate.isShortlisted ? '✓ Shortlisted' : 'Shortlist' }}
+                </button>
+                <button class="btn btn-chat" (click)="openChat(candidate)">
+                  Chat
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="filteredCandidates.length === 0">
+            <td colspan="6" class="text-center py-5 text-muted">
+              <i class="bi bi-search fs-3 d-block mb-2 text-secondary"></i>
+              No candidate profiles match your active filters.
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 

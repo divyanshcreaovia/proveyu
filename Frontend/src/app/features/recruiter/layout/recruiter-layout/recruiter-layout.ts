@@ -16,6 +16,7 @@ export class RecruiterLayout implements OnInit {
 
   private routeTitleMap: { [key: string]: string } = {
     '/recruiter/dashboard': 'Recruiter Dashboard',
+    '/recruiter/manage-hiring': 'Manage Hiring Pipeline',
     '/recruiter/post-requirement': 'Post Requirement',
     '/recruiter/profile': 'Company & Recruiter Profile',
     '/recruiter/candidate-detail': 'Candidate Profiles',

@@ -78,6 +78,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/recruiter/pages/dashboard/dashboard').then(m => m.Dashboard)
       },
       {
+        path: 'manage-hiring',
+        loadComponent: () => import('./features/recruiter/pages/manage-hiring/manage-hiring').then(m => m.ManageHiring)
+      },
+      {
         path: 'post-requirement',
         loadComponent: () => import('./features/recruiter/pages/post-requirement/post-requirement').then(m => m.PostRequirement)
       },

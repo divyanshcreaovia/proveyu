@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 export interface EducationItem {
   id: number;
@@ -32,7 +33,6 @@ export interface SkillItem {
 })
 export class Profile implements OnInit {
   activeTab: 'personal' | 'education' | 'professional' | 'skills' | 'preferences' | 'resume' = 'personal';
-  saveNotification: string | null = null;
   newSkillInput = '';
 
   candidateInfo = {
@@ -88,6 +88,8 @@ export class Profile implements OnInit {
   newExperience: Partial<ExperienceItem> = {};
   showExperienceForm = false;
 
+  constructor(private notificationService: NotificationService) {}
+
   ngOnInit() {}
 
   get completionScore(): number {
@@ -100,20 +102,34 @@ export class Profile implements OnInit {
   }
 
   saveProfile() {
-    this.triggerToast('Profile information updated successfully!');
+    this.notificationService.showSuccess('Profile information updated successfully!', 'Profile Updated');
+  }
+
+  savePreferences() {
+    this.notificationService.showModal({
+      type: 'warning',
+      title: 'Notice Period Verification Required',
+      message: `Notice Period setting: "${this.preferences.noticePeriod || 'Not Specified'}".\n\nEnter your exact notice period — Immediate, 30, 45, 60, or 90 days. Accurate details help match you with the right recruiter and opportunity.`,
+      confirmText: 'Confirm & Save Preferences',
+      cancelText: 'Edit Notice Period',
+      onConfirm: () => {
+        this.notificationService.showSuccess(`Career preferences updated! Notice Period saved as: ${this.preferences.noticePeriod}.`, 'Preferences Saved');
+      }
+    });
   }
 
   addSkill() {
     if (this.newSkillInput.trim()) {
       this.skillsList.push({ name: this.newSkillInput.trim(), level: 'Intermediate' });
       this.newSkillInput = '';
-      this.triggerToast('New skill added to candidate profile!');
+      this.notificationService.showSuccess('New skill added to candidate profile!', 'Skill Added');
     }
   }
 
   removeSkill(index: number) {
+    const removed = this.skillsList[index]?.name;
     this.skillsList.splice(index, 1);
-    this.triggerToast('Skill removed.');
+    this.notificationService.showInfo(`Skill "${removed}" removed from profile.`, 'Skill Removed');
   }
 
   addEducation() {
@@ -127,13 +143,13 @@ export class Profile implements OnInit {
       });
       this.newEducation = {};
       this.showEducationForm = false;
-      this.triggerToast('Education record added successfully!');
+      this.notificationService.showSuccess('Education record added successfully!', 'Education Saved');
     }
   }
 
   deleteEducation(id: number) {
     this.educationList = this.educationList.filter(e => e.id !== id);
-    this.triggerToast('Education record deleted.');
+    this.notificationService.showInfo('Education record deleted.', 'Deleted');
   }
 
   addExperience() {
@@ -147,13 +163,13 @@ export class Profile implements OnInit {
       });
       this.newExperience = {};
       this.showExperienceForm = false;
-      this.triggerToast('Professional experience added!');
+      this.notificationService.showSuccess('Professional experience added successfully!', 'Experience Saved');
     }
   }
 
   deleteExperience(id: number) {
     this.experienceList = this.experienceList.filter(e => e.id !== id);
-    this.triggerToast('Experience record deleted.');
+    this.notificationService.showInfo('Experience record deleted.', 'Deleted');
   }
 
   uploadResumeSimulation(event: any) {
@@ -162,7 +178,7 @@ export class Profile implements OnInit {
       this.resume.fileName = file.name;
       this.resume.fileSize = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
       this.resume.lastUpdated = 'Just now';
-      this.triggerToast('New resume PDF uploaded successfully!');
+      this.notificationService.showSuccess('New resume PDF uploaded successfully!', 'Resume Uploaded');
     }
   }
 
@@ -175,18 +191,11 @@ export class Profile implements OnInit {
     const currentIdx = avatars.indexOf(this.candidateInfo.avatar);
     const nextAvatar = avatars[(currentIdx + 1) % avatars.length];
     this.candidateInfo.avatar = nextAvatar;
-    this.triggerToast('Profile avatar updated!');
+    this.notificationService.showSuccess('Profile avatar updated!', 'Avatar Updated');
   }
 
   shareProfile() {
     navigator.clipboard?.writeText(window.location.href);
-    this.triggerToast('Profile share link copied to clipboard!');
-  }
-
-  private triggerToast(msg: string) {
-    this.saveNotification = msg;
-    setTimeout(() => {
-      this.saveNotification = null;
-    }, 3500);
+    this.notificationService.showSuccess('Profile share link copied to clipboard!', 'Link Copied');
   }
 }

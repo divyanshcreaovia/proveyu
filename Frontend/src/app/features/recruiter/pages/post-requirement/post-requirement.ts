@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 export interface Requirement {
   id: number;
@@ -26,8 +27,9 @@ export interface Requirement {
 })
 export class PostRequirement {
   showModal: boolean = false;
-  saveNotification: string = '';
   hiringType: 'in-house' | 'client' = 'in-house';
+
+  constructor(private notificationService: NotificationService) {}
 
   newRequirement: Partial<Requirement> = {
     jobTitle: 'Associate QA Automation Engineer',
@@ -100,10 +102,7 @@ export class PostRequirement {
 
   submitRequirement() {
     if (!this.newRequirement.jobTitle || !this.newRequirement.targetClient) {
-      this.saveNotification = 'Please enter Job Title and Target Client.';
-      setTimeout(() => {
-        this.saveNotification = '';
-      }, 3000);
+      this.notificationService.showError('Please enter Job Title and Target Client.', 'Missing Required Fields');
       return;
     }
 
@@ -124,10 +123,10 @@ export class PostRequirement {
     this.postedRequirements.unshift(requirement);
     this.closeModal();
 
-    this.saveNotification = `Verified Requirement "${requirement.jobTitle}" posted successfully!`;
-    setTimeout(() => {
-      this.saveNotification = '';
-    }, 3500);
+    this.notificationService.showSuccess(
+      `Verified Requirement "${requirement.jobTitle}" posted successfully!`,
+      'Requirement Published'
+    );
 
     // Reset default form state for future postings
     this.newRequirement = {
@@ -143,9 +142,6 @@ export class PostRequirement {
 
   deleteRequirement(id: number) {
     this.postedRequirements = this.postedRequirements.filter((r) => r.id !== id);
-    this.saveNotification = 'Requirement closed.';
-    setTimeout(() => {
-      this.saveNotification = '';
-    }, 3000);
+    this.notificationService.showInfo('Requirement closed and archived.', 'Requirement Updated');
   }
 }

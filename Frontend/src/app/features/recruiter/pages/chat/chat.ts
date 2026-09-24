@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { RecruiterChatService, CandidateChatThread, ChatMessage } from '../../services/recruiter-chat.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 @Component({
   selector: 'app-recruiter-chat',
@@ -14,13 +16,16 @@ export class Chat implements OnInit {
   filter: 'all' | 'accepted' | 'pending' = 'all';
   searchQuery = '';
   newMessage = '';
-  saveNotification = '';
 
   showPassportModal = false;
   chatThreads: CandidateChatThread[] = [];
   selectedThread!: CandidateChatThread;
 
-  constructor(private recruiterChatService: RecruiterChatService) {}
+  constructor(
+    private recruiterChatService: RecruiterChatService,
+    private router: Router,
+    private notificationService: NotificationService
+  ) {}
 
   ngOnInit() {
     this.chatThreads = this.recruiterChatService.getThreads();
@@ -78,10 +83,17 @@ export class Chat implements OnInit {
     this.showPassportModal = false;
   }
 
-  triggerToast(msg: string) {
-    this.saveNotification = msg;
+  shortlistAndMoveToHiring(thread: CandidateChatThread) {
+    if (!thread) return;
+    this.triggerToast(`${thread.candidateName} shortlisted! Moving to Manage Hiring board...`);
     setTimeout(() => {
-      this.saveNotification = '';
-    }, 3000);
+      this.router.navigate(['/recruiter/manage-hiring'], {
+        queryParams: { shortlisted: thread.candidateName }
+      });
+    }, 800);
+  }
+
+  triggerToast(msg: string) {
+    this.notificationService.showSuccess(msg);
   }
 }

@@ -1,13 +1,5 @@
 <div class="post-requirement-container">
 
-  <!-- Toast Notification -->
-  <div class="toast-notification" *ngIf="saveNotification">
-    <div class="toast-alert" role="alert">
-      <i class="bi bi-check-circle-fill"></i>
-      <span>{{ saveNotification }}</span>
-    </div>
-  </div>
-
   <!-- Structured Top Header (Title + Subtitle + Action Button) -->
   <div class="page-header">
     <div class="header-titles">
@@ -81,33 +73,27 @@
             <!-- Info Stack (3 Lines Separated Cleanly) -->
             <div class="req-info-stack">
               
-              <!-- Line 1: Job Title + Verified Active Badge + Min Score Badge -->
+              <!-- Line 1: Job Title -->
               <div class="req-line-1">
                 <span class="req-title">{{ req.jobTitle }}</span>
-                <span class="badge-verified-active">
-                  <i class="bi bi-check-circle-fill"></i> Verified Active
-                </span>
-                <span class="badge-min-score">
-                  Min Score: {{ req.minScoreThreshold }}+
-                </span>
               </div>
 
               <!-- Line 2: Company | Track | Experience -->
               <div class="req-line-2">
-                <span class="req-company"><i class="bi bi-building"></i>{{ req.targetClient }}</span>
+                <span class="req-company"><i class="bi bi-building me-1-5 text-navy"></i>{{ req.targetClient }}</span>
                 <span class="pipe-separator">|</span>
-                <span class="req-track"><i class="bi bi-layers"></i>{{ req.domainTrack }}</span>
+                <span class="req-track"><i class="bi bi-layers me-1-5 text-muted"></i>{{ req.domainTrack }}</span>
                 <span class="pipe-separator">|</span>
-                <span class="req-exp"><i class="bi bi-briefcase"></i>{{ req.experienceLevel }}</span>
+                <span class="req-exp"><i class="bi bi-briefcase me-1-5 text-muted"></i>{{ req.experienceLevel }}</span>
               </div>
 
               <!-- Line 3: Location | Salary | Date -->
               <div class="req-line-3">
-                <span class="req-loc"><i class="bi bi-geo-alt-fill"></i>{{ req.location }}</span>
+                <span class="req-loc"><i class="bi bi-geo-alt-fill me-1-5 text-rose"></i>{{ req.location }}</span>
                 <span class="pipe-separator">|</span>
-                <span class="req-salary"><i class="bi bi-currency-rupee"></i>{{ req.salaryPackage }}</span>
+                <span class="req-salary"><i class="bi bi-currency-rupee me-1-5 text-rose"></i>{{ req.salaryPackage }}</span>
                 <span class="pipe-separator">|</span>
-                <span class="req-date"><i class="bi bi-calendar3"></i>Posted {{ req.postedDate }}</span>
+                <span class="req-date"><i class="bi bi-calendar3 me-1-5 text-muted"></i>Posted {{ req.postedDate }}</span>
               </div>
 
             </div>

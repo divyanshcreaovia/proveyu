@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, Router } from '@angular/router';
 import { RecruiterChatService } from '../../services/recruiter-chat.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 export interface SkillScore {
   label: string;
@@ -33,11 +34,15 @@ export interface CandidateProfileItem {
   styleUrl: './candidate-detail.scss',
 })
 export class CandidateDetail implements OnInit {
+  viewMode: 'grid' | 'table' = 'grid';
   selectedTrack: string = 'All';
   searchQuery: string = '';
   minScoreFilter: number = 0;
   sortBy: string = 'Relevance';
-  saveNotification: string = '';
+
+  setViewMode(mode: 'grid' | 'table') {
+    this.viewMode = mode;
+  }
 
   selectedCandidateForPassport: CandidateProfileItem | null = null;
   showPassportModal: boolean = false;
@@ -161,7 +166,8 @@ export class CandidateDetail implements OnInit {
 
   constructor(
     private router: Router,
-    private recruiterChatService: RecruiterChatService
+    private recruiterChatService: RecruiterChatService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {}
@@ -191,13 +197,10 @@ export class CandidateDetail implements OnInit {
     candidate.isShortlisted = !candidate.isShortlisted;
     if (candidate.isShortlisted) {
       this.recruiterChatService.addCandidateToChat(candidate);
-      this.saveNotification = `${candidate.name} shortlisted and added to Candidate Chats!`;
+      this.notificationService.showSuccess(`${candidate.name} shortlisted and added to Candidate Chats!`, 'Shortlisted');
     } else {
-      this.saveNotification = `${candidate.name} removed from shortlist.`;
+      this.notificationService.showInfo(`${candidate.name} removed from shortlist.`, 'Shortlist Updated');
     }
-    setTimeout(() => {
-      this.saveNotification = '';
-    }, 3000);
   }
 
   openChat(candidate: CandidateProfileItem) {

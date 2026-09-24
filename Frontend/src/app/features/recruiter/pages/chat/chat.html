@@ -1,13 +1,5 @@
 <div class="chat-page-wrapper">
 
-  <!-- Toast Notification -->
-  <div class="toast-notification" *ngIf="saveNotification">
-    <div class="toast-alert" role="alert">
-      <i class="bi bi-check-circle-fill"></i>
-      <span>{{ saveNotification }}</span>
-    </div>
-  </div>
-
   <div class="chat-grid">
 
     <!-- LEFT PANEL: Candidate Threads List -->
@@ -113,10 +105,16 @@
           </div>
         </div>
 
-        <button type="button" class="btn-view-passport" (click)="openPassportModal()">
-          <i class="bi bi-file-earmark-person"></i>
-          <span>View Skill Passport</span>
-        </button>
+        <div class="header-action-group">
+          <button type="button" class="btn-view-passport" (click)="openPassportModal()">
+            <i class="bi bi-file-earmark-person"></i>
+            <span>View Skill Passport</span>
+          </button>
+          <button type="button" class="btn-shortlist-hiring" (click)="shortlistAndMoveToHiring(selectedThread)">
+            <i class="bi bi-kanban-fill"></i>
+            <span>Shortlist & Move to Board</span>
+          </button>
+        </div>
       </header>
 
       <!-- Chat & Message Content -->

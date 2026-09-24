@@ -18,6 +18,7 @@ export class RecruiterSidebar {
 
   navItems = [
     { label: 'Dashboard', icon: 'bi-grid-fill', route: '/recruiter/dashboard' },
+    { label: 'Manage Hiring', icon: 'bi-kanban-fill', route: '/recruiter/manage-hiring' },
     { label: 'Post Requirement', icon: 'bi-file-earmark-plus-fill', route: '/recruiter/post-requirement' },
     { label: 'Company Profile', icon: 'bi-building-fill', route: '/recruiter/profile' },
     { label: 'Candidate Profiles', icon: 'bi-people-fill', route: '/recruiter/candidate-detail' },

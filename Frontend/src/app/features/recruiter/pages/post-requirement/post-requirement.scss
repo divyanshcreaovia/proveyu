@@ -218,25 +218,25 @@
   .requirements-stack {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
+    gap: 1.25rem;
     width: 100%;
     box-sizing: border-box;
   }
 
   .requirement-item-card {
     border: 1px solid #e2e8f0;
-    border-radius: 18px;
+    border-radius: 20px;
     background-color: #ffffff;
-    padding: 1.25rem 1.5rem;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
-    transition: all 0.2s ease-in-out;
+    padding: 1.5rem 1.75rem;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+    transition: all 0.25s ease-in-out;
     width: 100%;
     box-sizing: border-box;
     min-width: 0;
 
     &:hover {
       border-color: #cbd5e1;
-      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
     }
   }
 
@@ -244,7 +244,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.25rem;
+    gap: 1.5rem;
     width: 100%;
     box-sizing: border-box;
     min-width: 0;
@@ -259,29 +259,29 @@
   .req-left-content {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.25rem;
     flex: 1 1 0%;
     min-width: 0;
     overflow: hidden;
   }
 
   .req-icon-circle {
-    width: 46px;
-    height: 46px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background-color: #111827;
+    background-color: #0f172a;
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     flex-shrink: 0;
   }
 
   .req-info-stack {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.65rem;
     min-width: 0;
     flex: 1 1 0%;
     overflow: hidden;
@@ -290,11 +290,11 @@
   .req-line-1 {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.85rem;
     flex-wrap: wrap;
 
     .req-title {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: #0f172a;
       letter-spacing: -0.01em;
@@ -309,12 +309,12 @@
       color: #16a34a;
       border: 1px solid #bbf7d0;
       font-weight: 700;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       border-radius: 50px;
-      padding: 0.2rem 0.75rem;
+      padding: 0.3rem 0.85rem;
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.4rem;
       flex-shrink: 0;
     }
 
@@ -323,9 +323,9 @@
       color: #7c3aed;
       border: 1px solid #e9d5ff;
       font-weight: 600;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       border-radius: 50px;
-      padding: 0.2rem 0.75rem;
+      padding: 0.3rem 0.85rem;
       flex-shrink: 0;
     }
   }
@@ -334,8 +334,9 @@
   .req-line-3 {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.85rem;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
     color: #475569;
     flex-wrap: wrap;
 
@@ -344,7 +345,7 @@
       color: #0f172a;
       i {
         color: #0f172a;
-        margin-right: 0.35rem;
+        margin-right: 0.45rem;
       }
     }
 
@@ -352,7 +353,7 @@
       color: #475569;
       i {
         color: #64748b;
-        margin-right: 0.35rem;
+        margin-right: 0.45rem;
       }
     }
 
@@ -360,7 +361,7 @@
       color: #475569;
       i {
         color: #f43f5e;
-        margin-right: 0.35rem;
+        margin-right: 0.45rem;
       }
     }
 
@@ -368,39 +369,39 @@
       color: #475569;
       i {
         color: #64748b;
-        margin-right: 0.35rem;
+        margin-right: 0.45rem;
       }
     }
   }
 
   .pipe-separator {
     color: #cbd5e1;
-    font-weight: 300;
-    margin: 0 0.5rem;
+    font-weight: 400;
+    margin: 0 0.75rem;
     user-select: none;
-    font-size: 0.82rem;
+    font-size: 0.85rem;
   }
 
   /* Right Stats & Actions */
   .req-right-content {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.25rem;
     flex-shrink: 0;
 
     @media (max-width: 576px) {
       width: 100%;
       justify-content: space-between;
       border-top: 1px solid #f1f5f9;
-      padding-top: 0.75rem;
+      padding-top: 1rem;
     }
   }
 
   .vertical-divider-line {
     width: 1px;
-    height: 48px;
+    height: 56px;
     background-color: #e2e8f0;
-    margin-right: 0.5rem;
+    margin: 0 0.5rem;
 
     @media (max-width: 1200px) {
       display: none;
@@ -410,10 +411,10 @@
   .matches-stat-box {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.85rem;
 
     .matches-icon {
-      font-size: 1.5rem;
+      font-size: 1.65rem;
       color: #0f172a;
       flex-shrink: 0;
     }
@@ -425,24 +426,24 @@
     }
 
     .matches-count {
-      font-size: 1.35rem;
+      font-size: 1.45rem;
       font-weight: 800;
       color: #0f172a;
       line-height: 1;
     }
 
     .matches-label {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 700;
       color: #0f172a;
-      margin-top: 2px;
+      margin-top: 3px;
       white-space: nowrap;
     }
 
     .matches-sublabel {
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       color: #64748b;
-      margin-top: 1px;
+      margin-top: 2px;
       white-space: nowrap;
     }
   }
@@ -452,13 +453,13 @@
     background-color: #ffffff;
     color: #4338ca;
     font-weight: 600;
-    border-radius: 12px;
-    padding: 0.5rem 1.25rem;
-    font-size: 0.85rem;
+    border-radius: 50px;
+    padding: 0.6rem 1.35rem;
+    font-size: 0.875rem;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.5rem;
     white-space: nowrap;
     flex-shrink: 0;
     transition: all 0.2s ease;
@@ -471,13 +472,13 @@
   }
 
   .btn-delete-circle {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     background-color: #fff1f2;
     color: #f43f5e;
     border: none;
-    font-size: 0.95rem;
+    font-size: 1rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -488,7 +489,7 @@
     &:hover {
       background-color: #ffe4e6;
       color: #e11d48;
-      transform: scale(1.05);
+      transform: scale(1.06);
     }
   }
 

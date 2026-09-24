@@ -371,6 +371,12 @@
         }
       }
 
+      .header-action-group {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
       .btn-view-passport {
         border: 1px solid #cbd5e1;
         background-color: #ffffff;
@@ -388,6 +394,27 @@
         &:hover {
           background-color: #f8fafc;
           border-color: #94a3b8;
+        }
+      }
+
+      .btn-shortlist-hiring {
+        border: 1px solid #00875a;
+        background-color: #00875a;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 0.82rem;
+        border-radius: 10px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background-color: #00704a;
+          border-color: #00704a;
+          box-shadow: 0 4px 12px rgba(0, 135, 90, 0.25);
         }
       }
     }
