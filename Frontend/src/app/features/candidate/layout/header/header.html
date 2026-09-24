@@ -12,17 +12,43 @@
     </button>
     
     <!-- Notification Bell -->
-    <button class="circle-action-btn border-0 shadow-xs rounded-circle d-flex align-items-center justify-content-center bg-white position-relative" title="Notifications">
-      <i class="bi bi-bell text-secondary fs-6"></i>
-      <span class="position-absolute p-1 bg-danger rounded-circle" style="top: 8px; right: 8px;"></span>
-    </button>
+    <div class="position-relative">
+      <button class="circle-action-btn border-0 shadow-xs rounded-circle d-flex align-items-center justify-content-center bg-white position-relative" title="Notifications" (click)="toggleDropdown()">
+        <i class="bi bi-bell text-secondary fs-6"></i>
+        <span *ngIf="unreadCount > 0" class="position-absolute p-1 bg-danger rounded-circle" style="top: 8px; right: 8px;"></span>
+      </button>
+
+      <!-- Dropdown Menu -->
+      <div *ngIf="showDropdown" class="dropdown-menu dropdown-menu-end show shadow position-absolute" style="right: 0; top: 110%; width: 320px; z-index: 1050; border-radius: 12px; border: none; padding: 0;">
+        <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom bg-light" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
+          <h6 class="mb-0 fw-bold text-navy">Notifications</h6>
+          <span class="badge bg-primary rounded-pill">{{ unreadCount }} New</span>
+        </div>
+        <div class="list-group list-group-flush" style="max-height: 350px; overflow-y: auto;">
+          <div *ngIf="notifications.length === 0" class="text-center py-4 text-muted small">
+            No notifications yet.
+          </div>
+          <a *ngFor="let notif of notifications" href="javascript:void(0)" class="list-group-item list-group-item-action p-3" [class.bg-light]="!notif.read">
+            <div class="d-flex w-100 justify-content-between align-items-center">
+              <h6 class="mb-1 text-navy fw-semibold small" style="text-transform: capitalize;">{{ notif.type }}</h6>
+              <small class="text-muted" style="font-size: 0.7rem;">{{ notif.createdAt | date:'shortTime' }}</small>
+            </div>
+            <p class="mb-1 small text-dark">{{ notif.message }}</p>
+            <button *ngIf="!notif.read" class="btn btn-sm btn-link p-0 text-decoration-none small text-primary" (click)="markAsRead(notif, $event)">Mark as read</button>
+          </a>
+        </div>
+        <div class="px-3 py-2 border-top text-center bg-light" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+          <a routerLink="/candidate/settings" class="text-decoration-none small text-primary fw-medium" (click)="showDropdown = false">Notification Settings</a>
+        </div>
+      </div>
+    </div>
     
     <!-- Profile Dropdown Pill -->
     <div class="profile-dropdown-pill d-flex align-items-center gap-2 ps-1 pe-2 py-1 bg-white rounded-pill shadow-xs cursor-pointer ms-1">
       <div class="avatar rounded-circle overflow-hidden" style="width: 36px; height: 36px;">
-        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" alt="Rahul Sharma" class="w-100 h-100 object-fit-cover">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" [alt]="fullName" class="w-100 h-100 object-fit-cover">
       </div>
-      <span class="fw-bold text-dark me-1" style="font-size: 0.9rem;">Rahul Sharma</span>
+      <span class="fw-bold text-dark me-1" style="font-size: 0.9rem;">{{ fullName }}</span>
       <i class="bi bi-chevron-down text-muted" style="font-size: 0.75rem;"></i>
     </div>
   </div>

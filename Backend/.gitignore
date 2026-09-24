@@ -12,6 +12,8 @@ target/
 .classpath
 .settings/
 .vscode/
+.metadata/
+.factorypath
 
 # Local Environment & Logs
 *.log

@@ -3,11 +3,13 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHighcharts } from 'highcharts-angular';
 import * as Highcharts from 'highcharts';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHighcharts({ instance: () => Promise.resolve(Highcharts) })
+    provideHighcharts({ instance: () => Promise.resolve(Highcharts) }),
+    provideHttpClient()
   ]
 };

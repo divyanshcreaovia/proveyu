@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -12,9 +13,10 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class Login {
   private router = inject(Router);
+  private http = inject(HttpClient);
 
-  email = 'rahul.sharma@example.com';
-  password = 'password123';
+  email = '';
+  password = '';
   selectedRole = 'candidate';
   rememberMe = true;
   isLoggingIn = false;
@@ -65,13 +67,40 @@ export class Login {
       event.preventDefault();
     }
     this.isLoggingIn = true;
-    this.loginSuccessMessage = 'Login successful! Redirecting to Candidate Dashboard...';
 
-    setTimeout(() => {
-      const targetRoute = this.selectedRole === 'candidate' ? '/candidate/dashboard' : '/candidate/dashboard';
-      this.router.navigate([targetRoute]).then(() => {
+    const payload = {
+      email: this.email,
+      password: this.password
+    };
+
+    this.http.post('http://localhost:8080/api/v1/auth/login', payload).subscribe({
+      next: (res: any) => {
+        this.loginSuccessMessage = 'Login successful! Redirecting...';
+        
+        // Save candidate full name and token
+        if (res.data) {
+          if (res.data.fullName) {
+            localStorage.setItem('candidateFullName', res.data.fullName);
+          }
+          if (res.data.token) {
+            localStorage.setItem('token', res.data.token);
+          }
+        } else {
+          localStorage.setItem('candidateFullName', 'Candidate');
+        }
+
+        setTimeout(() => {
+          const targetRoute = this.selectedRole === 'candidate' ? '/candidate/dashboard' : '/candidate/dashboard';
+          this.router.navigate([targetRoute]).then(() => {
+            this.isLoggingIn = false;
+          });
+        }, 400);
+      },
+      error: (err) => {
+        console.error('Login failed', err);
         this.isLoggingIn = false;
-      });
-    }, 400);
+        alert('Login failed. Please check your credentials.');
+      }
+    });
   }
 }

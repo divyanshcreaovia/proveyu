@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 export interface EducationItem {
   id: number;
@@ -31,54 +32,44 @@ export interface SkillItem {
   styleUrl: './profile.scss',
 })
 export class Profile implements OnInit {
+  private http = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
+
   activeTab: 'personal' | 'education' | 'professional' | 'skills' | 'preferences' | 'resume' = 'personal';
   saveNotification: string | null = null;
   newSkillInput = '';
 
   candidateInfo = {
-    fullName: 'Rahul Sharma',
-    email: 'rahul.sharma@example.com',
-    phone: '+91 98765 43210',
-    location: 'Bengaluru, Karnataka',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-    headline: 'Software Engineer | Full Stack & Systems',
-    linkedin: 'https://linkedin.com/in/rahulsharma',
-    github: 'https://github.com/rahulsharma',
-    portfolio: 'https://rahulsharma.dev',
-    bio: 'Passionate software engineer with 2+ years of hands-on experience building scalable web applications. Strong foundations in DSA, System Design, and Modern Cloud Architecture.'
+    fullName: '',
+    email: '',
+    phone: '',
+    location: '',
+    avatar: 'https://ui-avatars.com/api/?name=User&background=random',
+    headline: '',
+    linkedin: '',
+    github: '',
+    portfolio: '',
+    bio: ''
   };
 
-  educationList: EducationItem[] = [
-    { id: 1, degree: 'B.Tech in Computer Science', institution: 'NIT Karnataka, Surathkal', year: '2020 - 2024', score: '8.8 CGPA' },
-    { id: 2, degree: 'Higher Secondary (Class XII)', institution: 'Delhi Public School', year: '2018 - 2020', score: '94.2%' }
-  ];
+  educationList: EducationItem[] = [];
 
-  experienceList: ExperienceItem[] = [
-    { id: 1, company: 'Microsoft', role: 'Software Engineering Intern', duration: 'Jan 2024 - Jun 2024', description: 'Developed microservices using Node.js & TypeScript, optimizing API response latencies by 35%.' },
-    { id: 2, company: 'TechSolutions', role: 'Frontend Developer Intern', duration: 'May 2023 - Aug 2023', description: 'Built responsive dashboard interfaces using Angular & Bootstrap.' }
-  ];
+  experienceList: ExperienceItem[] = [];
 
-  skillsList: SkillItem[] = [
-    { name: 'Data Structures & Algorithms', level: 'Expert' },
-    { name: 'Angular & TypeScript', level: 'Expert' },
-    { name: 'Java & Spring Boot', level: 'Intermediate' },
-    { name: 'SQL & PostgreSQL', level: 'Intermediate' },
-    { name: 'System Design', level: 'Intermediate' },
-    { name: 'Docker & AWS', level: 'Beginner' }
-  ];
+  skillsList: SkillItem[] = [];
 
   preferences = {
-    desiredRole: 'Software Engineer / SDE-1',
-    jobType: 'Full-time',
-    preferredLocations: 'Bengaluru, Hyderabad, Remote',
-    expectedCtc: '₹18 - ₹25 LPA',
-    noticePeriod: '15 Days / Immediate'
+    desiredRole: '',
+    jobType: '',
+    preferredLocations: '',
+    expectedCtc: '',
+    noticePeriod: ''
   };
 
   resume = {
-    fileName: 'Rahul_Sharma_Resume_2024.pdf',
-    fileSize: '1.4 MB',
-    lastUpdated: '18 Sep, 2024'
+    fileName: '',
+    fileSize: '',
+    lastUpdated: ''
   };
 
   // Form Modals / New Item DTOs
@@ -88,7 +79,40 @@ export class Profile implements OnInit {
   newExperience: Partial<ExperienceItem> = {};
   showExperienceForm = false;
 
-  ngOnInit() {}
+  ngOnInit() {
+    const token = localStorage.getItem('token');
+    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+
+    this.http.get('http://localhost:8080/api/v1/candidates/profile', { headers }).subscribe({
+      next: (res: any) => {
+        if (res.success && res.data) {
+          if (res.data.skillsList) {
+            this.skillsList = res.data.skillsList.split(',').map((s: string) => ({ name: s.trim(), level: 'Intermediate' }));
+          }
+          if (res.data.resumeUrl) {
+            this.resume.fileName = res.data.resumeUrl.split('/').pop() || 'resume.pdf';
+          }
+          
+          this.candidateInfo.fullName = res.data.fullName || '';
+          this.candidateInfo.email = res.data.email || '';
+          this.candidateInfo.phone = res.data.phone || '';
+          this.candidateInfo.location = res.data.location || '';
+          this.candidateInfo.headline = res.data.headline || '';
+          this.candidateInfo.linkedin = res.data.linkedinUrl || '';
+          this.candidateInfo.github = res.data.githubUrl || '';
+          this.candidateInfo.portfolio = res.data.portfolioUrl || '';
+          this.candidateInfo.bio = res.data.bio || '';
+          
+          if (this.candidateInfo.fullName) {
+             this.candidateInfo.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.candidateInfo.fullName)}&background=random`;
+             localStorage.setItem('candidateFullName', this.candidateInfo.fullName);
+          }
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => console.error('Failed to load profile', err)
+    });
+  }
 
   get completionScore(): number {
     let score = 30; // base personal info
@@ -100,7 +124,34 @@ export class Profile implements OnInit {
   }
 
   saveProfile() {
-    this.triggerToast('Profile information updated successfully!');
+    const payload = {
+      experienceTrack: this.experienceList.length > 0 ? 'EXPERIENCED' : 'FRESHER',
+      yearsOfExperience: this.experienceList.length,
+      uanNumber: '100918273645',
+      skillsList: this.skillsList.map(s => s.name).join(', '),
+      resumeUrl: 'https://s3.amazonaws.com/proveyu-resumes/' + this.resume.fileName,
+      fullName: this.candidateInfo.fullName,
+      phone: this.candidateInfo.phone,
+      location: this.candidateInfo.location,
+      headline: this.candidateInfo.headline,
+      linkedinUrl: this.candidateInfo.linkedin,
+      githubUrl: this.candidateInfo.github,
+      portfolioUrl: this.candidateInfo.portfolio,
+      bio: this.candidateInfo.bio
+    };
+
+    const token = localStorage.getItem('token');
+    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+
+    this.http.post('http://localhost:8080/api/v1/candidates/profile', payload, { headers }).subscribe({
+      next: () => {
+        this.triggerToast('Profile information updated successfully!');
+      },
+      error: (err) => {
+        console.error('Failed to save profile', err);
+        this.triggerToast('Failed to update profile.');
+      }
+    });
   }
 
   addSkill() {

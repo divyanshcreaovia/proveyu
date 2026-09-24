@@ -1,0 +1,7 @@
+ALTER TABLE candidate_profiles
+ADD COLUMN location VARCHAR(150),
+ADD COLUMN headline VARCHAR(255),
+ADD COLUMN linkedin_url VARCHAR(255),
+ADD COLUMN github_url VARCHAR(255),
+ADD COLUMN portfolio_url VARCHAR(255),
+ADD COLUMN bio TEXT;

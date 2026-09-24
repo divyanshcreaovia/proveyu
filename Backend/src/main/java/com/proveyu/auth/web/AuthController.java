@@ -45,4 +45,11 @@ public class AuthController {
         authService.resetPassword(request);
         return ResponseEntity.ok(ApiResponse.success("Password has been reset successfully", "Password reset successful"));
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout() {
+        // In a stateless JWT setup, real invalidation requires a blocklist (e.g., Redis).
+        // For now, returning success and relying on frontend to drop the token.
+        return ResponseEntity.ok(ApiResponse.success(null, "Logged out successfully"));
+    }
 }

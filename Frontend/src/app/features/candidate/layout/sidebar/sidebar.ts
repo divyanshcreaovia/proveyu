@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-sidebar',
@@ -10,6 +11,8 @@ import { CommonModule } from '@angular/common';
   styleUrl: './sidebar.scss',
 })
 export class Sidebar {
+  private router = inject(Router);
+  private http = inject(HttpClient);
   isCollapsed = false;
 
   toggleSidebar() {
@@ -29,6 +32,31 @@ export class Sidebar {
   bottomItems = [
     { label: 'Support', icon: 'bi-headset', route: '/candidate/support' },
     { label: 'Settings', icon: 'bi-gear-fill', route: '/candidate/settings' },
-    { label: 'Log out', icon: 'bi-box-arrow-right', route: '/login' }
+    { label: 'Log out', icon: 'bi-box-arrow-right', action: 'logout' }
   ];
+
+  onBottomItemClick(item: any, event: Event) {
+    if (item.action === 'logout') {
+      event.preventDefault();
+      this.handleLogout();
+    }
+  }
+
+  private handleLogout() {
+    this.http.post('http://localhost:8080/api/v1/auth/logout', {}).subscribe({
+      next: () => {
+        this.clearSessionAndRedirect();
+      },
+      error: () => {
+        // Even if the backend fails, clear the local session to enforce logout
+        this.clearSessionAndRedirect();
+      }
+    });
+  }
+
+  private clearSessionAndRedirect() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('candidateFullName');
+    this.router.navigate(['/login']);
+  }
 }

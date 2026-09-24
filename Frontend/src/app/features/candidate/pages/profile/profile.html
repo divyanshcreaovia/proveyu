@@ -275,27 +275,28 @@
             <div class="row g-4 mb-4">
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Desired Role</label>
-                <input type="text" class="form-control py-2" [(ngModel)]="preferences.desiredRole">
+                <input type="text" class="form-control py-2" [(ngModel)]="preferences.desiredRole" placeholder="Software Engineer / SDE-1">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Job Type</label>
                 <select class="form-select py-2" [(ngModel)]="preferences.jobType">
-                  <option>Full-time</option>
-                  <option>Internship</option>
-                  <option>Contract</option>
+                  <option value="" disabled>Select Job Type</option>
+                  <option value="Full-time">Full-time</option>
+                  <option value="Internship">Internship</option>
+                  <option value="Contract">Contract</option>
                 </select>
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Preferred Locations</label>
-                <input type="text" class="form-control py-2" [(ngModel)]="preferences.preferredLocations">
+                <input type="text" class="form-control py-2" [(ngModel)]="preferences.preferredLocations" placeholder="Bengaluru, Hyderabad, Remote">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Expected CTC</label>
-                <input type="text" class="form-control py-2" [(ngModel)]="preferences.expectedCtc">
+                <input type="text" class="form-control py-2" [(ngModel)]="preferences.expectedCtc" placeholder="₹18 - ₹25 LPA">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Notice Period</label>
-                <input type="text" class="form-control py-2" [(ngModel)]="preferences.noticePeriod">
+                <input type="text" class="form-control py-2" [(ngModel)]="preferences.noticePeriod" placeholder="15 Days / Immediate">
               </div>
             </div>
 
