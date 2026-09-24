@@ -1,14 +1,33 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, signal, OnInit } from '@angular/core';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { Navbar } from './shared/components/navbar/navbar';
 import { Footer } from './shared/components/footer/footer';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, Footer],
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, Navbar, Footer],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('proveyu-frontend');
+  isCandidateRoute = false;
+
+  constructor(private router: Router) {}
+
+  ngOnInit() {
+    this.checkRoute(this.router.url);
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.checkRoute(event.urlAfterRedirects || event.url);
+      });
+  }
+
+  private checkRoute(url: string) {
+    this.isCandidateRoute = url.includes('/candidate');
+  }
 }

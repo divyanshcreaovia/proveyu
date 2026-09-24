@@ -1,0 +1,158 @@
+.grapeslab-dashboard-container {
+  font-family: 'Inter', sans-serif;
+}
+
+/* 5 Top Equal Professional Cards Grid (Single Row) */
+.top-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  width: 100%;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 576px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.stat-card-item {
+  border: 1px solid #e2e8f0 !important;
+  border-top-width: 4px !important;
+  border-radius: 20px !important;
+  background-color: #ffffff;
+  min-height: 145px;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.08) !important;
+
+    .circle-arrow-btn {
+      background-color: #0f172a !important;
+      color: #ffffff !important;
+      border-color: #0f172a !important;
+      transform: rotate(45deg);
+    }
+  }
+
+  .stat-icon-badge {
+    width: 32px;
+    height: 32px;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+  }
+
+  .circle-arrow-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  /* Color Themes */
+  &.card-theme-indigo {
+    background: linear-gradient(180deg, #ffffff 0%, #f5f7ff 100%);
+    .badge-theme-indigo { background-color: #e0e7ff; color: #4f46e5; }
+  }
+  &.card-theme-emerald {
+    background: linear-gradient(180deg, #ffffff 0%, #ecfdf5 100%);
+    .badge-theme-emerald { background-color: #d1fae5; color: #10b981; }
+  }
+  &.card-theme-purple {
+    background: linear-gradient(180deg, #ffffff 0%, #faf5ff 100%);
+    .badge-theme-purple { background-color: #f3e8ff; color: #7c3aed; }
+  }
+  &.card-theme-blue {
+    background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
+    .badge-theme-blue { background-color: #e0f2fe; color: #0284c7; }
+  }
+  &.card-theme-slate {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    .badge-theme-slate { background-color: #0f172a; color: #ffffff; }
+  }
+}
+
+/* ProveYu Skill Passport Styles */
+.text-purple-accent {
+  color: #4f46e5 !important;
+}
+
+.bg-purple-accent {
+  background-color: #4f46e5 !important;
+}
+
+.avatar-circle-purple {
+  background: linear-gradient(135deg, #3c079d 0%, #250367 100%);
+}
+
+.score-badge-circle {
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+}
+
+.primary-fit-box {
+  background-color: #f8fafc;
+  border-color: #e0e7ff !important;
+}
+
+/* Grapeslab Cards & Tables */
+.grapeslab-card {
+  border-radius: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+}
+
+.shadow-xs {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Status Badges */
+.badge-soft-cyan {
+  background-color: #dff7f6;
+  color: #0891b2;
+}
+
+.badge-soft-green {
+  background-color: #e2f9eb;
+  color: #16a34a;
+}
+
+.border-bottom-dark {
+  border-bottom: 2px solid #16122b;
+}
+
+.hover-dark:hover {
+  color: #16122b !important;
+}
+
+/* Chart Period Buttons */
+.filter-dot-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+
+  &.active-period {
+    background-color: var(--grapeslab-dark, #16122b);
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(22, 18, 43, 0.2);
+  }
+}
+
+.circle-nav-btn {
+  width: 44px;
+  height: 44px;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.08);
+  }
+}

@@ -21,6 +21,7 @@ import java.util.Collections;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider tokenProvider;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -29,15 +30,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt = getJwtFromRequest(request);
 
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-            String userId = tokenProvider.getUserIdFromToken(jwt);
-            String role = tokenProvider.getRoleFromToken(jwt);
+            if (!tokenBlacklistService.isBlacklisted(jwt)) {
+                String userId = tokenProvider.getUserIdFromToken(jwt);
+                String role = tokenProvider.getRoleFromToken(jwt);
 
-            SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userId, null, Collections.singletonList(authority));
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userId, null, Collections.singletonList(authority));
 
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
 
         filterChain.doFilter(request, response);

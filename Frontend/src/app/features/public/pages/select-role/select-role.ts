@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 export interface VerificationTrack {
   id: string;
@@ -22,6 +23,7 @@ export interface VerificationTrack {
 })
 export class SelectRole {
   private router = inject(Router);
+  private http = inject(HttpClient);
 
   // View state: 'choose' | 'candidate_wizard' | 'recruiter_wizard'
   viewState: 'choose' | 'candidate_wizard' | 'recruiter_wizard' = 'choose';
@@ -31,35 +33,39 @@ export class SelectRole {
 
   // Candidate Form Data
   formData = {
-    fullName: 'Rahul Sharma',
-    email: 'rahul.sharma@example.com',
-    phone: '+91 98765 43210',
-    city: 'Bengaluru',
-    college: 'RV College of Engineering',
-    degree: 'B.Tech',
+    fullName: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
+    city: '',
+    college: '',
+    degree: '',
     graduationYear: 2026,
-    stream: 'Computer Science & Engineering',
+    stream: '',
     status: 'fresher', // 'student' | 'fresher' | 'experienced'
     selectedTrack: 'universal',
-    photoUploaded: true,
-    idUploaded: true
+    photoUploaded: false,
+    idUploaded: false
   };
 
   // Recruiter Form Data
   recruiterFormData = {
-    contactName: 'Vikram Mehta',
-    workEmail: 'vikram.mehta@apexplacements.com',
-    phone: '+91 98123 45678',
-    city: 'Bengaluru',
-    companyName: 'Apex Placement Agency',
+    contactName: '',
+    workEmail: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
+    city: '',
+    companyName: '',
     orgType: 'agency', // 'agency' | 'startup' | 'corporate' | 'staffing'
-    website: 'https://apexplacements.com',
+    website: '',
     primaryTrack: 'universal',
     hiringVolume: '5-20',
     candidateLevel: 'fresher',
     accessTier: 'agency_console',
-    domainVerified: true,
-    gstVerified: true
+    domainVerified: false,
+    gstVerified: false
   };
 
   consentInvigilation = true;
@@ -187,8 +193,47 @@ export class SelectRole {
 
   submitRegistration() {
     this.isSubmitted = true;
-    setTimeout(() => {
-      this.router.navigate(['/']);
-    }, 2200);
+    
+    let payload;
+    if (this.viewState === 'candidate_wizard') {
+        if (this.formData.password !== this.formData.confirmPassword) {
+            alert('Passwords do not match');
+            this.isSubmitted = false;
+            return;
+        }
+        payload = {
+            email: this.formData.email,
+            password: this.formData.password,
+            fullName: this.formData.fullName,
+            phone: this.formData.phone,
+            role: 'CANDIDATE'
+        };
+    } else {
+        if (this.recruiterFormData.password !== this.recruiterFormData.confirmPassword) {
+            alert('Passwords do not match');
+            this.isSubmitted = false;
+            return;
+        }
+        payload = {
+            email: this.recruiterFormData.workEmail,
+            password: this.recruiterFormData.password,
+            fullName: this.recruiterFormData.contactName,
+            phone: this.recruiterFormData.phone,
+            role: 'RECRUITER'
+        };
+    }
+
+    this.http.post('http://localhost:8080/api/v1/auth/register', payload).subscribe({
+      next: (res) => {
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2200);
+      },
+      error: (err) => {
+        console.error('Registration failed', err);
+        this.isSubmitted = false;
+        alert('Registration failed. Please try again.');
+      }
+    });
   }
 }

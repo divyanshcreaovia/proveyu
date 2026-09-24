@@ -74,6 +74,12 @@ Key design principles:
 | `passout_year` | `INT` | YES | Year of graduation |
 | `skills_list` | `TEXT` | YES | Comma-separated list of candidate skills |
 | `resume_url` | `VARCHAR(512)` | YES | Document URL for candidate resume |
+| `location` | `VARCHAR(150)` | YES | Candidate location or city |
+| `headline` | `VARCHAR(255)` | YES | Professional headline |
+| `linkedin_url` | `VARCHAR(255)` | YES | LinkedIn profile URL |
+| `github_url` | `VARCHAR(255)` | YES | GitHub profile URL |
+| `portfolio_url` | `VARCHAR(255)` | YES | Personal portfolio website URL |
+| `bio` | `TEXT` | YES | Short biography / about me section |
 | `created_at` | `TIMESTAMP` | NO | Record creation timestamp |
 | `updated_at` | `TIMESTAMP` | YES | Record last modification timestamp |
 
@@ -313,3 +319,28 @@ Key design principles:
 | `installed_on` | `TIMESTAMP` | NO | Execution timestamp |
 | `execution_time` | `INT` | NO | Execution time in milliseconds |
 | `success` | `TINYINT(1)` | NO | Success boolean flag |
+
+---
+
+## 9. `candidate_settings` (Settings for Candidates)
+- **`id`** (`VARCHAR(36)`): Primary Key (UUID).
+- **`user_id`** (`VARCHAR(36)`): Foreign Key (`users.id`). UNIQUE.
+- **`email_notifications`** (`BOOLEAN`): Default TRUE.
+- **`sms_notifications`** (`BOOLEAN`): Default FALSE.
+- **`push_notifications`** (`BOOLEAN`): Default TRUE.
+- **`test_reminders`** (`BOOLEAN`): Default TRUE.
+- **`interview_invites`** (`BOOLEAN`): Default TRUE.
+- **`application_updates`** (`BOOLEAN`): Default TRUE.
+- **`job_offers`** (`BOOLEAN`): Default TRUE.
+- **`marketing_updates`** (`BOOLEAN`): Default FALSE.
+- **`newsletter`** (`BOOLEAN`): Default FALSE.
+
+---
+
+## 10. `notifications` (User Notifications)
+- **`id`** (`VARCHAR(36)`): Primary Key (UUID).
+- **`user_id`** (`VARCHAR(36)`): Foreign Key (`users.id`).
+- **`type`** (`VARCHAR(50)`): Type of notification (e.g. 'urgent', 'info').
+- **`message`** (`TEXT`): Notification content.
+- **`is_read`** (`BOOLEAN`): Default FALSE.
+- **`created_at`** (`TIMESTAMP`): Creation timestamp.

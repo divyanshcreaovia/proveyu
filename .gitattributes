@@ -1,0 +1,12 @@
+# Enforce Unix LF line endings across all platforms (Windows, Linux, macOS)
+* text=auto eol=lf
+*.java text eol=lf
+*.ts text eol=lf
+*.html text eol=lf
+*.scss text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+*.sql text eol=lf

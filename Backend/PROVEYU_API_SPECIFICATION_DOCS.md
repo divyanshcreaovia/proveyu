@@ -199,9 +199,17 @@ All APIs return a generic JSON wrapper structure:
 * **Request Payload**:
 ```json
 {
+  "fullName": "Aarav Patel",
+  "phone": "+91 98765 43210",
   "experienceTrack": "EXPERIENCED",
   "yearsOfExperience": 4,
   "uanNumber": "100918273645",
+  "location": "Bengaluru, Karnataka",
+  "headline": "Senior Software Engineer",
+  "linkedinUrl": "https://linkedin.com/in/aarav",
+  "githubUrl": "https://github.com/aarav",
+  "portfolioUrl": "https://aarav.dev",
+  "bio": "Passionate about highly scalable systems.",
   "skillsList": "Java, Spring Boot, MySQL, Microservices",
   "resumeUrl": "https://s3.amazonaws.com/proveyu-resumes/aarav.pdf"
 }
@@ -214,12 +222,21 @@ All APIs return a generic JSON wrapper structure:
   "data": {
     "id": "c54b7323-0f1e-46f2-aff8-f0da2631b86e",
     "userId": "b0803c68-90d7-426f-91a1-bbf472a269e4",
+    "fullName": "Aarav Patel",
+    "email": "aarav@example.com",
+    "phone": "+91 98765 43210",
     "experienceTrack": "EXPERIENCED",
     "yearsOfExperience": 4,
     "uanNumber": "100918273645",
     "collegeName": null,
     "degreeBranch": null,
     "passoutYear": null,
+    "location": "Bengaluru, Karnataka",
+    "headline": "Senior Software Engineer",
+    "linkedinUrl": "https://linkedin.com/in/aarav",
+    "githubUrl": "https://github.com/aarav",
+    "portfolioUrl": "https://aarav.dev",
+    "bio": "Passionate about highly scalable systems.",
     "skillsList": "Java, Spring Boot, MySQL, Microservices",
     "resumeUrl": "https://s3.amazonaws.com/proveyu-resumes/aarav.pdf",
     "updatedAt": "2026-09-20T20:51:00Z"
@@ -242,12 +259,21 @@ All APIs return a generic JSON wrapper structure:
   "data": {
     "id": "c54b7323-0f1e-46f2-aff8-f0da2631b86e",
     "userId": "b0803c68-90d7-426f-91a1-bbf472a269e4",
+    "fullName": "Aarav Patel",
+    "email": "aarav@example.com",
+    "phone": "+91 98765 43210",
     "experienceTrack": "EXPERIENCED",
     "yearsOfExperience": 4,
     "uanNumber": "100918273645",
     "collegeName": null,
     "degreeBranch": null,
     "passoutYear": null,
+    "location": "Bengaluru, Karnataka",
+    "headline": "Senior Software Engineer",
+    "linkedinUrl": "https://linkedin.com/in/aarav",
+    "githubUrl": "https://github.com/aarav",
+    "portfolioUrl": "https://aarav.dev",
+    "bio": "Passionate about highly scalable systems.",
     "skillsList": "Java, Spring Boot, MySQL, Microservices",
     "resumeUrl": "https://s3.amazonaws.com/proveyu-resumes/aarav.pdf",
     "updatedAt": "2026-09-20T20:51:00Z"
@@ -471,4 +497,72 @@ All APIs return a generic JSON wrapper structure:
 }
 ```
 
+---
 
+## 7. Settings & Notifications Module
+
+### 7.1 Get User Settings
+* **Endpoint**: `GET /api/v1/candidates/settings`
+* **Headers**: `Authorization: Bearer <token>`
+* **Success Response (`200 OK`)**:
+```json
+{
+  "success": true,
+  "message": "Settings retrieved successfully",
+  "data": {
+    "emailNotifications": true,
+    "smsNotifications": false,
+    "pushNotifications": true,
+    "testReminders": true,
+    "interviewInvites": true,
+    "applicationUpdates": true,
+    "jobOffers": true,
+    "marketingUpdates": false,
+    "newsletter": false
+  },
+  "errorCode": null,
+  "timestamp": "2026-09-22T20:50:00Z"
+}
+```
+
+### 7.2 Update User Settings
+* **Endpoint**: `PUT /api/v1/candidates/settings`
+* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
+* **Request Payload**: (Same as data block in GET)
+* **Success Response (`200 OK`)**: Echoes updated settings.
+
+### 7.3 Get All Notifications
+* **Endpoint**: `GET /api/v1/notifications`
+* **Headers**: `Authorization: Bearer <token>`
+* **Success Response (`200 OK`)**:
+```json
+{
+  "success": true,
+  "message": "Notifications retrieved successfully",
+  "data": [
+    {
+      "id": "c54b7323...",
+      "type": "urgent",
+      "message": "Your interview is tomorrow!",
+      "read": false,
+      "createdAt": "2026-09-22T19:00:00Z"
+    }
+  ],
+  "errorCode": null,
+  "timestamp": "2026-09-22T20:50:00Z"
+}
+```
+
+### 7.4 Mark Notification as Read
+* **Endpoint**: `PUT /api/v1/notifications/{id}/read`
+* **Headers**: `Authorization: Bearer <token>`
+* **Success Response (`200 OK`)**:
+```json
+{
+  "success": true,
+  "message": "Notification marked as read",
+  "data": null,
+  "errorCode": null,
+  "timestamp": "2026-09-22T20:50:00Z"
+}
+```

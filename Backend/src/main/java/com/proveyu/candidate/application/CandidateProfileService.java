@@ -84,6 +84,20 @@ public class CandidateProfileService {
         profile.setPassoutYear(request.getPassoutYear());
         profile.setSkillsList(request.getSkillsList());
         profile.setResumeUrl(request.getResumeUrl());
+        profile.setLocation(request.getLocation());
+        profile.setHeadline(request.getHeadline());
+        profile.setLinkedinUrl(request.getLinkedinUrl());
+        profile.setGithubUrl(request.getGithubUrl());
+        profile.setPortfolioUrl(request.getPortfolioUrl());
+        profile.setBio(request.getBio());
+
+        if (request.getFullName() != null) {
+            user.setFullName(request.getFullName());
+        }
+        if (request.getPhone() != null) {
+            user.setPhone(request.getPhone());
+        }
+        userRepository.save(user);
 
         // UAN EPFO Backend Experience verification calculation (hidden from candidate response DTO)
         if ("EXPERIENCED".equalsIgnoreCase(track) && request.getUanNumber() != null) {
@@ -109,12 +123,24 @@ public class CandidateProfileService {
                 saved.getPassoutYear(),
                 saved.getSkillsList(),
                 saved.getResumeUrl(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getPhone(),
+                saved.getLocation(),
+                saved.getHeadline(),
+                saved.getLinkedinUrl(),
+                saved.getGithubUrl(),
+                saved.getPortfolioUrl(),
+                saved.getBio(),
                 saved.getUpdatedAt()
         );
     }
 
     @Transactional(readOnly = true)
     public ProfileResponse getProfile(UUID candidateId) {
+        User user = userRepository.findById(candidateId)
+                .orElseThrow(() -> new DomainException("Candidate not found", HttpStatus.NOT_FOUND, "USER_NOT_FOUND"));
+
         CandidateProfile profile = profileRepository.findByUserId(candidateId)
                 .orElseGet(() -> CandidateProfile.builder().userId(candidateId).experienceTrack("FRESHER").build());
 
@@ -129,6 +155,15 @@ public class CandidateProfileService {
                 profile.getPassoutYear(),
                 profile.getSkillsList(),
                 profile.getResumeUrl(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getPhone(),
+                profile.getLocation(),
+                profile.getHeadline(),
+                profile.getLinkedinUrl(),
+                profile.getGithubUrl(),
+                profile.getPortfolioUrl(),
+                profile.getBio(),
                 profile.getUpdatedAt()
         );
     }

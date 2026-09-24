@@ -1,0 +1,110 @@
+<div class="settings-container" style="max-width: 900px;">
+  <div class="card card-shadow border-0">
+    <div class="border-bottom px-4 pt-3 bg-white" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
+      <ul class="nav nav-tabs border-0 gap-4" id="settingsTabs">
+        <li class="nav-item">
+          <button class="nav-link bg-transparent border-0 fw-medium pb-3 px-1 position-relative" [class.active]="activeTab === 'notifications'" (click)="activeTab = 'notifications'">Notifications</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link bg-transparent border-0 fw-medium pb-3 px-1 text-muted-custom" [class.active]="activeTab === 'privacy'" (click)="activeTab = 'privacy'">Privacy</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link bg-transparent border-0 fw-medium pb-3 px-1 text-muted-custom" [class.active]="activeTab === 'account'" (click)="activeTab = 'account'">Account</button>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="p-4 p-md-5">
+      <div *ngIf="activeTab === 'notifications'">
+
+        <div *ngIf="successMessage" class="alert alert-success py-2 mb-4">{{ successMessage }}</div>
+        <div *ngIf="errorMessage" class="alert alert-danger py-2 mb-4">{{ errorMessage }}</div>
+
+        <div class="row g-5">
+          <div class="col-md-7">
+            <h5 class="fw-bold text-navy mb-4">Notification Preferences</h5>
+            
+            <div class="d-flex flex-column gap-4">
+              
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="fw-bold text-navy mb-1">Email Notifications</div>
+                  <div class="text-muted-custom small">Get emails about tests, interviews and offers</div>
+                </div>
+                <div class="form-check form-switch ms-3">
+                  <input class="form-check-input fs-5 cursor-pointer shadow-none" type="checkbox" [(ngModel)]="settingsData.emailNotifications">
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="fw-bold text-navy mb-1">SMS Notifications</div>
+                  <div class="text-muted-custom small">Important alerts and reminders</div>
+                </div>
+                <div class="form-check form-switch ms-3">
+                  <input class="form-check-input fs-5 cursor-pointer shadow-none" type="checkbox" [(ngModel)]="settingsData.smsNotifications">
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="fw-bold text-navy mb-1">Push Notifications</div>
+                  <div class="text-muted-custom small">Real-time updates on your mobile</div>
+                </div>
+                <div class="form-check form-switch ms-3">
+                  <input class="form-check-input fs-5 cursor-pointer shadow-none" type="checkbox" [(ngModel)]="settingsData.pushNotifications">
+                </div>
+              </div>
+
+            </div>
+          </div>
+          
+          <div class="col-md-5 border-start-md ps-md-5 mt-5 mt-md-0">
+            <h5 class="fw-bold text-navy mb-4">Notification Types</h5>
+            
+            <div class="d-flex flex-column gap-3">
+              <div class="form-check">
+                <input class="form-check-input cursor-pointer shadow-none" type="checkbox" id="type_Test_Reminders" [(ngModel)]="settingsData.testReminders">
+                <label class="form-check-label fw-medium text-navy cursor-pointer" for="type_Test_Reminders">Test Reminders</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input cursor-pointer shadow-none" type="checkbox" id="type_Interview_Invites" [(ngModel)]="settingsData.interviewInvites">
+                <label class="form-check-label fw-medium text-navy cursor-pointer" for="type_Interview_Invites">Interview Invites</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input cursor-pointer shadow-none" type="checkbox" id="type_Application_Updates" [(ngModel)]="settingsData.applicationUpdates">
+                <label class="form-check-label fw-medium text-navy cursor-pointer" for="type_Application_Updates">Application Updates</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input cursor-pointer shadow-none" type="checkbox" id="type_Job_Offers" [(ngModel)]="settingsData.jobOffers">
+                <label class="form-check-label fw-medium text-navy cursor-pointer" for="type_Job_Offers">Job Offers</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input cursor-pointer shadow-none" type="checkbox" id="type_Marketing_Updates" [(ngModel)]="settingsData.marketingUpdates">
+                <label class="form-check-label fw-medium text-navy cursor-pointer" for="type_Marketing_Updates">Marketing Updates</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input cursor-pointer shadow-none" type="checkbox" id="type_Newsletter" [(ngModel)]="settingsData.newsletter">
+                <label class="form-check-label fw-medium text-navy cursor-pointer" for="type_Newsletter">Newsletter</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-5 pt-4 border-top">
+          <button class="btn btn-primary-custom px-4" (click)="saveSettings()" [disabled]="isSaving">
+            <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>
+            Save Changes
+          </button>
+        </div>
+      </div>
+      
+      <div *ngIf="activeTab === 'privacy'" class="text-center py-5 text-muted-custom">
+        Privacy settings placeholder
+      </div>
+      <div *ngIf="activeTab === 'account'" class="text-center py-5 text-muted-custom">
+        Account settings placeholder
+      </div>
+    </div>
+  </div>
+</div>

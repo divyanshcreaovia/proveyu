@@ -1,0 +1,383 @@
+<div class="profile-container">
+
+  <!-- Save Toast Notification -->
+  <div class="toast-notification position-fixed bottom-0 end-0 p-3 z-3" *ngIf="saveNotification">
+    <div class="alert alert-dark rounded-4 shadow-lg border-0 d-flex align-items-center gap-3 text-white px-4 py-3 mb-0" role="alert">
+      <i class="bi bi-check-circle-fill text-success fs-5"></i>
+      <span class="fw-semibold">{{ saveNotification }}</span>
+    </div>
+  </div>
+
+  <!-- Profile Header Card -->
+  <div class="card card-shadow border-0 mb-4 p-4">
+    <div class="row align-items-center">
+      <div class="col-md-7 d-flex align-items-center gap-4">
+        <div class="position-relative flex-shrink-0">
+          <div class="avatar rounded-circle overflow-hidden border border-2 border-white shadow-sm" style="width: 100px; height: 100px;">
+            <img [src]="candidateInfo.avatar" [alt]="candidateInfo.fullName" class="w-100 h-100 object-fit-cover">
+          </div>
+          <button class="btn btn-sm btn-light border position-absolute bottom-0 end-0 rounded-circle p-2 shadow-sm" style="transform: translate(25%, 25%);" (click)="changeAvatar()" title="Change Avatar">
+            <i class="bi bi-camera-fill text-primary"></i>
+          </button>
+        </div>
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <h4 class="fw-bold text-navy mb-0">{{ candidateInfo.fullName }}</h4>
+            <span class="badge bg-light-blue text-navy border px-2 py-1">Silver Tier</span>
+          </div>
+          <div class="text-muted-custom small mb-3">
+            <i class="bi bi-envelope me-1"></i> {{ candidateInfo.email }} <span class="mx-2">|</span>
+            <i class="bi bi-telephone me-1"></i> {{ candidateInfo.phone }} <span class="mx-2">|</span>
+            <i class="bi bi-geo-alt me-1"></i> {{ candidateInfo.location }}
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-primary-custom px-4" (click)="saveProfile()">Save Changes</button>
+            <button class="btn btn-sm btn-outline-custom px-4" (click)="shareProfile()">Share Profile</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completion Score -->
+      <div class="col-md-5 border-start ps-md-5 mt-4 mt-md-0">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="fw-bold text-navy">Profile Completion</span>
+          <span class="fw-bold text-success">{{ completionScore }}%</span>
+        </div>
+        <div class="progress rounded-pill bg-light-blue" style="height: 10px;">
+          <div class="progress-bar bg-success rounded-pill" role="progressbar" [style.width]="completionScore + '%'" [attr.aria-valuenow]="completionScore" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <p class="text-muted-custom small mt-3 mb-0">
+          Complete your profile to unlock more interview opportunities and better recommendations.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Content Card -->
+  <div class="card card-shadow border-0">
+    <!-- Clean Nav Tabs -->
+    <div class="border-bottom px-4 pt-3">
+      <ul class="nav nav-tabs border-0 gap-4" id="profileTabs">
+        <li class="nav-item">
+          <button class="nav-link bg-transparent border-0 fw-medium pb-3 px-1 transition-all" 
+                  [class.active]="activeTab === 'personal'" 
+                  (click)="activeTab = 'personal'">Personal Information</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link bg-transparent border-0 fw-medium pb-3 px-1 transition-all" 
+                  [class.active]="activeTab === 'education'" 
+                  (click)="activeTab = 'education'">Education</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link bg-transparent border-0 fw-medium pb-3 px-1 transition-all" 
+                  [class.active]="activeTab === 'professional'" 
+                  (click)="activeTab = 'professional'">Professional</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link bg-transparent border-0 fw-medium pb-3 px-1 transition-all" 
+                  [class.active]="activeTab === 'skills'" 
+                  (click)="activeTab = 'skills'">Skills</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link bg-transparent border-0 fw-medium pb-3 px-1 transition-all" 
+                  [class.active]="activeTab === 'preferences'" 
+                  (click)="activeTab = 'preferences'">Career Preferences</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link bg-transparent border-0 fw-medium pb-3 px-1 transition-all" 
+                  [class.active]="activeTab === 'resume'" 
+                  (click)="activeTab = 'resume'">Resume</button>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Tab Content Body -->
+    <div class="p-4 p-md-5">
+      <div class="row">
+        <!-- Left Main Form Column -->
+        <div class="col-lg-8">
+
+          <!-- TAB 1: Personal Information -->
+          <div *ngIf="activeTab === 'personal'">
+            <h5 class="fw-bold text-navy mb-4">Personal Information</h5>
+            
+            <div class="row g-4 mb-4">
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Full Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control py-2" [(ngModel)]="candidateInfo.fullName">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Email Address (Read Only)</label>
+                <input type="email" class="form-control py-2" [(ngModel)]="candidateInfo.email" readonly>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Phone Number <span class="text-danger">*</span></label>
+                <input type="tel" class="form-control py-2" [(ngModel)]="candidateInfo.phone">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Location / City <span class="text-danger">*</span></label>
+                <input type="text" class="form-control py-2" [(ngModel)]="candidateInfo.location">
+              </div>
+              <div class="col-md-12">
+                <label class="form-label text-muted-custom small fw-medium">Headline</label>
+                <input type="text" class="form-control py-2" [(ngModel)]="candidateInfo.headline">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label text-muted-custom small fw-medium"><i class="bi bi-linkedin text-primary me-1"></i> LinkedIn URL</label>
+                <input type="text" class="form-control py-2 small" [(ngModel)]="candidateInfo.linkedin">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label text-muted-custom small fw-medium"><i class="bi bi-github me-1"></i> GitHub URL</label>
+                <input type="text" class="form-control py-2 small" [(ngModel)]="candidateInfo.github">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label text-muted-custom small fw-medium"><i class="bi bi-globe me-1"></i> Portfolio</label>
+                <input type="text" class="form-control py-2 small" [(ngModel)]="candidateInfo.portfolio">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label text-muted-custom small fw-medium">About Me</label>
+                <textarea class="form-control py-3" rows="4" [(ngModel)]="candidateInfo.bio"></textarea>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-3 pt-3 border-top mt-2">
+              <button class="btn btn-outline-custom">Cancel</button>
+              <button class="btn btn-primary-custom px-4" (click)="saveProfile()">Save Changes</button>
+            </div>
+          </div>
+
+          <!-- TAB 2: Education -->
+          <div *ngIf="activeTab === 'education'">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h5 class="fw-bold text-navy mb-0">Education</h5>
+              <button class="btn btn-sm btn-primary-custom" (click)="showEducationForm = !showEducationForm">
+                + Add Degree
+              </button>
+            </div>
+
+            <!-- Add Education Form -->
+            <div class="card p-3 mb-4 card-bordered" *ngIf="showEducationForm">
+              <h6 class="fw-bold text-navy mb-3">Add Education</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small text-muted-custom">Degree / Course</label>
+                  <input type="text" class="form-control" placeholder="e.g. B.Tech Computer Science" [(ngModel)]="newEducation.degree">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small text-muted-custom">Institution</label>
+                  <input type="text" class="form-control" placeholder="e.g. NIT Karnataka" [(ngModel)]="newEducation.institution">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small text-muted-custom">Passing Year</label>
+                  <input type="text" class="form-control" placeholder="e.g. 2020 - 2024" [(ngModel)]="newEducation.year">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small text-muted-custom">Grade / Score</label>
+                  <input type="text" class="form-control" placeholder="e.g. 8.8 CGPA" [(ngModel)]="newEducation.score">
+                </div>
+              </div>
+              <div class="d-flex gap-2 justify-content-end mt-3">
+                <button class="btn btn-sm btn-outline-custom" (click)="showEducationForm = false">Cancel</button>
+                <button class="btn btn-sm btn-primary-custom" (click)="addEducation()">Save Education</button>
+              </div>
+            </div>
+
+            <!-- Education List -->
+            <div class="d-flex flex-column gap-3">
+              <div class="card p-3 card-bordered d-flex flex-row justify-content-between align-items-start" *ngFor="let edu of educationList">
+                <div>
+                  <h6 class="fw-bold text-navy mb-1">{{ edu.degree }}</h6>
+                  <div class="text-muted-custom small">{{ edu.institution }} • ({{ edu.year }})</div>
+                  <span class="badge bg-light text-navy border mt-2 px-2 py-1">{{ edu.score }}</span>
+                </div>
+                <button class="btn btn-link text-danger p-0 border-0 shadow-none" (click)="deleteEducation(edu.id)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: Professional Experience -->
+          <div *ngIf="activeTab === 'professional'">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h5 class="fw-bold text-navy mb-0">Professional Experience</h5>
+              <button class="btn btn-sm btn-primary-custom" (click)="showExperienceForm = !showExperienceForm">
+                + Add Experience
+              </button>
+            </div>
+
+            <!-- Add Experience Form -->
+            <div class="card p-3 mb-4 card-bordered" *ngIf="showExperienceForm">
+              <h6 class="fw-bold text-navy mb-3">Add Work Experience</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small text-muted-custom">Company</label>
+                  <input type="text" class="form-control" placeholder="e.g. Microsoft" [(ngModel)]="newExperience.company">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small text-muted-custom">Job Title / Role</label>
+                  <input type="text" class="form-control" placeholder="e.g. Software Engineering Intern" [(ngModel)]="newExperience.role">
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label small text-muted-custom">Duration</label>
+                  <input type="text" class="form-control" placeholder="e.g. Jan 2024 - Jun 2024" [(ngModel)]="newExperience.duration">
+                </div>
+                <div class="col-md-12">
+                  <label class="form-label small text-muted-custom">Description</label>
+                  <textarea class="form-control" rows="3" [(ngModel)]="newExperience.description"></textarea>
+                </div>
+              </div>
+              <div class="d-flex gap-2 justify-content-end mt-3">
+                <button class="btn btn-sm btn-outline-custom" (click)="showExperienceForm = false">Cancel</button>
+                <button class="btn btn-sm btn-primary-custom" (click)="addExperience()">Save Experience</button>
+              </div>
+            </div>
+
+            <!-- Experience List -->
+            <div class="d-flex flex-column gap-3">
+              <div class="card p-3 card-bordered d-flex flex-row justify-content-between align-items-start" *ngFor="let exp of experienceList">
+                <div>
+                  <h6 class="fw-bold text-navy mb-1">{{ exp.role }}</h6>
+                  <div class="text-primary fw-medium small mb-1">{{ exp.company }} • {{ exp.duration }}</div>
+                  <p class="text-muted-custom small mb-0">{{ exp.description }}</p>
+                </div>
+                <button class="btn btn-link text-danger p-0 border-0 shadow-none" (click)="deleteExperience(exp.id)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: Skills -->
+          <div *ngIf="activeTab === 'skills'">
+            <h5 class="fw-bold text-navy mb-4">Skills</h5>
+
+            <div class="d-flex gap-2 mb-4">
+              <input type="text" class="form-control py-2" placeholder="Add a skill (e.g. React, Java, Docker)..." [(ngModel)]="newSkillInput" (keyup.enter)="addSkill()">
+              <button class="btn btn-primary-custom px-4" (click)="addSkill()">Add</button>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+              <div class="badge bg-light text-navy border px-3 py-2 fs-6 d-flex align-items-center gap-2" *ngFor="let skill of skillsList; let i = index">
+                <span>{{ skill.name }}</span>
+                <span class="badge bg-white text-muted border small">{{ skill.level }}</span>
+                <button class="btn btn-link text-danger p-0 border-0 shadow-none ms-1" (click)="removeSkill(i)"><i class="bi bi-x"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 5: Career Preferences -->
+          <div *ngIf="activeTab === 'preferences'">
+            <h5 class="fw-bold text-navy mb-4">Career Preferences</h5>
+
+            <div class="row g-4 mb-4">
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Desired Role</label>
+                <input type="text" class="form-control py-2" [(ngModel)]="preferences.desiredRole" placeholder="Software Engineer / SDE-1">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Job Type</label>
+                <select class="form-select py-2" [(ngModel)]="preferences.jobType">
+                  <option value="" disabled>Select Job Type</option>
+                  <option value="Full-time">Full-time</option>
+                  <option value="Internship">Internship</option>
+                  <option value="Contract">Contract</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Preferred Locations</label>
+                <input type="text" class="form-control py-2" [(ngModel)]="preferences.preferredLocations" placeholder="Bengaluru, Hyderabad, Remote">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Expected CTC</label>
+                <input type="text" class="form-control py-2" [(ngModel)]="preferences.expectedCtc" placeholder="₹18 - ₹25 LPA">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">Notice Period</label>
+                <input type="text" class="form-control py-2" [(ngModel)]="preferences.noticePeriod" placeholder="15 Days / Immediate">
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-3 pt-3 border-top mt-2">
+              <button class="btn btn-primary-custom px-4" (click)="saveProfile()">Save Preferences</button>
+            </div>
+          </div>
+
+          <!-- TAB 6: Resume -->
+          <div *ngIf="activeTab === 'resume'">
+            <h5 class="fw-bold text-navy mb-4">Resume & Attachments</h5>
+
+            <div class="card p-4 text-center card-bordered mb-4">
+              <div class="mb-3">
+                <i class="bi bi-file-earmark-pdf text-danger fs-1"></i>
+              </div>
+              <h6 class="fw-bold text-navy mb-1">{{ resume.fileName }}</h6>
+              <div class="text-muted-custom small mb-3">{{ resume.fileSize }} • Updated {{ resume.lastUpdated }}</div>
+
+              <div class="d-flex justify-content-center gap-2">
+                <label class="btn btn-sm btn-primary-custom px-4 cursor-pointer mb-0">
+                  <i class="bi bi-upload me-1"></i> Upload New Resume
+                  <input type="file" accept=".pdf,.doc,.docx" class="d-none" (change)="uploadResumeSimulation($event)">
+                </label>
+                <a [href]="candidateInfo.portfolio" target="_blank" class="btn btn-sm btn-outline-custom px-4">
+                  <i class="bi bi-download me-1"></i> Download Resume
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Profile Summary Sidebar -->
+        <div class="col-lg-4 ps-lg-5 mt-5 mt-lg-0 border-start-lg">
+          <h6 class="fw-bold text-navy mb-4">Profile Summary</h6>
+          
+          <div class="d-flex flex-column gap-4">
+            <div class="d-flex gap-3">
+              <div class="bg-light-blue rounded-circle d-flex align-items-center justify-content-center text-primary flex-shrink-0" style="width: 40px; height: 40px;">
+                <i class="bi bi-mortarboard fs-5"></i>
+              </div>
+              <div>
+                <div class="fw-bold text-navy">Education</div>
+                <div class="text-muted-custom small" *ngIf="educationList.length > 0">{{ educationList[0].degree }}</div>
+                <div class="text-muted-custom small" *ngIf="educationList.length === 0">No records added</div>
+              </div>
+            </div>
+            
+            <div class="d-flex gap-3">
+              <div class="bg-light-blue rounded-circle d-flex align-items-center justify-content-center text-primary flex-shrink-0" style="width: 40px; height: 40px;">
+                <i class="bi bi-code-slash fs-5"></i>
+              </div>
+              <div>
+                <div class="fw-bold text-navy">Skills</div>
+                <div class="text-muted-custom small">{{ skillsList.length }} Verified Skills</div>
+              </div>
+            </div>
+
+            <div class="d-flex gap-3">
+              <div class="bg-light-blue rounded-circle d-flex align-items-center justify-content-center text-primary flex-shrink-0" style="width: 40px; height: 40px;">
+                <i class="bi bi-briefcase fs-5"></i>
+              </div>
+              <div>
+                <div class="fw-bold text-navy">Experience</div>
+                <div class="text-muted-custom small">{{ experienceList.length }} Work Experience</div>
+              </div>
+            </div>
+
+            <div class="d-flex gap-3">
+              <div class="bg-light-blue rounded-circle d-flex align-items-center justify-content-center text-primary flex-shrink-0" style="width: 40px; height: 40px;">
+                <i class="bi bi-file-earmark-pdf fs-5"></i>
+              </div>
+              <div>
+                <div class="fw-bold text-navy">Resume</div>
+                <div class="text-muted-custom small text-truncate" style="max-width: 160px;">{{ resume.fileName }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
