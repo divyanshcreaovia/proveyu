@@ -1,31 +1,166 @@
-.nav-tabs {
-  .nav-link {
-    color: var(--proveyu-text-muted);
-    border-bottom: 2px solid transparent !important;
-    
-    &.active {
-      color: var(--proveyu-primary) !important;
-      border-bottom-color: var(--proveyu-primary) !important;
+.candidate-settings-container {
+  // padding: 1.5rem;
+  background-color: transparent;
+  width: 100%;
+  font-family: inherit;
+
+  .settings-content-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .header-settings-card {
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+
+    .header-card-content {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1.5rem 1.75rem;
     }
-    
-    &:hover:not(.active) {
-      color: var(--proveyu-navy);
-      border-bottom-color: var(--proveyu-border) !important;
+
+    .company-logo-badge {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+  }
+
+  .main-settings-card {
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+
+    .card-header-tabs {
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      overflow: hidden;
+    }
+
+    .card-body {
+      padding: 1.75rem 2rem !important;
+    }
+  }
+
+  .nav-tabs {
+    .nav-link {
+      color: #64748b;
+      border-bottom: 3px solid transparent !important;
+      font-size: 0.92rem;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+
+      &.active {
+        color: #16122b !important;
+        border-bottom-color: #16122b !important;
+      }
+
+      &:hover:not(.active) {
+        color: #0f172a;
+        border-bottom-color: #cbd5e1 !important;
+      }
+    }
+  }
+
+  .btn-emerald-action {
+    background: #00875a;
+    border: 1px solid #00875a;
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+
+    &:hover {
+      background: #00704a;
+      border-color: #00704a;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 135, 90, 0.25);
+    }
+  }
+
+  .notification-rules-list {
+    .rule-item-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.25rem 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      transition: all 0.2s ease-in-out;
+
+      &:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+        background: #fafbfc;
+      }
+
+      .rule-text-content {
+        flex: 1;
+
+        .rule-title {
+          font-size: 0.96rem;
+          font-weight: 700;
+          color: #0f172a;
+          margin-bottom: 0.3rem;
+          line-height: 1.3;
+        }
+
+        .rule-desc {
+          font-size: 0.85rem;
+          color: #64748b;
+          line-height: 1.4;
+        }
+      }
+    }
+  }
+
+  .form-switch .form-check-input {
+    &:checked {
+      background-color: #00875a;
+      border-color: #00875a;
+    }
+  }
+
+  .custom-checkbox-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .form-check-input {
+      width: 1.15em;
+      height: 1.15em;
+      margin-top: 0;
+
+      &:checked {
+        background-color: #00875a;
+        border-color: #00875a;
+      }
+    }
+  }
+
+  .border-start-lg {
+    @media (min-width: 992px) {
+      border-left: 1px solid #e2e8f0;
     }
   }
 }
 
-.form-check-input:checked {
-  background-color: var(--proveyu-primary);
-  border-color: var(--proveyu-primary);
-}
 
-.border-start-md {
-  @media (min-width: 768px) {
-    border-left: 1px solid var(--proveyu-border);
-  }
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}

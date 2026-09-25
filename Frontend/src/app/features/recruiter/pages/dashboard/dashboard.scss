@@ -1,17 +1,16 @@
 .recruiter-dashboard-container {
-  padding: 1.5rem;
-  background-color: #f8fafc;
   min-height: calc(100vh - 70px);
   font-family: inherit;
 
-  /* Welcome Banner Card */
+  /* Welcome Banner Card (White Theme) */
   .welcome-banner-card {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 16px;
     padding: 1.75rem 2rem;
-    color: #ffffff;
+    color: #0f172a;
     margin-bottom: 1.5rem;
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
 
     .banner-content {
       display: flex;
@@ -24,32 +23,16 @@
         flex: 1;
         min-width: 300px;
 
-        .banner-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.4rem;
-          background: rgba(16, 185, 129, 0.15);
-          border: 1px solid rgba(16, 185, 129, 0.3);
-          color: #10b981;
-          font-size: 0.76rem;
-          font-weight: 700;
-          letter-spacing: 0.04em;
-          padding: 0.3rem 0.8rem;
-          border-radius: 30px;
-          margin-bottom: 0.75rem;
-          text-transform: uppercase;
-        }
-
         .welcome-title {
           font-size: 1.65rem;
           font-weight: 800;
-          color: #ffffff;
+          color: #0f172a;
           margin-bottom: 0.4rem;
         }
 
         .welcome-subtitle {
           font-size: 0.92rem;
-          color: #94a3b8;
+          color: #64748b;
           margin: 0;
           max-width: 680px;
         }
@@ -63,8 +46,9 @@
         .btn {
           display: inline-flex;
           align-items: center;
-          padding: 0.6rem 1.25rem;
-          border-radius: 8px;
+          gap: 0.5rem;
+          padding: 0.65rem 1.3rem;
+          border-radius: 50px;
           font-size: 0.88rem;
           font-weight: 600;
           transition: all 0.2s ease;
@@ -72,24 +56,29 @@
         }
 
         .btn-primary-custom {
-          background: #00875a;
-          border: 1px solid #00875a;
+          background: #16122b;
+          border: 1px solid #16122b;
           color: #ffffff;
 
           &:hover {
-            background: #00704a;
-            border-color: #00704a;
+            background: #262045;
+            border-color: #262045;
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(22, 18, 43, 0.2);
           }
         }
 
         .btn-outline-custom {
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          color: #ffffff;
+          background: #f1f5f9;
+          border: 1px solid #e2e8f0;
+          color: #0f172a;
 
           &:hover {
-            background: rgba(255, 255, 255, 0.18);
-            border-color: rgba(255, 255, 255, 0.35);
+            background: #16122b;
+            border-color: #16122b;
+            color: #ffffff;
+            transform: translateY(-1px);
           }
         }
       }
@@ -163,12 +152,15 @@
           &.text-navy {
             color: #0f172a;
           }
+
           &.text-primary-custom {
             color: #00875a;
           }
+
           &.text-success {
             color: #10b981;
           }
+
           &.text-warning {
             color: #d97706;
           }
@@ -238,14 +230,17 @@
             background: rgba(0, 135, 90, 0.1);
             color: #00875a;
           }
+
           &.bg-req {
             background: rgba(15, 23, 42, 0.1);
             color: #0f172a;
           }
+
           &.bg-security {
             background: rgba(16, 185, 129, 0.1);
             color: #10b981;
           }
+
           &.bg-activity {
             background: rgba(145, 0, 250, 0.1);
             color: #9100fa;

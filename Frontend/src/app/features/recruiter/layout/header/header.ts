@@ -23,6 +23,8 @@ export class RecruiterHeader {
   @Input() title: string = 'Recruiter Dashboard';
 
   isNotificationOpen: boolean = false;
+  isExpandedModalOpen: boolean = false;
+  activeFilterTab: 'recent' | 'all' = 'recent';
   unreadNotificationsCount: number = 3;
 
   notifications: NotificationItem[] = [
@@ -32,9 +34,9 @@ export class RecruiterHeader {
       desc: 'You unlocked Rahul Sharma\'s verified 98th Percentile Java Passport.',
       time: '15 mins ago',
       unread: true,
-      icon: 'bi-file-earmark-check-fill',
-      iconBg: '#f3e8ff',
-      iconColor: '#8b5cf6',
+      icon: 'bi-award',
+      iconBg: '#f8fafc',
+      iconColor: '#0f172a',
     },
     {
       id: 2,
@@ -42,9 +44,9 @@ export class RecruiterHeader {
       desc: 'Candidate Ananya Gupta accepted your interview invite for Senior Frontend Engineer.',
       time: '1 hour ago',
       unread: true,
-      icon: 'bi-check-circle-fill',
-      iconBg: '#e6f9f0',
-      iconColor: '#10b981',
+      icon: 'bi-check-circle',
+      iconBg: '#f8fafc',
+      iconColor: '#0f172a',
     },
     {
       id: 3,
@@ -52,9 +54,9 @@ export class RecruiterHeader {
       desc: '3 new candidates matching React JS requirements added to talent pool.',
       time: '3 hours ago',
       unread: true,
-      icon: 'bi-people-fill',
-      iconBg: '#e6f4fe',
-      iconColor: '#0284c7',
+      icon: 'bi-people',
+      iconBg: '#f8fafc',
+      iconColor: '#0f172a',
     },
     {
       id: 4,
@@ -62,9 +64,9 @@ export class RecruiterHeader {
       desc: 'Your Enterprise hiring plan renewed with 50 monthly candidate unlocks.',
       time: 'Yesterday',
       unread: false,
-      icon: 'bi-building-fill',
-      iconBg: '#fff0e6',
-      iconColor: '#f97316',
+      icon: 'bi-building',
+      iconBg: '#f8fafc',
+      iconColor: '#0f172a',
     },
     {
       id: 5,
@@ -73,8 +75,8 @@ export class RecruiterHeader {
       time: '2 days ago',
       unread: false,
       icon: 'bi-shield-check',
-      iconBg: '#f1f5f9',
-      iconColor: '#64748b',
+      iconBg: '#f8fafc',
+      iconColor: '#0f172a',
     },
   ];
 
@@ -85,14 +87,35 @@ export class RecruiterHeader {
     this.isNotificationOpen = !this.isNotificationOpen;
   }
 
+  openExpandModal(event?: MouseEvent) {
+    if (event) event.stopPropagation();
+    this.isNotificationOpen = false;
+    this.isExpandedModalOpen = true;
+  }
+
+  closeExpandModal() {
+    this.isExpandedModalOpen = false;
+  }
+
+  setFilterTab(tab: 'recent' | 'all') {
+    this.activeFilterTab = tab;
+  }
+
+  get filteredNotifications(): NotificationItem[] {
+    if (this.activeFilterTab === 'recent') {
+      return this.notifications.slice(0, 3);
+    }
+    return this.notifications;
+  }
+
   markAllRead(event: MouseEvent) {
     event.stopPropagation();
     this.notifications.forEach((n) => (n.unread = false));
     this.unreadNotificationsCount = 0;
   }
 
-  markSingleRead(notif: NotificationItem, event: MouseEvent) {
-    event.stopPropagation();
+  markSingleRead(notif: NotificationItem, event?: MouseEvent) {
+    if (event) event.stopPropagation();
     if (notif.unread) {
       notif.unread = false;
       this.unreadNotificationsCount = Math.max(0, this.unreadNotificationsCount - 1);

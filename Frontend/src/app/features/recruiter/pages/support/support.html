@@ -1,4 +1,478 @@
-<div class="grapeslab-card bg-white p-4 rounded-4 border shadow-xs">
-  <h4 class="fw-extrabold text-navy mb-2">Recruiter Help & Support Desk</h4>
-  <p class="text-muted small mb-0">Reach out to our employer relations team, check candidate verification guidelines, or submit support tickets.</p>
+<div class="recruiter-support-container">
+
+  <!-- Toast Notification Overlay -->
+  <div class="toast-notification position-fixed bottom-0 end-0 p-3 z-3" *ngIf="toastMessage">
+    <div class="alert alert-dark rounded-4 shadow-lg border-0 d-flex align-items-center gap-3 text-white px-4 py-3 mb-0" role="alert">
+      <i class="bi bi-check-circle-fill text-success fs-5"></i>
+      <span class="fw-semibold">{{ toastMessage }}</span>
+    </div>
+  </div>
+
+  <!-- Top Layout Row: Left 60% SLA Stat Cards + Right 40% Account Manager Card -->
+  <div class="row g-4 mb-4 top-layout-row">
+    <!-- Left Column (60% Width): 2x2 SLA Stat Cards Grid -->
+    <div class="col-lg-7 sla-cards-col">
+      <div class="row g-3 h-100">
+        <!-- Box 1: 100% Invigilation Audit Guarantee -->
+        <div class="col-sm-6">
+          <div class="support-sla-card h-100">
+            <div class="sla-icon bg-navy-light">
+              <i class="bi bi-shield-check text-navy"></i>
+            </div>
+            <div>
+              <div class="sla-value">100%</div>
+              <div class="sla-label">Invigilation Audit Guarantee</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Box 2: < 24 Hours Ticket Resolution SLA -->
+        <div class="col-sm-6">
+          <div class="support-sla-card h-100">
+            <div class="sla-icon bg-blue-light">
+              <i class="bi bi-clock-history text-primary"></i>
+            </div>
+            <div>
+              <div class="sla-value">&lt; 24 Hours</div>
+              <div class="sla-label">Ticket Resolution SLA</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Box 3: Total Support Tickets Counter -->
+        <div class="col-sm-6">
+          <div class="support-sla-card h-100">
+            <div class="sla-icon bg-purple-light">
+              <i class="bi bi-ticket-perforated-fill text-purple"></i>
+            </div>
+            <div>
+              <div class="sla-value">{{ tickets.length }}</div>
+              <div class="sla-label">Total Support Tickets</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Box 4: Enterprise Priority Recruiter Support -->
+        <div class="col-sm-6">
+          <div class="support-sla-card h-100">
+            <div class="sla-icon bg-amber-light">
+              <i class="bi bi-building-check text-amber"></i>
+            </div>
+            <div>
+              <div class="sla-value">Enterprise</div>
+              <div class="sla-label">Priority Recruiter Support</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column (40% Width): Dedicated Account Manager Card (Divyansh Gupta) -->
+    <div class="col-lg-5 account-manager-col">
+      <div class="account-manager-card">
+        <div class="am-header-badge">
+          <span class="am-status-dot"></span>
+          <span>DEDICATED ACCOUNT MANAGER</span>
+        </div>
+
+        <div class="am-profile-row">
+          <div class="am-avatar-wrapper">
+            <img [src]="accountManager.avatar" [alt]="accountManager.name" class="am-avatar-img" (error)="onAvatarError($event)">
+            <span class="am-online-badge" title="Online now"></span>
+          </div>
+          <div class="am-info">
+            <h5 class="am-name">{{ accountManager.name }}</h5>
+            <span class="am-role">{{ accountManager.role }}</span>
+            <div class="am-response-tag mt-1">
+              <i class="bi bi-lightning-charge-fill text-warning me-1"></i>
+              <span>Avg SLA Response: <strong>{{ accountManager.avgResponseTime }}</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="am-contact-actions mt-3">
+          <button class="btn btn-am-contact flex-grow-1" (click)="copyToClipboard(accountManager.phone, 'Phone number')">
+            <i class="bi bi-telephone-fill me-2"></i>
+            <span>{{ accountManager.phone }}</span>
+          </button>
+          <button class="btn btn-am-contact flex-grow-1" (click)="copyToClipboard(accountManager.email, 'Email address')">
+            <i class="bi bi-envelope-fill me-2"></i>
+            <span>Email Lead</span>
+          </button>
+        </div>
+
+        <div class="am-footer-hours mt-3">
+          <i class="bi bi-clock me-2 text-muted"></i>
+          <span>Hours: {{ accountManager.availability }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Your Support Tickets Section -->
+  <div class="support-section-card mb-4">
+    <div class="section-card-header">
+      <div class="d-flex align-items-center gap-3">
+        <div class="header-icon-box bg-dark-icon">
+          <i class="bi bi-ticket-detailed-fill"></i>
+        </div>
+        <div>
+          <h5 class="section-title">Your Support Tickets</h5>
+          <p class="section-subtitle">Track ongoing invigilation inquiries, integration requests, and billing tickets</p>
+        </div>
+      </div>
+
+      <!-- Black Theme Pill Button matching attached screenshot -->
+      <button class="btn btn-dark-pill" (click)="openNewTicketModal()">
+        <i class="bi bi-plus-circle-fill me-2"></i>
+        <span>Raise Support Ticket</span>
+      </button>
+    </div>
+
+    <!-- Ticket Filter Bar -->
+    <div class="ticket-filter-bar px-4 py-2 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="filter-label fw-bold text-navy small me-1">Filter Status:</span>
+        <button
+          class="btn btn-sm filter-pill"
+          [class.active]="activeTicketFilter === 'all'"
+          (click)="activeTicketFilter = 'all'">
+          All ({{ tickets.length }})
+        </button>
+        <button
+          class="btn btn-sm filter-pill"
+          [class.active]="activeTicketFilter === 'open'"
+          (click)="activeTicketFilter = 'open'">
+          Open
+        </button>
+        <button
+          class="btn btn-sm filter-pill"
+          [class.active]="activeTicketFilter === 'in progress'"
+          (click)="activeTicketFilter = 'in progress'">
+          In Progress
+        </button>
+        <button
+          class="btn btn-sm filter-pill"
+          [class.active]="activeTicketFilter === 'resolved'"
+          (click)="activeTicketFilter = 'resolved'">
+          Resolved
+        </button>
+      </div>
+      <div class="text-muted small">
+        Showing {{ filteredTickets.length }} ticket(s)
+      </div>
+    </div>
+
+    <!-- Tickets List -->
+    <div class="tickets-list p-4">
+      <div *ngIf="filteredTickets.length === 0" class="empty-tickets text-center py-5">
+        <i class="bi bi-inbox text-muted fs-1 d-block mb-2"></i>
+        <h6 class="fw-bold text-navy">No support tickets found</h6>
+        <p class="text-muted small">Need help? Click "Raise Support Ticket" to get in touch with our team.</p>
+      </div>
+
+      <div class="ticket-card" *ngFor="let ticket of filteredTickets" (click)="viewTicketDetails(ticket)">
+        <div class="ticket-card-top">
+          <div class="d-flex align-items-center gap-2">
+            <span class="ticket-id-badge">{{ ticket.id }}</span>
+            <span class="ticket-category-badge">{{ ticket.category }}</span>
+            <span class="ticket-priority-badge" [class]="'priority-' + ticket.priority.toLowerCase()">
+              {{ ticket.priority }} Priority
+            </span>
+          </div>
+
+          <span class="ticket-status-pill" [class]="'status-' + ticket.status.toLowerCase().replace(' ', '-')">
+            <i class="bi bi-circle-fill me-1" style="font-size: 0.45rem;"></i>
+            {{ ticket.status }}
+          </span>
+        </div>
+
+        <h6 class="ticket-subject">{{ ticket.subject }}</h6>
+        <p class="ticket-desc">{{ ticket.description }}</p>
+
+        <div class="ticket-card-footer">
+          <div class="d-flex align-items-center gap-3 text-muted small">
+            <span *ngIf="ticket.candidateRef">
+              <i class="bi bi-person-badge me-1"></i> Candidate: <strong>{{ ticket.candidateRef }}</strong>
+            </span>
+            <span>
+              <i class="bi bi-clock me-1"></i> Updated {{ ticket.updatedAt }}
+            </span>
+          </div>
+
+          <div class="ticket-replies-badge">
+            <i class="bi bi-chat-left-text-fill me-2"></i>
+            <span>{{ ticket.repliesCount }} message(s)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Knowledge Base & FAQ Accordion Section -->
+  <div class="support-section-card mb-4">
+    <div class="section-card-header">
+      <div class="d-flex align-items-center gap-3">
+        <div class="header-icon-box bg-dark-icon">
+          <i class="bi bi-question-circle-fill"></i>
+        </div>
+        <div>
+          <h5 class="section-title">Employer Knowledge Base & FAQs</h5>
+          <p class="section-subtitle">Search invigilation guidelines, scorecards, and ATS integrations</p>
+        </div>
+      </div>
+
+      <!-- FAQ Search Input Bar -->
+      <div class="faq-search-box position-relative" style="min-width: 280px;">
+        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+        <input
+          type="text"
+          class="form-control rounded-pill ps-5 py-2 font-inter small border"
+          placeholder="Search FAQs (e.g. #Invigilation Audit)..."
+          [(ngModel)]="searchQuery">
+      </div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="category-tabs-row px-4 pt-3 border-bottom">
+      <div class="d-flex gap-2 flex-wrap">
+        <button
+          class="btn category-tab-btn"
+          *ngFor="let cat of categories"
+          [class.active]="activeFaqCategory === cat.id"
+          (click)="activeFaqCategory = cat.id">
+          <i [class]="'bi ' + cat.icon + ' me-2'"></i>
+          <span>{{ cat.label }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- FAQ Accordion List -->
+    <div class="faq-list p-4">
+      <div *ngIf="filteredFaqs.length === 0" class="text-center py-5 text-muted">
+        <i class="bi bi-search fs-2 mb-2 d-block"></i>
+        <p class="mb-0">No matching FAQs found for "<strong>{{ searchQuery }}</strong>"</p>
+        <button class="btn btn-link text-dark btn-sm mt-2 fw-semibold" (click)="searchQuery = ''; activeFaqCategory = 'all'">Reset filters</button>
+      </div>
+
+      <div class="faq-item-card" *ngFor="let faq of filteredFaqs" [class.open]="faq.isOpen">
+        <div class="faq-header" (click)="toggleFaq(faq)">
+          <div class="d-flex align-items-center gap-3 flex-grow-1 me-3">
+            <div class="faq-icon-pill">
+              <i class="bi bi-patch-question-fill"></i>
+            </div>
+            <h6 class="faq-question mb-0">{{ faq.question }}</h6>
+          </div>
+          <i class="bi" [class.bi-chevron-down]="!faq.isOpen" [class.bi-chevron-up]="faq.isOpen"></i>
+        </div>
+
+        <div class="faq-body" *ngIf="faq.isOpen">
+          <p class="faq-answer">{{ faq.answer }}</p>
+          <div class="faq-tags mt-2">
+            <span class="faq-tag" *ngFor="let tag of faq.tags" (click)="setPopularTag(tag); $event.stopPropagation()">
+              #{{ tag }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Raise Support Ticket Modal Drawer -->
+  <div class="modal-backdrop-custom" *ngIf="showNewTicketModal">
+    <div class="modal-dialog-custom">
+      <div class="modal-content-custom">
+        <div class="modal-header-custom">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-headset text-navy fs-4"></i>
+            <div>
+              <h5 class="modal-title-custom">Raise Support Ticket</h5>
+              <p class="modal-subtitle-custom">Submit an inquiry to the ProveYu enterprise proctoring team</p>
+            </div>
+          </div>
+          <button class="btn-close-custom" (click)="closeNewTicketModal()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div class="modal-body-custom">
+          <div class="mb-3">
+            <label class="form-label-custom">Ticket Subject <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control input-custom"
+              placeholder="e.g. Request Invigilation Audit Log for Candidate #PY-4921"
+              [(ngModel)]="newTicket.subject"
+            >
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label-custom">Support Category</label>
+              <select class="form-select select-custom" [(ngModel)]="newTicket.category">
+                <option value="Candidate Invigilation">Candidate Invigilation & Verification</option>
+                <option value="ATS & Webhooks">ATS Sync & Webhooks</option>
+                <option value="Billing & Credits">Billing, GST Invoice & Credits</option>
+                <option value="Job Requirements">Job Requirements & Pipeline</option>
+                <option value="Account & Team">Account & Team Seats</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label-custom">Priority Level</label>
+              <select class="form-select select-custom" [(ngModel)]="newTicket.priority">
+                <option value="Low">Low (General Query)</option>
+                <option value="Medium">Medium (Standard Request)</option>
+                <option value="High">High (Candidate Audit Needed)</option>
+                <option value="Urgent">Urgent (System / ATS Down)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-custom">Candidate Reference ID / Passport No. (Optional)</label>
+            <input
+              type="text"
+              class="form-control input-custom"
+              placeholder="e.g. PY-4921 or Candidate Name"
+              [(ngModel)]="newTicket.candidateRef"
+            >
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-custom">Detailed Description <span class="text-danger">*</span></label>
+            <textarea
+              rows="4"
+              class="form-control input-custom"
+              placeholder="Describe your issue or audit request in detail..."
+              [(ngModel)]="newTicket.description"
+            ></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label-custom">Attach Document / Screenshot (Optional)</label>
+            <div class="file-dropzone-box">
+              <input type="file" id="ticketFileInput" class="d-none" (change)="onFileSelected($event)">
+              <label for="ticketFileInput" class="file-dropzone-label">
+                <i class="bi bi-cloud-arrow-up-fill text-navy fs-3 mb-1"></i>
+                <span *ngIf="!newTicket.attachmentName">Click to attach file or screenshot</span>
+                <span *ngIf="newTicket.attachmentName" class="text-navy fw-bold">{{ newTicket.attachmentName }}</span>
+                <span class="text-muted small">PNG, JPG, PDF up to 10MB</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer-custom">
+          <button class="btn btn-cancel-custom" (click)="closeNewTicketModal()">Cancel</button>
+          <button class="btn btn-dark-pill px-4" (click)="submitTicket()">
+            <i class="bi bi-send-fill me-2"></i>
+            <span>Submit Support Ticket</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ticket View & Reply Details Modal -->
+  <div class="modal-backdrop-custom" *ngIf="selectedTicket">
+    <div class="modal-dialog-custom modal-lg">
+      <div class="modal-content-custom">
+        <div class="modal-header-custom">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="ticket-id-badge">{{ selectedTicket.id }}</span>
+              <span class="ticket-priority-badge" [class]="'priority-' + selectedTicket.priority.toLowerCase()">
+                {{ selectedTicket.priority }} Priority
+              </span>
+              <span class="ticket-status-pill" [class]="'status-' + selectedTicket.status.toLowerCase().replace(' ', '-')">
+                {{ selectedTicket.status }}
+              </span>
+            </div>
+            <h5 class="modal-title-custom me-4">{{ selectedTicket.subject }}</h5>
+          </div>
+          <button class="btn-close-custom" (click)="closeTicketDetails()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div class="modal-body-custom">
+          <!-- Ticket Metadata Banner -->
+          <div class="ticket-meta-info-box p-3 rounded-3 mb-4 bg-light">
+            <div class="row g-2 text-muted small">
+              <div class="col-sm-4"><strong>Category:</strong> {{ selectedTicket.category }}</div>
+              <div class="col-sm-4"><strong>Created:</strong> {{ selectedTicket.createdAt }}</div>
+              <div class="col-sm-4" *ngIf="selectedTicket.candidateRef"><strong>Candidate:</strong> {{ selectedTicket.candidateRef }}</div>
+            </div>
+          </div>
+
+          <!-- Message History Thread -->
+          <div class="ticket-history-box">
+            <h6 class="fw-bold text-navy mb-3 d-flex align-items-center justify-content-between">
+              <span><i class="bi bi-chat-square-dots-fill text-primary me-2"></i> Ticket Conversation Thread</span>
+              <span class="badge bg-dark text-white font-monospace">{{ selectedTicket.repliesCount }} Message(s)</span>
+            </h6>
+            
+            <div class="message-thread-list">
+              <div
+                *ngFor="let msg of selectedTicket.messages"
+                class="reply-bubble-wrapper mb-3"
+                [class.is-user]="msg.sender === 'user'"
+                [class.is-support]="msg.sender === 'support'">
+                
+                <div class="reply-bubble p-3 rounded-3">
+                  <div class="reply-bubble-header d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom">
+                    <div class="d-flex align-items-center gap-2">
+                      <img *ngIf="msg.avatar" [src]="msg.avatar" (error)="onAvatarError($event)" class="reply-avatar">
+                      <i *ngIf="!msg.avatar" class="bi bi-headset reply-avatar-icon bg-navy text-white"></i>
+                      <div>
+                        <strong class="reply-sender-name">{{ msg.senderName }}</strong>
+                        <span class="reply-sender-role ms-2 text-muted small">({{ msg.senderRole }})</span>
+                      </div>
+                    </div>
+                    <span class="reply-timestamp text-muted small"><i class="bi bi-clock me-1"></i> {{ msg.timestamp }}</span>
+                  </div>
+                  <p class="reply-message-body mb-0">{{ msg.message }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Reply Textbox Box -->
+          <div class="ticket-reply-form mt-4 pt-3 border-top">
+            <label class="form-label-custom mb-2 fw-bold text-navy d-flex align-items-center gap-2">
+              <i class="bi bi-reply-fill text-primary fs-5"></i>
+              <span>Add Reply to Ticket</span>
+            </label>
+            <div class="reply-input-wrapper position-relative">
+              <textarea
+                rows="3"
+                class="form-control input-custom reply-textarea"
+                placeholder="Type your reply message here to send to the proctoring desk..."
+                [(ngModel)]="replyInputText"
+                (keydown.control.enter)="sendReply()">
+              </textarea>
+              <div class="d-flex align-items-center justify-content-between mt-2 flex-wrap gap-2">
+                <span class="text-muted small">
+                  <i class="bi bi-shield-check text-success me-1"></i> Press Ctrl+Enter or click Send Reply
+                </span>
+                <button class="btn btn-dark-pill px-4" (click)="sendReply()">
+                  <i class="bi bi-send-fill me-2"></i>
+                  <span>Send Reply</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer-custom">
+          <button class="btn btn-cancel-custom me-auto" (click)="closeTicketDetails()">Close Ticket View</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
+
+
+
