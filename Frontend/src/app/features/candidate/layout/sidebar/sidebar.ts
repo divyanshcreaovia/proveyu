@@ -55,8 +55,8 @@ export class Sidebar {
   }
 
   private clearSessionAndRedirect() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('candidateFullName');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('candidateFullName');
     this.router.navigate(['/login']);
   }
 }

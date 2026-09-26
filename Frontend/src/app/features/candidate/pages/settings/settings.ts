@@ -35,7 +35,7 @@ export class Settings implements OnInit {
   }
 
   loadSettings() {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (!token) return;
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -50,7 +50,7 @@ export class Settings implements OnInit {
   }
 
   saveSettings() {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (!token) return;
 
     this.isSaving = true;

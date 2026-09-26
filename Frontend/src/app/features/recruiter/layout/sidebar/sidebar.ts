@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-recruiter-sidebar',
@@ -10,6 +11,8 @@ import { CommonModule } from '@angular/common';
   styleUrl: './sidebar.scss',
 })
 export class RecruiterSidebar {
+  private router = inject(Router);
+  private http = inject(HttpClient);
   isCollapsed = false;
 
   toggleSidebar() {
@@ -28,6 +31,30 @@ export class RecruiterSidebar {
   bottomItems = [
     { label: 'Support', icon: 'bi-headset', route: '/recruiter/support' },
     { label: 'Settings', icon: 'bi-gear-fill', route: '/recruiter/settings' },
-    { label: 'Log out', icon: 'bi-box-arrow-right', route: '/select-role' }
+    { label: 'Log out', icon: 'bi-box-arrow-right', action: 'logout' }
   ];
+
+  onBottomItemClick(item: any, event: Event) {
+    if (item.action === 'logout') {
+      event.preventDefault();
+      this.handleLogout();
+    }
+  }
+
+  private handleLogout() {
+    this.http.post('http://localhost:8080/api/v1/auth/logout', {}).subscribe({
+      next: () => {
+        this.clearSessionAndRedirect();
+      },
+      error: () => {
+        this.clearSessionAndRedirect();
+      }
+    });
+  }
+
+  private clearSessionAndRedirect() {
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('candidateFullName');
+    this.router.navigate(['/login']);
+  }
 }

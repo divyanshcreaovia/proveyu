@@ -22,6 +22,8 @@ interface NotificationItem {
 export class RecruiterHeader {
   @Input() title: string = 'Recruiter Dashboard';
 
+  recruiterName: string = sessionStorage.getItem('candidateFullName') || 'Recruiter';
+
   isNotificationOpen: boolean = false;
   isExpandedModalOpen: boolean = false;
   activeFilterTab: 'recent' | 'all' = 'recent';
