@@ -3,11 +3,11 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-$primary: #273247db;
+$primary: #273247;
 
 :root {
   /* ProveYu Core Palette */
-  --proveyu-primary: #{$primary};
+  --proveyu-primary: #273247;
   --proveyu-primary-hover: #0047d9;
   --proveyu-navy: #0a1b3f;
   --proveyu-bg-light: #f8fafc;
@@ -106,6 +106,14 @@ main {
   color: white;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 87, 255, 0.25);
+}
+
+.btn-primary-custom:disabled,
+.btn-primary-custom[disabled] {
+  background-color: var(--proveyu-primary) !important;
+  color: white !important;
+  opacity: 0.8;
+  cursor: not-allowed;
 }
 
 .btn-outline-custom {

@@ -11,84 +11,7 @@
 
   <div class="container-custom py-2 position-relative" style="z-index: 1;">
 
-    <!-- VIEW STATE 1: DUAL ROLE CHOICE CARDS (Matching Login Look & Feel) -->
-    <div *ngIf="viewState === 'choose'">
-
-      <!-- Header Banner -->
-      <div class="text-center mb-4">
-        <a routerLink="/" class="d-inline-block mb-2">
-          <img src="images/logo1.png" alt="ProveYu Logo" style="height: 48px; width: auto;">
-        </a>
-        <h1 class="h3 fw-bold text-navy mb-2">Get Verified or Access Verified Talent</h1>
-        <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 640px;">
-          Select your account type to proceed on the ProveYu physical skill assessment network.
-        </p>
-      </div>
-
-      <!-- Extended Width Dual Role Cards -->
-      <div class="row g-4 justify-content-center mx-auto" style="max-width: 1140px;">
-
-        <!-- Candidate Card -->
-        <div class="col-md-6">
-          <div
-            class="card card-shadow border-0 h-100 p-4 p-md-5 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
-            (click)="selectRole('candidate')">
-
-            <span class="point-pill-btn point-pill-primary mx-auto mb-3">FOR JOB SEEKERS & FRESHERS</span>
-
-            <h2 class="h4 fw-bold text-navy mb-3">I'm a Candidate — Get Verified</h2>
-            <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
-              Get your skills invigilated and verified at a partner exam centre. Earn a multi-dimensional Skill Passport
-              and get hired on merit.
-            </p>
-
-            <button class="btn btn-primary-custom w-100 py-3 fw-bold text-white shadow mt-auto">
-              Start Candidate Verification &rarr;
-            </button>
-          </div>
-        </div>
-
-        <!-- Recruiter Card -->
-        <div class="col-md-6">
-          <div
-            class="card card-shadow border border-primary border-opacity-25 h-100 p-4 p-md-5 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
-            (click)="selectRole('recruiter')">
-
-            <span class="point-pill-btn point-pill-success mx-auto mb-3">FOR RECRUITERS & AGENCIES</span>
-
-            <h2 class="h4 fw-bold text-navy mb-3">I'm Hiring — Access Verified Talent</h2>
-            <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
-              Access pre-verified candidate passports with zero remote proctoring cheating or resume inflation. Hire 2x
-              faster.
-            </p>
-
-            <button class="btn btn-outline-custom w-100 py-3 fw-bold text-navy mt-auto">
-              Continue as Recruiter / Agency &rarr;
-            </button>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Sign In Footer Link -->
-      <div class="text-center mt-4 pt-2 fs-7 text-muted-custom">
-        Already have an account? <a routerLink="/login" class="text-primary fw-bold text-decoration-none">Sign In Here
-          &rarr;</a>
-      </div>
-    </div>
-
-
-    <!-- VIEW STATE 2: CANDIDATE REGISTRATION WIZARD (Extended Width) -->
-    <div *ngIf="viewState === 'candidate_wizard'" class="mx-auto" style="max-width: 860px;">
-
-      <!-- Back to role choice button -->
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fs-8 fw-semibold"
-          (click)="viewState = 'choose'">
-          &larr; Back to Role Choice
-        </button>
-      </div>
-
+    <div class="mx-auto" style="max-width: 860px;">
       <div class="card card-shadow border-0 p-4 p-md-5 bg-white rounded-4">
 
         <!-- Header -->
@@ -96,57 +19,36 @@
           <a routerLink="/" class="d-inline-block mb-2">
             <img src="images/logo1.png" alt="ProveYu Logo" style="height: 44px; width: auto;">
           </a>
-          <h1 class="h4 fw-extrabold text-navy mb-0">Candidate Verification Registration</h1>
+          <h1 class="h4 fw-extrabold text-navy mb-0">ProveYu Registration</h1>
         </div>
 
-        <!-- Stepper Bar -->
-        <div class="stepper-bar d-flex justify-content-between align-items-center gap-2 overflow-auto">
-          <div class="step-node d-flex align-items-center gap-2 cursor-pointer" [class.active]="currentStep === 1"
-            [class.completed]="currentStep > 1" (click)="setStep(1)">
-            <div class="step-num-circle">1</div>
-            <span class="step-lbl d-none d-sm-inline">Basic Info</span>
-          </div>
-          <div class="step-line flex-fill" [class.active-line]="currentStep > 1"></div>
-
-          <div class="step-node d-flex align-items-center gap-2 cursor-pointer" [class.active]="currentStep === 2"
-            [class.completed]="currentStep > 2" (click)="setStep(2)">
-            <div class="step-num-circle">2</div>
-            <span class="step-lbl d-none d-sm-inline">Education</span>
-          </div>
-          <div class="step-line flex-fill" [class.active-line]="currentStep > 2"></div>
-
-          <div class="step-node d-flex align-items-center gap-2 cursor-pointer" [class.active]="currentStep === 3"
-            [class.completed]="currentStep > 3" (click)="setStep(3)">
-            <div class="step-num-circle">3</div>
-            <span class="step-lbl d-none d-sm-inline">Domain Track</span>
-          </div>
-          <div class="step-line flex-fill" [class.active-line]="currentStep > 3"></div>
-
-          <div class="step-node d-flex align-items-center gap-2 cursor-pointer" [class.active]="currentStep === 4"
-            [class.completed]="currentStep > 4" (click)="setStep(4)">
-            <div class="step-num-circle">4</div>
-            <span class="step-lbl d-none d-sm-inline">ID Upload</span>
-          </div>
-          <div class="step-line flex-fill" [class.active-line]="currentStep > 4"></div>
-
-          <div class="step-node d-flex align-items-center gap-2 cursor-pointer" [class.active]="currentStep === 5"
-            [class.completed]="currentStep > 5" (click)="setStep(5)">
-            <div class="step-num-circle">5</div>
-            <span class="step-lbl d-none d-sm-inline">Review</span>
-          </div>
-        </div>
-
-        <!-- Step Header Title -->
         <div class="mb-4 text-start">
-          <h2 class="h5 fw-bold text-navy mb-1">{{ getStepTitle() }}</h2>
-          <p class="text-muted-custom fs-7 mb-0">{{ getStepSub() }}</p>
+          <h2 class="h5 fw-bold text-navy mb-1">Create an Account</h2>
+          <p class="text-muted-custom fs-7 mb-0">Fill in your details below to register.</p>
         </div>
 
-        <!-- STEP 1: Basic Info -->
-        <div *ngIf="currentStep === 1">
+        <div>
           <div class="row g-3 text-start">
+            <div class="col-md-12">
+              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">I am registering as a</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </span>
+                <select class="form-select border-start-0 py-2.5 px-3 fs-7 text-navy fw-medium" [(ngModel)]="formData.role">
+                  <option value="CANDIDATE">Candidate (Job Seeker / Fresher)</option>
+                  <option value="RECRUITER">Recruiter (Agency / Company)</option>
+                </select>
+              </div>
+            </div>
+            
             <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Full Name (as per Govt ID)</label>
+              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Full Name</label>
               <div class="input-group">
                 <span class="input-group-text bg-light border-end-0 text-muted fs-7">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -155,9 +57,10 @@
                   </svg>
                 </span>
                 <input type="text" class="form-control border-start-0 py-2.5 px-3 fs-7" [(ngModel)]="formData.fullName"
-                  name="fullName_new" placeholder="Rahul Sharma" autocomplete="new-password" required>
+                  placeholder="Rahul Sharma" autocomplete="new-password" required>
               </div>
             </div>
+            
             <div class="col-md-6">
               <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Email Address</label>
               <div class="input-group">
@@ -168,42 +71,27 @@
                   </svg>
                 </span>
                 <input type="email" class="form-control border-start-0 py-2.5 px-3 fs-7" [(ngModel)]="formData.email"
-                  name="email_new" placeholder="rahul.sharma@example.com" autocomplete="new-password" required>
+                  placeholder="rahul.sharma@example.com" autocomplete="new-password" required>
               </div>
             </div>
+            
             <div class="col-md-6">
               <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Phone Number</label>
               <div class="input-group">
                 <span class="input-group-text bg-light border-end-0 text-muted fs-7">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path
-                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                   </svg>
                 </span>
                 <input type="tel" class="form-control border-start-0 py-2.5 px-3 fs-7" [(ngModel)]="formData.phone"
-                  name="phone_new" placeholder="+91 98765 43210" autocomplete="new-password" required>
+                  placeholder="+91 98765 43210" autocomplete="new-password" required>
               </div>
             </div>
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Preferred Test City (Exam Centre)</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                </span>
-                <select class="form-select border-start-0 py-2.5 px-3 fs-7 text-navy fw-medium"
-                  [(ngModel)]="formData.city">
-                  <option value="Bengaluru">Bengaluru</option>
-                  <option value="Hyderabad">Hyderabad</option>
-                  <option value="Delhi NCR">Delhi NCR</option>
-                  <option value="Pune">Pune</option>
-                  <option value="Mumbai">Mumbai</option>
-                  <option value="Chennai">Chennai</option>
-                </select>
-              </div>
+            
+            <div class="col-md-6 d-none d-md-block">
+                <!-- Spacer for alignment -->
             </div>
+            
             <div class="col-md-6">
               <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Password</label>
               <div class="input-group">
@@ -214,9 +102,10 @@
                   </svg>
                 </span>
                 <input type="password" class="form-control border-start-0 py-2.5 px-3 fs-7" [(ngModel)]="formData.password"
-                  name="password_new" placeholder="Create a password" autocomplete="new-password" required>
+                  placeholder="Create a password" autocomplete="new-password" required>
               </div>
             </div>
+            
             <div class="col-md-6">
               <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Confirm Password</label>
               <div class="input-group">
@@ -227,491 +116,25 @@
                   </svg>
                 </span>
                 <input type="password" class="form-control border-start-0 py-2.5 px-3 fs-7" [(ngModel)]="formData.confirmPassword"
-                  name="confirmPassword_new" placeholder="Confirm password" autocomplete="new-password" required>
+                  placeholder="Confirm password" autocomplete="new-password" required>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- STEP 2: Education -->
-        <div *ngIf="currentStep === 2">
-          <div class="row g-3 text-start">
-            <div class="col-12">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">College / University Name</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-                    <path d="M6 12v5c3 3 9 3 12 0v-5" />
-                  </svg>
-                </span>
-                <input type="text" class="form-control border-start-0 py-2.5 px-3 fs-7" [(ngModel)]="formData.college"
-                  placeholder="RV College of Engineering" required>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Degree</label>
-              <select class="form-select py-2.5 px-3 fs-7 text-navy fw-medium" [(ngModel)]="formData.degree">
-                <option value="B.Tech">B.Tech / B.E.</option>
-                <option value="BCA">BCA</option>
-                <option value="M.Tech">M.Tech / M.E.</option>
-                <option value="MCA">MCA</option>
-                <option value="Diploma">Diploma CS/IT</option>
-                <option value="B.Sc CS">B.Sc Computer Science</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Graduation Year</label>
-              <select class="form-select py-2.5 px-3 fs-7 text-navy fw-medium" [(ngModel)]="formData.graduationYear">
-                <option [ngValue]="2026">2026 (Final Year)</option>
-                <option [ngValue]="2025">2025 (Passed out)</option>
-                <option [ngValue]="2024">2024</option>
-                <option [ngValue]="2023">2023</option>
-                <option [ngValue]="2027">2027</option>
-              </select>
-            </div>
-            <div class="col-12">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Stream / Branch</label>
-              <input type="text" class="form-control py-2.5 px-3 fs-7" [(ngModel)]="formData.stream"
-                placeholder="Computer Science & Engineering">
-            </div>
-            <div class="col-12">
-              <label class="form-label text-navy fw-semibold fs-7 mb-2">Current Work Status</label>
-              <div class="d-flex flex-wrap gap-3">
-                <label class="card p-3 rounded-3 border flex-fill cursor-pointer text-center"
-                  [class.border-primary]="formData.status === 'student'"
-                  [class.bg-light-blue]="formData.status === 'student'">
-                  <input type="radio" name="status" [(ngModel)]="formData.status" value="student" class="d-none">
-                  <span class="fs-7 fw-bold text-navy d-block">Student</span>
-                </label>
-
-                <label class="card p-3 rounded-3 border flex-fill cursor-pointer text-center"
-                  [class.border-primary]="formData.status === 'fresher'"
-                  [class.bg-light-blue]="formData.status === 'fresher'">
-                  <input type="radio" name="status" [(ngModel)]="formData.status" value="fresher" class="d-none">
-                  <span class="fs-7 fw-bold text-navy d-block">Fresher (0 Exp)</span>
-                </label>
-
-                <label class="card p-3 rounded-3 border flex-fill cursor-pointer text-center"
-                  [class.border-primary]="formData.status === 'experienced'"
-                  [class.bg-light-blue]="formData.status === 'experienced'">
-                  <input type="radio" name="status" [(ngModel)]="formData.status" value="experienced" class="d-none">
-                  <span class="fs-7 fw-bold text-navy d-block">Experienced</span>
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- STEP 3: Domain Track Selection -->
-        <div *ngIf="currentStep === 3" class="text-start">
-          <p class="text-muted-custom fs-7 mb-3">Choose the primary track you wish to get invigilated for at the partner
-            exam lab:</p>
-
-          <div class="d-flex flex-column gap-3 mb-2">
-            <div *ngFor="let track of availableTracks"
-              class="card border p-3.5 rounded-3 bg-white cursor-pointer transition-all hover-lift"
-              [class.border-primary]="formData.selectedTrack === track.id"
-              [class.bg-light-blue]="formData.selectedTrack === track.id" (click)="formData.selectedTrack = track.id">
-
-              <div class="d-flex align-items-center justify-content-between">
-                <div>
-                  <div class="d-flex align-items-center gap-2 mb-1">
-                    <span class="badge bg-warning text-dark fs-8 fw-bold rounded-pill"
-                      *ngIf="track.recommended">RECOMMENDED</span>
-                    <h3 class="h6 fw-bold text-navy mb-0">{{ track.title }}</h3>
-                  </div>
-                  <p class="text-muted-custom fs-8 mb-0">{{ track.desc }}</p>
-                </div>
-                <div class="form-check ms-3">
-                  <input type="radio" class="form-check-input" name="trackRadio"
-                    [checked]="formData.selectedTrack === track.id">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- STEP 4: ID Verification Upload -->
-        <div *ngIf="currentStep === 4" class="text-start">
-          <div class="p-3 bg-light-blue rounded-3 border border-primary border-opacity-25 mb-4 text-navy fs-7">
-            <div class="fw-bold mb-1 text-primary">Identity & Admit Card Requirement</div>
-            Uploading your photo and ID ahead of time ensures instant gate biometric matching at TCS iON / JEE test
-            hubs.
-          </div>
-
-          <div class="row g-3">
-            <div class="col-md-6">
-              <div class="border border-2 border-dashed rounded-3 p-4 text-center bg-light">
-                <h4 class="fs-7 fw-bold text-navy mb-1">Passport Photograph</h4>
-                <p class="fs-8 text-muted mb-2">JPEG/PNG front face picture</p>
-                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 fs-8 fw-bold">✓ Photo
-                  Uploaded</span>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <div class="border border-2 border-dashed rounded-3 p-4 text-center bg-light">
-                <h4 class="fs-7 fw-bold text-navy mb-1">Govt ID Card</h4>
-                <p class="fs-8 text-muted mb-2">Aadhaar, PAN, Passport or Student ID</p>
-                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 fs-8 fw-bold">✓ ID
-                  Document Attached</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- STEP 5: Review & Consent -->
-        <div *ngIf="currentStep === 5" class="text-start">
-          <div class="card p-4 rounded-3 bg-light border mb-4">
-            <h3 class="h6 fw-bold text-navy mb-3">Registration Review Summary</h3>
-            <div class="row g-3 fs-7 text-navy">
-              <div class="col-md-6"><strong>Full Name:</strong> {{ formData.fullName }}</div>
-              <div class="col-md-6"><strong>Email / Phone:</strong> {{ formData.email }} | {{ formData.phone }}</div>
-              <div class="col-md-6"><strong>Test City:</strong> {{ formData.city }}</div>
-              <div class="col-md-6"><strong>College:</strong> {{ formData.college }} ({{ formData.degree }})</div>
-              <div class="col-12 border-top pt-2 mt-2">
-                <strong>Verification Track:</strong>
-                <span class="text-primary fw-bold ms-1">{{ getSelectedTrackTitle() }}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="d-flex flex-column gap-2 mb-4 fs-7 text-navy">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="consentInvigilation" [(ngModel)]="consentInvigilation"
-                required>
-              <label class="form-check-label fw-medium" for="consentInvigilation">
-                I agree to present original Govt Photo ID at the partner test centre gate.
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="consentData" [(ngModel)]="consentData" required>
-              <label class="form-check-label fw-medium" for="consentData">
-                I consent to sharing my invigilated Skill Passport scores with hiring partners.
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Navigation Controls -->
-        <div class="d-flex justify-content-between align-items-center pt-4 border-top mt-4">
-          <button type="button" class="btn btn-outline-secondary px-4 py-2.5 rounded-pill fs-7 fw-semibold"
-            (click)="prevStep()">
-            &larr; Previous
-          </button>
-          <button type="button" class="btn btn-primary-custom px-5 py-2.5 text-white fw-bold shadow"
-            *ngIf="currentStep < 5" (click)="nextStep()">
-            Next Step &rarr;
-          </button>
+        <div class="d-flex justify-content-end align-items-center pt-4 border-top mt-4">
           <button type="button" class="btn btn-success px-5 py-2.5 rounded-pill text-white fw-bold shadow"
-            *ngIf="currentStep === 5" (click)="submitRegistration()">
+            (click)="submitRegistration()">
             Submit Registration &rarr;
           </button>
         </div>
 
       </div>
+
+      <div class="text-center pt-3 fs-7 text-muted-custom mt-2">
+        Already have an account? <a routerLink="/login" class="text-primary fw-bold text-decoration-none">Sign In Here &rarr;</a>
+      </div>
     </div>
-
-
-    <!-- VIEW STATE 3: RECRUITER REGISTRATION WIZARD (Extended Width) -->
-    <div *ngIf="viewState === 'recruiter_wizard'" class="mx-auto" style="max-width: 860px;">
-
-      <!-- Back to role choice button -->
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fs-8 fw-semibold"
-          (click)="viewState = 'choose'">
-          &larr; Back to Role Choice
-        </button>
-      </div>
-
-      <div class="card card-shadow border-0 p-4 p-md-5 bg-white rounded-4">
-
-        <!-- Header -->
-        <div class="text-center mb-4">
-          <a routerLink="/" class="d-inline-block mb-2">
-            <img src="images/logo1.png" alt="ProveYu Logo" style="height: 44px; width: auto;">
-          </a>
-          <h1 class="h4 fw-extrabold text-navy mb-0">Recruiter & Agency Registration</h1>
-        </div>
-
-        <!-- Stepper Bar for Recruiter -->
-        <div class="stepper-bar d-flex justify-content-between align-items-center gap-2 overflow-auto">
-          <div class="step-node d-flex align-items-center gap-2 cursor-pointer" [class.active]="currentStep === 1"
-            [class.completed]="currentStep > 1" (click)="setStep(1)">
-            <div class="step-num-circle">1</div>
-            <span class="step-lbl d-none d-sm-inline">Contact Info</span>
-          </div>
-          <div class="step-line flex-fill" [class.active-line]="currentStep > 1"></div>
-
-          <div class="step-node d-flex align-items-center gap-2 cursor-pointer" [class.active]="currentStep === 2"
-            [class.completed]="currentStep > 2" (click)="setStep(2)">
-            <div class="step-num-circle">2</div>
-            <span class="step-lbl d-none d-sm-inline">Organization</span>
-          </div>
-          <div class="step-line flex-fill" [class.active-line]="currentStep > 2"></div>
-
-          <div class="step-node d-flex align-items-center gap-2 cursor-pointer" [class.active]="currentStep === 3"
-            [class.completed]="currentStep > 3" (click)="setStep(3)">
-            <div class="step-num-circle">3</div>
-            <span class="step-lbl d-none d-sm-inline">Hiring Needs</span>
-          </div>
-          <div class="step-line flex-fill" [class.active-line]="currentStep > 3"></div>
-
-          <div class="step-node d-flex align-items-center gap-2 cursor-pointer" [class.active]="currentStep === 4"
-            [class.completed]="currentStep > 4" (click)="setStep(4)">
-            <div class="step-num-circle">4</div>
-            <span class="step-lbl d-none d-sm-inline">Verification</span>
-          </div>
-          <div class="step-line flex-fill" [class.active-line]="currentStep > 4"></div>
-
-          <div class="step-node d-flex align-items-center gap-2 cursor-pointer" [class.active]="currentStep === 5"
-            [class.completed]="currentStep > 5" (click)="setStep(5)">
-            <div class="step-num-circle">5</div>
-            <span class="step-lbl d-none d-sm-inline">Activate</span>
-          </div>
-        </div>
-
-        <!-- Step Header Title -->
-        <div class="mb-4 text-start">
-          <h2 class="h5 fw-bold text-navy mb-1">{{ getStepTitle() }}</h2>
-          <p class="text-muted-custom fs-7 mb-0">{{ getStepSub() }}</p>
-        </div>
-
-        <!-- RECRUITER STEP 1: Contact -->
-        <div *ngIf="currentStep === 1">
-          <div class="row g-3 text-start">
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Representative Full Name</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                </span>
-                <input type="text" class="form-control border-start-0 py-2.5 px-3 fs-7"
-                  [(ngModel)]="recruiterFormData.contactName" placeholder="Vikram Mehta" required>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Work Email Address</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                    <polyline points="22,6 12,13 2,6" />
-                  </svg>
-                </span>
-                <input type="email" class="form-control border-start-0 py-2.5 px-3 fs-7"
-                  [(ngModel)]="recruiterFormData.workEmail" placeholder="vikram@company.com" required>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Direct Phone Number</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path
-                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                  </svg>
-                </span>
-                <input type="tel" class="form-control border-start-0 py-2.5 px-3 fs-7"
-                  [(ngModel)]="recruiterFormData.phone" placeholder="+91 98123 45678" required>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Hiring HQ / City</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                </span>
-                <select class="form-select border-start-0 py-2.5 px-3 fs-7 text-navy fw-medium"
-                  [(ngModel)]="recruiterFormData.city">
-                  <option value="Bengaluru">Bengaluru</option>
-                  <option value="Hyderabad">Hyderabad</option>
-                  <option value="Delhi NCR">Delhi NCR</option>
-                  <option value="Pune">Pune</option>
-                  <option value="Mumbai">Mumbai</option>
-                  <option value="Chennai">Chennai</option>
-                </select>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Password</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                  </svg>
-                </span>
-                <input type="password" class="form-control border-start-0 py-2.5 px-3 fs-7" [(ngModel)]="recruiterFormData.password"
-                  placeholder="Create a password" required>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Confirm Password</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                  </svg>
-                </span>
-                <input type="password" class="form-control border-start-0 py-2.5 px-3 fs-7" [(ngModel)]="recruiterFormData.confirmPassword"
-                  placeholder="Confirm password" required>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- RECRUITER STEP 2: Organization -->
-        <div *ngIf="currentStep === 2">
-          <div class="row g-3 text-start">
-            <div class="col-12">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Company / Placement Agency Name</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-                  </svg>
-                </span>
-                <input type="text" class="form-control border-start-0 py-2.5 px-3 fs-7"
-                  [(ngModel)]="recruiterFormData.companyName" placeholder="Apex Placement Agency" required>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Organization Type</label>
-              <select class="form-select py-2.5 px-3 fs-7 text-navy fw-medium" [(ngModel)]="recruiterFormData.orgType">
-                <option value="agency">Placement Agency / Staffing</option>
-                <option value="startup">Tech Startup (Seed to Series C)</option>
-                <option value="corporate">Enterprise Corporate</option>
-                <option value="services">IT Services & Consulting</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Company Website URL</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="2" y1="12" x2="22" y2="12" />
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10z" />
-                  </svg>
-                </span>
-                <input type="url" class="form-control border-start-0 py-2.5 px-3 fs-7"
-                  [(ngModel)]="recruiterFormData.website" placeholder="https://apexplacements.com">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- RECRUITER STEP 3: Hiring Needs -->
-        <div *ngIf="currentStep === 3">
-          <div class="row g-3 text-start">
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Expected Monthly Hiring Target</label>
-              <select class="form-select py-2.5 px-3 fs-7 text-navy fw-medium"
-                [(ngModel)]="recruiterFormData.hiringVolume">
-                <option value="1-5">1–5 hires / month</option>
-                <option value="5-20">5–20 hires / month</option>
-                <option value="20+">20+ hires / month (Volume Hiring)</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Target Candidate Experience Level</label>
-              <select class="form-select py-2.5 px-3 fs-7 text-navy fw-medium"
-                [(ngModel)]="recruiterFormData.candidateLevel">
-                <option value="fresher">Freshers (0 Exp)</option>
-                <option value="junior">Junior Engineers (1–3 Yrs)</option>
-                <option value="all">All Invigilated Candidates</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- RECRUITER STEP 4: Verification -->
-        <div *ngIf="currentStep === 4" class="text-start">
-          <div class="p-3 bg-light-blue rounded-3 border border-primary border-opacity-25 mb-4 text-navy fs-7">
-            <div class="fw-bold mb-1 text-primary">Employer Verification</div>
-            Corporate email domain and business license validation before access is granted.
-          </div>
-
-          <div class="row g-3">
-            <div class="col-md-6">
-              <div class="border border-2 border-dashed rounded-3 p-4 text-center bg-light">
-                <h4 class="fs-7 fw-bold text-navy mb-1">Corporate Domain Check</h4>
-                <p class="fs-8 text-muted mb-2">Work Email DNS Lookup</p>
-                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 fs-8 fw-bold">✓ Domain
-                  Validated</span>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <div class="border border-2 border-dashed rounded-3 p-4 text-center bg-light">
-                <h4 class="fs-7 fw-bold text-navy mb-1">Business Registration</h4>
-                <p class="fs-8 text-muted mb-2">GSTIN Certificate / CIN Document</p>
-                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 fs-8 fw-bold">✓ Business
-                  ID Attached</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- RECRUITER STEP 5: Review & Activate -->
-        <div *ngIf="currentStep === 5" class="text-start">
-          <div class="card p-4 rounded-3 bg-light border mb-4">
-            <h3 class="h6 fw-bold text-navy mb-3">Recruiter Registration Summary</h3>
-            <div class="row g-3 fs-7 text-navy">
-              <div class="col-md-6"><strong>Representative:</strong> {{ recruiterFormData.contactName }}</div>
-              <div class="col-md-6"><strong>Work Email:</strong> {{ recruiterFormData.workEmail }}</div>
-              <div class="col-md-6"><strong>Organization:</strong> {{ recruiterFormData.companyName }}</div>
-              <div class="col-md-6"><strong>City:</strong> {{ recruiterFormData.city }}</div>
-            </div>
-          </div>
-
-          <div class="d-flex flex-column gap-2 mb-4 fs-7 text-navy">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="recConsent1" [(ngModel)]="consentInvigilation"
-                required>
-              <label class="form-check-label fw-medium" for="recConsent1">
-                I confirm I am an authorized hiring representative of {{ recruiterFormData.companyName }}.
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Navigation Controls for Recruiter -->
-        <div class="d-flex justify-content-between align-items-center pt-4 border-top mt-4">
-          <button type="button" class="btn btn-outline-secondary px-4 py-2.5 rounded-pill fs-7 fw-semibold"
-            (click)="prevStep()">
-            &larr; Previous
-          </button>
-          <button type="button" class="btn btn-primary-custom px-5 py-2.5 text-white fw-bold shadow"
-            *ngIf="currentStep < 5" (click)="nextStep()">
-            Next Step &rarr;
-          </button>
-          <button type="button" class="btn btn-success px-5 py-2.5 rounded-pill text-white fw-bold shadow"
-            *ngIf="currentStep === 5" (click)="submitRegistration()">
-            Activate Recruiter Access &rarr;
-          </button>
-        </div>
-
-      </div>
-
-      <!-- Bottom Link -->
-      <div class="text-center pt-3 fs-7 text-muted-custom border-top mt-4">
-        Already have an account? <a routerLink="/login" class="text-primary fw-bold text-decoration-none">Sign In Here
-          &rarr;</a>
-      </div>
-
-    </div>
-
   </div>
 
   <!-- SUBMISSION CONFIRMATION MODAL OVERLAY -->
@@ -726,7 +149,7 @@
       </div>
       <h3 class="h4 fw-bold text-navy mb-2">Registration Submitted!</h3>
       <p class="text-muted-custom fs-7 mb-4">
-        Your verification admit card and login credentials have been generated. Redirecting to home page...
+        Your account has been created. Redirecting to login page...
       </p>
       <div class="spinner-border text-primary mx-auto" role="status">
         <span class="visually-hidden">Loading...</span>

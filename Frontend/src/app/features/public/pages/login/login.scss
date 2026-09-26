@@ -1,3 +1,16 @@
 .fs-7 {
   font-size: 0.875rem;
 }
+
+.fs-8 {
+  font-size: 0.8rem;
+}
+
+/* Override Bootstrap's disabled button behavior on the login button */
+button[type="submit"].btn-primary-custom,
+button[type="submit"].btn-primary-custom:disabled,
+button[type="submit"].btn-primary-custom:hover:disabled {
+  background-color: #273247 !important;
+  color: white !important;
+  border-color: #273247 !important;
+}

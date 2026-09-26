@@ -80,7 +80,7 @@ export class Profile implements OnInit {
   showExperienceForm = false;
 
   ngOnInit() {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
     this.http.get('http://localhost:8080/api/v1/candidates/profile', { headers }).subscribe({
@@ -105,7 +105,7 @@ export class Profile implements OnInit {
           
           if (this.candidateInfo.fullName) {
              this.candidateInfo.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.candidateInfo.fullName)}&background=random`;
-             localStorage.setItem('candidateFullName', this.candidateInfo.fullName);
+             sessionStorage.setItem('candidateFullName', this.candidateInfo.fullName);
           }
           this.cdr.detectChanges();
         }
@@ -140,7 +140,7 @@ export class Profile implements OnInit {
       bio: this.candidateInfo.bio
     };
 
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
     this.http.post('http://localhost:8080/api/v1/candidates/profile', payload, { headers }).subscribe({

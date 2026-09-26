@@ -14,7 +14,7 @@
       <div class="col-md-7 d-flex align-items-center gap-4">
         <div class="position-relative flex-shrink-0">
           <div class="avatar rounded-circle overflow-hidden border border-2 border-white shadow-sm" style="width: 100px; height: 100px;">
-            <img [src]="recruiterInfo.avatar" [alt]="recruiterInfo.contactName" class="w-100 h-100 object-fit-cover">
+            <img [src]="recruiterInfo.avatar || 'https://ui-avatars.com/api/?name=' + (recruiterInfo.contactName || 'Recruiter') + '&background=0D8ABC&color=fff'" [alt]="recruiterInfo.contactName" class="w-100 h-100 object-fit-cover">
           </div>
           <button class="btn btn-sm btn-light border position-absolute bottom-0 end-0 rounded-circle p-2 shadow-sm" style="transform: translate(25%, 25%);" (click)="changeAvatar()" title="Change Logo/Avatar">
             <i class="bi bi-camera-fill text-primary"></i>
@@ -95,7 +95,7 @@
             <div class="row g-4 mb-4">
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Company / Agency Name <span class="text-danger">*</span></label>
-                <input type="text" class="form-control py-2" [(ngModel)]="recruiterInfo.companyName">
+                <input type="text" class="form-control py-2" name="companyName" [(ngModel)]="recruiterInfo.companyName">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Representative Full Name <span class="text-danger">*</span></label>
@@ -111,11 +111,11 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Hiring HQ / Location <span class="text-danger">*</span></label>
-                <input type="text" class="form-control py-2" [(ngModel)]="recruiterInfo.city">
+                <input type="text" class="form-control py-2" name="city" [(ngModel)]="recruiterInfo.city">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Organization Type</label>
-                <select class="form-select py-2" [(ngModel)]="recruiterInfo.orgType">
+                <select class="form-select py-2" name="orgType" [(ngModel)]="recruiterInfo.orgType">
                   <option value="agency">Placement Agency / Staffing</option>
                   <option value="startup">Tech Startup (Seed to Series C)</option>
                   <option value="corporate">Enterprise Corporate</option>
@@ -124,15 +124,15 @@
               </div>
               <div class="col-md-12">
                 <label class="form-label text-muted-custom small fw-medium">Company Website URL</label>
-                <input type="url" class="form-control py-2" [(ngModel)]="recruiterInfo.website">
+                <input type="url" class="form-control py-2" name="website" [(ngModel)]="recruiterInfo.website">
               </div>
               <div class="col-md-12">
                 <label class="form-label text-muted-custom small fw-medium">Company Tagline / Headline</label>
-                <input type="text" class="form-control py-2" [(ngModel)]="recruiterInfo.headline">
+                <input type="text" class="form-control py-2" name="headline" [(ngModel)]="recruiterInfo.headline">
               </div>
               <div class="col-12">
                 <label class="form-label text-muted-custom small fw-medium">About Organization & Hiring Focus</label>
-                <textarea class="form-control py-3" rows="4" [(ngModel)]="recruiterInfo.about"></textarea>
+                <textarea class="form-control py-3" rows="4" name="about" [(ngModel)]="recruiterInfo.about"></textarea>
               </div>
             </div>
             
@@ -149,7 +149,7 @@
             <div class="row g-4 mb-4">
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Monthly Hiring Volume Target</label>
-                <select class="form-select py-2" [(ngModel)]="hiringPreferences.hiringVolume">
+                <select class="form-select py-2" name="hiringVolume" [(ngModel)]="hiringPreferences.hiringVolume">
                   <option value="1-5">1–5 hires / month</option>
                   <option value="5-20">5–20 hires / month</option>
                   <option value="20+">20+ hires / month (Volume Hiring)</option>
@@ -157,7 +157,7 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Candidate Experience Level Target</label>
-                <select class="form-select py-2" [(ngModel)]="hiringPreferences.candidateLevel">
+                <select class="form-select py-2" name="candidateLevel" [(ngModel)]="hiringPreferences.candidateLevel">
                   <option value="fresher">Freshers (0 Exp)</option>
                   <option value="junior">Junior Engineers (1–3 Yrs)</option>
                   <option value="all">All Invigilated Candidates</option>
@@ -165,7 +165,7 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Primary Verification Track Focus</label>
-                <select class="form-select py-2" [(ngModel)]="hiringPreferences.primaryTrack">
+                <select class="form-select py-2" name="primaryTrack" [(ngModel)]="hiringPreferences.primaryTrack">
                   <option value="universal">Universal Competency Passport</option>
                   <option value="java">Java Spring Boot Microservices</option>
                   <option value="qa">QA & Test Automation</option>
@@ -174,11 +174,11 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Target Placement Cities</label>
-                <input type="text" class="form-control py-2" [(ngModel)]="hiringPreferences.preferredCities">
+                <input type="text" class="form-control py-2" name="preferredCities" [(ngModel)]="hiringPreferences.preferredCities">
               </div>
               <div class="col-12">
                 <label class="form-label text-muted-custom small fw-medium">Custom Hiring Criteria Notes</label>
-                <textarea class="form-control py-3" rows="3" [(ngModel)]="hiringPreferences.customNotes"></textarea>
+                <textarea class="form-control py-3" rows="3" name="customNotes" [(ngModel)]="hiringPreferences.customNotes"></textarea>
               </div>
             </div>
 

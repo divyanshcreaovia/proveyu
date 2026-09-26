@@ -20,7 +20,7 @@ export class Header implements OnInit {
   showDropdown = false;
 
   ngOnInit() {
-    const savedName = localStorage.getItem('candidateFullName');
+    const savedName = sessionStorage.getItem('candidateFullName');
     if (savedName) {
       this.fullName = savedName;
     }
@@ -28,7 +28,7 @@ export class Header implements OnInit {
   }
 
   loadNotifications() {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (!token) return;
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -51,7 +51,7 @@ export class Header implements OnInit {
     event.stopPropagation();
     if (notification.read) return;
 
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (!token) return;
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);

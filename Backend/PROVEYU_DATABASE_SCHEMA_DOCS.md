@@ -128,9 +128,24 @@ Key design principles:
 | :--- | :--- | :--- | :--- |
 | `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
 | `user_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` |
-| `company_id` | `VARCHAR(36)` | NO | Foreign Key -> `companies(id)` |
+| `company_id` | `VARCHAR(36)` | YES | Foreign Key -> `companies(id)` |
 | `designation` | `VARCHAR(255)` | YES | Recruiter designation (e.g. TA Lead) |
-| `corporate_email` | `VARCHAR(255)` | YES | Corporate email address |
+| `work_email` | `VARCHAR(255)` | YES | Corporate email address |
+| `work_email_verified_at` | `TIMESTAMP` | YES | Timestamp of work email verification |
+| `seats_purchased` | `INT` | NO | Number of seats purchased |
+| `company_name` | `VARCHAR(255)` | YES | Company / Agency name |
+| `city` | `VARCHAR(100)` | YES | Recruiter HQ / Location city |
+| `org_type` | `VARCHAR(50)` | YES | Organization type (e.g. agency, corporate) |
+| `website` | `VARCHAR(255)` | YES | Company Website URL |
+| `headline` | `VARCHAR(255)` | YES | Company Tagline / Headline |
+| `about` | `TEXT` | YES | About Organization & Hiring Focus |
+| `avatar` | `VARCHAR(255)` | YES | Company Logo or Avatar URL |
+| `linkedin` | `VARCHAR(255)` | YES | LinkedIn Profile URL |
+| `hiring_volume` | `VARCHAR(255)` | YES | Monthly hiring volume target |
+| `candidate_level` | `VARCHAR(255)` | YES | Candidate experience level target |
+| `primary_track` | `VARCHAR(255)` | YES | Primary verification track focus |
+| `preferred_cities` | `VARCHAR(255)` | YES | Target placement cities |
+| `custom_notes` | `TEXT` | YES | Custom hiring criteria notes |
 | `created_at` | `TIMESTAMP` | NO | Record creation timestamp |
 
 ---
