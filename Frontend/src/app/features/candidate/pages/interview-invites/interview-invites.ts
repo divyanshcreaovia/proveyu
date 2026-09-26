@@ -65,7 +65,7 @@ export class InterviewInvites implements OnInit {
       location: 'Bengaluru / Remote',
       type: 'Technical Video Interview (60 Min)',
       status: 'Pending',
-      statusText: 'Expires in 3 days',
+      statusText: 'Decision Pending',
       statusClass: 'expires',
       scheduledDate: '2024-09-26',
       scheduledTime: '02:00 PM',
@@ -91,7 +91,7 @@ export class InterviewInvites implements OnInit {
       location: 'Hyderabad (Hybrid)',
       type: 'System Design & Coding (90 Min)',
       status: 'Accepted',
-      statusText: 'Confirmed: Sep 25, 11 AM',
+      statusText: 'Accepted',
       statusClass: 'confirmed',
       scheduledDate: '2024-09-25',
       scheduledTime: '11:00 AM',
@@ -104,7 +104,7 @@ export class InterviewInvites implements OnInit {
       topics: ['System Architecture', 'Database Sharding', 'Azure Services'],
       messages: [
         { id: 1, text: 'Hello Rahul, congratulations on passing the Microsoft Azure assessment on ProveYu!', sender: 'recruiter', time: 'Yesterday' },
-        { id: 2, text: 'Interview confirmed for Sept 25th at 11:00 AM IST.', sender: 'system', time: 'Yesterday' }
+        { id: 2, text: 'Accepted. Now you can chat', sender: 'system', time: 'Yesterday' }
       ]
     },
     {
@@ -117,7 +117,7 @@ export class InterviewInvites implements OnInit {
       location: 'Bengaluru / Hybrid',
       type: 'Live Coding & Architecture Walkthrough (45 Min)',
       status: 'Pending',
-      statusText: 'Expires in 1 day',
+      statusText: 'Decision Pending',
       statusClass: 'expires',
       scheduledDate: 'Saturday, Sep 28th',
       scheduledTime: '04:00 PM',
@@ -130,6 +130,31 @@ export class InterviewInvites implements OnInit {
       topics: ['Frontend Architecture', 'State Management', 'React Performance'],
       messages: [
         { id: 1, text: 'Hi Rahul, Amazon Prime Video team is looking for a Senior Frontend Engineer.', sender: 'recruiter', time: '09:30 AM' }
+      ]
+    },
+    {
+      id: 4,
+      company: 'Meta',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg',
+      role: 'Full Stack Engineer (React & Systems)',
+      level: 'Senior Level',
+      ctc: '₹35 – ₹45 LPA',
+      location: 'Gurugram / Remote',
+      type: 'Technical Interview (60 Min)',
+      status: 'Pending',
+      statusText: 'Decision Pending',
+      statusClass: 'expires',
+      scheduledDate: 'Monday, Sep 30th',
+      scheduledTime: '05:00 PM',
+      recruiterInitials: 'RD',
+      recruiterName: 'Rohan Deshmukh',
+      recruiterBadge: 'Verified Recruiter',
+      recruiterRole: 'Tech Recruiting Lead at Meta',
+      jobDesc: 'Drive product architecture and scalable web platform infrastructure across Meta web ecosystem.',
+      requirements: ['React / GraphQL Specialist', 'System Design & Scalability', 'Performance Profiling'],
+      topics: ['Component Architecture', 'GraphQL APIs', 'System Design'],
+      messages: [
+        { id: 1, text: 'Hi Rahul! Impressed by your ProveYu verified React score. We have a Senior Full Stack Engineer role at Meta.', sender: 'recruiter', time: '11:15 AM' }
       ]
     }
   ];
@@ -189,18 +214,32 @@ export class InterviewInvites implements OnInit {
     if (!this.selectedInterview) return;
 
     this.selectedInterview.status = 'Accepted';
-    this.selectedInterview.statusText = `Confirmed: ${this.selectedInterview.scheduledDate}`;
+    this.selectedInterview.statusText = 'Accepted';
     this.selectedInterview.statusClass = 'confirmed';
 
     const systemMsg: ChatMessage = {
       id: Date.now(),
-      text: `🎉 You accepted the interview invitation from ${this.selectedInterview.company} for ${this.selectedInterview.scheduledDate} at ${this.selectedInterview.scheduledTime}. Calendar invite sent to your registered email!`,
+      text: 'Accepted. Now you can chat',
       sender: 'system',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     this.selectedInterview.messages.push(systemMsg);
+  }
 
-    this.triggerToast(`Interview request accepted with ${this.selectedInterview.company}! Direct chat unlocked.`);
+  declineRequest() {
+    if (!this.selectedInterview) return;
+
+    this.selectedInterview.status = 'Declined';
+    this.selectedInterview.statusText = 'Declined';
+    this.selectedInterview.statusClass = 'declined';
+
+    const systemMsg: ChatMessage = {
+      id: Date.now(),
+      text: 'Request Declined',
+      sender: 'system',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+    this.selectedInterview.messages.push(systemMsg);
   }
 
   openJobDescModal() {

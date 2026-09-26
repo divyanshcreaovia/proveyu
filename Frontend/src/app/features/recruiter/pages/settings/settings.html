@@ -1,0 +1,70 @@
+<div class="recruiter-settings-container">
+
+  <!-- Toast Notification Overlay -->
+  <div class="toast-notification position-fixed bottom-0 end-0 p-3 z-3" *ngIf="toastMessage">
+    <div class="alert alert-dark rounded-4 shadow-lg border-0 d-flex align-items-center gap-3 text-white px-4 py-3 mb-0" role="alert">
+      <i class="bi bi-check-circle-fill text-success fs-5"></i>
+      <span class="fw-semibold">{{ toastMessage }}</span>
+    </div>
+  </div>
+
+  <div class="settings-content-wrapper">
+    <!-- Settings Header Card -->
+    <div class="card card-shadow border-0 mb-4 header-settings-card">
+      <div class="header-card-content">
+        <div class="company-logo-badge">
+          <i class="bi bi-bell-fill text-navy fs-2"></i>
+        </div>
+        <div>
+          <h4 class="fw-bold text-navy mb-1">Recruiter Notification Settings</h4>
+          <p class="text-muted small mb-0">Configure your email and in-app alerts for candidate passport submissions, test score alerts, and pipeline updates.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification & Alert Rules Card -->
+    <div class="card card-shadow border-0 main-settings-card">
+      <div class="card-body p-4 p-md-4-5">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 pb-2 border-bottom">
+          <div>
+            <h5 class="fw-bold text-navy mb-1">Notification & Alert Rules</h5>
+            <p class="text-muted small mb-0">Choose how and when your team receives candidate alerts</p>
+          </div>
+          <button class="btn btn-emerald-action px-4 py-2" (click)="saveNotifications()">
+            <i class="bi bi-check2-circle me-2"></i> Save Preferences
+          </button>
+        </div>
+
+        <div class="notification-rules-list d-flex flex-column gap-3">
+          <div class="rule-item-card" *ngFor="let rule of notificationSettings">
+            <div class="rule-text-content">
+              <h6 class="rule-title mb-1">{{ rule.label }}</h6>
+              <p class="rule-desc mb-0">{{ rule.desc }}</p>
+            </div>
+
+            <div class="rule-checkboxes-group">
+              <div class="form-check custom-checkbox-box mb-0">
+                <input class="form-check-input cursor-pointer shadow-none" type="checkbox" [(ngModel)]="rule.email" [id]="'email_' + rule.key">
+                <label class="form-check-label text-navy cursor-pointer fw-semibold" [for]="'email_' + rule.key">
+                  Email
+                </label>
+              </div>
+
+              <div class="form-check custom-checkbox-box mb-0">
+                <input class="form-check-input cursor-pointer shadow-none" type="checkbox" [(ngModel)]="rule.app" [id]="'app_' + rule.key">
+                <label class="form-check-label text-navy cursor-pointer fw-semibold" [for]="'app_' + rule.key">
+                  In-App
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+

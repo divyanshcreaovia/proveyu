@@ -1,179 +1,147 @@
-<div class="grapeslab-dashboard-container py-2 w-100" style="width: 100%;">
+<div class="candidate-dashboard-container">
 
-  <!-- 1. Important Notifications & Alerts Banner -->
-  <div class="alert-notifications-wrapper mb-4 w-100" *ngIf="notifications.length > 0">
-    <div class="d-flex flex-column gap-2">
-      <div
-        class="alert-pill-item p-3 rounded-4 bg-white shadow-xs border d-flex flex-wrap align-items-center justify-content-between gap-2"
-        *ngFor="let notif of notifications">
-        <div class="d-flex align-items-center gap-3">
-          <div class="alert-icon rounded-circle p-2 d-flex align-items-center justify-content-center"
-            [ngClass]="notif.type === 'urgent' ? 'bg-danger-subtle text-danger' : 'bg-primary-subtle text-primary'">
-            <i [class]="notif.type === 'urgent' ? 'bi bi-bell-fill' : 'bi bi-info-circle-fill'"></i>
-          </div>
-          <span class="fw-semibold text-dark fs-6">{{ notif.text }}</span>
-        </div>
-        <button class="btn btn-sm rounded-pill px-3 py-1-5 fw-bold"
-          [ngClass]="notif.type === 'urgent' ? 'btn-dark' : 'btn-outline-dark'">
-          {{ notif.action }}
-        </button>
+  <!-- 1. White Theme Welcome Banner Card -->
+  <div class="welcome-banner-card mb-4">
+    <div class="banner-content">
+      <div class="banner-text">
+        <h3 class="welcome-title">Welcome back, {{ candidateProfile.name }}</h3>
+        <p class="welcome-subtitle">
+          Track your upcoming invigilated exams, review skill passport scores, and manage interview invites from verified hiring partners.
+        </p>
+      </div>
+      <div class="banner-actions">
+        <a routerLink="/candidate/book-slot" class="btn btn-primary-custom">
+          <i class="bi bi-calendar-plus-fill me-2"></i>
+          <span>Book Exam Slot</span>
+        </a>
+        <a routerLink="/candidate/my-passport" class="btn btn-outline-custom">
+          <i class="bi bi-award-fill me-2"></i>
+          <span>Skill Passport</span>
+        </a>
+        <a routerLink="/candidate/interview-invites" class="btn btn-outline-custom">
+          <i class="bi bi-envelope-open-fill me-2"></i>
+          <span>Interview Invites</span>
+        </a>
       </div>
     </div>
   </div>
 
-  <!-- 2. Top Row: 5 Equal Professional Metric Cards (Single Horizontal Row) -->
-  <div class="row g-3 mb-4 w-100 m-0">
-    <div class="col-12 px-0 px-lg-2">
-      <div class="top-stat-grid">
-        <div class="stat-card-item p-3 p-xl-4 rounded-4 border shadow-xs d-flex flex-column justify-content-between position-relative transition-all" 
-             *ngFor="let stat of statCards"
-             [ngClass]="stat.bgClass"
-             [style.border-top-color]="stat.accentColor"
-             [routerLink]="stat.route">
-          
-          <!-- Top row: Icon Badge + Label & Action Arrow -->
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="d-flex align-items-center gap-2">
-              <div class="stat-icon-badge rounded-circle p-2 d-flex align-items-center justify-content-center"
-                   [ngClass]="stat.badgeColor">
-                <i [class]="'bi ' + stat.icon"></i>
+  <!-- 2. Top 5 Metric Cards Grid -->
+  <div class="kpi-stats-grid mb-4">
+    <div
+      class="kpi-card cursor-pointer"
+      *ngFor="let stat of statCards"
+      [routerLink]="stat.route">
+      <div class="kpi-top">
+        <span class="kpi-tag">{{ stat.label }}</span>
+        <i class="bi bi-arrow-up-right-circle text-muted"></i>
+      </div>
+      <div class="kpi-value-row">
+        <div class="kpi-value text-navy">{{ stat.value }}</div>
+      </div>
+      <div class="kpi-subtext" [style.color]="stat.accentColor">{{ stat.subtext }}</div>
+    </div>
+  </div>
+
+  <!-- 3. Redesigned Next Scheduled Exam (Sleek Full-Width Executive Card) -->
+  <div class="dashboard-card exam-hero-card mb-4">
+    <div class="card-header-flex mb-3 pb-3 border-bottom">
+      <div class="header-left">
+        <div class="header-icon-box bg-kanban">
+          <i class="bi bi-calendar-event-fill"></i>
+        </div>
+        <div>
+          <h5 class="card-header-title">Next Scheduled Exam</h5>
+          <p class="card-header-subtitle">Your upcoming in-person proctored assessment</p>
+        </div>
+      </div>
+      <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1-5 fw-bold extra-small">
+        <i class="bi bi-shield-check me-1"></i> Proctored & Confirmed
+      </span>
+    </div>
+
+    <div class="row align-items-center g-3">
+      <div class="col-lg-8">
+        <div class="pe-lg-3">
+          <div class="fw-bold text-navy mb-3" style="font-size: 0.88rem;">{{ nextExam.subject }}</div>
+
+          <div class="exam-chips-row">
+            <div class="exam-chip-item">
+              <div class="chip-icon-box chip-icon-purple">
+                <i class="bi bi-calendar-event-fill"></i>
               </div>
-              <span class="fw-bold text-dark small" style="font-size: 0.82rem;">{{ stat.label }}</span>
+              <div>
+                <span class="chip-label">DATE & TIME</span>
+                <span class="chip-val">{{ nextExam.date }} ({{ nextExam.time }})</span>
+              </div>
             </div>
-            <div class="circle-arrow-btn rounded-circle border d-flex align-items-center justify-content-center bg-white text-dark shadow-xs">
-              <i class="bi bi-arrow-up-right fw-bold"></i>
+
+            <div class="exam-chip-item">
+              <div class="chip-icon-box chip-icon-pink">
+                <i class="bi bi-geo-alt-fill"></i>
+              </div>
+              <div>
+                <span class="chip-label">EXAM CENTER</span>
+                <span class="chip-val">{{ nextExam.center }}</span>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Metric Value -->
-          <div class="stat-value fw-extrabold text-dark fs-3 mb-1 tracking-tight">
-            {{ stat.value }}
-          </div>
-
-          <!-- Subtext -->
-          <div class="stat-subtext small fw-semibold text-truncate" [style.color]="stat.accentColor" title="{{ stat.subtext }}">
-            {{ stat.subtext }}
-          </div>
+      <div class="col-lg-4 text-lg-end border-start-lg pt-3 pt-lg-0">
+        <div class="d-flex flex-column align-items-lg-end gap-2 ps-lg-3">
+          <button class="btn btn-dark-pill px-4 py-2 w-100-mobile" routerLink="/candidate/my-passport">
+            <i class="bi bi-download me-2"></i> Download Admit Card
+          </button>
+          <button class="btn btn-outline-custom px-4 py-2 w-100-mobile" (click)="openRescheduleModal($event)">
+            <i class="bi bi-arrow-repeat me-2"></i> Reschedule Slot
+          </button>
+          <a href="#" (click)="openExamDetailsModal($event)" class="header-action-link mt-1 text-purple-link">
+            <span>View Exam Details</span>
+            <i class="bi bi-arrow-right"></i>
+          </a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 3. Middle Grid: Quick Actions & Next Exam Card -->
-  <div class="row g-4 mb-4 w-100 m-0">
-    <!-- Next Exam Highlight Card -->
-    <div class="col-xl-7 col-lg-7 px-0 px-lg-2">
-      <div
-        class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs h-100 d-flex flex-column justify-content-between">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div class="d-flex align-items-center gap-2">
-            <div
-              class="icon-square rounded-circle bg-warning-subtle text-dark p-2 d-flex align-items-center justify-content-center"
-              style="width: 38px; height: 38px;">
-              <i class="bi bi-clock-history fs-5"></i>
+  <!-- 4. Performance & Competencies Charts Row (50% / 50% Equal Split) -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-6">
+      <div class="dashboard-card h-100">
+        <div class="card-header-flex mb-2">
+          <div class="header-left">
+            <div class="header-icon-box bg-req">
+              <i class="bi bi-graph-up-arrow"></i>
             </div>
-            <h5 class="fw-bold text-dark mb-0 fs-5">Next Scheduled Exam</h5>
-          </div>
-          <span class="badge bg-warning text-dark rounded-pill px-3 py-1-5 fw-bold">Upcoming</span>
-        </div>
-
-        <div class="p-3 bg-light rounded-4 my-2 border">
-          <h6 class="fw-bold text-dark fs-5 mb-2">{{ nextExam.subject }}</h6>
-          <div class="row g-2 text-secondary small">
-            <div class="col-md-6">
-              <i class="bi bi-calendar3 me-1 text-dark"></i> <strong>Date:</strong> {{ nextExam.date }} ({{
-              nextExam.time }})
-            </div>
-            <div class="col-md-6">
-              <i class="bi bi-geo-alt me-1 text-dark"></i> <strong>Center:</strong> {{ nextExam.center }}
+            <div>
+              <h5 class="card-header-title">Performance Snapshot</h5>
+              <p class="card-header-subtitle">Test score growth vs batch benchmark</p>
             </div>
           </div>
         </div>
-
-        <div class="d-flex flex-wrap gap-2 mt-2">
-          <button class="btn btn-dark rounded-pill px-4 py-2 fw-bold shadow-xs" routerLink="/candidate/my-passport">
-            <i class="bi bi-download me-1"></i> Download Admit Card
-          </button>
-          <button class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold" routerLink="/candidate/book-slot">
-            Reschedule Slot
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Profile Completion & Quick Actions Grid -->
-    <div class="col-xl-5 col-lg-5 px-0 px-lg-2 mt-3 mt-lg-0">
-      <div
-        class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs h-100 d-flex flex-column justify-content-between">
-        <!-- Profile Completion -->
-        <div>
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 class="fw-bold text-dark mb-0 fs-5">Profile Completion</h5>
-            <span class="fw-extrabold text-success fs-5">{{ candidateProfile.completionPercentage }}%</span>
-          </div>
-          <div class="progress rounded-pill bg-light mb-3" style="height: 10px;">
-            <div class="progress-bar bg-success rounded-pill" role="progressbar"
-              [style.width]="candidateProfile.completionPercentage + '%'"></div>
-          </div>
-          <div class="missing-items-list mb-3">
-            <span class="text-muted small d-block mb-1 fw-semibold">Pending Items:</span>
-            <div class="d-flex flex-column gap-1">
-              <small class="text-secondary d-flex align-items-center gap-2" *ngFor="let item of missingProfileItems">
-                <i class="bi bi-exclamation-circle text-warning"></i> {{ item }}
-              </small>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions Buttons -->
-        <div>
-          <span class="text-muted small d-block mb-2 fw-bold text-uppercase"
-            style="letter-spacing: 0.05em; font-size: 0.7rem;">Quick Actions</span>
-          <div class="row g-2">
-            <div class="col-6" *ngFor="let action of quickActions">
-              <button
-                class="btn btn-sm rounded-pill w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 transition-all"
-                [ngClass]="action.bg" [routerLink]="action.route">
-                <i [class]="'bi ' + action.icon"></i> {{ action.label }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 4. Performance Snapshot & Skills Analysis Charts (Highcharts) -->
-  <div class="row g-4 mb-4 w-100 m-0">
-    <!-- Highcharts Performance Spline Area Chart -->
-    <div class="col-xl-7 col-lg-7 px-0 px-lg-2">
-      <div class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs h-100 d-flex flex-column">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <h5 class="fw-bold text-dark mb-0 fs-5">Performance Snapshot</h5>
-            <small class="text-muted">Test Score Growth vs Batch Benchmark</small>
-          </div>
-          <span class="badge bg-dark text-white rounded-pill px-3 py-1-5 fw-bold">Highcharts Enabled</span>
-        </div>
-
-        <div class="chart-wrapper flex-grow-1 w-100">
+        <div class="chart-wrapper">
           <highcharts-chart [options]="performanceChartOptions" style="width: 100%; height: 240px; display: block;">
           </highcharts-chart>
         </div>
       </div>
     </div>
 
-    <!-- Highcharts Skill Competency Column Chart -->
-    <div class="col-xl-5 col-lg-5 px-0 px-lg-2 mt-3 mt-lg-0">
-      <div class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs h-100 d-flex flex-column">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <h5 class="fw-bold text-dark mb-0 fs-5">Skill Competencies</h5>
-            <small class="text-muted">Domain Proficiency Breakdown</small>
+    <div class="col-md-6">
+      <div class="dashboard-card h-100">
+        <div class="card-header-flex mb-2">
+          <div class="header-left">
+            <div class="header-icon-box bg-security">
+              <i class="bi bi-bar-chart-line-fill"></i>
+            </div>
+            <div>
+              <h5 class="card-header-title">Skill Competencies</h5>
+              <p class="card-header-subtitle">Domain proficiency breakdown</p>
+            </div>
           </div>
         </div>
-
-        <div class="chart-wrapper flex-grow-1 w-100">
+        <div class="chart-wrapper">
           <highcharts-chart [options]="skillsRadarOptions" style="width: 100%; height: 240px; display: block;">
           </highcharts-chart>
         </div>
@@ -181,87 +149,166 @@
     </div>
   </div>
 
-  <!-- 5. Strengths & Improvements + Recent Activity Timeline -->
-  <div class="row g-4 mb-4 w-100 m-0">
-    <!-- Actionable Insights (Strengths & Improvements) -->
-    <div class="col-xl-7 col-lg-7 px-0 px-lg-2">
-      <div
-        class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs h-100 d-flex flex-column justify-content-between">
-        <h5 class="fw-bold text-dark mb-3 fs-5">Actionable Strengths & Improvements</h5>
+  <!-- 5. Invites, Badges, Profile & Activity Body Grid (2 Column: 65% / 35%) -->
+  <div class="dashboard-body-grid mb-4">
 
-        <div class="row g-3">
-          <!-- Strengths -->
-          <div class="col-md-6">
-            <div class="p-3 rounded-4 bg-success-subtle border border-success-subtle h-100">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <i class="bi bi-check-circle-fill text-success fs-5"></i>
-                <h6 class="fw-bold text-dark mb-0 fs-6">Top Strengths</h6>
-              </div>
-              <div class="d-flex flex-column gap-2">
-                <div *ngFor="let s of insights.strengths">
-                  <span class="fw-bold text-dark small d-block">{{ s.title }}</span>
-                  <small class="text-secondary" style="font-size: 0.78rem;">{{ s.desc }}</small>
+    <!-- LEFT COLUMN: Invites & Badges (50% / 50% Side-by-Side) -->
+    <div class="dashboard-left-col">
+      <div class="row g-4 h-100">
+        <!-- Active Interview Invites -->
+        <div class="col-md-6">
+          <div class="dashboard-card h-100">
+            <div class="card-header-flex mb-3">
+              <div class="header-left">
+                <div class="header-icon-box bg-kanban">
+                  <i class="bi bi-building-check"></i>
+                </div>
+                <div>
+                  <h5 class="card-header-title">Active Interview Invites</h5>
+                  <p class="card-header-subtitle">Direct recruiter interest</p>
                 </div>
               </div>
+              <a routerLink="/candidate/interview-invites" class="header-action-link">
+                <span>View All</span>
+                <i class="bi bi-arrow-right"></i>
+              </a>
             </div>
-          </div>
 
-          <!-- Improvements -->
-          <div class="col-md-6">
-            <div class="p-3 rounded-4 bg-warning-subtle border border-warning-subtle h-100">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <i class="bi bi-lightning-charge-fill text-warning fs-5"></i>
-                <h6 class="fw-bold text-dark mb-0 fs-6">Areas for Growth</h6>
-              </div>
-              <div class="d-flex flex-column gap-2">
-                <div *ngFor="let imp of insights.improvements">
-                  <span class="fw-bold text-dark small d-block">{{ imp.title }}</span>
-                  <small class="text-secondary" style="font-size: 0.78rem;">{{ imp.desc }}</small>
+            <div class="d-flex flex-column gap-3">
+              <div class="p-3 rounded-3 border bg-light d-flex flex-column gap-2" *ngFor="let invite of interviewInvites">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold text-navy fs-6">{{ invite.company }}</span>
+                    <span class="badge rounded-pill border-0 px-2 py-1 extra-small" [style.background-color]="invite.badgeBg" [style.color]="invite.badgeColor">
+                      {{ invite.status }}
+                    </span>
+                  </div>
+                  <span class="fw-extrabold text-success extra-small">{{ invite.ctc }}</span>
+                </div>
+                <div class="text-secondary small fw-medium">{{ invite.role }}</div>
+                <div class="d-flex align-items-center justify-content-between pt-1 border-top mt-1 flex-wrap gap-2 text-muted extra-small">
+                  <span><i class="bi bi-clock me-1 text-primary"></i> {{ invite.date }}</span>
+                  <a routerLink="/candidate/interview-invites" class="text-primary fw-bold text-decoration-none">
+                    Respond <i class="bi bi-chevron-right ms-1"></i>
+                  </a>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Recent Activity Timeline -->
-    <div class="col-xl-5 col-lg-5 px-0 px-lg-2 mt-3 mt-lg-0">
-      <div
-        class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs h-100 d-flex flex-column justify-content-between">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="fw-bold text-dark mb-0 fs-5">Recent Activity Feed</h5>
-          <span class="text-muted small">Live Updates</span>
-        </div>
-
-        <div class="activity-timeline d-flex flex-column gap-3 my-auto py-1">
-          <div class="d-flex align-items-start gap-3" *ngFor="let act of recentActivities">
-            <div
-              class="timeline-icon rounded-circle bg-light p-2 d-flex align-items-center justify-content-center shadow-xs"
-              style="width: 36px; height: 36px;">
-              <i [class]="act.icon"></i>
-            </div>
+        <!-- Verified Skill Passport Scorecards -->
+        <div class="col-md-6">
+          <div class="dashboard-card h-100 d-flex flex-column justify-content-between">
             <div>
-              <span class="fw-semibold text-dark d-block" style="font-size: 0.85rem;">{{ act.text }}</span>
-              <small class="text-muted" style="font-size: 0.75rem;">{{ act.time }}</small>
+              <div class="card-header-flex mb-3">
+                <div class="header-left">
+                  <div class="header-icon-box bg-security">
+                    <i class="bi bi-patch-check-fill text-success"></i>
+                  </div>
+                  <div>
+                    <h5 class="card-header-title">Verified Passport Badges</h5>
+                    <p class="card-header-subtitle">Top proctored scorecards</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex flex-column gap-3">
+                <div class="p-3 rounded-3 border d-flex align-items-center justify-content-between gap-2" *ngFor="let s of verifiedSkills" style="background-color: #fafafa;">
+                  <div>
+                    <div class="fw-bold text-navy small mb-1 d-flex align-items-center gap-1">
+                      <i class="bi bi-shield-check text-primary"></i> {{ s.skill }}
+                    </div>
+                    <div class="text-muted extra-small">Score: <strong class="text-navy">{{ s.score }}</strong></div>
+                  </div>
+                  <div class="text-end">
+                    <span class="badge rounded-pill px-2 py-1 fw-bold fs-7" [style.background-color]="s.bg" [style.color]="s.color">
+                      {{ s.percentile }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-3 pt-2 text-center">
+              <button class="btn btn-dark-pill btn-sm w-100" routerLink="/candidate/my-passport">
+                <i class="bi bi-share-fill me-2"></i> Share Passport Link
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- RIGHT COLUMN: Profile Completion -->
+    <div class="dashboard-right-col">
+
+      <!-- Section 1: Profile Completion & Quick Actions -->
+      <div class="dashboard-card h-100 d-flex flex-column justify-content-between">
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="card-header-title">Profile Completion</h5>
+            <span class="fw-bold text-success font-monospace fs-5">{{ candidateProfile.completionPercentage }}%</span>
+          </div>
+
+          <div class="progress rounded-pill bg-light mb-3" style="height: 8px;">
+            <div class="progress-bar bg-success rounded-pill" role="progressbar" [style.width]="candidateProfile.completionPercentage + '%'"></div>
+          </div>
+
+          <div class="mb-3">
+            <h6 class="fw-bold text-navy mb-2 small">Pending Items</h6>
+            <div class="d-flex flex-column gap-2">
+              <div class="d-flex align-items-center gap-2 text-secondary small" *ngFor="let item of missingProfileItems">
+                <i class="bi bi-dash-circle text-muted"></i>
+                <span>{{ item }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-top pt-3 mt-3">
+          <h6 class="quick-links-title mb-2"><i class="bi bi-lightning-charge-fill me-2 text-warning"></i>Quick Actions</h6>
+          <div class="quick-buttons-grid">
+            <a routerLink="/candidate/book-slot" class="quick-btn">
+              <i class="bi bi-calendar-plus text-primary"></i>
+              <span>Book Exam</span>
+            </a>
+            <a routerLink="/candidate/my-passport" class="quick-btn">
+              <i class="bi bi-award text-purple"></i>
+              <span>Skill Passport</span>
+            </a>
+            <a routerLink="/candidate/profile" class="quick-btn">
+              <i class="bi bi-person-gear text-info"></i>
+              <span>Edit Profile</span>
+            </a>
+            <a routerLink="/candidate/support" class="quick-btn">
+              <i class="bi bi-headset text-danger"></i>
+              <span>Help Desk</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
-  <!-- 6. Exam History Table -->
-  <div class="grapeslab-card bg-white p-4 rounded-4 border-0 shadow-xs w-100 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div>
-        <h5 class="fw-bold text-dark mb-0 fs-5">Exam History & Performance</h5>
-        <small class="text-muted">Verified Test Reports & Percentiles</small>
+  <!-- 6. Exam History & Performance Table (Full-Width Card at Bottom) -->
+  <div class="dashboard-card mb-4">
+    <div class="card-header-flex mb-3">
+      <div class="header-left">
+        <div class="header-icon-box bg-kanban">
+          <i class="bi bi-journal-text"></i>
+        </div>
+        <div>
+          <h5 class="card-header-title">Exam History & Performance Reports</h5>
+          <p class="card-header-subtitle">Verified test scorecards & percentiles</p>
+        </div>
       </div>
-      <button class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1-5 fw-semibold"
-        routerLink="/candidate/my-passport">
-        View All Reports
-      </button>
+      <a routerLink="/candidate/my-passport" class="header-action-link">
+        <span>View Full Skill Passport</span>
+        <i class="bi bi-arrow-right"></i>
+      </a>
     </div>
 
     <div class="table-responsive">
@@ -277,10 +324,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let exam of examHistory" class="border-bottom-light">
-            <td class="fw-bold text-dark py-3">{{ exam.name }}</td>
-            <td class="text-secondary small">{{ exam.date }}</td>
-            <td class="fw-extrabold text-dark">{{ exam.score }}</td>
+          <tr *ngFor="let exam of examHistory">
+            <td class="fw-bold text-navy py-3">{{ exam.name }}</td>
+            <td class="text-muted small">{{ exam.date }}</td>
+            <td class="fw-extrabold text-navy">{{ exam.score }}</td>
             <td class="fw-bold text-primary">{{ exam.percentile }}</td>
             <td>
               <span class="badge rounded-pill bg-success-subtle text-success px-3 py-1-5 fw-bold border-0">
@@ -288,13 +335,209 @@
               </span>
             </td>
             <td class="text-end">
-              <button class="btn btn-sm btn-light border rounded-pill px-3 py-1 fw-semibold text-dark shadow-xs">
+              <button class="btn btn-sm btn-light border rounded-pill px-3 py-1 fw-semibold text-navy shadow-xs" routerLink="/candidate/my-passport">
                 Scorecard
               </button>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- MODAL 1: VIEW EXAM DETAILS & INVIGILATION TICKET -->
+  <div class="modal-backdrop-custom" *ngIf="isExamDetailsModalOpen">
+    <div class="modal-card-custom modal-pass-card p-4">
+      <!-- Modal Header -->
+      <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+        <div class="d-flex align-items-center gap-3">
+          <div class="modal-header-icon">
+            <i class="bi bi-ticket-perforated-fill"></i>
+          </div>
+          <div>
+            <h5 class="fw-extrabold text-navy mb-0 fs-6">Proctored Assessment Pass & Details</h5>
+            <span class="text-muted extra-small">Booking Ref: #PY-DSA-9012 • AI In-Person Center Evaluation</span>
+          </div>
+        </div>
+        <button class="btn-close" (click)="closeExamDetailsModal()"></button>
+      </div>
+
+      <div class="modal-body-content d-flex flex-column gap-3">
+        <!-- Verified Exam Ticket Header Card (Soft Lavender Box) -->
+        <div class="exam-pass-header-box">
+          <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+            <span class="pass-tag-purple">EXAM CODE: EXAM-DSA-101</span>
+            <span class="pass-tag-green"><i class="bi bi-shield-check me-1"></i>Slot Confirmed</span>
+          </div>
+          <h4 class="pass-title mb-1">{{ nextExam.subject }}</h4>
+          <p class="pass-desc mb-3">Strengthen your core problem-solving skills and get industry-recognized validation.</p>
+
+          <!-- 3 Info Columns -->
+          <div class="pass-info-grid">
+            <div class="pass-info-col">
+              <div class="info-icon-purple">
+                <i class="bi bi-calendar-event-fill"></i>
+              </div>
+              <div>
+                <span class="info-label">DATE & TIME</span>
+                <div class="info-val-primary">{{ nextExam.date }}</div>
+                <div class="info-val-sub">({{ nextExam.time }})</div>
+              </div>
+            </div>
+
+            <div class="pass-info-col">
+              <div class="info-icon-blue">
+                <i class="bi bi-clock-fill"></i>
+              </div>
+              <div>
+                <span class="info-label">DURATION</span>
+                <div class="info-val-primary">90 Minutes</div>
+                <div class="info-val-sub">(AI Proctored)</div>
+              </div>
+            </div>
+
+            <div class="pass-info-col">
+              <div class="info-icon-pink">
+                <i class="bi bi-geo-alt-fill"></i>
+              </div>
+              <div>
+                <span class="info-label">TEST CENTER VENUE</span>
+                <div class="info-val-primary">iON Digital Zone,</div>
+                <div class="info-val-sub">Koramangala, Bengaluru</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mandatory Invigilation & Center Guidelines -->
+        <div class="guidelines-section">
+          <h6 class="section-title mb-2">Mandatory Invigilation & Center Guidelines</h6>
+          <div class="d-flex flex-column gap-2">
+            <div class="guideline-card">
+              <div>
+                <div class="guideline-heading">Original Government Photo ID Mandatory</div>
+                <div class="guideline-desc">Candidates must present a physical government-issued photo ID (Aadhaar, Passport, or PAN Card) for biometric identity verification at the test center reception desk.</div>
+              </div>
+            </div>
+
+            <div class="guideline-card">
+              <div>
+                <div class="guideline-heading">30-Minute Prior Reporting Window</div>
+                <div class="guideline-desc">Arrive at least 30 minutes prior to your scheduled slot. Biometric gate registration and workstation assignment strictly close 15 minutes before exam start time.</div>
+              </div>
+            </div>
+
+            <div class="guideline-card">
+              <div>
+                <div class="guideline-heading">Strict Electronic Device Prohibition</div>
+                <div class="guideline-desc">Smartwatches, mobile phones, bluetooth headphones, calculators, and personal scratchpads are forbidden inside the testing bay and must be deposited in assigned lockers.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="d-flex align-items-center justify-content-between gap-2 mt-4 pt-3 border-top">
+        <button class="btn btn-outline-modal-pill" (click)="closeExamDetailsModal()">Close</button>
+        <button class="btn btn-dark-modal-pill" routerLink="/candidate/my-passport" (click)="closeExamDetailsModal()">
+          <i class="bi bi-download me-2"></i> Download Admit Card PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: RESCHEDULE SLOT MODAL -->
+  <div class="modal-backdrop-custom" *ngIf="isRescheduleModalOpen">
+    <div class="modal-card-custom modal-pass-card p-4" style="max-width: 680px !important;">
+      <!-- Modal Header -->
+      <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+        <div class="d-flex align-items-center gap-3">
+          <div class="modal-header-icon">
+            <i class="bi bi-arrow-repeat"></i>
+          </div>
+          <div>
+            <h5 class="fw-extrabold text-navy mb-0 fs-6">Reschedule Assessment Slot</h5>
+            <span class="text-muted extra-small">Modify date & time without forfeiting your booking</span>
+          </div>
+        </div>
+        <button class="btn-close" (click)="closeRescheduleModal()"></button>
+      </div>
+
+      <div class="modal-body-content d-flex flex-column gap-3">
+        <div class="alert alert-success extra-small py-2-5 px-3 mb-0 d-flex align-items-center gap-2" *ngIf="rescheduleSuccessMsg">
+          <i class="bi bi-check-circle-fill fs-5"></i>
+          <span>Slot rescheduled successfully to <strong>{{ nextExam.date }} ({{ nextExam.time }})</strong>!</span>
+        </div>
+
+        <!-- Current Active Booking Badge -->
+        <div class="p-3 rounded-3 bg-light border d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div>
+            <span class="text-muted extra-small fw-bold uppercase-tag d-block mb-1">CURRENT CONFIRMED SLOT</span>
+            <div class="fw-extrabold text-navy small mb-1">{{ nextExam.subject }}</div>
+            <div class="text-muted extra-small d-flex align-items-center gap-2">
+              <span><i class="bi bi-calendar3 me-1 text-primary"></i> {{ nextExam.date }}</span>
+              <span>•</span>
+              <span><i class="bi bi-clock me-1 text-purple"></i> {{ nextExam.time }}</span>
+            </div>
+          </div>
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1-5 fw-bold extra-small">
+            <i class="bi bi-geo-alt-fill me-1"></i> iON Digital Zone, Koramangala
+          </span>
+        </div>
+
+        <!-- Select New Date Grid -->
+        <div>
+          <label class="form-label extra-small fw-bold text-navy uppercase-tag mb-2">1. Select New Date</label>
+          <div class="row g-2">
+            <div class="col-md-3 col-6" *ngFor="let d of availableRescheduleDates">
+              <button 
+                class="btn btn-sm w-100 py-2.5 px-2 border rounded-3 text-start transition-all d-flex align-items-center justify-content-between"
+                [ngClass]="rescheduleDate === d ? 'btn-dark text-white border-dark shadow-sm' : 'btn-light text-navy bg-white'"
+                (click)="rescheduleDate = d">
+                <span class="extra-small fw-bold">{{ d }}</span>
+                <i class="bi bi-check-circle-fill text-success small" *ngIf="rescheduleDate === d"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Select New Time Slot Grid -->
+        <div>
+          <label class="form-label extra-small fw-bold text-navy uppercase-tag mb-2">2. Select New Time Slot</label>
+          <div class="row g-2">
+            <div class="col-md-3 col-6" *ngFor="let t of availableRescheduleTimes">
+              <button 
+                class="btn btn-sm w-100 py-2.5 px-2 border rounded-3 text-start transition-all d-flex align-items-center justify-content-between"
+                [ngClass]="rescheduleTime === t ? 'btn-dark text-white border-dark shadow-sm' : 'btn-light text-navy bg-white'"
+                (click)="rescheduleTime = t">
+                <span class="extra-small fw-bold">{{ t }}</span>
+                <i class="bi bi-check-circle-fill text-success small" *ngIf="rescheduleTime === t"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Policy Note / Allowance Structured Card (No Icon & Clean Spacing) -->
+        <div class="rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-3" style="background: #faf8ff; border-color: #ede9fe !important; padding: 0.9rem 1.25rem;">
+          <div>
+            <div class="fw-bold text-navy small mb-0.5">Free Reschedule Allowance</div>
+            <div class="text-muted extra-small">1 free slot modification permitted per exam registration with zero penalty or hidden charges.</div>
+          </div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-bold extra-small ms-auto ms-sm-0">
+            1 Remaining (₹0 Fee)
+          </span>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-end gap-2 mt-4 pt-3 border-top">
+        <button class="btn btn-outline-modal-pill" (click)="closeRescheduleModal()">Cancel</button>
+        <button class="btn btn-dark-modal-pill px-4" (click)="confirmReschedule()" [disabled]="rescheduleSuccessMsg">
+          <i class="bi bi-arrow-repeat me-1" *ngIf="!rescheduleSuccessMsg"></i>
+          <span>{{ rescheduleSuccessMsg ? 'Rescheduled!' : 'Confirm Reschedule' }}</span>
+        </button>
+      </div>
     </div>
   </div>
 

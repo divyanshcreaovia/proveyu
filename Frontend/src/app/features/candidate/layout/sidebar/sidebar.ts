@@ -23,7 +23,7 @@ export class Sidebar {
     { label: 'Overview', icon: 'bi-grid-fill', route: '/candidate/dashboard' },
     { label: 'Profile', icon: 'bi-person-fill', route: '/candidate/profile' },
     { label: 'Book Exam', icon: 'bi-calendar-event-fill', route: '/candidate/book-slot' },
-    { label: 'My Passport', icon: 'bi-pass-fill', route: '/candidate/my-passport' },
+    { label: 'Skill Passport', icon: 'bi-pass-fill', route: '/candidate/my-passport' },
     // { label: 'Prep Guide', icon: 'bi-journal-bookmark-fill', route: '/candidate/prep-guide' },
     { label: 'Interview Invites', icon: 'bi-envelope-paper-fill', route: '/candidate/interview-invites' },
     // { label: 'Results & Offers', icon: 'bi-award-fill', route: '/candidate/results' },

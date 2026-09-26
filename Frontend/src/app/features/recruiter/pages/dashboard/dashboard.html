@@ -1,1 +1,235 @@
-<p>dashboard works!</p>
+<div class="recruiter-dashboard-container">
+
+  <!-- Welcome Banner Card -->
+  <div class="welcome-banner-card">
+    <div class="banner-content">
+      <div class="banner-text">
+        <h3 class="welcome-title">Welcome back, {{ recruiterName }}</h3>
+        <p class="welcome-subtitle">
+          Manage your active job postings, track candidates across hiring stages, and review invigilated ProveYu passports.
+        </p>
+      </div>
+      <div class="banner-actions">
+        <a routerLink="/recruiter/post-requirement" class="btn btn-primary-custom">
+          <i class="bi bi-plus-circle-fill me-2"></i>
+          <span>Post Requirement</span>
+        </a>
+        <a routerLink="/recruiter/manage-hiring" class="btn btn-outline-custom">
+          <i class="bi bi-kanban-fill me-2"></i>
+          <span>Manage Pipeline</span>
+        </a>
+        <a routerLink="/recruiter/candidate-detail" class="btn btn-outline-custom">
+          <i class="bi bi-people-fill me-2"></i>
+          <span>Browse Passports</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top 4 Executive KPI Stat Cards -->
+  <div class="kpi-stats-grid">
+    <div class="kpi-card" *ngFor="let stat of kpiStats">
+      <div class="kpi-top">
+        <span class="kpi-tag">{{ stat.label }}</span>
+        <span class="kpi-badge" *ngIf="stat.badgeText">{{ stat.badgeText }}</span>
+      </div>
+      <div class="kpi-value-row">
+        <div class="kpi-value" [class]="stat.colorClass">{{ stat.value }}</div>
+        <div class="kpi-icon-box">
+          <i [class]="'bi ' + stat.icon"></i>
+        </div>
+      </div>
+      <div class="kpi-subtext">{{ stat.subtext }}</div>
+    </div>
+  </div>
+
+  <!-- Main 2-Column Dashboard Body Grid -->
+  <div class="dashboard-body-grid">
+
+    <!-- LEFT COLUMN: Pipeline Overview + Active Requirements -->
+    <div class="dashboard-left-col">
+
+      <!-- Section 1: Hiring Pipeline Overview (Mini-Kanban Summary) -->
+      <div class="dashboard-card">
+        <div class="card-header-flex">
+          <div class="header-left">
+            <div class="header-icon-box bg-kanban">
+              <i class="bi bi-kanban-fill"></i>
+            </div>
+            <div>
+              <h5 class="card-header-title">Hiring Pipeline Overview</h5>
+              <p class="card-header-subtitle">Real-time candidate counts across your active recruitment stages</p>
+            </div>
+          </div>
+          <a routerLink="/recruiter/manage-hiring" class="header-action-link">
+            <span>Open Kanban Board</span>
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="pipeline-summary-grid">
+          <div class="pipeline-stage-box" *ngFor="let stage of pipelineStages">
+            <div class="stage-header-pill" [style.background-color]="stage.badgeBg">
+              <span>{{ stage.name }} ({{ stage.count }})</span>
+            </div>
+            <div class="stage-candidate-chips">
+              <div class="candidate-chip" *ngFor="let name of stage.candidatesPreview">
+                <i class="bi bi-person-fill chip-icon"></i>
+                <span class="chip-name">{{ name }}</span>
+              </div>
+            </div>
+            <a routerLink="/recruiter/manage-hiring" class="stage-footer-link">
+              <span>View Stage</span>
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Active Verified Job Requirements Feed -->
+      <div class="dashboard-card mt-4">
+        <div class="card-header-flex">
+          <div class="header-left">
+            <div class="header-icon-box bg-req">
+              <i class="bi bi-briefcase-fill"></i>
+            </div>
+            <div>
+              <h5 class="card-header-title">Active Verified Job Requirements</h5>
+              <p class="card-header-subtitle">Requirements mapped with candidate invigilated coding metrics</p>
+            </div>
+          </div>
+          <a routerLink="/recruiter/post-requirement" class="header-action-link">
+            <span>+ Post New Job</span>
+          </a>
+        </div>
+
+        <div class="requirements-stack">
+          <div class="req-item-card" *ngFor="let req of activeRequirements">
+            <div class="req-left">
+              <div class="req-icon-circle">
+                <i class="bi bi-briefcase-fill"></i>
+              </div>
+              <div class="req-info">
+                <div class="req-title-row">
+                  <span class="job-title">{{ req.jobTitle }}</span>
+                </div>
+                <div class="req-meta-row">
+                  <span><i class="bi bi-building me-1"></i>{{ req.targetClient }}</span>
+                  <span class="sep">|</span>
+                  <span><i class="bi me-1"></i>{{ req.domainTrack }}</span>
+                  <span class="sep">|</span>
+                  <span><i class="bi me-1"></i>{{ req.salaryPackage }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="req-right">
+              <div class="matches-stat">
+                <div class="matches-num">{{ req.candidateMatchesCount }}</div>
+                <div class="matches-lbl">Matches</div>
+              </div>
+              <a routerLink="/recruiter/candidate-detail" class="btn btn-sm btn-view-matches">
+                <span>View Matches</span>
+                <i class="bi bi-arrow-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Security Verification + Activity Feed + Quick Links -->
+    <div class="dashboard-right-col">
+
+      <!-- Section 1: Invigilated Security & Proctoring Stats -->
+      <div class="dashboard-card">
+        <div class="card-header-flex">
+          <div class="header-left">
+            <div class="header-icon-box bg-security">
+              <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <div>
+              <h5 class="card-header-title">Proctoring Metrics</h5>
+              <p class="card-header-subtitle">ProveYu Invigilated Trust Assurance</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="security-metrics-list">
+          <div class="metric-row" *ngFor="let metric of verificationMetrics">
+            <div class="metric-info">
+              <span class="metric-label"><i [class]="'bi ' + metric.icon + ' me-2 text-primary-custom'"></i>{{ metric.label }}</span>
+              <span class="metric-value">{{ metric.percentage }}%</span>
+            </div>
+            <div class="progress progress-custom">
+              <div class="progress-bar bg-success" role="progressbar" [style.width.%]="metric.percentage"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="trust-badge-footer">
+          <i class="bi bi-check-circle-fill text-success fs-5"></i>
+          <span>100% Anti-Cheating & Biometrics Validated</span>
+        </div>
+      </div>
+
+      <!-- Section 2: Recent Candidate Activity Feed -->
+      <div class="dashboard-card mt-4">
+        <div class="card-header-flex">
+          <div class="header-left">
+            <div class="header-icon-box bg-activity">
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <div>
+              <h5 class="card-header-title">Recent Activity</h5>
+              <p class="card-header-subtitle">Live hiring events & interview updates</p>
+            </div>
+          </div>
+          <a routerLink="/recruiter/chat" class="header-action-link">
+            <span>Chats</span>
+          </a>
+        </div>
+
+        <div class="activity-timeline">
+          <div class="timeline-item" *ngFor="let act of recentActivities">
+            <div class="timeline-icon" [style.background-color]="act.iconBg">
+              <i [class]="'bi ' + act.icon"></i>
+            </div>
+            <div class="timeline-content">
+              <div class="activity-candidate">{{ act.candidateName }}</div>
+              <div class="activity-desc">{{ act.action }}</div>
+              <div class="activity-time">{{ act.timestamp }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Quick Navigation Shortcuts -->
+      <div class="dashboard-card mt-4">
+        <h6 class="quick-links-title"><i class="bi bi-lightning-charge-fill me-2 text-warning"></i>Quick Shortcuts</h6>
+        <div class="quick-buttons-grid">
+          <a routerLink="/recruiter/candidate-detail" class="quick-btn">
+            <i class="bi bi-people-fill text-primary-custom"></i>
+            <span>Candidates</span>
+          </a>
+          <a routerLink="/recruiter/chat" class="quick-btn">
+            <i class="bi bi-chat-dots-fill text-success"></i>
+            <span>Chats</span>
+          </a>
+          <a routerLink="/recruiter/profile" class="quick-btn">
+            <i class="bi bi-building-fill text-info"></i>
+            <span>Profile</span>
+          </a>
+          <a routerLink="/recruiter/support" class="quick-btn">
+            <i class="bi bi-headset text-danger"></i>
+            <span>Help Desk</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

@@ -3,18 +3,19 @@ import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Navbar } from './shared/components/navbar/navbar';
 import { Footer } from './shared/components/footer/footer';
+import { GlobalNotification } from './shared/components/global-notification/global-notification';
 import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, Navbar, Footer],
+  imports: [CommonModule, RouterOutlet, Navbar, Footer, GlobalNotification],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App implements OnInit {
   protected readonly title = signal('proveyu-frontend');
-  isCandidateRoute = false;
+  isPortalRoute = false;
 
   constructor(private router: Router) {}
 
@@ -28,6 +29,6 @@ export class App implements OnInit {
   }
 
   private checkRoute(url: string) {
-    this.isCandidateRoute = url.includes('/candidate');
+    this.isPortalRoute = url.includes('/candidate') || url.includes('/recruiter');
   }
 }

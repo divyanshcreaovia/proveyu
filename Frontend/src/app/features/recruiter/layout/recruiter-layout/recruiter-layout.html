@@ -1,0 +1,9 @@
+<div class="app-layout d-flex vh-100 overflow-hidden" style="background-color: var(--grapeslab-bg, #f3f4f8);">
+  <app-recruiter-sidebar></app-recruiter-sidebar>
+  <div class="main-content flex-grow-1 d-flex flex-column h-100 overflow-hidden" style="min-width: 0;">
+    <app-recruiter-header [title]="activeTitle"></app-recruiter-header>
+    <main class="content-wrapper px-4 pb-5 flex-grow-1 overflow-y-auto w-100" style="width: 100%;">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

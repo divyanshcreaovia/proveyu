@@ -1,0 +1,315 @@
+/* Global Toast Floating Stack Container */
+.toast-stack-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 420px;
+  width: calc(100vw - 48px);
+  pointer-events: none;
+
+  .global-toast-banner {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.9rem 1.1rem;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e2e8f0;
+    animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.25s ease;
+
+    .toast-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+
+    .toast-content-box {
+      flex: 1;
+      min-width: 0;
+
+      .toast-title {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 2px;
+      }
+
+      .toast-message {
+        font-size: 0.82rem;
+        color: #475569;
+        line-height: 1.35;
+        word-break: break-word;
+      }
+    }
+
+    .toast-btn-close {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: #0f172a;
+        background: rgba(0, 0, 0, 0.05);
+      }
+    }
+
+    /* Toast Types */
+    &.toast-success {
+      border-left: 4px solid #10b981;
+
+      .toast-icon-box {
+        background: rgba(16, 185, 129, 0.12);
+        color: #10b981;
+      }
+    }
+
+    &.toast-error {
+      border-left: 4px solid #ef4444;
+
+      .toast-icon-box {
+        background: rgba(239, 68, 68, 0.12);
+        color: #ef4444;
+      }
+    }
+
+    &.toast-warning {
+      border-left: 4px solid #f59e0b;
+
+      .toast-icon-box {
+        background: rgba(245, 158, 11, 0.12);
+        color: #f59e0b;
+      }
+    }
+
+    &.toast-info {
+      border-left: 4px solid #3b82f6;
+
+      .toast-icon-box {
+        background: rgba(59, 130, 246, 0.12);
+        color: #3b82f6;
+      }
+    }
+  }
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(40px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Global Modal Backdrop & Dialog */
+.global-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 10040;
+}
+
+.global-modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 480px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+  z-index: 10050;
+  overflow: hidden;
+  animation: modalScaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  .modal-header-section {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+
+    .modal-icon-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .modal-heading-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    .modal-type-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.75;
+    }
+
+    .modal-close-btn {
+      margin-left: auto;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 6px;
+
+      &:hover {
+        color: #0f172a;
+        background: #e2e8f0;
+      }
+    }
+  }
+
+  .modal-body-section {
+    padding: 1.5rem;
+
+    .modal-message-text {
+      font-size: 0.92rem;
+      color: #334155;
+      line-height: 1.5;
+      margin: 0;
+    }
+  }
+
+  .modal-footer-section {
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+
+    .btn {
+      padding: 0.55rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-modal-cancel {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+
+      &:hover {
+        background: #f1f5f9;
+      }
+    }
+
+    .btn-modal-confirm {
+      background: #0f172a;
+      border: 1px solid #0f172a;
+      color: #ffffff;
+
+      &:hover {
+        background: #1e293b;
+      }
+    }
+  }
+
+  /* Modal Theme Colors */
+  &.modal-theme-success {
+    .modal-icon-badge {
+      background: rgba(16, 185, 129, 0.12);
+      color: #10b981;
+    }
+
+    .modal-type-tag {
+      color: #10b981;
+    }
+
+    .btn-modal-confirm {
+      background: #00875a;
+      border-color: #00875a;
+
+      &:hover {
+        background: #00704a;
+      }
+    }
+  }
+
+  &.modal-theme-error {
+    .modal-icon-badge {
+      background: rgba(239, 68, 68, 0.12);
+      color: #ef4444;
+    }
+
+    .modal-type-tag {
+      color: #ef4444;
+    }
+
+    .btn-modal-confirm {
+      background: #dc2626;
+      border-color: #dc2626;
+
+      &:hover {
+        background: #b91c1c;
+      }
+    }
+  }
+
+  &.modal-theme-warning {
+    .modal-icon-badge {
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+    }
+
+    .modal-type-tag {
+      color: #d97706;
+    }
+  }
+}
+
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}

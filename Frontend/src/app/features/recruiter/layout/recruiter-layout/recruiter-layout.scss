@@ -1,0 +1,23 @@
+.app-layout {
+  font-family: 'Inter', sans-serif;
+
+  .main-content {
+    background-color: var(--grapeslab-bg, #f8fafc);
+  }
+
+  .content-wrapper {
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  }
+}

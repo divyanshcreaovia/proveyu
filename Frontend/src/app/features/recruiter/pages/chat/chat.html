@@ -1,0 +1,242 @@
+<div class="chat-page-wrapper">
+
+  <div class="chat-grid">
+
+    <!-- LEFT PANEL: Candidate Threads List -->
+    <aside class="chat-left-card">
+      
+      <!-- Left Header Top -->
+      <div class="left-header-top">
+        <div class="header-title-box">
+          <h2 class="chat-heading">Candidate Chats</h2>
+          <span class="count-badge">{{ chatThreads.length }} Conversations</span>
+        </div>
+      </div>
+
+      <!-- Search Input -->
+      <div class="left-search-box">
+        <div class="search-input-group">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" class="search-input" placeholder="Search candidate or role..." [(ngModel)]="searchQuery">
+        </div>
+      </div>
+
+      <!-- Filter Pills -->
+      <div class="left-tabs-row">
+        <button type="button" class="tab-pill" [class.active]="filter === 'all'" (click)="filter = 'all'">
+          All ({{ chatThreads.length }})
+        </button>
+        <button type="button" class="tab-pill" [class.active]="filter === 'accepted'" (click)="filter = 'accepted'">
+          Accepted
+        </button>
+        <button type="button" class="tab-pill" [class.active]="filter === 'pending'" (click)="filter = 'pending'">
+          Pending
+        </button>
+      </div>
+
+      <!-- Candidate Threads List -->
+      <div class="left-cards-scroll">
+        <div *ngFor="let item of filteredThreads" 
+             class="thread-card-item"
+             [class.active-card]="selectedThread && selectedThread.id === item.id"
+             (click)="selectThread(item)">
+          
+          <div class="purple-dot-indicator" *ngIf="selectedThread && selectedThread.id === item.id"></div>
+
+          <div class="card-top-header">
+            <div class="candidate-meta-row">
+              <div class="avatar-sm">
+                {{ item.candidateInitials }}
+              </div>
+              <div class="title-score-box">
+                <span class="candidate-title">
+                  {{ item.candidateName }}
+                </span>
+                <span class="score-green">Score {{ item.score }}</span>
+              </div>
+            </div>
+            <span class="status-pill {{ item.statusClass }}">
+              {{ item.statusText }}
+            </span>
+          </div>
+
+          <div class="role-title-text">{{ item.roleTrack }}</div>
+
+          <div class="card-meta-footer">
+            <span class="meta-subitem">
+              <i class="bi bi-geo-alt"></i> {{ item.location }}
+            </span>
+            <span class="meta-subitem">
+              <i class="bi bi-clock"></i> {{ item.lastMessageTime }}
+            </span>
+          </div>
+
+        </div>
+
+        <div *ngIf="filteredThreads.length === 0" class="empty-state-text">
+          No candidate conversations match your search.
+        </div>
+      </div>
+
+      <div class="left-card-footer">
+        100% verified candidate passports & proctored lab scores.
+      </div>
+
+    </aside>
+
+    <!-- RIGHT PANEL: Chat Details & Live Messaging -->
+    <main class="chat-right-card">
+
+      <!-- Top Header -->
+      <header class="right-top-header" *ngIf="selectedThread">
+        <div class="candidate-profile-box">
+          <div class="avatar-dark-circle">
+            {{ selectedThread.candidateInitials }}
+            <span class="online-dot"></span>
+          </div>
+          <div class="candidate-info">
+            <div class="name-row">
+              <span class="name-text">{{ selectedThread.candidateName }}</span>
+              <span class="badge-verified-tier">
+                <i class="bi bi-patch-check-fill"></i> {{ selectedThread.percentileBadge }}
+              </span>
+            </div>
+            <span class="role-subtitle">{{ selectedThread.collegeExp }}</span>
+          </div>
+        </div>
+
+        <div class="header-action-group">
+          <button type="button" class="btn-view-passport" (click)="openPassportModal()">
+            <i class="bi bi-file-earmark-person"></i>
+            <span>View Skill Passport</span>
+          </button>
+          <button type="button" class="btn-shortlist-hiring" (click)="shortlistAndMoveToHiring(selectedThread)">
+            <i class="bi bi-kanban-fill"></i>
+            <span>Shortlist & Move to Board</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Chat & Message Content -->
+      <div class="chat-scroll-area" *ngIf="selectedThread">
+
+        <!-- Centered Section Divider Badge -->
+        <div class="divider-pill-row">
+          <span class="divider-pill">PROVEYU VERIFIED CANDIDATE CHAT</span>
+        </div>
+
+        <!-- Chat Messages Loop -->
+        <ng-container *ngFor="let msg of selectedThread.messages">
+
+          <!-- System Message -->
+          <div class="system-message-row" *ngIf="msg.sender === 'system'">
+            <span class="system-message-pill">
+              {{ msg.text }}
+            </span>
+          </div>
+
+          <!-- Recruiter or Candidate Bubble -->
+          <div class="chat-bubble-row" *ngIf="msg.sender !== 'system'" [class.row-recruiter]="msg.sender === 'recruiter'">
+            
+            <div class="bubble-avatar" *ngIf="msg.sender === 'candidate'">
+              {{ selectedThread.candidateInitials }}
+            </div>
+            
+            <div class="bubble-box">
+              
+              <!-- Candidate Message (Light Grey) -->
+              <div class="bubble-content bubble-candidate" *ngIf="msg.sender === 'candidate'">
+                {{ msg.text }}
+              </div>
+
+              <!-- Recruiter Message (Dark Navy) -->
+              <div class="bubble-content bubble-recruiter" *ngIf="msg.sender === 'recruiter'">
+                {{ msg.text }}
+              </div>
+
+              <span class="bubble-time">{{ msg.time }}</span>
+            </div>
+          </div>
+        </ng-container>
+
+      </div>
+
+      <!-- Bottom Action Input Bar (Fixed Footer) -->
+      <footer class="right-bottom-bar" *ngIf="selectedThread">
+        
+        <div class="accepted-chat-input-box">
+          <input type="text" class="chat-control" placeholder="Type your message to candidate..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage()">
+          <button type="button" class="btn-send-message" (click)="sendMessage()" title="Send message">
+            <i class="bi bi-send-fill"></i>
+          </button>
+        </div>
+
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- PASSPORT PREVIEW MODAL -->
+  <div class="modal-backdrop-custom" *ngIf="showPassportModal && selectedThread" (click)="closePassportModal()"></div>
+  
+  <div class="modal-dialog-custom" *ngIf="showPassportModal && selectedThread">
+    <div class="modal-header-dark">
+      <div>
+        <div class="uppercase-tag-emerald">PROVEYU SKILL PASSPORT</div>
+        <h5 class="modal-candidate-name">{{ selectedThread.candidateName }}</h5>
+      </div>
+      <button type="button" class="btn-close-white" (click)="closePassportModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <div class="modal-body-custom">
+      <div class="passport-meta-box">
+        <div>
+          <div class="meta-label">Passport Serial Number</div>
+          <div class="meta-value-serial">{{ selectedThread.passportId }}</div>
+        </div>
+        <div class="text-end">
+          <div class="meta-label">Overall Verified Score</div>
+          <div class="meta-value-score">{{ selectedThread.score }} / 100</div>
+        </div>
+      </div>
+
+      <h6 class="modal-section-heading">Skill Competency Evaluation</h6>
+      <div class="skills-breakdown-grid">
+        <div class="skill-breakdown-card">
+          <div class="breakdown-score">88%</div>
+          <div class="breakdown-label">System Design</div>
+        </div>
+        <div class="skill-breakdown-card">
+          <div class="breakdown-score">92%</div>
+          <div class="breakdown-label">Backend APIs</div>
+        </div>
+        <div class="skill-breakdown-card">
+          <div class="breakdown-score">85%</div>
+          <div class="breakdown-label">DSA & Algorithms</div>
+        </div>
+      </div>
+
+      <h6 class="modal-section-heading">In-Person Invigilation Audit</h6>
+      <ul class="audit-list">
+        <li class="audit-item">
+          <span class="audit-label">Test Center:</span>
+          <span class="audit-val">TCS iON Digital Zone ({{ selectedThread.location }})</span>
+        </li>
+        <li class="audit-item">
+          <span class="audit-label">Biometric & Identity Check:</span>
+          <span class="audit-val-success">&#10003; Verified & Cleared</span>
+        </li>
+        <li class="audit-item">
+          <span class="audit-label">Invigilator Code Review:</span>
+          <span class="audit-val-success">&#10003; Plagiarism-Free (100% Unique Code)</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="modal-footer-custom">
+      <button type="button" class="btn btn-outline-custom" (click)="closePassportModal()">Close</button>
+    </div>
+  </div>
+
+</div>

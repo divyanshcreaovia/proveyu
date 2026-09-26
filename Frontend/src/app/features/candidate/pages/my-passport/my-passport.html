@@ -1,128 +1,559 @@
-<div class="passport-container">
-  <!-- Exam Status Header -->
-  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-    <div class="d-flex align-items-center gap-3">
-      <h3 class="fw-bold text-navy mb-0">DSA - Online Assessment</h3>
-      <span class="badge bg-warning text-dark border px-3 py-2 rounded-pill">Scheduled</span>
-    </div>
-    <div class="text-muted-custom fw-medium">
-      <i class="bi bi-clock-history me-1"></i> Exam in 3 days
+<div class="passport-container w-100 pb-5">
+
+  <!-- Passport Selection Dropdown Bar -->
+  <div class="card passport-select-card card-shadow border-0 mb-3 p-2-5 bg-white">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-2 ps-2">
+        <div class="bg-light-blue rounded-circle p-2 text-primary d-flex align-items-center justify-content-center"
+          style="width: 36px; height: 36px;">
+          <i class="bi bi-journal-bookmark-fill fs-6"></i>
+        </div>
+        <div>
+          <span class="fw-bold text-navy d-block lh-1 small">Select Active Skill Passport</span>
+          <small class="text-muted-custom" style="font-size: 0.75rem;">Switch between your completed skill assessment
+            passports</small>
+        </div>
+      </div>
+
+      <div style="min-width: 340px; max-width: 100%;">
+        <select class="form-select border-primary-subtle bg-light-blue text-navy fw-bold py-1-5 px-3 small shadow-sm"
+          [(ngModel)]="selectedPassportId">
+          <option *ngFor="let p of passportsList" [value]="p.id">
+            {{ p.title }} (Score: {{ p.readinessScore }}/100)
+          </option>
+        </select>
+      </div>
     </div>
   </div>
 
-  <div class="row g-4">
-    <!-- Left Column: Details & Actions -->
-    <div class="col-lg-7">
-      <div class="card card-shadow border-0 p-4 mb-4">
-        <div class="row g-4">
-          <div class="col-sm-4">
-            <div class="text-muted-custom small mb-1">Date</div>
-            <div class="fw-bold text-navy">22 Sep 2024</div>
+  <!-- TOP CANDIDATE PASSPORT HEADER CARD -->
+  <div class="card header-passport-card border mb-3 p-3 p-md-4 bg-white rounded-4 shadow-xs">
+    <div class="row align-items-center g-3">
+      <!-- Left Profile Details -->
+      <div class="col-lg-8 d-flex align-items-center gap-3">
+        <div class="position-relative flex-shrink-0">
+          <div class="avatar rounded-3 overflow-hidden border border-2 border-white shadow-sm"
+            style="width: 72px; height: 72px;">
+            <img [src]="candidate.avatar" [alt]="candidate.name" class="w-100 h-100 object-fit-cover">
           </div>
-          <div class="col-sm-4">
-            <div class="text-muted-custom small mb-1">Time</div>
-            <div class="fw-bold text-navy">1:00 PM - 2:30 PM</div>
+          <span
+            class="position-absolute bottom-0 start-50 translate-middle-x badge bg-dark text-emerald font-monospace px-2 py-0-5 rounded-pill uppercase-tag shadow-sm"
+            style="font-size: 0.65rem; margin-bottom: -6px;">
+            ● ACTIVE
+          </span>
+        </div>
+
+        <div class="d-flex flex-column gap-1">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <h4 class="fw-extrabold text-navy mb-0 fs-4" style="letter-spacing: -0.015em;">{{ candidate.name }}</h4>
+            <span *ngIf="activePassport.isQualified"
+              class="badge bg-success-subtle text-success border border-success-subtle px-2-5 py-1 rounded-pill uppercase-tag fw-bold"
+              style="font-size: 0.68rem;">
+              <i class="bi bi-patch-check-fill me-1"></i> {{ candidate.verificationBadge }}
+            </span>
+            <span *ngIf="!activePassport.isQualified"
+              class="badge bg-danger-subtle text-danger border border-danger-subtle px-2-5 py-1 rounded-pill uppercase-tag fw-bold"
+              style="font-size: 0.68rem;">
+              <i class="bi bi-exclamation-octagon-fill me-1"></i> UNQUALIFIED · RETAKE REQUIRED
+            </span>
           </div>
-          <div class="col-sm-4">
-            <div class="text-muted-custom small mb-1">Duration</div>
-            <div class="fw-bold text-navy">90 minutes</div>
+
+          <div class="text-navy fw-semibold small" style="font-size: 0.85rem;">
+            <i class="bi bi-mortarboard-fill me-1" style="color: #6366f1;"></i> {{ candidate.degree }} · <span
+              class="fw-bold">{{ candidate.institution }}</span>
           </div>
-          <div class="col-sm-4">
-            <div class="text-muted-custom small mb-1">Mode</div>
-            <div class="fw-bold text-navy">Online</div>
-          </div>
-          <div class="col-sm-4">
-            <div class="text-muted-custom small mb-1">Proctoring</div>
-            <div class="fw-bold text-navy">AI + Human</div>
-          </div>
-          <div class="col-sm-4">
-            <div class="text-muted-custom small mb-1">Negative Marking</div>
-            <div class="fw-bold text-navy">No</div>
+
+          <div class="text-muted-custom small font-monospace d-flex align-items-center gap-2 flex-wrap"
+            style="font-size: 0.76rem;">
+            <span>Verified ID: <strong class="text-navy font-monospace">{{ activePassport.id }}</strong></span>
+            <span>·</span>
+            <span>Cohort: <strong class="text-secondary font-monospace">{{ activePassport.cohort }}</strong></span>
+            <span>·</span>
+            <span [ngClass]="activePassport.isQualified ? 'text-emerald' : 'text-danger'" class="fw-bold">
+              <i class="bi" [ngClass]="activePassport.isQualified ? 'bi-shield-lock-fill' : 'bi-shield-x-fill'"></i> {{ activePassport.proctorLevel }}
+            </span>
           </div>
         </div>
-      </div>
-      
-      <div class="d-flex gap-3 mb-4 flex-wrap">
-        <button class="btn btn-primary-custom flex-grow-1"><i class="bi bi-download me-2"></i> Download Admit Card</button>
-        <button class="btn btn-outline-custom flex-grow-1">Reschedule</button>
-        <button class="btn btn-outline-custom flex-grow-1">View Instructions</button>
       </div>
 
-      <!-- Admit Card Preview -->
-      <h5 class="fw-bold text-navy mb-3">Admit Card Preview</h5>
-      <div class="card card-shadow border border-light p-4 admit-card bg-white position-relative overflow-hidden">
-        <div class="position-absolute top-0 end-0 bg-primary text-white px-4 py-1" style="border-bottom-left-radius: 10px;">
-          <small class="fw-bold">PROVEYU PASSPORT</small>
-        </div>
-        
-        <div class="d-flex justify-content-between align-items-start mb-4 pt-2">
-          <h4 class="fw-bold text-navy mb-0">ProveYu</h4>
-          <div class="text-end">
-            <div class="small text-muted-custom fw-bold">ADMIT CARD</div>
-            <div class="small fw-bold text-navy">Exam: DSA</div>
+      <!-- Right Anti-Tamper Integrity Ledger -->
+      <div class="col-lg-4 border-start-lg ps-lg-4 mt-3 mt-lg-0">
+        <div class="p-2-5 rounded-3 bg-light-subtle border d-flex align-items-center gap-3">
+          <div class="qr-box p-1 bg-white border rounded flex-shrink-0 text-center shadow-2xs">
+            <img
+              [src]="'https://api.qrserver.com/v1/create-qr-code/?size=64x64&data=https://proveyu.dev/verify/' + activePassport.id"
+              alt="Audit QR" width="52" height="52" class="img-fluid">
           </div>
-        </div>
-        
-        <div class="row align-items-center">
-          <div class="col-4 col-sm-3 text-center">
-            <img src="https://ui-avatars.com/api/?name=Rahul+Sharma&background=0D8ABC&color=fff&size=100" alt="Candidate" class="rounded border" style="width: 80px; height: 80px;">
-          </div>
-          <div class="col-8 col-sm-6 ps-sm-4 border-start-sm">
-            <div class="mb-2">
-              <small class="text-muted-custom d-block lh-1">Name</small>
-              <span class="fw-bold text-navy fs-5">Rahul Sharma</span>
-            </div>
-            <div class="row">
-              <div class="col-6">
-                <small class="text-muted-custom d-block lh-1">Date</small>
-                <span class="fw-medium text-navy small">22 Sep 2024</span>
-              </div>
-              <div class="col-6">
-                <small class="text-muted-custom d-block lh-1">Time</small>
-                <span class="fw-medium text-navy small">1:00 PM</span>
-              </div>
+          <div class="lh-sm">
+            <div class="fw-bold text-navy small d-flex align-items-center gap-1.5">
+              <i class="bi bi-shield-lock-fill text-success fs-6"></i> Anti-Tamper Integrity Ledger
             </div>
           </div>
-          <div class="col-12 col-sm-3 text-center text-sm-end mt-4 mt-sm-0">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=PYV20240920B001" alt="QR" width="80" height="80" class="border p-1">
-          </div>
-        </div>
-        
-        <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
-          <div class="small"><span class="text-muted-custom">Booking ID:</span> <span class="fw-bold">PYV20240920B001</span></div>
-          <div class="small text-primary fw-medium"><i class="bi bi-shield-check me-1"></i> Verified</div>
         </div>
       </div>
     </div>
 
-    <!-- Right Column: Instructions -->
-    <div class="col-lg-5">
-      <div class="card card-shadow border-0 p-4 bg-light-blue h-100">
-        <h5 class="fw-bold text-navy mb-4"><i class="bi bi-exclamation-circle text-primary me-2"></i> Important Instructions</h5>
-        
-        <ul class="list-unstyled d-flex flex-column gap-3 mb-0">
-          <li class="d-flex align-items-start gap-2">
-            <i class="bi bi-check2-circle text-success mt-1"></i>
-            <span class="text-muted-custom small">Carry a valid ID proof (Aadhar/PAN/Driving License)</span>
-          </li>
-          <li class="d-flex align-items-start gap-2">
-            <i class="bi bi-check2-circle text-success mt-1"></i>
-            <span class="text-muted-custom small">Reach 30 minutes before the exam time</span>
-          </li>
-          <li class="d-flex align-items-start gap-2">
-            <i class="bi bi-x-circle text-danger mt-1"></i>
-            <span class="text-muted-custom small">No electronic devices allowed except laptop/desktop</span>
-          </li>
-          <li class="d-flex align-items-start gap-2">
-            <i class="bi bi-check2-circle text-success mt-1"></i>
-            <span class="text-muted-custom small">Ensure stable internet connection (min 2 Mbps)</span>
-          </li>
-          <li class="d-flex align-items-start gap-2">
-            <i class="bi bi-check2-circle text-success mt-1"></i>
-            <span class="text-muted-custom small">Follow the proctor's instructions strictly. Any violation may lead to disqualification.</span>
-          </li>
-        </ul>
+  </div>
+
+  <!-- 4 KPI STAT CARDS ROW (Matching Image 1) -->
+  <div class="row g-3 mb-3">
+    <!-- KPI 1: CAREER READINESS SCORE -->
+    <div class="col-6 col-md-3">
+      <div class="card card-bordered p-3 p-md-4 bg-white h-100 rounded-4 shadow-xs">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="uppercase-tag text-muted-custom font-monospace fw-bold" style="font-size: 0.68rem; letter-spacing: 0.05em;">CAREER READINESS SCORE</span>
+          <span class="text-muted-custom font-monospace small" style="font-size: 0.8rem;">/ 100</span>
+        </div>
+
+        <div class="d-flex align-items-baseline gap-1 my-1">
+          <span class="display-6 fw-extrabold font-monospace" [ngClass]="activePassport.isQualified ? 'text-navy' : 'text-danger'">{{ activePassport.readinessScore }}</span>
+          <span class="text-secondary font-monospace" style="font-size: 0.95rem;">/100</span>
+        </div>
+
+        <!-- Trajectory Subtext (Single Line) -->
+        <div class="fw-bold small d-inline-flex align-items-center gap-1 mt-auto pt-2" [ngClass]="activePassport.isQualified ? 'text-emerald' : 'text-danger'" style="font-size: 0.76rem;">
+          <i class="bi bi-graph-up-arrow" style="font-size: 0.7rem;"></i> {{ activePassport.readinessTrajectoryText }}
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI 2: NATIONAL PERCENTILE -->
+    <div class="col-6 col-md-3">
+      <div class="card card-bordered p-3 p-md-4 bg-white h-100 rounded-4 shadow-xs">
+        <div class="mb-2">
+          <span class="uppercase-tag text-muted-custom font-monospace fw-bold" style="font-size: 0.68rem; letter-spacing: 0.05em;">NATIONAL PERCENTILE</span>
+        </div>
+
+        <div class="my-2">
+          <span class="display-6 fw-extrabold text-navy font-monospace">{{ activePassport.percentileText }}</span>
+        </div>
+
+        <div class="text-muted-custom small mt-auto lh-sm" style="font-size: 0.76rem;">
+          {{ activePassport.percentileSubtext }}
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI 3: MERIT POSITION -->
+    <div class="col-6 col-md-3">
+      <div class="card card-bordered p-3 p-md-4 bg-white h-100 rounded-4 shadow-xs">
+        <div class="mb-2">
+          <span class="uppercase-tag text-muted-custom font-monospace fw-bold" style="font-size: 0.68rem; letter-spacing: 0.05em;">MERIT POSITION</span>
+        </div>
+
+        <div class="d-flex align-items-baseline gap-1-5 my-2">
+          <span class="display-6 fw-extrabold text-navy font-monospace">{{ activePassport.meritRankText.split(' ')[0] }}</span>
+          <span class="text-secondary font-monospace fs-5">/ {{ activePassport.meritRankText.split(' ')[2] || '350' }}</span>
+        </div>
+
+        <div class="text-muted-custom small mt-auto lh-sm" style="font-size: 0.76rem;">
+          {{ activePassport.meritSubtext }}
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI 4: PLACEMENT DRIVE STATUS -->
+    <div class="col-6 col-md-3">
+      <div class="card card-bordered p-3 p-md-4 bg-white h-100 rounded-4 shadow-xs">
+        <div class="mb-2">
+          <span class="uppercase-tag text-muted-custom font-monospace fw-bold" style="font-size: 0.68rem; letter-spacing: 0.05em;">PLACEMENT DRIVE STATUS</span>
+        </div>
+
+        <div class="my-1">
+          <span class="display-6 fw-extrabold font-monospace" [ngClass]="activePassport.isQualified ? 'text-emerald' : 'text-danger'">
+            {{ activePassport.placementStatus }}
+          </span>
+        </div>
+
+        <div class="border-top pt-2 mt-auto" style="border-color: #f1f5f9 !important;">
+          <div class="fw-bold uppercase-tag text-muted-custom" style="font-size: 0.64rem; letter-spacing: 0.05em;">
+            {{ activePassport.placementSubtext }}
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- MAIN 2-COLUMN GRID -->
+  <div class="row g-3">
+    <!-- LEFT MAIN COLUMN (8 Cols / 65%) -->
+    <div class="col-lg-8">
+
+      <!-- Verified Skill Matrix & Proficiency Levels -->
+      <div id="skills" class="passport-section-card card card-shadow border mb-3 p-3 p-md-4 bg-white rounded-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 pb-3 border-bottom">
+          <div class="d-flex align-items-center gap-3">
+            <div class="skill-header-icon-box rounded-3 p-2-5 d-flex align-items-center justify-content-center flex-shrink-0"
+              style="width: 44px; height: 44px; background-color: #f0efff; color: #6366f1;">
+              <i class="bi bi-bar-chart-line-fill fs-5"></i>
+            </div>
+            <div>
+              <h6 class="fw-extrabold text-navy mb-0 fs-5" style="letter-spacing: -0.01em;">Verified Skill Matrix & Proficiency Levels</h6>
+              <div class="text-muted-custom small">Multi-tier runtime test suite proctored via AST code parsing and complexity evaluation.</div>
+            </div>
+          </div>
+          <div class="skill-header-badge d-flex align-items-center gap-2 px-3 py-2 rounded-3 border" style="background-color: #f8f7ff; border-color: #e2e0fe !important;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 28px; height: 28px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+              <i class="bi bi-shield-fill-check" style="font-size: 0.8rem;"></i>
+            </div>
+            <div class="lh-sm">
+              <div class="fw-extrabold uppercase-tag text-purple" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #4f46e5;">6 CORE COMPETENCIES</div>
+              <div class="text-muted-custom font-monospace" style="font-size: 0.64rem;">Verified & Assessed</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+          <div class="skill-item-card card-bordered p-3 rounded-4" *ngFor="let item of activePassport.skills">
+            <div class="row align-items-center g-3">
+              <!-- Left Column: Skill Icon + Name + SubTags + Note -->
+              <div class="col-lg-6 col-md-12">
+                <div class="d-flex align-items-start gap-3">
+                  <div class="skill-icon-badge rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
+                    [style.background-color]="item.iconBg" [style.color]="item.iconColor"
+                    style="width: 44px; height: 44px; font-size: 1.25rem;">
+                    <i class="bi" [ngClass]="item.icon"></i>
+                  </div>
+                  <div>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                      <h6 class="fw-extrabold text-navy mb-0 fs-6">{{ item.name }}</h6>
+                      <div class="d-flex gap-1 flex-wrap">
+                        <span *ngFor="let tag of item.subTags" class="badge bg-light text-secondary border px-2 py-1 font-monospace" style="font-size: 0.68rem; font-weight: 500;">
+                          {{ tag }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="text-muted-custom small lh-sm" style="font-size: 0.76rem;">
+                      {{ item.note }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Middle Column: Progress bar & Score & Proficiency sub-label -->
+              <div class="col-lg-4 col-md-8">
+                <div class="d-flex justify-content-end mb-1">
+                  <span class="fw-extrabold text-navy font-monospace fs-5">{{ item.score }}%</span>
+                </div>
+                <div class="progress rounded-pill bg-light my-1" style="height: 8px;">
+                  <div class="progress-bar rounded-pill" [ngClass]="item.progressColor" role="progressbar" [style.width]="item.score + '%'"></div>
+                </div>
+                <div class="text-muted-custom uppercase-tag font-monospace text-start" style="font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; color: #64748b;">
+                  {{ item.proficiencyLabel }}
+                </div>
+              </div>
+
+              <!-- Far-Right Column: Badge with Level Icon -->
+              <div class="col-lg-2 col-md-4 text-end">
+                <span class="badge px-3 py-2 rounded-pill uppercase-tag fw-bold d-inline-flex align-items-center gap-1-5 shadow-2xs" [ngClass]="{
+                  'bg-emerald-subtle text-emerald border border-emerald-subtle': item.level === 'ADVANCED',
+                  'bg-purple-subtle text-purple border border-purple-subtle': item.level === 'STRONG',
+                  'bg-amber-subtle text-amber border border-amber-subtle': item.level === 'DEVELOPING'
+                }">
+                  <i class="bi" [ngClass]="item.badgeIcon"></i> {{ item.level }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Evaluative Strengths -->
+      <div id="strengths" class="passport-section-card card card-shadow border mb-3 p-3 p-md-4 bg-white rounded-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold text-navy mb-0 uppercase-tag tracking-wider" style="font-size: 0.78rem;">TOP EVALUATIVE STRENGTHS</h6>
+          <span class="text-emerald small font-monospace fw-bold"><i class="bi bi-shield-check me-1"></i> Empirically Validated</span>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-4" *ngFor="let s of activePassport.strengths">
+            <div class="card p-3 card-bordered h-100 bg-light-blue rounded-3 border">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fs-6 fw-extrabold text-primary font-monospace">{{ s.id }}</span>
+                <span class="badge bg-white text-navy border small font-monospace fw-bold px-2 py-1">{{ s.score }}% SCORE</span>
+              </div>
+              <h6 class="fw-bold text-navy mb-1 small">{{ s.title }}</h6>
+              <p class="text-muted-custom small mb-2 lh-sm" style="font-size: 0.74rem;">{{ s.description }}</p>
+              <div class="text-emerald fw-bold small mt-auto" style="font-size: 0.7rem;">{{ s.badge }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DTU Batch Distribution (Pyramid Visualizer matching Image 1) -->
+      <div id="merit" class="passport-section-card card card-shadow border mb-3 p-3 p-md-4 bg-white rounded-4">
+        <!-- Card Header -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 pb-2">
+          <div class="d-flex align-items-center gap-3">
+            <div class="skill-header-icon-box rounded-3 p-2-5 d-flex align-items-center justify-content-center flex-shrink-0"
+              style="width: 44px; height: 44px; background-color: #f0efff; color: #6366f1;">
+              <i class="bi bi-bar-chart-line-fill fs-5"></i>
+            </div>
+            <div>
+              <h6 class="fw-extrabold text-navy mb-0 fs-5" style="letter-spacing: -0.01em;">DTU Batch Distribution</h6>
+              <div class="text-muted-custom small">See how you rank among 350 assessed candidates</div>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2 px-3 py-2 rounded-3 border" style="background-color: #f8f7ff; border-color: #e2e0fe !important;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; background-color: #ede9fe; color: #6366f1;">
+              <i class="bi bi-people-fill" style="font-size: 0.85rem;"></i>
+            </div>
+            <div class="lh-sm">
+              <div class="fw-extrabold text-navy font-monospace fs-6">350</div>
+              <div class="text-muted-custom font-monospace uppercase-tag" style="font-size: 0.62rem; letter-spacing: 0.05em;">CANDIDATES</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Card Body: 2 Columns (Pyramid Left, Position Cards Right) -->
+        <div class="row align-items-center g-4">
+          <!-- Left Column: Pyramid Graphic with Connected Labels -->
+          <div class="col-lg-6 col-md-12">
+            <div class="pyramid-container position-relative w-100 pe-lg-2">
+              <svg viewBox="0 0 420 270" class="w-100 h-auto" style="overflow: visible;">
+                <defs>
+                  <!-- Gradient 1: Emerald (Top 10%) -->
+                  <linearGradient id="pyr-emerald" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#10b981" />
+                    <stop offset="100%" stop-color="#059669" />
+                  </linearGradient>
+                  <!-- Gradient 2: Purple Blue (Top 25%) -->
+                  <linearGradient id="pyr-indigo" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#6366f1" />
+                    <stop offset="100%" stop-color="#4f46e5" />
+                  </linearGradient>
+                  <!-- Gradient 3: Soft Lavender (Top 50%) -->
+                  <linearGradient id="pyr-purple" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#a78bfa" />
+                    <stop offset="100%" stop-color="#8b5cf6" />
+                  </linearGradient>
+                  <!-- Gradient 4: Slate Grey (Remaining 50%+) -->
+                  <linearGradient id="pyr-slate" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#cbd5e1" />
+                    <stop offset="100%" stop-color="#94a3b8" />
+                  </linearGradient>
+                </defs>
+
+                <!-- TIER 1: TOP 10% (Green Top Pyramid Segment) -->
+                <path d="M 90 58 L 115 15 Q 120 5 125 15 L 150 58 Q 153 64 145 64 L 95 64 Q 87 64 90 58 Z" fill="url(#pyr-emerald)" />
+                <text x="120" y="46" fill="#ffffff" font-weight="800" font-size="14" text-anchor="middle" font-family="Inter, sans-serif">10%</text>
+                <!-- Connector Line + Dot 1 -->
+                <line x1="155" y1="38" x2="225" y2="38" stroke="#10b981" stroke-width="2" stroke-dasharray="3,3" />
+                <circle cx="225" cy="38" r="4.5" fill="#10b981" />
+                <text x="240" y="34" fill="#0f172a" font-weight="800" font-size="14" font-family="Inter, sans-serif">Top 10%</text>
+                <text x="240" y="50" fill="#64748b" font-weight="500" font-size="12" font-family="Inter, sans-serif">35 candidates</text>
+
+                <!-- TIER 2: TOP 25% (Indigo Middle Segment) -->
+                <path d="M 68 118 L 86 73 Q 89 67 96 67 L 144 67 Q 151 67 154 73 L 172 118 Q 175 124 167 124 L 73 124 Q 65 124 68 118 Z" fill="url(#pyr-indigo)" />
+                <text x="120" y="102" fill="#ffffff" font-weight="800" font-size="14" text-anchor="middle" font-family="Inter, sans-serif">25%</text>
+                <!-- Connector Line + Dot 2 -->
+                <line x1="178" y1="96" x2="235" y2="96" stroke="#6366f1" stroke-width="2" />
+                <circle cx="235" cy="96" r="4.5" fill="#6366f1" />
+                <text x="250" y="92" fill="#0f172a" font-weight="800" font-size="14" font-family="Inter, sans-serif">Top 25%</text>
+                <text x="250" y="108" fill="#64748b" font-weight="500" font-size="12" font-family="Inter, sans-serif">88 candidates</text>
+
+                <!-- TIER 3: TOP 50% (Lavender Segment) -->
+                <path d="M 45 178 L 63 133 Q 66 127 73 127 L 167 127 Q 174 127 177 133 L 195 178 Q 198 184 190 184 L 50 184 Q 42 184 45 178 Z" fill="url(#pyr-purple)" />
+                <text x="120" y="161" fill="#ffffff" font-weight="800" font-size="14" text-anchor="middle" font-family="Inter, sans-serif">50%</text>
+                <!-- Connector Line + Dot 3 -->
+                <line x1="200" y1="156" x2="245" y2="156" stroke="#8b5cf6" stroke-width="2" />
+                <circle cx="245" cy="156" r="4.5" fill="#8b5cf6" />
+                <text x="260" y="152" fill="#0f172a" font-weight="800" font-size="14" font-family="Inter, sans-serif">Top 50%</text>
+                <text x="260" y="168" fill="#64748b" font-weight="500" font-size="12" font-family="Inter, sans-serif">175 candidates</text>
+
+                <!-- TIER 4: REMAINING (Slate Grey Segment) -->
+                <path d="M 22 238 L 40 193 Q 43 187 50 187 L 190 187 Q 197 187 200 193 L 218 238 Q 221 244 213 244 L 27 244 Q 19 244 22 238 Z" fill="url(#pyr-slate)" />
+                <text x="120" y="221" fill="#ffffff" font-weight="800" font-size="14" text-anchor="middle" font-family="Inter, sans-serif">50%+</text>
+                <!-- Connector Line + Dot 4 -->
+                <line x1="223" y1="216" x2="255" y2="216" stroke="#94a3b8" stroke-width="2" />
+                <circle cx="255" cy="216" r="4.5" fill="#94a3b8" />
+                <text x="270" y="212" fill="#0f172a" font-weight="800" font-size="14" font-family="Inter, sans-serif">Remaining</text>
+                <text x="270" y="228" fill="#64748b" font-weight="500" font-size="12" font-family="Inter, sans-serif">175 candidates</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Right Column: Position Box + Placement Callout Card -->
+          <div class="col-lg-6 col-md-12 d-flex flex-column gap-3">
+            <!-- Your Position Card -->
+            <div class="p-3-5 p-md-4 rounded-4 border d-flex justify-content-between align-items-center shadow-xs" style="background-color: #f8f7ff; border-color: #e0e0fe !important;">
+              <div>
+                <div class="fw-bold uppercase-tag mb-1" style="color: #6366f1; font-size: 0.78rem; letter-spacing: 0.04em;">Your Position</div>
+                <div class="d-flex align-items-center gap-1-5 mb-1">
+                  <h4 class="fw-extrabold text-navy mb-0 fs-3">{{ activePassport.percentileText }} Percentile</h4>
+                  <i class="bi bi-crown-fill fs-5" style="color: #6366f1;"></i>
+                </div>
+                <div class="fw-semibold text-secondary small">Rank {{ activePassport.meritRankText }}</div>
+              </div>
+
+              <!-- Circular Progress Donut Gauge -->
+              <div class="position-relative flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                <svg viewBox="0 0 70 70" width="80" height="80">
+                  <circle cx="35" cy="35" r="28" fill="none" stroke="#e2e8f0" stroke-width="6" />
+                  <circle cx="35" cy="35" r="28" fill="none"
+                    [attr.stroke]="activePassport.isQualified ? '#10b981' : '#ef4444'"
+                    stroke-width="6"
+                    stroke-linecap="round"
+                    stroke-dasharray="175.93"
+                    [attr.stroke-dashoffset]="activePassport.isQualified ? 21.11 : 114.35"
+                    transform="rotate(-90 35 35)" />
+                </svg>
+                <div class="position-absolute top-50 start-50 translate-middle text-center lh-1">
+                  <div class="fw-extrabold text-navy font-monospace" style="font-size: 0.95rem;">{{ activePassport.percentileText.replace('th','').replace('st','').replace('nd','').replace('rd','') }}%</div>
+                  <div class="text-muted-custom font-monospace uppercase-tag mt-0-5" style="font-size: 0.52rem; font-weight: 700;">PERCENTILE</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Placement Clearance Callout -->
+            <div class="p-3 rounded-4 border d-flex align-items-center gap-3" [ngClass]="activePassport.isQualified ? 'bg-emerald-subtle border-emerald-subtle' : 'bg-amber-subtle border-amber-subtle'">
+              <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;" [ngClass]="activePassport.isQualified ? 'bg-emerald text-white' : 'bg-amber text-white'">
+                <i class="bi fs-5" [ngClass]="activePassport.isQualified ? 'bi-trophy-fill' : 'bi-exclamation-triangle-fill'"></i>
+              </div>
+              <div class="text-navy small lh-sm">
+                Candidate Divyansh Gupta is <strong [ngClass]="activePassport.isQualified ? 'text-emerald' : 'text-amber'">{{ activePassport.isQualified ? 'positioned within top quartile' : 'currently below threshold' }}</strong> {{ activePassport.isQualified ? 'eligible for Tier-1 placement drives.' : 'required for Tier-1 drive clearance.' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT SIDEBAR COLUMN (4 Cols / 35%) -->
+    <div class="col-lg-4">
+
+      <!-- Verification Checklist (Top of Right Column next to Skill Matrix) -->
+      <div id="verification" class="passport-section-card card card-shadow border mb-3 p-3 p-md-4 bg-white rounded-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold text-navy mb-0 uppercase-tag" style="font-size: 0.78rem;">Verification Checklist</h6>
+          <span class="font-monospace fw-bold" [ngClass]="activePassport.isQualified ? 'text-emerald' : 'text-danger'" style="font-size: 0.725rem;">{{ activePassport.isQualified ? '5 / 5 CLEARED' : 'ACTION REQUIRED' }}</span>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+          <div class="verification-item border-bottom pb-2-5" *ngFor="let check of activePassport.verificationChecks; let last = last" [class.border-bottom-0]="last" [class.pb-0]="last">
+            <div class="fw-bold text-navy small mb-1" style="font-size: 0.825rem;">
+              {{ check.title }}
+            </div>
+            <div class="text-muted-custom lh-sm" style="font-size: 0.75rem;">
+              {{ check.description }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Growth Velocity & Trajectory -->
+      <div id="progress" class="passport-section-card card card-shadow border mb-3 p-3 p-md-4 bg-white rounded-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold text-navy mb-0 uppercase-tag" style="font-size: 0.78rem;">Growth Velocity & Trajectory</h6>
+          <span class="badge px-2-5 py-1 font-monospace fw-bold" [ngClass]="activePassport.isQualified ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'" style="font-size: 0.7rem;">
+            {{ activePassport.isQualified ? '+14 PTS GAIN' : '-12 PTS BELOW CUTOFF' }}
+          </span>
+        </div>
+
+        <!-- Trajectory Sprint Items -->
+        <div class="d-flex flex-column gap-3 mb-3">
+          <div class="p-3 rounded-3 border bg-light-subtle d-flex justify-content-between align-items-center shadow-2xs" *ngFor="let item of activePassport.history" [class.border-primary]="item.isActive" [class.bg-light-blue]="item.isActive">
+            <div>
+              <div class="fw-bold text-navy small mb-0-5" style="font-size: 0.825rem;">{{ item.period }}</div>
+              <div class="text-muted-custom" style="font-size: 0.725rem;">{{ item.subtitle }}</div>
+            </div>
+            <div class="text-end font-monospace">
+              <div class="fw-bold text-navy small">{{ item.scoreText }}</div>
+              <div class="text-muted-custom" style="font-size: 0.7rem;">{{ item.rankText }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trajectory Sparkline Graph Box -->
+        <div class="p-3 rounded-3 bg-light border text-center font-monospace mt-3" style="font-size: 0.73rem;">
+          <div class="d-flex justify-content-between text-muted-custom">
+            <span>Baseline: {{ activePassport.history[0]?.scoreText || '60' }}</span>
+            <span class="fw-bold" [ngClass]="activePassport.isQualified ? 'text-primary' : 'text-danger'">{{ activePassport.compoundLiftText }}</span>
+            <span>Current: {{ activePassport.readinessScore }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Role Readiness Card (Matching Reference Image) -->
+      <div id="readiness" class="passport-section-card card card-shadow border mb-3 p-3 p-md-4 bg-white rounded-4">
+        <!-- Header -->
+        <div class="d-flex align-items-center gap-3 mb-3 pb-1">
+          <div class="rounded-3 p-2-5 d-flex align-items-center justify-content-center flex-shrink-0"
+            style="width: 44px; height: 44px; background-color: #eef2ff; color: #6366f1;">
+            <i class="bi bi-briefcase-fill fs-5"></i>
+          </div>
+          <div>
+            <h6 class="fw-extrabold text-navy mb-0 fs-5" style="letter-spacing: -0.01em;">Role Readiness</h6>
+            <div class="text-muted-custom small">How well your verified skills match industry roles.</div>
+          </div>
+        </div>
+
+        <!-- Role Items List -->
+        <div class="d-flex flex-column gap-3 mb-3">
+          <div class="p-3 rounded-4 border bg-white card-bordered" *ngFor="let r of activePassport.roleReadiness">
+            <!-- Top Line: Role Title + Percentage -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="fw-extrabold text-navy mb-0 fs-6">{{ r.role }}</h6>
+              <span class="fw-extrabold text-navy font-monospace fs-5">{{ r.matchScore }}%</span>
+            </div>
+
+            <!-- Tags + Match Badge -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-2">
+              <div class="d-flex gap-1 flex-wrap">
+                <span *ngFor="let tag of r.tags" class="badge bg-light text-secondary border px-2 py-1 font-monospace" style="font-size: 0.68rem; font-weight: 500;">
+                  {{ tag }}
+                </span>
+              </div>
+              <span class="badge px-3 py-1-5 rounded-pill uppercase-tag fw-bold" [ngClass]="r.matchBadgeClass" style="font-size: 0.68rem;">
+                {{ r.matchBadgeText }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Callout -->
+        <div class="p-2-5 rounded-3 bg-light-subtle border d-flex align-items-center gap-2-5">
+          <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; background-color: #e0e7ff; color: #6366f1;">
+            <i class="bi bi-bullseye" style="font-size: 0.85rem;"></i>
+          </div>
+          <div class="text-muted-custom lh-sm" style="font-size: 0.73rem;">
+            Based on your verified skill profile and industry role requirements.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+  <!-- STICKY BOTTOM FLOATING ACTION BAR -->
+  <div class="floating-passport-bar fixed-bottom bg-white border-top shadow-lg py-2 px-3 px-md-4">
+    <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <!-- Candidate Quick Status -->
+      <div class="d-flex align-items-center gap-2">
+        <img [src]="candidate.avatar" [alt]="candidate.name" class="rounded-circle border"
+          style="width: 32px; height: 32px;">
+        <div>
+          <span class="fw-bold text-navy small d-block lh-1">{{ candidate.name }} ({{ activePassport.readinessScore
+            }}/100)</span>
+          <small class="font-monospace" [ngClass]="activePassport.isQualified ? 'text-emerald' : 'text-danger fw-bold'" style="font-size: 0.7rem;">
+            {{ activePassport.id }} · {{ activePassport.isQualified ? 'Ready to Hire' : 'Not Qualified' }}
+          </small>
+        </div>
+      </div>
+
+      <!-- Action Buttons Group (Only 2 buttons) -->
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-custom px-3 py-1-5" (click)="sharePassport()" style="font-size: 0.8rem;">
+          <i class="bi bi-share me-1.5"></i> Share with anyone
+        </button>
+        <button class="btn btn-sm btn-primary-custom px-3 py-1-5" (click)="downloadPassportPdf()" style="font-size: 0.8rem;">
+          <i class="bi bi-file-earmark-arrow-down me-1.5"></i> Download PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>

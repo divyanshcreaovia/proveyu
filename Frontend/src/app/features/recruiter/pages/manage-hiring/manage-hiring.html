@@ -1,0 +1,310 @@
+<div class="manage-hiring-container">
+
+  <!-- Structured Top Page Header -->
+  <div class="page-header">
+    <div class="header-titles">
+      <p class="page-subtitle">Track, interview, and transition candidates with 100% invigilated ProveYu skill passports.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline-custom" routerLink="/recruiter/candidate-detail">
+        <i class="bi bi-person-lines-fill"></i>
+        <span>View All Candidates</span>
+      </button>
+      <button class="btn btn-primary-custom" (click)="openAddModal()">
+        <i class="bi bi-plus-circle-fill"></i>
+        <span>Add Candidate to Board</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Search and Filter Toolbar -->
+  <div class="filter-toolbar">
+    <div class="search-box">
+      <i class="bi bi-search search-icon"></i>
+      <input type="text"
+             class="form-control search-input"
+             placeholder="Search candidate name, ID (#CF-7412), or skills..."
+             [(ngModel)]="searchTerm" />
+    </div>
+
+    <div class="filter-dropdown">
+      <label class="filter-label"><i class="bi bi-funnel-fill"></i> Domain Track:</label>
+      <select class="form-select filter-select" [(ngModel)]="selectedTrackFilter">
+        <option *ngFor="let track of domainTracks" [value]="track">{{ track }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Main Kanban Board 4-Column Grid Layout -->
+  <div class="kanban-board-grid">
+    
+    <div class="kanban-column"
+         *ngFor="let col of columns"
+         [class.drag-over]="dragOverStage === col.id"
+         (dragover)="onDragOver($event, col.id)"
+         (dragleave)="onDragLeave($event)"
+         (drop)="onDrop($event, col.id)">
+
+      <!-- Column Header Pill Tag (Matching Exact Screenshot Styling) -->
+      <div class="column-header-pill" [style.background-color]="col.badgeBg">
+        <span>{{ col.title }} ({{ getStageCount(col.id) }})</span>
+      </div>
+
+      <!-- Column Cards Stack Container -->
+      <div class="column-cards-stack">
+
+        <!-- Candidate Card -->
+        <div class="candidate-kanban-card"
+             *ngFor="let candidate of getFilteredCandidates(col.id)"
+             draggable="true"
+             (dragstart)="onDragStart($event, candidate)">
+          
+          <!-- Card Content Body (Clickable to open Detail Modal) -->
+          <div class="card-body-content" (click)="openDetailModal(candidate)">
+            <!-- Line 1: Candidate Name / Code ID -->
+            <div class="candidate-name">{{ candidate.name }}</div>
+
+            <!-- Line 2: Role Track / Domain Specialization (Green Text) -->
+            <div class="candidate-track">{{ candidate.roleTrack }}</div>
+
+            <!-- Line 3: Invigilated Score -->
+            <div class="candidate-score">
+              Score: <span class="score-value">{{ candidate.score }}/100</span>
+            </div>
+          </div>
+
+          <!-- Card Bottom Action Button / Badge (Matching Exact Screenshot) -->
+          <div class="card-action-box">
+            
+            <!-- Shortlisted Action Button: Move to Interview -->
+            <button class="btn btn-card-action btn-action-outline"
+                    *ngIf="col.nextStageButtonStyle === 'outline'"
+                    (click)="moveNext(candidate)">
+              <span>Move to Interview</span>
+              <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+
+            <!-- Interviewing Action Button: Extend Offer -->
+            <button class="btn btn-card-action btn-action-solid-green"
+                    *ngIf="col.nextStageButtonStyle === 'solid-green'"
+                    (click)="moveNext(candidate)">
+              <span>Extend Offer</span>
+              <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+
+            <!-- Offered Action Button: Mark as Hired -->
+            <button class="btn btn-card-action btn-action-solid-orange"
+                    *ngIf="col.nextStageButtonStyle === 'solid-orange'"
+                    (click)="moveNext(candidate)">
+              <span>Mark as Hired</span>
+              <i class="bi bi-person-check-fill ms-1"></i>
+            </button>
+
+            <!-- Hired Status Badge Pill: CLOSED & PLACED -->
+            <div class="badge-closed-placed"
+                 *ngIf="col.nextStageButtonStyle === 'badge-green'">
+              CLOSED & PLACED
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Empty State in Column when no candidates -->
+        <div class="empty-column-placeholder" *ngIf="getFilteredCandidates(col.id).length === 0">
+          <i class="bi bi-inbox empty-icon"></i>
+          <span>No candidates in {{ col.title }}</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Candidate Details Modal Backdrop -->
+  <div class="modal-backdrop-custom" *ngIf="showDetailModal" (click)="closeDetailModal()"></div>
+
+  <!-- Candidate Details Modal -->
+  <div class="modal-dialog-custom" *ngIf="showDetailModal && selectedCandidate">
+    <div class="modal-header-custom">
+      <div class="modal-header-content">
+        <div class="modal-icon-badge">
+          <i class="bi bi-person-badge-fill"></i>
+        </div>
+        <div>
+          <h5 class="modal-title">{{ selectedCandidate.name }}</h5>
+          <p class="modal-subtitle">ProveYu Invigilated Candidate Passport & Hiring History</p>
+        </div>
+      </div>
+      <button type="button" class="btn-close-custom" (click)="closeDetailModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-body-custom">
+      <div class="detail-modal-grid">
+        
+        <!-- Invigilated Passport Highlight -->
+        <div class="passport-banner">
+          <div class="banner-left">
+            <span class="banner-tag">100% INVIGILATED PASSPORT</span>
+            <h4 class="banner-score">{{ selectedCandidate.score }} <small>/100</small></h4>
+            <div class="banner-role">{{ selectedCandidate.roleTrack }}</div>
+          </div>
+          <div class="banner-right">
+            <div class="check-item"><i class="bi bi-check-circle-fill"></i> AI Webcam Proctoring</div>
+            <div class="check-item"><i class="bi bi-check-circle-fill"></i> Screen & IDE Session Recorded</div>
+            <div class="check-item"><i class="bi bi-check-circle-fill"></i> Govt ID & Biometrics Matched</div>
+          </div>
+        </div>
+
+        <!-- Details Grid -->
+        <div class="info-group-grid mt-3">
+          <div class="info-item">
+            <span class="info-label">Current Stage</span>
+            <span class="info-value text-capitalize fw-bold text-primary">{{ selectedCandidate.stage }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Candidate Code</span>
+            <span class="info-value">{{ selectedCandidate.code || selectedCandidate.id }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email Address</span>
+            <span class="info-value">{{ selectedCandidate.email }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Phone</span>
+            <span class="info-value">{{ selectedCandidate.phone }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Location</span>
+            <span class="info-value">{{ selectedCandidate.location }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Experience</span>
+            <span class="info-value">{{ selectedCandidate.experience }}</span>
+          </div>
+        </div>
+
+        <!-- Skills list -->
+        <div class="skills-section mt-3" *ngIf="selectedCandidate.skills && selectedCandidate.skills.length">
+          <h6 class="section-title">Verified Skills & Tools</h6>
+          <div class="skills-flex">
+            <span class="skill-tag" *ngFor="let s of selectedCandidate.skills">{{ s }}</span>
+          </div>
+        </div>
+
+        <!-- Recruiter / Interview Notes -->
+        <div class="notes-section mt-3">
+          <h6 class="section-title">Interview & Evaluation Notes</h6>
+          <ul class="notes-list">
+            <li *ngFor="let note of selectedCandidate.notes">
+              <i class="bi bi-chat-left-text-fill note-icon"></i>
+              <span>{{ note }}</span>
+            </li>
+          </ul>
+
+          <div class="add-note-box mt-2">
+            <input type="text"
+                   class="form-control form-control-sm"
+                   placeholder="Add an evaluation note..."
+                   [(ngModel)]="newNoteText"
+                   (keyup.enter)="addNote()" />
+            <button class="btn btn-sm btn-primary-custom" (click)="addNote()">Add Note</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="modal-footer-custom">
+      <button class="btn btn-outline-custom" (click)="closeDetailModal()">Close</button>
+      <button class="btn btn-primary-custom" (click)="moveNext(selectedCandidate); closeDetailModal()">
+        <span>Advance Stage</span>
+        <i class="bi bi-arrow-right ms-1"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Add Candidate Modal Backdrop -->
+  <div class="modal-backdrop-custom" *ngIf="showAddModal" (click)="closeAddModal()"></div>
+
+  <!-- Add Candidate Modal -->
+  <div class="modal-dialog-custom" *ngIf="showAddModal">
+    <div class="modal-header-custom">
+      <div class="modal-header-content">
+        <div class="modal-icon-badge">
+          <i class="bi bi-person-plus-fill"></i>
+        </div>
+        <div>
+          <h5 class="modal-title">Add Candidate to Pipeline</h5>
+          <p class="modal-subtitle">Directly add a verified candidate into your hiring board</p>
+        </div>
+      </div>
+      <button type="button" class="btn-close-custom" (click)="closeAddModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-body-custom">
+      <form (ngSubmit)="saveNewCandidate()">
+        <div class="modal-form-grid">
+          
+          <div class="form-col-full">
+            <label class="form-label">Candidate Name <span class="required-star">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="newCandidate.name" name="candName" placeholder="e.g. Ananya Roy" required />
+          </div>
+
+          <div class="form-col-half">
+            <label class="form-label">Role Track <span class="required-star">*</span></label>
+            <select class="form-select" [(ngModel)]="newCandidate.roleTrack" name="roleTrack">
+              <option value="Java Backend (Spring Boot)">Java Backend (Spring Boot)</option>
+              <option value="Web Development (Full Stack)">Web Development (Full Stack)</option>
+              <option value="Universal Fresher Competency">Universal Fresher Competency</option>
+              <option value="QA & Automation Testing">QA & Automation Testing</option>
+              <option value="Python Backend & Data">Python Backend & Data</option>
+            </select>
+          </div>
+
+          <div class="form-col-half">
+            <label class="form-label">Invigilated Score Cutoff (/100)</label>
+            <input type="number" class="form-control" [(ngModel)]="newCandidate.score" name="candScore" min="50" max="100" />
+          </div>
+
+          <div class="form-col-half">
+            <label class="form-label">Initial Stage</label>
+            <select class="form-select" [(ngModel)]="newCandidate.stage" name="candStage">
+              <option value="shortlisted">Shortlisted</option>
+              <option value="interviewing">Interviewing</option>
+              <option value="offered">Offered</option>
+              <option value="hired">Hired</option>
+            </select>
+          </div>
+
+          <div class="form-col-half">
+            <label class="form-label">Experience Level</label>
+            <input type="text" class="form-control" [(ngModel)]="newCandidate.experience" name="candExp" placeholder="e.g. 2 Yrs" />
+          </div>
+
+          <div class="form-col-half">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" [(ngModel)]="newCandidate.email" name="candEmail" placeholder="e.g. candidate@example.com" />
+          </div>
+
+          <div class="form-col-half">
+            <label class="form-label">Phone</label>
+            <input type="text" class="form-control" [(ngModel)]="newCandidate.phone" name="candPhone" placeholder="+91 98765 00000" />
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer-custom">
+      <button class="btn btn-outline-custom" (click)="closeAddModal()">Cancel</button>
+      <button class="btn btn-primary-custom" (click)="saveNewCandidate()">Add Candidate</button>
+    </div>
+  </div>
+
+</div>

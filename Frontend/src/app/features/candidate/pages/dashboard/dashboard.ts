@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HighchartsChartComponent } from 'highcharts-angular';
 import * as Highcharts from 'highcharts';
@@ -7,7 +8,7 @@ import * as Highcharts from 'highcharts';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, HighchartsChartComponent],
+  imports: [CommonModule, FormsModule, RouterLink, HighchartsChartComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -31,53 +32,43 @@ export class Dashboard implements OnInit {
   // 2. 5 Top Professional Metric Cards
   statCards = [
     {
-      label: 'Upcoming Exams',
+      label: 'UPCOMING EXAMS',
       value: '1 Scheduled',
       subtext: 'DSA Assessment on 24 Sep',
-      icon: 'bi-calendar-check-fill',
-      bgClass: 'card-theme-indigo',
-      badgeColor: 'badge-theme-indigo',
-      accentColor: '#4f46e5',
+      accentColor: '#7c3aed',
+      textColor: '#0f172a',
       route: '/candidate/book-slot'
     },
     {
-      label: 'Exams Taken',
+      label: 'EXAMS TAKEN',
       value: '8 Exams',
       subtext: '6 Passed (75% Pass Rate)',
-      icon: 'bi-journal-check',
-      bgClass: 'card-theme-emerald',
-      badgeColor: 'badge-theme-emerald',
       accentColor: '#10b981',
+      textColor: '#0f172a',
       route: '/candidate/my-passport'
     },
     {
-      label: 'Active Invites',
+      label: 'ACTIVE INVITES',
       value: '3 Invites',
       subtext: 'Google, Microsoft & TCS',
-      icon: 'bi-envelope-paper-fill',
-      bgClass: 'card-theme-purple',
-      badgeColor: 'badge-theme-purple',
-      accentColor: '#7c3aed',
+      accentColor: '#c026d3',
+      textColor: '#0f172a',
       route: '/candidate/interview-invites'
     },
     {
-      label: 'Performance Tier',
+      label: 'PERFORMANCE TIER',
       value: '92.4 %ile',
       subtext: 'Top 8% All India Rank',
-      icon: 'bi-graph-up-arrow',
-      bgClass: 'card-theme-blue',
-      badgeColor: 'badge-theme-blue',
       accentColor: '#0284c7',
+      textColor: '#0284c7',
       route: '/candidate/my-passport'
     },
     {
-      label: 'Passport Identity',
+      label: 'PASSPORT IDENTITY',
       value: 'Silver Tier',
       subtext: 'ID: PY-8842-5678',
-      icon: 'bi-patch-check-fill',
-      bgClass: 'card-theme-slate',
-      badgeColor: 'badge-theme-slate',
-      accentColor: '#0f172a',
+      accentColor: '#475569',
+      textColor: '#0f172a',
       route: '/candidate/my-passport'
     }
   ];
@@ -92,25 +83,38 @@ export class Dashboard implements OnInit {
     admitCardReady: true
   };
 
-  // 4. Quick Actions
-  quickActions = [
-    { label: 'Book Exam', icon: 'bi-calendar-plus', route: '/candidate/book-slot', bg: 'bg-dark text-white' },
-    { label: 'My Passport', icon: 'bi-pass', route: '/candidate/my-passport', bg: 'bg-white text-dark border' },
-    { label: 'Edit Profile', icon: 'bi-person-gear', route: '/candidate/profile', bg: 'bg-white text-dark border' },
-    { label: 'Prep Guide', icon: 'bi-journal-bookmark', route: '/candidate/prep-guide', bg: 'bg-white text-dark border' }
+  // 4. Active Recruiter Interview Invites (Real Candidate Data)
+  interviewInvites = [
+    {
+      id: 'INV-9021',
+      company: 'Google India',
+      role: 'Senior Frontend Engineer (React/TypeScript)',
+      ctc: '₹22 - 28 LPA',
+      status: 'Interview Scheduled',
+      date: 'Tomorrow, 02:30 PM',
+      location: 'Virtual / Google Meet',
+      badgeBg: '#e0f2fe',
+      badgeColor: '#0369a1'
+    },
+    {
+      id: 'INV-8910',
+      company: 'Microsoft Corporation',
+      role: 'Fullstack Software Engineer (Node/C#)',
+      ctc: '₹24 - 30 LPA',
+      status: 'Invite Pending',
+      date: '28 Sep, 11:00 AM',
+      location: 'Virtual / MS Teams',
+      badgeBg: '#fef3c7',
+      badgeColor: '#b45309'
+    }
   ];
 
-  // 5. Strengths & Improvements Insights
-  insights = {
-    strengths: [
-      { title: 'Coding Speed & Accuracy', desc: 'Ranked in top 5% speed in Graph & Tree algorithms.' },
-      { title: 'Data Structures Core', desc: '94% accuracy in Stack, Queue, and Dynamic Programming.' }
-    ],
-    improvements: [
-      { title: 'System Design Scaling', desc: 'Need practice in Distributed Caching & Load Balancers.' },
-      { title: 'SQL Query Optimization', desc: 'Review Multi-table JOINs & Indexing execution plans.' }
-    ]
-  };
+  // 5. Verified Skill Passport Scorecards
+  verifiedSkills = [
+    { skill: 'Data Structures & Algorithms', percentile: '98.2 %ile', score: '94/100', status: 'Proctored Verified', bg: '#e0f2fe', color: '#0369a1' },
+    { skill: 'Frontend Web & React.js', percentile: '96.5 %ile', score: '92/100', status: 'Proctored Verified', bg: '#f3e8ff', color: '#7c3aed' },
+    { skill: 'Java Enterprise & Spring', percentile: '91.4 %ile', score: '88/100', status: 'Proctored Verified', bg: '#dcfce7', color: '#15803d' }
+  ];
 
   // 6. Exam History
   examHistory = [
@@ -128,20 +132,14 @@ export class Dashboard implements OnInit {
     { text: 'Recruiter from Google viewed candidate passport', time: '5 days ago', icon: 'bi-eye-fill text-info' }
   ];
 
-  // 8. Notifications & Alerts
-  notifications = [
-    { type: 'urgent', text: 'Admit Card for DSA Assessment on 24 Sep is ready for download.', action: 'Download Admit Card' },
-    { type: 'info', text: 'Microsoft invited you for Software Engineer interview round.', action: 'View Invitation' }
-  ];
-
-  // 9. Profile Completion Missing Items
+  // 8. Profile Completion Missing Items
   missingProfileItems = [
     'Add Work Experience / Projects',
     'Upload Resume PDF',
     'Verify Mobile OTP'
   ];
 
-  // 10. Highcharts Configurations
+  // Highcharts Configurations
   performanceChartOptions: Highcharts.Options = {};
   skillsRadarOptions: Highcharts.Options = {};
 
@@ -155,7 +153,7 @@ export class Dashboard implements OnInit {
       chart: {
         type: 'areaspline',
         backgroundColor: 'transparent',
-        height: 240,
+        height: 230,
         style: { fontFamily: 'Inter, sans-serif' }
       },
       title: { text: '' },
@@ -210,7 +208,7 @@ export class Dashboard implements OnInit {
       chart: {
         type: 'column',
         backgroundColor: 'transparent',
-        height: 240,
+        height: 230,
         style: { fontFamily: 'Inter, sans-serif' }
       },
       title: { text: '' },
@@ -232,13 +230,6 @@ export class Dashboard implements OnInit {
         borderRadius: 10,
         style: { color: '#ffffff' }
       },
-      plotOptions: {
-        column: {
-          borderRadius: 8,
-          pointPadding: 0.1,
-          borderWidth: 0
-        }
-      },
       series: [
         {
           name: 'Skill Proficiency',
@@ -249,4 +240,57 @@ export class Dashboard implements OnInit {
       ]
     };
   }
+
+  // Modal states for Exam Details and Reschedule
+  isExamDetailsModalOpen = false;
+  isRescheduleModalOpen = false;
+
+  // Reschedule selection states
+  rescheduleDate = '28 Sep, 2024';
+  rescheduleTime = '02:30 PM - 04:00 PM';
+  rescheduleSuccessMsg = false;
+
+  availableRescheduleDates = [
+    '26 Sep, 2024',
+    '28 Sep, 2024',
+    '30 Sep, 2024',
+    '02 Oct, 2024'
+  ];
+
+  availableRescheduleTimes = [
+    '09:00 AM - 10:30 AM',
+    '11:00 AM - 12:30 PM',
+    '02:30 PM - 04:00 PM',
+    '05:00 PM - 06:30 PM'
+  ];
+
+  openExamDetailsModal(event?: Event) {
+    if (event) event.preventDefault();
+    this.isExamDetailsModalOpen = true;
+  }
+
+  closeExamDetailsModal() {
+    this.isExamDetailsModalOpen = false;
+  }
+
+  openRescheduleModal(event?: Event) {
+    if (event) event.preventDefault();
+    this.isRescheduleModalOpen = true;
+    this.rescheduleSuccessMsg = false;
+  }
+
+  closeRescheduleModal() {
+    this.isRescheduleModalOpen = false;
+  }
+
+  confirmReschedule() {
+    this.nextExam.date = this.rescheduleDate;
+    this.nextExam.time = this.rescheduleTime;
+    this.rescheduleSuccessMsg = true;
+    setTimeout(() => {
+      this.isRescheduleModalOpen = false;
+      this.rescheduleSuccessMsg = false;
+    }, 1200);
+  }
 }
+

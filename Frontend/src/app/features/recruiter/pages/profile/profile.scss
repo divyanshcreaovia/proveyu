@@ -1,0 +1,114 @@
+.profile-container {
+  font-family: 'Inter', sans-serif;
+
+  /* Global Form Controls & Fields Border Styling (Same as Candidate Profile) */
+  .form-control,
+  .form-select,
+  textarea {
+    border: 1px solid #cbd5e1 !important;
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+    border-radius: 8px !important;
+    font-size: 0.925rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+
+    &:hover {
+      border-color: #94a3b8 !important;
+    }
+
+    &:focus {
+      border-color: #4f46e5 !important;
+      background-color: #ffffff !important;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12) !important;
+      outline: none !important;
+    }
+
+    &[readonly],
+    &:disabled {
+      background-color: #f1f5f9 !important;
+      border-color: #e2e8f0 !important;
+      color: #64748b !important;
+      cursor: not-allowed;
+    }
+  }
+
+  /* Explicit border for inner profile cards (Same as Candidate Profile) */
+  .card-bordered {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+
+  .shadow-xs {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .border-start-md {
+    @media (min-width: 768px) {
+      border-left: 1px solid #ebedf2;
+    }
+  }
+
+  .border-start-lg {
+    @media (min-width: 992px) {
+      border-left: 1px solid #ebedf2;
+    }
+  }
+
+  .toast-notification {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  /* Active Link Underline Styling for Profile Tabs (Same as Candidate Profile) */
+  .nav-tabs {
+    .nav-link {
+      color: #64748b;
+      font-size: 0.95rem;
+      border: none !important;
+      border-bottom: 3px solid transparent !important;
+      border-radius: 0 !important;
+      padding-bottom: 0.85rem !important;
+      margin-bottom: -1px;
+      transition: color 0.2s ease, border-color 0.2s ease;
+
+      &:hover {
+        color: #16122b;
+        border-color: rgba(22, 18, 43, 0.2) !important;
+      }
+
+      &.active {
+        color: #16122b !important;
+        font-weight: 700 !important;
+        border-bottom: 3px solid #16122b !important;
+        background-color: transparent !important;
+      }
+    }
+  }
+
+  .tab-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}

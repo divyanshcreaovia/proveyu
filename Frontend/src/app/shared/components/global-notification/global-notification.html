@@ -1,0 +1,57 @@
+<!-- Global Floating Toast Container -->
+<div class="toast-stack-container" *ngIf="toasts.length > 0">
+  <div class="global-toast-banner"
+       *ngFor="let toast of toasts"
+       [class]="'toast-' + toast.type">
+    
+    <div class="toast-icon-box">
+      <i [class]="'bi ' + getIconClass(toast.type)"></i>
+    </div>
+
+    <div class="toast-content-box">
+      <div class="toast-title" *ngIf="toast.title">{{ toast.title }}</div>
+      <div class="toast-message">{{ toast.message }}</div>
+    </div>
+
+    <button type="button" class="toast-btn-close" (click)="dismissToast(toast.id)" aria-label="Close">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+  </div>
+</div>
+
+<!-- Global Notification Modal Dialog -->
+<div class="global-modal-backdrop" *ngIf="modalOptions" (click)="handleCancel()"></div>
+
+<div class="global-modal-dialog" *ngIf="modalOptions" [class]="'modal-theme-' + modalOptions.type">
+  <div class="modal-header-section">
+    <div class="modal-icon-badge">
+      <i [class]="'bi ' + getIconClass(modalOptions.type)"></i>
+    </div>
+    <div>
+      <h5 class="modal-heading-title">{{ modalOptions.title }}</h5>
+      <span class="modal-type-tag">{{ modalOptions.type }}</span>
+    </div>
+    <button type="button" class="modal-close-btn" (click)="handleCancel()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="modal-body-section">
+    <p class="modal-message-text">{{ modalOptions.message }}</p>
+  </div>
+
+  <div class="modal-footer-section">
+    <button type="button"
+            class="btn btn-modal-cancel"
+            *ngIf="modalOptions.cancelText"
+            (click)="handleCancel()">
+      {{ modalOptions.cancelText }}
+    </button>
+    <button type="button"
+            class="btn btn-modal-confirm"
+            (click)="handleConfirm()">
+      {{ modalOptions.confirmText || 'OK' }}
+    </button>
+  </div>
+</div>

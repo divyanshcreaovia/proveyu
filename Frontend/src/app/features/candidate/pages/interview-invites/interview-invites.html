@@ -139,50 +139,61 @@
         </div>
 
         <!-- Chat Messages Loop -->
-        <div class="chat-bubble-row" *ngFor="let msg of selectedInterview.messages">
-          <div class="bubble-avatar" *ngIf="msg.sender === 'recruiter'">
-            {{ selectedInterview.recruiterInitials }}
-          </div>
-          
-          <div class="bubble-box">
-            <div class="bubble-content" *ngIf="msg.sender === 'recruiter'">
-              <span *ngIf="!msg.isBoldPassport">{{ msg.text }}</span>
-              <span *ngIf="msg.isBoldPassport">
-                Your <span class="highlight-purple">ProveYu passport</span> verified top 5% performance in React & JS.
-              </span>
-            </div>
+        <ng-container *ngFor="let msg of selectedInterview.messages">
 
-            <!-- Candidate Chat Bubble -->
-            <div class="bubble-content bg-dark text-white" *ngIf="msg.sender === 'candidate'" style="background-color: #0f172a; color: #ffffff;">
+          <!-- System Message (Centered Clean Text) -->
+          <div class="d-flex justify-content-center w-100 my-2" *ngIf="msg.sender === 'system'">
+            <span class="text-secondary small fw-medium bg-light px-3 py-1 rounded-pill border" style="font-size: 0.75rem; color: #64748b;">
               {{ msg.text }}
-            </div>
-
-            <!-- System Notification Bubble -->
-            <div class="badge bg-light text-dark border px-3 py-2 rounded-pill my-1 small text-wrap max-w-75" *ngIf="msg.sender === 'system'">
-              {{ msg.text }}
-            </div>
-
-            <span class="bubble-time" *ngIf="msg.sender !== 'system'">{{ msg.time }}</span>
+            </span>
           </div>
-        </div>
+
+          <!-- Recruiter or Candidate Bubble -->
+          <div class="chat-bubble-row" *ngIf="msg.sender !== 'system'">
+            <div class="bubble-avatar" *ngIf="msg.sender === 'recruiter'">
+              {{ selectedInterview.recruiterInitials }}
+            </div>
+            
+            <div class="bubble-box">
+              <div class="bubble-content" *ngIf="msg.sender === 'recruiter'">
+                <span *ngIf="!msg.isBoldPassport">{{ msg.text }}</span>
+                <span *ngIf="msg.isBoldPassport">
+                  Your <span class="highlight-purple">ProveYu passport</span> verified top 5% performance in React & JS.
+                </span>
+              </div>
+
+              <!-- Candidate Chat Bubble -->
+              <div class="bubble-content bg-dark text-white" *ngIf="msg.sender === 'candidate'" style="background-color: #0f172a; color: #ffffff;">
+                {{ msg.text }}
+              </div>
+
+              <span class="bubble-time">{{ msg.time }}</span>
+            </div>
+          </div>
+        </ng-container>
 
       </div>
 
       <!-- Bottom Action Bar (Fixed Footer) -->
       <footer class="right-bottom-bar" *ngIf="selectedInterview">
         
-        <!-- PENDING STATUS: Lock Notice + Accept Request Button -->
-        <ng-container *ngIf="selectedInterview.status !== 'Accepted'">
+        <!-- PENDING STATUS: Lock Notice + Decline & Accept Request Buttons -->
+        <ng-container *ngIf="selectedInterview.status === 'Pending'">
           <div class="locked-notice">
             <svg class="lock-icon" fill="currentColor" viewBox="0 0 20 20">
               <path clip-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" fill-rule="evenodd"></path>
             </svg>
-            <span>Accept request to unlock direct chat & calendar invite.</span>
+            <span>Accept request to unlock direct chat.</span>
           </div>
 
-          <button type="button" class="btn-accept-request" (click)="acceptRequest()">
-            Accept Request
-          </button>
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn-decline-request" (click)="declineRequest()">
+              Decline Request
+            </button>
+            <button type="button" class="btn-accept-request" (click)="acceptRequest()">
+              Accept Request
+            </button>
+          </div>
         </ng-container>
 
         <!-- ACCEPTED STATUS: Unlocked Live Chat Input -->
@@ -192,6 +203,13 @@
             <button type="button" class="btn-send-message" (click)="sendMessage()" title="Send message">
               <i class="bi bi-send-fill" style="font-size: 0.75rem; margin-left: -2px;"></i>
             </button>
+          </div>
+        </ng-container>
+
+        <!-- DECLINED STATUS -->
+        <ng-container *ngIf="selectedInterview.status === 'Declined'">
+          <div class="w-100 text-center text-muted small py-1 fw-medium">
+            <i class="bi bi-x-circle me-1 text-danger"></i> Invitation Declined
           </div>
         </ng-container>
 
@@ -238,7 +256,10 @@
 
     <div class="modal-footer-custom">
       <button type="button" class="btn-modal-close" (click)="closeJobDescModal()">Close</button>
-      <button type="button" class="btn-modal-select" *ngIf="selectedInterview.status !== 'Accepted'" (click)="closeJobDescModal(); acceptRequest()">
+      <button type="button" class="btn-decline-request" *ngIf="selectedInterview.status === 'Pending'" (click)="closeJobDescModal(); declineRequest()">
+        Decline Request
+      </button>
+      <button type="button" class="btn-modal-select" *ngIf="selectedInterview.status === 'Pending'" (click)="closeJobDescModal(); acceptRequest()">
         Accept Request
       </button>
     </div>
