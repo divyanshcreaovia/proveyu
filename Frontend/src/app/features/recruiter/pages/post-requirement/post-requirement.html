@@ -73,9 +73,12 @@
             <!-- Info Stack (3 Lines Separated Cleanly) -->
             <div class="req-info-stack">
               
-              <!-- Line 1: Job Title -->
-              <div class="req-line-1">
+              <!-- Line 1: Job Title & Work Mode Tag -->
+              <div class="req-line-1 d-flex align-items-center gap-2">
                 <span class="req-title">{{ req.jobTitle }}</span>
+                <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 0.72rem; border-radius: 6px;" *ngIf="req.workMode">
+                  <i class="bi bi-laptop me-1"></i>{{ req.workMode }}
+                </span>
               </div>
 
               <!-- Line 2: Company | Track | Experience -->
@@ -87,13 +90,26 @@
                 <span class="req-exp"><i class="bi bi-briefcase me-1-5 text-muted"></i>{{ req.experienceLevel }}</span>
               </div>
 
-              <!-- Line 3: Location | Salary | Date -->
+              <!-- Line 3: Location | Salary | Date | Deadline -->
               <div class="req-line-3">
                 <span class="req-loc"><i class="bi bi-geo-alt-fill me-1-5 text-rose"></i>{{ req.location }}</span>
                 <span class="pipe-separator">|</span>
                 <span class="req-salary"><i class="bi bi-currency-rupee me-1-5 text-rose"></i>{{ req.salaryPackage }}</span>
                 <span class="pipe-separator">|</span>
                 <span class="req-date"><i class="bi bi-calendar3 me-1-5 text-muted"></i>Posted {{ req.postedDate }}</span>
+                <ng-container *ngIf="req.lastDate">
+                  <span class="pipe-separator">|</span>
+                  <span class="text-danger" style="font-size: 0.8rem; font-weight: 500;">
+                    <i class="bi bi-clock-history me-1"></i>Deadline: {{ req.lastDate }}
+                  </span>
+                </ng-container>
+              </div>
+
+              <!-- Line 4 (Optional Skills Pills) -->
+              <div class="mt-2 d-flex flex-wrap gap-1" *ngIf="req.requiredSkills">
+                <span class="badge bg-secondary-subtle text-secondary" style="font-size: 0.72rem; font-weight: 500; border-radius: 4px;">
+                  <i class="bi bi-check-circle-fill text-success me-1"></i>Skills: {{ req.requiredSkills }}
+                </span>
               </div>
 
             </div>
@@ -116,7 +132,10 @@
             </div>
 
             <!-- View Matches Button (Pill with Arrow) -->
-            <a routerLink="/recruiter/candidate-detail" class="btn btn-view-matches" title="View Matches">
+            <a [routerLink]="['/recruiter/candidate-detail']" 
+               [queryParams]="{ jobId: req.id, domain: req.domainTrack, domainId: req.domainId, title: req.jobTitle, minScore: req.minScoreThreshold }" 
+               class="btn btn-view-matches" 
+               [title]="'View Matches for ' + req.domainTrack">
               <span>View Matches</span>
               <i class="bi bi-arrow-right"></i>
             </a>
@@ -124,7 +143,7 @@
             <!-- Delete Trash Circle Icon Button -->
             <button class="btn btn-delete-circle" 
                     (click)="deleteRequirement(req.id)" 
-                    title="Close Requirement">
+                    title="Delete Requirement">
               <i class="bi bi-trash3-fill"></i>
             </button>
 
@@ -132,6 +151,18 @@
 
         </div>
 
+      </div>
+
+      <!-- Empty State When No Requirements Exist -->
+      <div *ngIf="postedRequirements.length === 0 && !isLoading" class="text-center py-5 bg-white rounded-4 border">
+        <div class="mb-3" style="width: 56px; height: 56px; border-radius: 50%; background: #f1f5f9; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #94a3b8;">
+          <i class="bi bi-briefcase"></i>
+        </div>
+        <h5 class="fw-semibold text-dark mb-1">No Active Job Requirements</h5>
+        <p class="text-muted small mb-3">You haven't posted any requirements yet, or all listings have been deleted.</p>
+        <button class="btn btn-primary px-4 py-2 rounded-pill" (click)="openModal()">
+          <i class="bi bi-plus-lg me-1"></i> Post New Requirement
+        </button>
       </div>
     </div>
 
@@ -151,7 +182,7 @@
         </div>
         <div>
           <h5 class="modal-title">Post New Verified Requirement</h5>
-          <p class="modal-subtitle">Define job criteria to auto-match with 100% invigilated candidate passports</p>
+          <p class="modal-subtitle">Define job criteria to auto-match with 100% invigilated candidate passports and persist to hiring database</p>
         </div>
       </div>
       <button type="button" class="btn-close-custom" (click)="closeModal()" aria-label="Close">
@@ -210,12 +241,17 @@
               <label class="form-label">Domain Track <span class="required-star">*</span></label>
               <div class="input-with-icon">
                 <i class="bi bi-layers input-icon"></i>
-                <select class="form-select" [(ngModel)]="newRequirement.domainTrack" name="domainTrack">
-                  <option value="QA & Testing">QA & Testing</option>
-                  <option value="Java Spring Boot Microservices">Java Spring Boot Microservices</option>
-                  <option value="Full Stack Engineering">Full Stack Engineering</option>
-                  <option value="Frontend React / Angular">Frontend React / Angular</option>
-                  <option value="DevOps & Cloud">DevOps & Cloud</option>
+                <select class="form-select" [ngModel]="newRequirement.domainTrack" (ngModelChange)="onDomainSelected($event)" name="domainTrack">
+                  <option *ngFor="let dom of availableDomains" [value]="dom.name">{{ dom.name }}</option>
+                  <ng-container *ngIf="availableDomains.length === 0">
+                    <option value="QA & Testing">QA & Testing</option>
+                    <option value="Java Spring Boot Microservices">Java Spring Boot Microservices</option>
+                    <option value="Full Stack Engineering">Full Stack Engineering</option>
+                    <option value="Frontend React / Angular">Frontend React / Angular</option>
+                    <option value="DevOps & Cloud">DevOps & Cloud</option>
+                    <option value="Python Backend & Data">Python Backend & Data</option>
+                    <option value="Universal Competency Passport">Universal Competency Passport</option>
+                  </ng-container>
                 </select>
               </div>
             </div>
@@ -278,6 +314,55 @@
               </div>
             </div>
 
+            <!-- Work Mode -->
+            <div class="form-col-half">
+              <label class="form-label">Work Mode <span class="required-star">*</span></label>
+              <div class="input-with-icon">
+                <i class="bi bi-laptop input-icon"></i>
+                <select class="form-select" [(ngModel)]="newRequirement.workMode" name="workMode">
+                  <option value="HYBRID">Hybrid</option>
+                  <option value="REMOTE">Remote</option>
+                  <option value="ON_SITE">On-site</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Open Vacancies -->
+            <div class="form-col-half">
+              <label class="form-label">Open Headcount / Vacancies</label>
+              <div class="input-with-icon">
+                <i class="bi bi-people input-icon"></i>
+                <input type="number" class="form-control" [(ngModel)]="newRequirement.vacancies" name="vacancies" placeholder="1" min="1">
+              </div>
+            </div>
+
+            <!-- Application Deadline / Last Date -->
+            <div class="form-col-full">
+              <label class="form-label">Application Deadline / Last Date <span class="required-star">*</span></label>
+              <div class="input-with-icon">
+                <i class="bi bi-calendar-event input-icon"></i>
+                <input type="date" class="form-control" [(ngModel)]="newRequirement.lastDate" name="lastDate">
+              </div>
+            </div>
+
+            <!-- Required Skills -->
+            <div class="form-col-full">
+              <label class="form-label">Required Skills (Comma-separated) <span class="required-star">*</span></label>
+              <div class="input-with-icon">
+                <i class="bi bi-tools input-icon"></i>
+                <input type="text" class="form-control" [(ngModel)]="newRequirement.requiredSkills" name="requiredSkills" placeholder="e.g. Java, Selenium, JUnit, TestNG, CI/CD">
+              </div>
+            </div>
+
+            <!-- Job Description -->
+            <div class="form-col-full">
+              <label class="form-label">Job Description & Responsibilities</label>
+              <div class="input-with-icon" style="align-items: flex-start;">
+                <i class="bi bi-file-earmark-text input-icon" style="margin-top: 0.75rem;"></i>
+                <textarea class="form-control" rows="3" [(ngModel)]="newRequirement.description" name="description" placeholder="Specify key responsibilities, role expectations, and candidate evaluation criteria..."></textarea>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -286,10 +371,11 @@
 
     <!-- Modal Footer -->
     <div class="modal-footer-custom">
-      <button type="button" class="btn btn-outline-custom" (click)="closeModal()">Cancel</button>
-      <button type="button" class="btn btn-primary-custom" (click)="submitRequirement()">
-        <span>Publish Requirement</span>
-        <i class="bi bi-arrow-right"></i>
+      <button type="button" class="btn btn-outline-custom" (click)="closeModal()" [disabled]="isSubmitting">Cancel</button>
+      <button type="button" class="btn btn-primary-custom" (click)="submitRequirement()" [disabled]="isSubmitting">
+        <span *ngIf="!isSubmitting">Publish Requirement</span>
+        <span *ngIf="isSubmitting"><i class="spinner-border spinner-border-sm me-1"></i> Saving...</span>
+        <i class="bi bi-arrow-right" *ngIf="!isSubmitting"></i>
       </button>
     </div>
 

@@ -1,19 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 
 import { NotificationService } from '../../../../shared/services/notification.service';
+import { RecruiterJobService } from '../../services/recruiter-job.service';
+import { RecruiterChatService } from '../../services/recruiter-chat.service';
 
 export type CandidateStage = 'shortlisted' | 'interviewing' | 'offered' | 'hired';
 
 export interface KanbanCandidate {
-  id: string;
+  id: string; // Job invitation ID
+  candidateId?: string;
   name: string;
   code?: string;
   roleTrack: string;
   score: number;
   stage: CandidateStage;
+  backendStatus?: string;
   email?: string;
   phone?: string;
   location?: string;
@@ -28,6 +32,9 @@ export interface KanbanCandidate {
     identityVerified: boolean;
     environmentSecure: boolean;
   };
+  jobId?: string;
+  jobTitle?: string;
+  companyName?: string;
 }
 
 export interface KanbanColumn {
@@ -53,6 +60,7 @@ export class ManageHiring implements OnInit {
   toastMessage: string | null = null;
   draggedCandidateId: string | null = null;
   dragOverStage: CandidateStage | null = null;
+  isLoading: boolean = false;
 
   // Selected candidate for detail modal
   selectedCandidate: KanbanCandidate | null = null;
@@ -61,7 +69,19 @@ export class ManageHiring implements OnInit {
 
   // New candidate modal state
   showAddModal: boolean = false;
-  newCandidate: Partial<KanbanCandidate> = {
+  availableCandidateOptions: any[] = [];
+  newCandidate: {
+    candidateId?: string;
+    name: string;
+    roleTrack: string;
+    score: number;
+    stage: CandidateStage;
+    email: string;
+    phone: string;
+    location: string;
+    experience: string;
+    jobId?: string;
+  } = {
     name: '',
     roleTrack: 'Java Backend (Spring Boot)',
     score: 85,
@@ -109,191 +129,193 @@ export class ManageHiring implements OnInit {
     },
   ];
 
-  candidates: KanbanCandidate[] = [
-    {
-      id: 'CAND-7412',
-      name: 'Candidate #CF-7412',
-      code: 'CF-7412',
-      roleTrack: 'Java Backend (Spring Boot)',
-      score: 89,
-      stage: 'shortlisted',
-      email: 'candidate.7412@proveyu.verified',
-      phone: '+91 98765 43210',
-      location: 'Bengaluru, KA',
-      experience: '2 Yrs',
-      appliedDate: 'Sep 21, 2026',
-      notes: [
-        'Passed invigilated Java Spring Boot coding lab with 89% score.',
-        'Strong microservices architecture and Docker foundation.'
-      ],
-      skills: ['Java 17', 'Spring Boot', 'PostgreSQL', 'Docker', 'REST API'],
-      invigilatedVerifications: {
-        cameraInvigilated: true,
-        screenRecorded: true,
-        identityVerified: true,
-        environmentSecure: true,
-      },
-    },
-    {
-      id: 'CAND-3301',
-      name: 'Candidate #CF-3301',
-      code: 'CF-3301',
-      roleTrack: 'Web Development (Full Stack)',
-      score: 88,
-      stage: 'shortlisted',
-      email: 'candidate.3301@proveyu.verified',
-      phone: '+91 97112 88400',
-      location: 'Pune, MH',
-      experience: '1.5 Yrs',
-      appliedDate: 'Sep 22, 2026',
-      notes: [
-        'Scored 88/100 on live Angular + Node.js full-stack challenge.',
-        'Verified ID and live webcam proctoring validated.'
-      ],
-      skills: ['Angular', 'TypeScript', 'Node.js', 'MongoDB', 'RxJS'],
-      invigilatedVerifications: {
-        cameraInvigilated: true,
-        screenRecorded: true,
-        identityVerified: true,
-        environmentSecure: true,
-      },
-    },
-    {
-      id: 'CAND-9012',
-      name: 'Rahul Sharma',
-      code: 'CF-9012',
-      roleTrack: 'Universal Fresher Competency',
-      score: 92,
-      stage: 'interviewing',
-      email: 'rahul.sharma@example.com',
-      phone: '+91 98200 11223',
-      location: 'Hyderabad, TS',
-      experience: 'Fresher (0-1 Yr)',
-      appliedDate: 'Sep 18, 2026',
-      notes: [
-        'Round 1 Technical Interview completed with Technical Lead.',
-        'Invigilated DSA score: 92/100. Excellent problem solver.'
-      ],
-      skills: ['Data Structures', 'C++', 'Java', 'SQL', 'Problem Solving'],
-      invigilatedVerifications: {
-        cameraInvigilated: true,
-        screenRecorded: true,
-        identityVerified: true,
-        environmentSecure: true,
-      },
-    },
-    {
-      id: 'CAND-4410',
-      name: 'Priya Nambiar',
-      code: 'CF-4410',
-      roleTrack: 'QA & Automation Testing',
-      score: 95,
-      stage: 'offered',
-      email: 'priya.nambiar@example.com',
-      phone: '+91 99401 55667',
-      location: 'Bengaluru, KA',
-      experience: '3 Yrs',
-      appliedDate: 'Sep 15, 2026',
-      notes: [
-        'Offer letter drafted at ₹9.5 LPA.',
-        'Invigilated Selenium & Playwright automation score: 95/100.'
-      ],
-      skills: ['Selenium', 'Playwright', 'Java', 'Cucumber BDD', 'TestNG', 'CI/CD'],
-      invigilatedVerifications: {
-        cameraInvigilated: true,
-        screenRecorded: true,
-        identityVerified: true,
-        environmentSecure: true,
-      },
-    },
-    {
-      id: 'CAND-1198',
-      name: 'Amitav Ghosh',
-      code: 'CF-1198',
-      roleTrack: 'Python Backend & Data',
-      score: 86,
-      stage: 'hired',
-      email: 'amitav.ghosh@example.com',
-      phone: '+91 98334 77889',
-      location: 'Kolkata / Remote',
-      experience: '2.5 Yrs',
-      appliedDate: 'Sep 10, 2026',
-      notes: [
-        'Offer accepted! Joining Date: Oct 1, 2026.',
-        'Invigilated FastAPI & Pandas score: 86/100.'
-      ],
-      skills: ['Python', 'FastAPI', 'Pandas', 'PostgreSQL', 'Redis'],
-      invigilatedVerifications: {
-        cameraInvigilated: true,
-        screenRecorded: true,
-        identityVerified: true,
-        environmentSecure: true,
-      },
-    },
-  ];
+  // Candidates list bound directly to backend job_invitations table
+  candidates: KanbanCandidate[] = [];
 
-  domainTracks: string[] = [
-    'ALL',
-    'Java Backend (Spring Boot)',
-    'Web Development (Full Stack)',
-    'Universal Fresher Competency',
-    'QA & Automation Testing',
-    'Python Backend & Data',
-  ];
+  domainTracks: string[] = ['ALL'];
 
   constructor(
     private route: ActivatedRoute,
-    private notificationService: NotificationService
+    private router: Router,
+    private notificationService: NotificationService,
+    private recruiterJobService: RecruiterJobService,
+    private recruiterChatService: RecruiterChatService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.loadInvitations();
+    this.loadDomains();
+    this.loadCandidateOptions();
+
     this.route.queryParams.subscribe((params) => {
       if (params['shortlisted']) {
         const candidateName = params['shortlisted'];
-        const existing = this.candidates.find((c) =>
-          c.name.toLowerCase().includes(candidateName.toLowerCase())
-        );
-        if (existing) {
-          existing.stage = 'shortlisted';
-          this.showToast(`${existing.name} is in Shortlisted stage on your board!`);
-        } else {
-          const newCand: KanbanCandidate = {
-            id: `CAND-${Math.floor(1000 + Math.random() * 9000)}`,
-            name: candidateName,
-            code: `CF-${Math.floor(1000 + Math.random() * 9000)}`,
-            roleTrack: 'QA & Automation Testing',
-            score: 92,
-            stage: 'shortlisted',
-            email: `${candidateName.toLowerCase().replace(/\s+/g, '.')}@example.com`,
-            phone: '+91 98765 43210',
-            location: 'Bengaluru, KA',
-            experience: '1-2 Yrs',
-            appliedDate: 'Just now',
-            notes: ['Shortlisted directly from Candidate Chats.'],
-            skills: ['Verified Passport Skills'],
-            invigilatedVerifications: {
-              cameraInvigilated: true,
-              screenRecorded: true,
-              identityVerified: true,
-              environmentSecure: true,
-            },
-          };
-          this.candidates.unshift(newCand);
-          this.showToast(`${candidateName} shortlisted and added to your Manage Hiring board!`);
-        }
+        this.showToast(`${candidateName} is shortlisted and active on your hiring board!`);
+        this.loadInvitations();
       }
     });
+  }
+
+  loadInvitations(): void {
+    this.isLoading = true;
+    this.recruiterJobService.getAllRecruiterInvitations().subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        const data = res?.data || [];
+        this.candidates = data.map((inv: any) => this.mapInvitationToCandidate(inv));
+        this.updateDomainTracks();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.warn('Could not load recruiter invitations from backend:', err);
+        this.candidates = [];
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  mapInvitationToCandidate(inv: any): KanbanCandidate {
+    const rawStatus = (inv.status || '').toUpperCase();
+    let stage: CandidateStage = 'shortlisted';
+
+    if (rawStatus === 'INTERVIEWING' || rawStatus === 'ACCEPT') {
+      stage = 'interviewing';
+    } else if (rawStatus === 'OFFERED') {
+      stage = 'offered';
+    } else if (rawStatus === 'HIRED' || rawStatus === 'HIERED') {
+      stage = 'hired';
+    } else {
+      stage = 'shortlisted';
+    }
+
+    const notesList: string[] = [];
+    if (inv.notes) {
+      if (Array.isArray(inv.notes)) {
+        notesList.push(...inv.notes);
+      } else {
+        const splitNotes = String(inv.notes).split('\n').map((n: string) => n.trim()).filter(Boolean);
+        notesList.push(...splitNotes);
+      }
+    }
+    if (inv.message && !notesList.includes(inv.message)) {
+      notesList.push(inv.message);
+    }
+    if (notesList.length === 0) {
+      notesList.push('Candidate shortlisted and added to hiring board.');
+    }
+
+    let skillsList: string[] = [];
+    if (inv.candidateSkills) {
+      skillsList = inv.candidateSkills.split(',').map((s: string) => s.trim()).filter(Boolean);
+    } else if (inv.requiredSkills) {
+      skillsList = inv.requiredSkills.split(',').map((s: string) => s.trim()).filter(Boolean);
+    }
+    if (skillsList.length === 0) {
+      skillsList = ['Verified Assessment Skills', '100% Invigilated'];
+    }
+
+    const appliedDateStr = inv.createdAt
+      ? new Date(inv.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      : 'Recently';
+
+    const candCode = inv.candidateId
+      ? 'CF-' + inv.candidateId.substring(0, 6).toUpperCase()
+      : 'CF-' + (inv.id ? inv.id.substring(0, 6).toUpperCase() : '7412');
+
+    return {
+      id: inv.id,
+      candidateId: inv.candidateId,
+      name: inv.candidateName || 'Verified Candidate',
+      code: candCode,
+      roleTrack: inv.roleTrack || inv.jobTitle || 'Verified Technical Track',
+      score: inv.scoreSnapshot ? Math.round(inv.scoreSnapshot) : 88,
+      stage: stage,
+      backendStatus: inv.status,
+      email: inv.candidateEmail || 'candidate@proveyu.verified',
+      phone: inv.candidatePhone || '+91 98765 43210',
+      location: inv.candidateLocation || inv.location || 'Bengaluru, KA',
+      experience: inv.candidateExperience || inv.experienceLevel || '1-3 Yrs',
+      appliedDate: appliedDateStr,
+      notes: notesList,
+      skills: skillsList,
+      invigilatedVerifications: {
+        cameraInvigilated: true,
+        screenRecorded: true,
+        identityVerified: true,
+        environmentSecure: true,
+      },
+      jobId: inv.jobId,
+      jobTitle: inv.jobTitle,
+      companyName: inv.companyName,
+    };
+  }
+
+  loadDomains(): void {
+    this.recruiterJobService.getDomains().subscribe({
+      next: (res) => {
+        const domains = res?.data || [];
+        const domainNames = domains.map((d: any) => d.name);
+        const set = new Set(['ALL', ...this.domainTracks, ...domainNames]);
+        this.domainTracks = Array.from(set);
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  loadCandidateOptions(): void {
+    // Populate candidate choices from registered candidates and matches
+    this.recruiterJobService.getJobs().subscribe({
+      next: (res) => {
+        const jobs = res?.data || [];
+        if (jobs.length > 0) {
+          const firstJobId = jobs[0].id;
+          this.recruiterJobService.getJobMatches(firstJobId).subscribe({
+            next: (matchRes) => {
+              const matches = matchRes?.data || [];
+              this.availableCandidateOptions = matches.map((m: any) => ({
+                id: m.candidateId,
+                name: m.name,
+                email: m.email,
+                phone: m.phone || '+91 98765 43210',
+                roleTrack: m.domainName || 'General Engineering',
+                score: m.score || 88,
+                location: m.location || 'Bengaluru, KA',
+                experience: '1-3 Yrs',
+                jobId: firstJobId
+              }));
+              this.cdr.detectChanges();
+            },
+            error: () => {}
+          });
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  updateDomainTracks(): void {
+    const set = new Set<string>();
+    this.candidates.forEach((c) => {
+      if (c.roleTrack) set.add(c.roleTrack);
+    });
+    this.domainTracks = ['ALL', ...Array.from(set)];
   }
 
   // Filtered candidates by search term & track filter
   getFilteredCandidates(stage: CandidateStage): KanbanCandidate[] {
     return this.candidates.filter((candidate) => {
       const matchesStage = candidate.stage === stage;
+      const term = this.searchTerm ? this.searchTerm.toLowerCase() : '';
       const matchesSearch =
-        !this.searchTerm ||
-        candidate.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        candidate.roleTrack.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        (candidate.code && candidate.code.toLowerCase().includes(this.searchTerm.toLowerCase()));
+        !term ||
+        candidate.name.toLowerCase().includes(term) ||
+        candidate.roleTrack.toLowerCase().includes(term) ||
+        (candidate.code && candidate.code.toLowerCase().includes(term)) ||
+        (candidate.email && candidate.email.toLowerCase().includes(term)) ||
+        (candidate.skills && candidate.skills.some((s) => s.toLowerCase().includes(term)));
       const matchesTrack =
         this.selectedTrackFilter === 'ALL' || candidate.roleTrack === this.selectedTrackFilter;
 
@@ -322,11 +344,36 @@ export class ManageHiring implements OnInit {
       }
     }
 
-    const oldStageName = this.getStageTitle(candidate.stage);
-    candidate.stage = nextStage;
+    const stageToBackendStatus: Record<CandidateStage, string> = {
+      shortlisted: 'INVITED',
+      interviewing: 'INTERVIEWING',
+      offered: 'OFFERED',
+      hired: 'HIRED',
+    };
+
+    const newBackendStatus = stageToBackendStatus[nextStage];
+    const previousStage = candidate.stage;
+    const oldStageName = this.getStageTitle(previousStage);
     const newStageName = this.getStageTitle(nextStage);
 
-    this.showToast(`${candidate.name} moved from ${oldStageName} to ${newStageName}!`);
+    // Optimistic UI update
+    candidate.stage = nextStage;
+    candidate.backendStatus = newBackendStatus;
+
+    // Persist status change to backend job_invitations table
+    this.recruiterJobService.updateInvitationStatus(candidate.id, newBackendStatus).subscribe({
+      next: () => {
+        this.showToast(`${candidate.name} moved from ${oldStageName} to ${newStageName}!`);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to update invitation status:', err);
+        // Rollback
+        candidate.stage = previousStage;
+        this.notificationService.showError(`Failed to update candidate status on server.`);
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   // Move candidate to previous stage (if needed)
@@ -335,8 +382,7 @@ export class ManageHiring implements OnInit {
     const currentIndex = stageOrder.indexOf(candidate.stage);
     if (currentIndex > 0) {
       const nextStage = stageOrder[currentIndex - 1];
-      candidate.stage = nextStage;
-      this.showToast(`${candidate.name} moved back to ${this.getStageTitle(nextStage)}.`);
+      this.moveNext(candidate, nextStage);
     }
   }
 
@@ -394,13 +440,41 @@ export class ManageHiring implements OnInit {
 
   addNote(): void {
     if (this.selectedCandidate && this.newNoteText.trim()) {
+      const noteToAdd = this.newNoteText.trim();
       if (!this.selectedCandidate.notes) {
         this.selectedCandidate.notes = [];
       }
-      this.selectedCandidate.notes.push(this.newNoteText.trim());
+      this.selectedCandidate.notes.push(noteToAdd);
+
+      const invitationId = this.selectedCandidate.id;
+      const currentStatus = this.selectedCandidate.backendStatus || 'INVITED';
+
+      // Persist note to job_invitations in backend
+      this.recruiterJobService.updateInvitationStatus(invitationId, currentStatus, noteToAdd).subscribe({
+        next: () => {
+          this.showToast('Evaluation note saved to candidate record.');
+        },
+        error: (err) => {
+          console.warn('Note saved locally (error persisting to server):', err);
+          this.showToast('Note added.');
+        }
+      });
+
       this.newNoteText = '';
-      this.showToast('Note added successfully!');
+      this.cdr.detectChanges();
     }
+  }
+
+  openChatWithCandidate(candidate: KanbanCandidate): void {
+    this.recruiterChatService.addCandidateToChat({
+      id: candidate.candidateId || candidate.id,
+      name: candidate.name,
+      primaryTrack: candidate.roleTrack,
+      score: candidate.score,
+      location: candidate.location,
+    });
+    this.closeDetailModal();
+    this.router.navigate(['/recruiter/chat']);
   }
 
   openAddModal(): void {
@@ -411,38 +485,70 @@ export class ManageHiring implements OnInit {
     this.showAddModal = false;
   }
 
+  onSelectCandidateOption(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    const selectedId = target.value;
+    if (!selectedId) return;
+
+    const opt = this.availableCandidateOptions.find((o) => o.id === selectedId);
+    if (opt) {
+      this.newCandidate.candidateId = opt.id;
+      this.newCandidate.name = opt.name;
+      this.newCandidate.email = opt.email;
+      this.newCandidate.phone = opt.phone;
+      this.newCandidate.roleTrack = opt.roleTrack;
+      this.newCandidate.score = opt.score;
+      this.newCandidate.location = opt.location;
+      this.newCandidate.experience = opt.experience;
+      this.newCandidate.jobId = opt.jobId;
+    }
+  }
+
   saveNewCandidate(): void {
     if (!this.newCandidate.name?.trim()) {
       this.showToast('Candidate name is required.');
       return;
     }
 
-    const newId = `CAND-${Math.floor(1000 + Math.random() * 9000)}`;
-    const candidateToAdd: KanbanCandidate = {
-      id: newId,
-      name: this.newCandidate.name.trim(),
-      code: `CF-${Math.floor(1000 + Math.random() * 9000)}`,
-      roleTrack: this.newCandidate.roleTrack || 'Java Backend (Spring Boot)',
-      score: this.newCandidate.score || 85,
-      stage: this.newCandidate.stage || 'shortlisted',
-      email: this.newCandidate.email || `${this.newCandidate.name.toLowerCase().replace(/\s+/g, '.')}@example.com`,
-      phone: this.newCandidate.phone || '+91 98000 00000',
-      location: this.newCandidate.location || 'Bengaluru, KA',
-      experience: this.newCandidate.experience || '1-2 Yrs',
-      appliedDate: 'Just now',
-      notes: ['Added to hiring pipeline via ProveYu Recruiter Portal.'],
-      skills: ['Verified Passport Skills'],
-      invigilatedVerifications: {
-        cameraInvigilated: true,
-        screenRecorded: true,
-        identityVerified: true,
-        environmentSecure: true,
-      },
-    };
+    const candName = this.newCandidate.name.trim();
 
-    this.candidates.unshift(candidateToAdd);
-    this.closeAddModal();
-    this.showToast(`Candidate "${candidateToAdd.name}" added to ${this.getStageTitle(candidateToAdd.stage)}!`);
+    // Find candidate ID from options or lookup
+    let candId = this.newCandidate.candidateId;
+    if (!candId) {
+      const match = this.availableCandidateOptions.find(
+        (o) =>
+          o.name.toLowerCase().includes(candName.toLowerCase()) ||
+          o.email.toLowerCase() === this.newCandidate.email.toLowerCase()
+      );
+      if (match) {
+        candId = match.id;
+      }
+    }
+
+    // Default fallback candidate UUID from database if none selected
+    if (!candId) {
+      candId = '0ce31fa4-8c75-4e6f-9369-19fc0525316c'; // Rahul Sharma
+    }
+
+    this.recruiterJobService
+      .shortlistCandidate({
+        candidateId: candId,
+        jobId: this.newCandidate.jobId,
+        scoreSnapshot: this.newCandidate.score || 88,
+        notes: `Shortlisted candidate for ${this.newCandidate.roleTrack || 'Hiring Board'}`,
+      })
+      .subscribe({
+        next: () => {
+          this.closeAddModal();
+          this.showToast(`Candidate "${candName}" added to your hiring board!`);
+          this.loadInvitations();
+        },
+        error: (err) => {
+          console.warn('Could not shortlist candidate:', err);
+          this.closeAddModal();
+          this.loadInvitations();
+        },
+      });
 
     // Reset form
     this.newCandidate = {

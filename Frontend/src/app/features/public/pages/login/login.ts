@@ -43,16 +43,31 @@ export class Login {
       next: (res: any) => {
         this.loginSuccessMessage = 'Login successful! Redirecting...';
         
-        // Save candidate full name and token
+        // Save user session details in both sessionStorage and localStorage
         if (res.data) {
           if (res.data.fullName) {
             sessionStorage.setItem('candidateFullName', res.data.fullName);
+            localStorage.setItem('candidateFullName', res.data.fullName);
           }
           if (res.data.token) {
             sessionStorage.setItem('token', res.data.token);
+            localStorage.setItem('token', res.data.token);
+          }
+          if (res.data.userId) {
+            sessionStorage.setItem('userId', res.data.userId);
+            localStorage.setItem('userId', res.data.userId);
+          }
+          if (res.data.email) {
+            sessionStorage.setItem('email', res.data.email);
+            localStorage.setItem('email', res.data.email);
+          }
+          if (res.data.role) {
+            sessionStorage.setItem('role', res.data.role);
+            localStorage.setItem('role', res.data.role);
           }
         } else {
           sessionStorage.setItem('candidateFullName', 'Candidate');
+          localStorage.setItem('candidateFullName', 'Candidate');
         }
 
         setTimeout(() => {

@@ -70,7 +70,7 @@ public class ChatWebSocketSessionManager {
 
         Set<WebSocketSession> sessions = userSessions.get(userId);
         if (sessions == null || sessions.isEmpty()) {
-            log.debug("[WEBSOCKET OFFLINE] User=[{}] has no active sessions. Real-time message omitted.", userId);
+            log.info("[WEBSOCKET OFFLINE] User=[{}] has no active sessions. Real-time message omitted.", userId);
             return;
         }
 
@@ -89,7 +89,7 @@ public class ChatWebSocketSessionManager {
                     synchronized (session) {
                         session.sendMessage(textMessage);
                     }
-                    log.debug("[WEBSOCKET DELIVERED] Event delivered to User=[{}] SessionId=[{}]", userId, session.getId());
+                    log.info("[WEBSOCKET DELIVERED] Event delivered to User=[{}] SessionId=[{}]", userId, session.getId());
                 } catch (IOException ex) {
                     log.warn("[WEBSOCKET SEND FAILED] Could not send message to user=[{}] sessionId=[{}]: {}",
                             userId, session.getId(), ex.getMessage());

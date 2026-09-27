@@ -1,17 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewChecked, inject, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Subscription } from 'rxjs';
+import { RecruiterJobService } from '../../../recruiter/services/recruiter-job.service';
+import { ChatWebSocketService } from '../../../../shared/services/chat-websocket.service';
 
 export interface ChatMessage {
-  id: number;
+  id: number | string;
   text: string;
   sender: 'recruiter' | 'candidate' | 'system';
   time: string;
-  isBoldPassport?: boolean;
 }
 
 export interface InterviewInvite {
-  id: number;
+  id: number | string;
+  invitationUuid?: string;
+  recruiterId?: string;
+  candidateId?: string;
+  jobId?: string;
   company: string;
   logo: string;
   role: string;
@@ -43,7 +50,13 @@ export interface InterviewInvite {
   templateUrl: './interview-invites.html',
   styleUrl: './interview-invites.scss',
 })
-export class InterviewInvites implements OnInit {
+export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
+  private http = inject(HttpClient);
+  private recruiterJobService = inject(RecruiterJobService);
+  private chatWebSocketService = inject(ChatWebSocketService);
+  private cdr = inject(ChangeDetectorRef);
+  private wsSubscription?: Subscription;
+
   filter: 'all' | 'pending' | 'accepted' | 'declined' = 'all';
   searchQuery = '';
 
@@ -54,117 +67,185 @@ export class InterviewInvites implements OnInit {
   // Job Description Modal state
   showJobDescModal = false;
 
-  interviews: InterviewInvite[] = [
-    {
-      id: 1,
-      company: 'Google',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg',
-      role: 'SDE-1 (Algorithms & Backend)',
-      level: 'Junior / Mid Level',
-      ctc: '₹22 – ₹28 LPA',
-      location: 'Bengaluru / Remote',
-      type: 'Technical Video Interview (60 Min)',
-      status: 'Pending',
-      statusText: 'Decision Pending',
-      statusClass: 'expires',
-      scheduledDate: '2024-09-26',
-      scheduledTime: '02:00 PM',
-      recruiterInitials: 'SS',
-      recruiterName: 'Sarah Smith',
-      recruiterBadge: 'Verified Recruiter',
-      recruiterRole: 'Senior Technical Recruiter at Google',
-      jobDesc: 'Join Google Software Engineering team to build high-scale distributed systems and core search backend infrastructure.',
-      requirements: ['Data Structures & Algorithms', 'C++, Java, or Python', 'System Design fundamentals'],
-      topics: ['Arrays & Graphs', 'Dynamic Programming', 'Concurrency'],
-      messages: [
-        { id: 1, text: 'Hi Rahul! Thanks for sharing your ProveYu Skill Passport. Your DSA evaluation scores are impressive!', sender: 'recruiter', time: '10:00 AM' },
-        { id: 2, text: 'We would love to invite you for a 60-minute technical interview for the SDE-1 position.', sender: 'recruiter', time: '10:02 AM' }
-      ]
-    },
-    {
-      id: 2,
-      company: 'Microsoft',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
-      role: 'Software Engineer - Azure Cloud',
-      level: 'Mid Level',
-      ctc: '₹26 – ₹32 LPA',
-      location: 'Hyderabad (Hybrid)',
-      type: 'System Design & Coding (90 Min)',
-      status: 'Accepted',
-      statusText: 'Accepted',
-      statusClass: 'confirmed',
-      scheduledDate: '2024-09-25',
-      scheduledTime: '11:00 AM',
-      recruiterInitials: 'AV',
-      recruiterName: 'Ananya Verma',
-      recruiterBadge: 'Verified HM',
-      recruiterRole: 'Talent Acquisition Lead at Microsoft',
-      jobDesc: 'Architect cloud native microservices on Azure. Focus on scalability, fault tolerance, and API integration.',
-      requirements: ['C# / .NET or Java', 'Azure Cloud Platform', 'REST APIs & Microservices'],
-      topics: ['System Architecture', 'Database Sharding', 'Azure Services'],
-      messages: [
-        { id: 1, text: 'Hello Rahul, congratulations on passing the Microsoft Azure assessment on ProveYu!', sender: 'recruiter', time: 'Yesterday' },
-        { id: 2, text: 'Accepted. Now you can chat', sender: 'system', time: 'Yesterday' }
-      ]
-    },
-    {
-      id: 3,
-      company: 'Amazon',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
-      role: 'Frontend Engineer (React / Next.js)',
-      level: 'Senior Level',
-      ctc: '₹30 – ₹38 LPA',
-      location: 'Bengaluru / Hybrid',
-      type: 'Live Coding & Architecture Walkthrough (45 Min)',
-      status: 'Pending',
-      statusText: 'Decision Pending',
-      statusClass: 'expires',
-      scheduledDate: 'Saturday, Sep 28th',
-      scheduledTime: '04:00 PM',
-      recruiterInitials: 'VM',
-      recruiterName: 'Vikram Malhotra',
-      recruiterBadge: 'Verified HM',
-      recruiterRole: 'Engineering Manager at Amazon Prime Video',
-      jobDesc: 'Lead frontend engineering for high-performance video streaming web applications using React, TypeScript and Web Performance optimization techniques.',
-      requirements: ['5+ years React / TypeScript experience', 'Web Performance Optimization', 'Amazon Leadership Principles'],
-      topics: ['Frontend Architecture', 'State Management', 'React Performance'],
-      messages: [
-        { id: 1, text: 'Hi Rahul, Amazon Prime Video team is looking for a Senior Frontend Engineer.', sender: 'recruiter', time: '09:30 AM' }
-      ]
-    },
-    {
-      id: 4,
-      company: 'Meta',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg',
-      role: 'Full Stack Engineer (React & Systems)',
-      level: 'Senior Level',
-      ctc: '₹35 – ₹45 LPA',
-      location: 'Gurugram / Remote',
-      type: 'Technical Interview (60 Min)',
-      status: 'Pending',
-      statusText: 'Decision Pending',
-      statusClass: 'expires',
-      scheduledDate: 'Monday, Sep 30th',
-      scheduledTime: '05:00 PM',
-      recruiterInitials: 'RD',
-      recruiterName: 'Rohan Deshmukh',
-      recruiterBadge: 'Verified Recruiter',
-      recruiterRole: 'Tech Recruiting Lead at Meta',
-      jobDesc: 'Drive product architecture and scalable web platform infrastructure across Meta web ecosystem.',
-      requirements: ['React / GraphQL Specialist', 'System Design & Scalability', 'Performance Profiling'],
-      topics: ['Component Architecture', 'GraphQL APIs', 'System Design'],
-      messages: [
-        { id: 1, text: 'Hi Rahul! Impressed by your ProveYu verified React score. We have a Senior Full Stack Engineer role at Meta.', sender: 'recruiter', time: '11:15 AM' }
-      ]
-    }
-  ];
-
-  // Default to Amazon (Invite #3) as shown in reference screenshot
-  selectedInterview: InterviewInvite = this.interviews[2];
+  interviews: InterviewInvite[] = [];
+  selectedInterview: InterviewInvite | null = null;
   newMessage = '';
 
+  @ViewChild('chatScrollContainer') chatScrollContainer?: ElementRef<HTMLDivElement>;
+  @ViewChild('scrollBottomAnchor') scrollBottomAnchor?: ElementRef<HTMLDivElement>;
+  private shouldScrollBottom = false;
+
+  ngAfterViewChecked() {
+    if (this.shouldScrollBottom) {
+      this.shouldScrollBottom = false;
+      this.scrollToBottom();
+    }
+  }
+
   ngOnInit() {
-    this.selectedInterview = this.interviews[2];
+    // 1. Connect WebSocket
+    this.chatWebSocketService.connect();
+
+    // 2. Listen to incoming real-time messages via WebSocket
+    this.wsSubscription = this.chatWebSocketService.messages$.subscribe(evt => {
+      if (evt.event === 'message.new' && evt.data) {
+        this.handleRealtimeIncomingMessage(evt.data);
+      }
+    });
+
+    // 3. Load backend interview invitations
+    this.loadBackendInvitations();
+  }
+
+  ngOnDestroy() {
+    this.wsSubscription?.unsubscribe();
+  }
+
+  getCurrentUserId(): string {
+    const stored = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+    if (stored) return stored;
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.sub) {
+          sessionStorage.setItem('userId', payload.sub);
+          localStorage.setItem('userId', payload.sub);
+          return payload.sub;
+        }
+      } catch {}
+    }
+    return '';
+  }
+
+  handleRealtimeIncomingMessage(msgData: any) {
+    if (!this.selectedInterview || !this.selectedInterview.recruiterId) return;
+
+    const currentUserId = this.getCurrentUserId();
+    const isMe = currentUserId && msgData.senderId === currentUserId;
+    const sender: 'candidate' | 'recruiter' = isMe ? 'candidate' : 'recruiter';
+
+    // Check if message belongs to currently open interview recruiter
+    if (msgData.senderId === this.selectedInterview.recruiterId || msgData.receiverId === this.selectedInterview.recruiterId) {
+      const alreadyExists = this.selectedInterview.messages.some(m => 
+        m.id === msgData.id || (m.text === msgData.message && m.sender === sender)
+      );
+
+      if (!alreadyExists) {
+        this.selectedInterview.messages.push({
+          id: msgData.id || Date.now(),
+          text: msgData.message,
+          sender,
+          time: msgData.createdAt ? new Date(msgData.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        this.shouldScrollBottom = true;
+        this.cdr.detectChanges();
+        this.scrollToBottom(true);
+      }
+    }
+  }
+
+  loadBackendInvitations() {
+    const candidateId = this.getCurrentUserId();
+    this.recruiterJobService.getCandidateInvitations(candidateId || undefined).subscribe({
+      next: (res) => {
+        if (res.data && res.data.length > 0) {
+          const backendList: InterviewInvite[] = res.data.map((inv: any, idx: number) => {
+            let status: 'Pending' | 'Accepted' | 'Declined' = 'Pending';
+            let statusText = 'Decision Pending';
+            let statusClass = 'expires';
+
+            if (inv.status === 'ACCEPT') {
+              status = 'Accepted';
+              statusText = 'Accepted';
+              statusClass = 'confirmed';
+            } else if (inv.status === 'DECLINE') {
+              status = 'Declined';
+              statusText = 'Declined';
+              statusClass = 'declined';
+            }
+
+            const initials = inv.recruiterName
+              ? inv.recruiterName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()
+              : 'HR';
+
+            const createdDate = inv.createdAt ? new Date(inv.createdAt) : new Date();
+            const dateStr = createdDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+            const timeStr = createdDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const msgs: ChatMessage[] = [
+              {
+                id: 1,
+                text: inv.message || `You have been shortlisted for ${inv.jobTitle || 'Verified Engineering Role'}.`,
+                sender: 'recruiter',
+                time: timeStr
+              }
+            ];
+
+            if (status === 'Accepted') {
+              msgs.push({
+                id: 2,
+                text: 'Accepted. Now you can chat',
+                sender: 'system',
+                time: 'Just now'
+              });
+            } else if (status === 'Declined') {
+              msgs.push({
+                id: 2,
+                text: 'Request Declined',
+                sender: 'system',
+                time: 'Just now'
+              });
+            }
+
+            return {
+              id: `INV-${idx + 1}`,
+              invitationUuid: inv.id,
+              recruiterId: inv.recruiterId,
+              candidateId: inv.candidateId,
+              jobId: inv.jobId,
+              company: inv.companyName || 'Verified Partner',
+              logo: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
+              role: inv.jobTitle || 'Verified Role',
+              level: inv.experienceLevel || 'Mid Level',
+              ctc: inv.salaryPackage || 'Pre-vetted Salary',
+              location: inv.location || 'Remote',
+              type: 'Technical Interview & Evaluation',
+              status,
+              statusText,
+              statusClass,
+              scheduledDate: dateStr,
+              scheduledTime: timeStr,
+              recruiterInitials: initials,
+              recruiterName: inv.recruiterName || 'Verified Hiring Lead',
+              recruiterBadge: 'Verified Recruiter',
+              recruiterRole: inv.recruiterRole || 'Technical Recruiter',
+              jobDesc: inv.jobDescription || 'Participate in verified assessment and interview.',
+              requirements: inv.requiredSkills ? inv.requiredSkills.split(',').map((s: string) => s.trim()) : ['Problem Solving', 'Engineering Skills'],
+              topics: ['Technical Assessment', 'Architecture', 'Problem Solving'],
+              messages: msgs
+            };
+          });
+
+          this.interviews = backendList;
+          this.selectedInterview = this.interviews.length > 0 ? this.interviews[0] : null;
+
+          if (this.selectedInterview && this.selectedInterview.status === 'Accepted' && this.selectedInterview.recruiterId) {
+            this.loadChatMessages(this.selectedInterview.recruiterId);
+          }
+        } else {
+          this.interviews = [];
+          this.selectedInterview = null;
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.warn('Could not load candidate backend invitations:', err);
+        this.interviews = [];
+        this.selectedInterview = null;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   get filteredInterviews(): InterviewInvite[] {
@@ -186,60 +267,191 @@ export class InterviewInvites implements OnInit {
 
   selectInterview(invite: InterviewInvite) {
     this.selectedInterview = invite;
+    if (invite.status === 'Accepted' && invite.recruiterId) {
+      this.loadChatMessages(invite.recruiterId);
+    }
   }
 
   sendMessage() {
-    if (!this.selectedInterview) return;
+    if (!this.selectedInterview || !this.selectedInterview.recruiterId || !this.newMessage.trim()) return;
 
-    if (this.newMessage.trim()) {
-      const msg: ChatMessage = {
-        id: Date.now(),
-        text: this.newMessage.trim(),
-        sender: 'candidate',
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      this.selectedInterview.messages.push(msg);
-      this.newMessage = '';
+    const textToSend = this.newMessage.trim();
+    const msg: ChatMessage = {
+      id: Date.now(),
+      text: textToSend,
+      sender: 'candidate',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+    this.selectedInterview.messages.push(msg);
+    this.newMessage = '';
+    this.shouldScrollBottom = true;
+    this.scrollToBottom(true);
 
-      setTimeout(() => {
-        const chatContainer = document.querySelector('.chat-scroll-area');
-        if (chatContainer) {
-          chatContainer.scrollTop = chatContainer.scrollHeight;
+    // 1. Send via WebSocket for instant push
+    const sentViaWs = this.chatWebSocketService.sendMessage(this.selectedInterview.recruiterId, textToSend);
+
+    // 2. Fallback to REST persistence only if WebSocket is not connected
+    if (!sentViaWs) {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
+      this.http.post('http://localhost:8080/api/v1/chat/messages', {
+        receiverId: this.selectedInterview.recruiterId,
+        message: textToSend
+      }, { headers }).subscribe({
+        next: () => this.scrollToBottom(),
+        error: (err) => {
+          console.warn('Backend chat send warning:', err);
+          this.scrollToBottom();
         }
-      }, 50);
+      });
     }
   }
 
   acceptRequest() {
     if (!this.selectedInterview) return;
 
-    this.selectedInterview.status = 'Accepted';
-    this.selectedInterview.statusText = 'Accepted';
-    this.selectedInterview.statusClass = 'confirmed';
+    if (this.selectedInterview.invitationUuid) {
+      this.recruiterJobService.acceptInvitation(this.selectedInterview.invitationUuid).subscribe({
+        next: () => {
+          if (!this.selectedInterview) return;
+          this.selectedInterview.status = 'Accepted';
+          this.selectedInterview.statusText = 'Accepted';
+          this.selectedInterview.statusClass = 'confirmed';
 
-    const systemMsg: ChatMessage = {
-      id: Date.now(),
-      text: 'Accepted. Now you can chat',
-      sender: 'system',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    this.selectedInterview.messages.push(systemMsg);
+          const systemMsg: ChatMessage = {
+            id: Date.now(),
+            text: 'Accepted. Now you can chat',
+            sender: 'system',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          this.selectedInterview.messages.push(systemMsg);
+          this.triggerToast('Interview invite accepted! You can now chat directly with the recruiter.');
+
+          if (this.selectedInterview.recruiterId) {
+            this.loadChatMessages(this.selectedInterview.recruiterId);
+          }
+        },
+        error: (err) => {
+          console.error('Accept API error:', err);
+          if (!this.selectedInterview) return;
+          this.selectedInterview.status = 'Accepted';
+          this.selectedInterview.statusText = 'Accepted';
+          this.selectedInterview.statusClass = 'confirmed';
+          this.triggerToast('Interview invite accepted! Direct chat unlocked.');
+        }
+      });
+    } else {
+      this.selectedInterview.status = 'Accepted';
+      this.selectedInterview.statusText = 'Accepted';
+      this.selectedInterview.statusClass = 'confirmed';
+
+      const systemMsg: ChatMessage = {
+        id: Date.now(),
+        text: 'Accepted. Now you can chat',
+        sender: 'system',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      this.selectedInterview.messages.push(systemMsg);
+      this.triggerToast('Interview invite accepted! Direct chat unlocked.');
+    }
   }
 
   declineRequest() {
     if (!this.selectedInterview) return;
 
-    this.selectedInterview.status = 'Declined';
-    this.selectedInterview.statusText = 'Declined';
-    this.selectedInterview.statusClass = 'declined';
+    if (this.selectedInterview.invitationUuid) {
+      this.recruiterJobService.declineInvitation(this.selectedInterview.invitationUuid).subscribe({
+        next: () => {
+          if (!this.selectedInterview) return;
+          this.selectedInterview.status = 'Declined';
+          this.selectedInterview.statusText = 'Declined';
+          this.selectedInterview.statusClass = 'declined';
 
-    const systemMsg: ChatMessage = {
-      id: Date.now(),
-      text: 'Request Declined',
-      sender: 'system',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          const systemMsg: ChatMessage = {
+            id: Date.now(),
+            text: 'Request Declined',
+            sender: 'system',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          this.selectedInterview.messages.push(systemMsg);
+          this.triggerToast('Interview invite declined.');
+        },
+        error: (err) => {
+          console.error('Decline API error:', err);
+          if (!this.selectedInterview) return;
+          this.selectedInterview.status = 'Declined';
+          this.selectedInterview.statusText = 'Declined';
+          this.selectedInterview.statusClass = 'declined';
+        }
+      });
+    } else {
+      this.selectedInterview.status = 'Declined';
+      this.selectedInterview.statusText = 'Declined';
+      this.selectedInterview.statusClass = 'declined';
+
+      const systemMsg: ChatMessage = {
+        id: Date.now(),
+        text: 'Request Declined',
+        sender: 'system',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      this.selectedInterview.messages.push(systemMsg);
+      this.triggerToast('Interview invite declined.');
+    }
+  }
+
+  loadChatMessages(recruiterId: string) {
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
+    this.http.get<any>(`http://localhost:8080/api/v1/chat/messages/${recruiterId}`, { headers }).subscribe({
+      next: (res) => {
+        if (this.selectedInterview && res.data && res.data.content && res.data.content.length > 0) {
+          const currentUserId = this.getCurrentUserId();
+          const loadedMsgs: ChatMessage[] = res.data.content.map((m: any) => {
+            const isMe = currentUserId && (m.senderId === currentUserId);
+            return {
+              id: m.id,
+              text: m.message,
+              sender: (isMe ? 'candidate' : 'recruiter') as ('candidate' | 'recruiter'),
+              time: m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now'
+            };
+          });
+
+          // System badge at the beginning
+          loadedMsgs.unshift({
+            id: 9999,
+            text: 'Accepted. Now you can chat',
+            sender: 'system',
+            time: 'Just now'
+          });
+
+          this.selectedInterview.messages = loadedMsgs;
+          this.shouldScrollBottom = true;
+          this.cdr.detectChanges();
+          this.scrollToBottom(false);
+        }
+      },
+      error: (err) => console.warn('Could not load chat messages:', err)
+    });
+  }
+
+  scrollToBottom(smooth: boolean = false) {
+    const doScroll = (behavior: ScrollBehavior) => {
+      if (this.scrollBottomAnchor?.nativeElement) {
+        this.scrollBottomAnchor.nativeElement.scrollIntoView({ behavior, block: 'end' });
+      }
+      if (this.chatScrollContainer?.nativeElement) {
+        const el = this.chatScrollContainer.nativeElement;
+        el.scrollTop = el.scrollHeight;
+      } else {
+        const el = document.querySelector('.chat-scroll-area');
+        if (el) el.scrollTop = el.scrollHeight;
+      }
     };
-    this.selectedInterview.messages.push(systemMsg);
+
+    setTimeout(() => doScroll(smooth ? 'smooth' : 'auto'), 30);
+    setTimeout(() => doScroll('auto'), 150);
+    setTimeout(() => doScroll('auto'), 300);
   }
 
   openJobDescModal() {

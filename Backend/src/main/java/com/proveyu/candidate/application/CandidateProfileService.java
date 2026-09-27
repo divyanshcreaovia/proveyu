@@ -1,5 +1,7 @@
 package com.proveyu.candidate.application;
 
+import com.proveyu.assessment.domain.Domain;
+import com.proveyu.assessment.infrastructure.DomainRepository;
 import com.proveyu.assessment.domain.Exam;
 import com.proveyu.assessment.infrastructure.ExamRepository;
 import com.proveyu.assessment.infrastructure.SkillRepository;
@@ -45,6 +47,7 @@ public class CandidateProfileService {
     private final SkillRepository skillRepository;
     private final UanVerificationService uanVerificationService;
     private final FileStorageService fileStorageService;
+    private final DomainRepository domainRepository;
 
     @Transactional
     public ProfileResponse uploadResume(UUID candidateId, MultipartFile file) {
@@ -91,6 +94,13 @@ public class CandidateProfileService {
         profile.setPortfolioUrl(request.getPortfolioUrl());
         profile.setBio(request.getBio());
 
+        if (request.getDomainId() != null) {
+            profile.setDomainId(request.getDomainId());
+        } else if (request.getDomainName() != null && !request.getDomainName().isBlank()) {
+            domainRepository.findByNameIgnoreCase(request.getDomainName().trim())
+                    .ifPresent(d -> profile.setDomainId(d.getId()));
+        }
+
         if (request.getFullName() != null) {
             user.setFullName(request.getFullName());
         }
@@ -112,9 +122,16 @@ public class CandidateProfileService {
 
         CandidateProfile saved = profileRepository.save(profile);
 
+        String domainName = null;
+        if (saved.getDomainId() != null) {
+            domainName = domainRepository.findById(saved.getDomainId()).map(Domain::getName).orElse(null);
+        }
+
         return new ProfileResponse(
                 saved.getId(),
                 saved.getUserId(),
+                saved.getDomainId(),
+                domainName,
                 saved.getExperienceTrack(),
                 saved.getYearsOfExperience(),
                 saved.getUanNumber(),
@@ -144,9 +161,16 @@ public class CandidateProfileService {
         CandidateProfile profile = profileRepository.findByUserId(candidateId)
                 .orElseGet(() -> CandidateProfile.builder().userId(candidateId).experienceTrack("FRESHER").build());
 
+        String domainName = null;
+        if (profile.getDomainId() != null) {
+            domainName = domainRepository.findById(profile.getDomainId()).map(Domain::getName).orElse(null);
+        }
+
         return new ProfileResponse(
                 profile.getId(),
                 profile.getUserId(),
+                profile.getDomainId(),
+                domainName,
                 profile.getExperienceTrack(),
                 profile.getYearsOfExperience(),
                 profile.getUanNumber(),

@@ -335,9 +335,60 @@ Key design principles:
 | `execution_time` | `INT` | NO | Execution time in milliseconds |
 | `success` | `TINYINT(1)` | NO | Success boolean flag |
 
+
+### 18. `jobs`
+
+* **Use Case**: Core job requirements posted by recruiters or hiring organizations in the Manage Hiring module. Captures target domain tracks, required skills, score thresholds, experience limits, compensation, work mode, and application deadlines.
+
+| Field Name | Data Type | Nullable | Description / Constraints |
+| :--- | :--- | :--- | :--- |
+| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
+| `posted_by` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` (Recruiter/Poster) |
+| `company_id` | `VARCHAR(36)` | YES | Foreign Key -> `companies(id)` |
+| `title` | `VARCHAR(255)` | NO | Job title (e.g., "Associate QA Automation Engineer") |
+| `description` | `TEXT` | YES | Full job details & responsibilities |
+| `role_track` | `VARCHAR(100)` | YES | Track (e.g., "QA & Testing", "Java Backend (Spring Boot)") |
+| `required_skills` | `TEXT` | YES | Comma-separated required skill tags |
+| `experience_level` | `VARCHAR(50)` | YES | Experience label |
+| `min_experience_years` | `INT` | YES | Minimum years of experience required (Default: 0) |
+| `max_experience_years` | `INT` | YES | Maximum years of experience |
+| `min_salary_lpa` | `DECIMAL(5,2)` | YES | Minimum salary LPA |
+| `max_salary_lpa` | `DECIMAL(5,2)` | YES | Maximum salary LPA |
+| `salary_package` | `VARCHAR(100)` | YES | Formatted compensation package |
+| `location` | `VARCHAR(150)` | YES | Job location |
+| `work_mode` | `VARCHAR(50)` | NO | Work mode (`REMOTE`, `HYBRID`, `ON_SITE`) |
+| `min_score_threshold` | `DOUBLE` | YES | Minimum invigilated assessment score threshold |
+| `vacancies` | `INT` | YES | Open headcount vacancies (Default: 1) |
+| `target_client` | `VARCHAR(255)` | YES | In-house entity or hiring agency client name |
+| `last_date` | `DATE` | YES | Application / hiring deadline |
+| `status` | `VARCHAR(30)` | NO | Posting status (`ACTIVE`, `CLOSED`, `DRAFT`, `ARCHIVED`) |
+| `created_at` | `DATETIME` | NO | Creation timestamp |
+| `updated_at` | `DATETIME` | YES | Last modification timestamp |
+
+---
+
+### 19. `job_invitations`
+
+* **Use Case**: Direct interview invitations issued by recruiters to candidates based on invigilated scores.
+
+| Field Name | Data Type | Nullable | Description / Constraints |
+| :--- | :--- | :--- | :--- |
+| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
+| `recruiter_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` (Recruiter) |
+| `candidate_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` (Candidate) |
+| `job_id` | `VARCHAR(36)` | NO | Foreign Key -> `jobs(id)` |
+| `candidate_score_id` | `VARCHAR(36)` | YES | Foreign Key -> `candidate_scores(id)` |
+| `score_snapshot` | `DECIMAL(5,2)` | YES | Candidate score snapshot at invitation time |
+| `status` | `VARCHAR(30)` | NO | Pipeline Status |
+| `message` | `TEXT` | YES | Invitation message sent to candidate |
+| `notes` | `TEXT` | YES | Recruiter internal evaluation notes |
+| `created_at` | `DATETIME` | NO | Invitation dispatch timestamp |
+| `updated_at` | `DATETIME` | YES | Stage transition / last update timestamp |
+
 ---
 
 ## 9. `candidate_settings` (Settings for Candidates)
+
 - **`id`** (`VARCHAR(36)`): Primary Key (UUID).
 - **`user_id`** (`VARCHAR(36)`): Foreign Key (`users.id`). UNIQUE.
 - **`email_notifications`** (`BOOLEAN`): Default TRUE.
@@ -353,9 +404,11 @@ Key design principles:
 ---
 
 ## 10. `notifications` (User Notifications)
+
 - **`id`** (`VARCHAR(36)`): Primary Key (UUID).
 - **`user_id`** (`VARCHAR(36)`): Foreign Key (`users.id`).
-- **`type`** (`VARCHAR(50)`): Type of notification (e.g. 'urgent', 'info').
+- **`type`** (`VARCHAR(50)`): Type of notification.
 - **`message`** (`TEXT`): Notification content.
 - **`is_read`** (`BOOLEAN`): Default FALSE.
 - **`created_at`** (`TIMESTAMP`): Creation timestamp.
+

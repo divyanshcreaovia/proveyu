@@ -24,6 +24,9 @@
           <div class="d-flex align-items-center gap-2 mb-1">
             <h4 class="fw-bold text-navy mb-0">{{ candidateInfo.fullName }}</h4>
             <span class="badge bg-light-blue text-navy border px-2 py-1">Silver Tier</span>
+            <span class="badge bg-success-subtle text-success border border-success px-2 py-1 ms-1" *ngIf="candidateInfo.domainName">
+              <i class="bi bi-layers-fill me-1"></i>{{ candidateInfo.domainName }}
+            </span>
           </div>
           <div class="text-muted-custom small mb-3">
             <i class="bi bi-envelope me-1"></i> {{ candidateInfo.email }} <span class="mx-2">|</span>
@@ -117,6 +120,15 @@
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Location / City <span class="text-danger">*</span></label>
                 <input type="text" class="form-control py-2" [(ngModel)]="candidateInfo.location">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted-custom small fw-medium">
+                  <i class="bi bi-layers text-primary me-1"></i> Primary Engineering Domain <span class="text-danger">*</span>
+                </label>
+                <select class="form-select py-2" [(ngModel)]="candidateInfo.domainId" (ngModelChange)="onDomainChanged($event)">
+                  <option value="" disabled>Select your primary domain track</option>
+                  <option *ngFor="let dom of availableDomains" [value]="dom.id">{{ dom.name }}</option>
+                </select>
               </div>
               <div class="col-md-12">
                 <label class="form-label text-muted-custom small fw-medium">Headline</label>

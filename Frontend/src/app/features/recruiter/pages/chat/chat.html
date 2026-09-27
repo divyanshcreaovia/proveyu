@@ -73,8 +73,8 @@
 
         </div>
 
-        <div *ngIf="filteredThreads.length === 0" class="empty-state-text">
-          No candidate conversations match your search.
+        <div *ngIf="filteredThreads.length === 0" class="empty-state-text py-5 text-center text-muted small">
+          No candidate conversations found.
         </div>
       </div>
 
@@ -86,92 +86,105 @@
 
     <!-- RIGHT PANEL: Chat Details & Live Messaging -->
     <main class="chat-right-card">
-
-      <!-- Top Header -->
-      <header class="right-top-header" *ngIf="selectedThread">
-        <div class="candidate-profile-box">
-          <div class="avatar-dark-circle">
-            {{ selectedThread.candidateInitials }}
-            <span class="online-dot"></span>
+      <ng-container *ngIf="selectedThread; else noThreadSelected">
+        <!-- Top Header -->
+        <header class="right-top-header">
+          <div class="candidate-profile-box">
+            <div class="avatar-dark-circle">
+              {{ selectedThread.candidateInitials }}
+              <span class="online-dot"></span>
+            </div>
+            <div class="candidate-info">
+              <div class="name-row">
+                <span class="name-text">{{ selectedThread.candidateName }}</span>
+                <span class="badge-verified-tier">
+                  <i class="bi bi-patch-check-fill"></i> {{ selectedThread.percentileBadge }}
+                </span>
+              </div>
+              <span class="role-subtitle">{{ selectedThread.collegeExp }}</span>
+            </div>
           </div>
-          <div class="candidate-info">
-            <div class="name-row">
-              <span class="name-text">{{ selectedThread.candidateName }}</span>
-              <span class="badge-verified-tier">
-                <i class="bi bi-patch-check-fill"></i> {{ selectedThread.percentileBadge }}
+
+          <div class="header-action-group">
+            <button type="button" class="btn-view-passport" (click)="openPassportModal()">
+              <i class="bi bi-file-earmark-person"></i>
+              <span>View Skill Passport</span>
+            </button>
+            <button type="button" class="btn-shortlist-hiring" (click)="shortlistAndMoveToHiring(selectedThread)">
+              <i class="bi bi-kanban-fill"></i>
+              <span>Shortlist & Move to Board</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Chat & Message Content -->
+        <div #chatScrollContainer class="chat-scroll-area">
+
+          <!-- Centered Section Divider Badge -->
+          <div class="divider-pill-row">
+            <span class="divider-pill">PROVEYU VERIFIED CANDIDATE CHAT</span>
+          </div>
+
+          <!-- Chat Messages Loop -->
+          <ng-container *ngFor="let msg of selectedThread.messages">
+
+            <!-- System Message -->
+            <div class="system-message-row" *ngIf="msg.sender === 'system'">
+              <span class="system-message-pill">
+                {{ msg.text }}
               </span>
             </div>
-            <span class="role-subtitle">{{ selectedThread.collegeExp }}</span>
-          </div>
-        </div>
 
-        <div class="header-action-group">
-          <button type="button" class="btn-view-passport" (click)="openPassportModal()">
-            <i class="bi bi-file-earmark-person"></i>
-            <span>View Skill Passport</span>
-          </button>
-          <button type="button" class="btn-shortlist-hiring" (click)="shortlistAndMoveToHiring(selectedThread)">
-            <i class="bi bi-kanban-fill"></i>
-            <span>Shortlist & Move to Board</span>
-          </button>
-        </div>
-      </header>
-
-      <!-- Chat & Message Content -->
-      <div class="chat-scroll-area" *ngIf="selectedThread">
-
-        <!-- Centered Section Divider Badge -->
-        <div class="divider-pill-row">
-          <span class="divider-pill">PROVEYU VERIFIED CANDIDATE CHAT</span>
-        </div>
-
-        <!-- Chat Messages Loop -->
-        <ng-container *ngFor="let msg of selectedThread.messages">
-
-          <!-- System Message -->
-          <div class="system-message-row" *ngIf="msg.sender === 'system'">
-            <span class="system-message-pill">
-              {{ msg.text }}
-            </span>
-          </div>
-
-          <!-- Recruiter or Candidate Bubble -->
-          <div class="chat-bubble-row" *ngIf="msg.sender !== 'system'" [class.row-recruiter]="msg.sender === 'recruiter'">
-            
-            <div class="bubble-avatar" *ngIf="msg.sender === 'candidate'">
-              {{ selectedThread.candidateInitials }}
-            </div>
-            
-            <div class="bubble-box">
+            <!-- Recruiter or Candidate Bubble -->
+            <div class="chat-bubble-row" *ngIf="msg.sender !== 'system'" [class.row-recruiter]="msg.sender === 'recruiter'">
               
-              <!-- Candidate Message (Light Grey) -->
-              <div class="bubble-content bubble-candidate" *ngIf="msg.sender === 'candidate'">
-                {{ msg.text }}
+              <div class="bubble-avatar" *ngIf="msg.sender === 'candidate'">
+                {{ selectedThread.candidateInitials }}
               </div>
+              
+              <div class="bubble-box">
+                
+                <!-- Candidate Message (Light Grey) -->
+                <div class="bubble-content bubble-candidate" *ngIf="msg.sender === 'candidate'">
+                  {{ msg.text }}
+                </div>
 
-              <!-- Recruiter Message (Dark Navy) -->
-              <div class="bubble-content bubble-recruiter" *ngIf="msg.sender === 'recruiter'">
-                {{ msg.text }}
+                <!-- Recruiter Message (Dark Navy) -->
+                <div class="bubble-content bubble-recruiter" *ngIf="msg.sender === 'recruiter'">
+                  {{ msg.text }}
+                </div>
+
+                <span class="bubble-time">{{ msg.time }}</span>
               </div>
-
-              <span class="bubble-time">{{ msg.time }}</span>
             </div>
-          </div>
-        </ng-container>
+          </ng-container>
 
-      </div>
-
-      <!-- Bottom Action Input Bar (Fixed Footer) -->
-      <footer class="right-bottom-bar" *ngIf="selectedThread">
-        
-        <div class="accepted-chat-input-box">
-          <input type="text" class="chat-control" placeholder="Type your message to candidate..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage()">
-          <button type="button" class="btn-send-message" (click)="sendMessage()" title="Send message">
-            <i class="bi bi-send-fill"></i>
-          </button>
+          <!-- Bottom Scroll Anchor -->
+          <div #scrollBottomAnchor style="height: 1px; width: 100%;"></div>
         </div>
 
-      </footer>
+        <!-- Bottom Action Input Bar (Fixed Footer) -->
+        <footer class="right-bottom-bar">
+          <div class="accepted-chat-input-box">
+            <input type="text" class="chat-control" placeholder="Type your message to candidate..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage()">
+            <button type="button" class="btn-send-message" (click)="sendMessage()" title="Send message">
+              <i class="bi bi-send-fill"></i>
+            </button>
+          </div>
+        </footer>
+      </ng-container>
+
+      <ng-template #noThreadSelected>
+        <div class="empty-selection-card text-center d-flex flex-column align-items-center justify-content-center p-5 h-100" style="min-height: 480px;">
+          <div class="empty-icon-wrap mb-3" style="width: 64px; height: 64px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; color: #94a3b8;">
+            <i class="bi bi-chat-dots"></i>
+          </div>
+          <h5 class="fw-semibold text-dark mb-1">No Conversation Selected</h5>
+          <p class="text-muted small mb-0" style="max-width: 340px;">
+            Shortlist candidates from your hiring board or wait for candidate acceptance to start live conversations.
+          </p>
+        </div>
+      </ng-template>
 
     </main>
 
@@ -201,35 +214,30 @@
         </div>
       </div>
 
-      <h6 class="modal-section-heading">Skill Competency Evaluation</h6>
-      <div class="skills-breakdown-grid">
-        <div class="skill-breakdown-card">
-          <div class="breakdown-score">88%</div>
-          <div class="breakdown-label">System Design</div>
+      <h6 class="modal-section-heading">Verified Role & Evaluation</h6>
+      <div class="p-3 bg-light rounded-3 mb-3 border">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <strong class="text-dark">{{ selectedThread.roleTrack }}</strong>
+          <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">{{ selectedThread.percentileBadge }}</span>
         </div>
-        <div class="skill-breakdown-card">
-          <div class="breakdown-score">92%</div>
-          <div class="breakdown-label">Backend APIs</div>
-        </div>
-        <div class="skill-breakdown-card">
-          <div class="breakdown-score">85%</div>
-          <div class="breakdown-label">DSA & Algorithms</div>
+        <div class="text-muted small">
+          <i class="bi bi-geo-alt me-1"></i> {{ selectedThread.location }}
         </div>
       </div>
 
-      <h6 class="modal-section-heading">In-Person Invigilation Audit</h6>
+      <h6 class="modal-section-heading">Invigilation Audit Status</h6>
       <ul class="audit-list">
         <li class="audit-item">
-          <span class="audit-label">Test Center:</span>
-          <span class="audit-val">TCS iON Digital Zone ({{ selectedThread.location }})</span>
+          <span class="audit-label">Assessment Verification:</span>
+          <span class="audit-val-success">&#10003; 100% Proctored & Authenticated</span>
         </li>
         <li class="audit-item">
-          <span class="audit-label">Biometric & Identity Check:</span>
-          <span class="audit-val-success">&#10003; Verified & Cleared</span>
+          <span class="audit-label">Identity Status:</span>
+          <span class="audit-val-success">&#10003; Verified Candidate</span>
         </li>
         <li class="audit-item">
-          <span class="audit-label">Invigilator Code Review:</span>
-          <span class="audit-val-success">&#10003; Plagiarism-Free (100% Unique Code)</span>
+          <span class="audit-label">Direct Communication:</span>
+          <span class="audit-val-success">&#10003; Unlocked & Active</span>
         </li>
       </ul>
     </div>

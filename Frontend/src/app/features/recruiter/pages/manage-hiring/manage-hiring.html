@@ -35,6 +35,12 @@
     </div>
   </div>
 
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="d-flex align-items-center justify-content-center py-3 text-muted">
+    <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+    <span>Loading hiring pipeline from verified records...</span>
+  </div>
+
   <!-- Main Kanban Board 4-Column Grid Layout -->
   <div class="kanban-board-grid">
     
@@ -220,6 +226,10 @@
 
     <div class="modal-footer-custom">
       <button class="btn btn-outline-custom" (click)="closeDetailModal()">Close</button>
+      <button class="btn btn-outline-custom" *ngIf="selectedCandidate.candidateId" (click)="openChatWithCandidate(selectedCandidate)">
+        <i class="bi bi-chat-dots-fill me-1"></i>
+        <span>Chat with Candidate</span>
+      </button>
       <button class="btn btn-primary-custom" (click)="moveNext(selectedCandidate); closeDetailModal()">
         <span>Advance Stage</span>
         <i class="bi bi-arrow-right ms-1"></i>
@@ -251,6 +261,16 @@
       <form (ngSubmit)="saveNewCandidate()">
         <div class="modal-form-grid">
           
+          <div class="form-col-full" *ngIf="availableCandidateOptions.length > 0">
+            <label class="form-label">Select Verified Candidate</label>
+            <select class="form-select" (change)="onSelectCandidateOption($event)">
+              <option value="">-- Choose Candidate or enter details manually below --</option>
+              <option *ngFor="let cand of availableCandidateOptions" [value]="cand.id">
+                {{ cand.name }} ({{ cand.email }}) — {{ cand.roleTrack }} [Score: {{ cand.score }}/100]
+              </option>
+            </select>
+          </div>
+
           <div class="form-col-full">
             <label class="form-label">Candidate Name <span class="required-star">*</span></label>
             <input type="text" class="form-control" [(ngModel)]="newCandidate.name" name="candName" placeholder="e.g. Ananya Roy" required />

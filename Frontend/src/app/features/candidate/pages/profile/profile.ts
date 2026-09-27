@@ -49,8 +49,12 @@ export class Profile implements OnInit {
     linkedin: '',
     github: '',
     portfolio: '',
-    bio: ''
+    bio: '',
+    domainId: '',
+    domainName: ''
   };
+
+  availableDomains: any[] = [];
 
   educationList: EducationItem[] = [];
 
@@ -102,6 +106,9 @@ export class Profile implements OnInit {
           this.candidateInfo.github = res.data.githubUrl || '';
           this.candidateInfo.portfolio = res.data.portfolioUrl || '';
           this.candidateInfo.bio = res.data.bio || '';
+          this.candidateInfo.domainId = res.data.domainId || '';
+          this.candidateInfo.domainName = res.data.domainName || '';
+          this.updateDomainName();
           
           if (this.candidateInfo.fullName) {
              this.candidateInfo.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.candidateInfo.fullName)}&background=random`;
@@ -112,6 +119,31 @@ export class Profile implements OnInit {
       },
       error: (err) => console.error('Failed to load profile', err)
     });
+
+    this.http.get('http://localhost:8080/api/v1/domains').subscribe({
+      next: (res: any) => {
+        if (res.data) {
+          this.availableDomains = res.data;
+          this.updateDomainName();
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => console.warn('Failed to load domains', err)
+    });
+  }
+
+  onDomainChanged(domainId: string) {
+    this.candidateInfo.domainId = domainId;
+    this.updateDomainName();
+  }
+
+  updateDomainName() {
+    if (this.candidateInfo.domainId && this.availableDomains.length > 0) {
+      const found = this.availableDomains.find(d => d.id === this.candidateInfo.domainId);
+      if (found) {
+        this.candidateInfo.domainName = found.name;
+      }
+    }
   }
 
   get completionScore(): number {
@@ -128,6 +160,8 @@ export class Profile implements OnInit {
       experienceTrack: this.experienceList.length > 0 ? 'EXPERIENCED' : 'FRESHER',
       yearsOfExperience: this.experienceList.length,
       uanNumber: '100918273645',
+      domainId: this.candidateInfo.domainId,
+      domainName: this.candidateInfo.domainName,
       skillsList: this.skillsList.map(s => s.name).join(', '),
       resumeUrl: 'https://s3.amazonaws.com/proveyu-resumes/' + this.resume.fileName,
       fullName: this.candidateInfo.fullName,
