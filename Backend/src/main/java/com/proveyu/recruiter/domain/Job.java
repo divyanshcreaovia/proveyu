@@ -104,6 +104,12 @@ public class Job {
     @Column(name = "last_date")
     private LocalDate lastDate;
 
+    @Column(name = "interview_rounds", columnDefinition = "TEXT")
+    private String interviewRounds;
+
+    @Column(name = "total_rounds")
+    private Integer totalRounds = 0;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)
     private JobStatus status = JobStatus.ACTIVE;
@@ -122,7 +128,8 @@ public class Job {
                String requiredSkills, String experienceLevel, Integer minExperienceYears, Integer maxExperienceYears,
                Double minSalaryLpa, Double maxSalaryLpa, String salaryPackage, String location, String workMode,
                Double minScoreThreshold, Integer vacancies, String targetClient, LocalDate lastDate,
-               JobStatus status, Instant createdAt, Instant updatedAt) {
+               JobStatus status, Instant createdAt, Instant updatedAt,
+               String interviewRounds, Integer totalRounds) {
         this.id = id;
         this.postedBy = postedBy;
         this.companyId = companyId;
@@ -146,6 +153,8 @@ public class Job {
         this.status = status != null ? status : JobStatus.ACTIVE;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.interviewRounds = interviewRounds;
+        this.totalRounds = totalRounds != null ? totalRounds : 0;
     }
 
     public UUID getId() { return id; }
@@ -216,6 +225,12 @@ public class Job {
     public LocalDate getLastDate() { return lastDate; }
     public void setLastDate(LocalDate lastDate) { this.lastDate = lastDate; }
 
+    public String getInterviewRounds() { return interviewRounds; }
+    public void setInterviewRounds(String interviewRounds) { this.interviewRounds = interviewRounds; }
+
+    public Integer getTotalRounds() { return totalRounds; }
+    public void setTotalRounds(Integer totalRounds) { this.totalRounds = totalRounds; }
+
     public JobStatus getStatus() { return status; }
     public void setStatus(JobStatus status) { this.status = status; }
 
@@ -248,6 +263,8 @@ public class Job {
         private Integer vacancies = 1;
         private String targetClient;
         private LocalDate lastDate;
+        private String interviewRounds;
+        private Integer totalRounds = 0;
         private JobStatus status = JobStatus.ACTIVE;
         private Instant createdAt;
         private Instant updatedAt;
@@ -272,6 +289,8 @@ public class Job {
         public JobBuilder vacancies(Integer vacancies) { this.vacancies = vacancies; return this; }
         public JobBuilder targetClient(String targetClient) { this.targetClient = targetClient; return this; }
         public JobBuilder lastDate(LocalDate lastDate) { this.lastDate = lastDate; return this; }
+        public JobBuilder interviewRounds(String interviewRounds) { this.interviewRounds = interviewRounds; return this; }
+        public JobBuilder totalRounds(Integer totalRounds) { this.totalRounds = totalRounds; return this; }
         public JobBuilder status(JobStatus status) { this.status = status; return this; }
         public JobBuilder createdAt(Instant createdAt) { this.createdAt = createdAt; return this; }
         public JobBuilder updatedAt(Instant updatedAt) { this.updatedAt = updatedAt; return this; }
@@ -280,7 +299,7 @@ public class Job {
             return new Job(id, postedBy, companyId, domainId, title, description, roleTrack, requiredSkills,
                     experienceLevel, minExperienceYears, maxExperienceYears, minSalaryLpa, maxSalaryLpa,
                     salaryPackage, location, workMode, minScoreThreshold, vacancies, targetClient,
-                    lastDate, status, createdAt, updatedAt);
+                    lastDate, status, createdAt, updatedAt, interviewRounds, totalRounds);
         }
     }
 }

@@ -9,5 +9,6 @@ public enum JobInvitationStatus {
     OFFERED,
     HIERED,
     HIRED,
-    ON_HOLD
+    ON_HOLD,
+    REJECTED
 }

@@ -67,6 +67,13 @@ export class ManageHiring implements OnInit {
   showDetailModal: boolean = false;
   newNoteText: string = '';
 
+  // Rejection modal state
+  showRejectModal: boolean = false;
+  candidateToReject: KanbanCandidate | null = null;
+  rejectReason: string = 'Failed Interview Evaluation';
+  rejectNote: string = '';
+  isRejecting: boolean = false;
+
   // New candidate modal state
   showAddModal: boolean = false;
   availableCandidateOptions: any[] = [];
@@ -163,7 +170,13 @@ export class ManageHiring implements OnInit {
       next: (res) => {
         this.isLoading = false;
         const data = res?.data || [];
-        this.candidates = data.map((inv: any) => this.mapInvitationToCandidate(inv));
+        // Candidate is excluded from active hiring pipeline if REJECTED or DECLINED
+        this.candidates = data
+          .filter((inv: any) => {
+            const s = (inv.status || '').toUpperCase();
+            return s !== 'REJECTED' && s !== 'DECLINE' && s !== 'DECLINED';
+          })
+          .map((inv: any) => this.mapInvitationToCandidate(inv));
         this.updateDomainTracks();
         this.cdr.detectChanges();
       },
@@ -561,6 +574,54 @@ export class ManageHiring implements OnInit {
       location: 'Bengaluru / Hybrid',
       experience: '1-3 Yrs',
     };
+  }
+
+  openRejectModal(candidate: KanbanCandidate, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.candidateToReject = candidate;
+    this.rejectReason = candidate.stage === 'interviewing'
+      ? 'Failed Interview Evaluation'
+      : (candidate.stage === 'shortlisted' ? 'Profile Mismatch with Job Requirements' : 'Offer Terms / Expectations Mismatch');
+    this.rejectNote = '';
+    this.showRejectModal = true;
+  }
+
+  closeRejectModal(): void {
+    this.showRejectModal = false;
+    this.candidateToReject = null;
+    this.rejectNote = '';
+    this.isRejecting = false;
+  }
+
+  confirmRejectCandidate(): void {
+    if (!this.candidateToReject) return;
+
+    const cand = this.candidateToReject;
+    this.isRejecting = true;
+    const fullNote = this.rejectNote.trim()
+      ? `${this.rejectReason}: ${this.rejectNote.trim()}`
+      : this.rejectReason;
+
+    this.recruiterJobService.rejectCandidate(cand.id, fullNote).subscribe({
+      next: () => {
+        this.isRejecting = false;
+        // Immediately remove candidate from hiring board pipeline
+        this.candidates = this.candidates.filter(c => c.id !== cand.id);
+        this.showToast(`${cand.name} was rejected and removed from hiring pipeline.`);
+        this.closeRejectModal();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isRejecting = false;
+        console.warn('Backend reject returned error, applying local removal:', err);
+        this.candidates = this.candidates.filter(c => c.id !== cand.id);
+        this.showToast(`${cand.name} was rejected and removed from hiring pipeline.`);
+        this.closeRejectModal();
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   showToast(msg: string): void {

@@ -68,6 +68,9 @@ public class JobInvitation {
     @Column(name = "status", nullable = false, length = 30)
     private JobInvitationStatus status = JobInvitationStatus.INVITED;
 
+    @Column(name = "interview_round", length = 100)
+    private String interviewRound;
+
     @Column(name = "message", columnDefinition = "TEXT")
     private String message;
 
@@ -129,6 +132,9 @@ public class JobInvitation {
     public JobInvitationStatus getStatus() { return status; }
     public void setStatus(JobInvitationStatus status) { this.status = status; }
 
+    public String getInterviewRound() { return interviewRound; }
+    public void setInterviewRound(String interviewRound) { this.interviewRound = interviewRound; }
+
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
 
@@ -151,6 +157,7 @@ public class JobInvitation {
         private UUID candidateScoreId;
         private Double scoreSnapshot;
         private JobInvitationStatus status = JobInvitationStatus.INVITED;
+        private String interviewRound;
         private String message;
         private String notes;
         private Instant createdAt;
@@ -163,14 +170,17 @@ public class JobInvitation {
         public JobInvitationBuilder candidateScoreId(UUID candidateScoreId) { this.candidateScoreId = candidateScoreId; return this; }
         public JobInvitationBuilder scoreSnapshot(Double scoreSnapshot) { this.scoreSnapshot = scoreSnapshot; return this; }
         public JobInvitationBuilder status(JobInvitationStatus status) { this.status = status; return this; }
+        public JobInvitationBuilder interviewRound(String interviewRound) { this.interviewRound = interviewRound; return this; }
         public JobInvitationBuilder message(String message) { this.message = message; return this; }
         public JobInvitationBuilder notes(String notes) { this.notes = notes; return this; }
         public JobInvitationBuilder createdAt(Instant createdAt) { this.createdAt = createdAt; return this; }
         public JobInvitationBuilder updatedAt(Instant updatedAt) { this.updatedAt = updatedAt; return this; }
 
         public JobInvitation build() {
-            return new JobInvitation(id, recruiterId, candidateId, jobId, candidateScoreId, scoreSnapshot,
+            JobInvitation inv = new JobInvitation(id, recruiterId, candidateId, jobId, candidateScoreId, scoreSnapshot,
                     status, message, notes, createdAt, updatedAt);
+            inv.setInterviewRound(interviewRound);
+            return inv;
         }
     }
 }

@@ -66,7 +66,7 @@ public class ChatService {
                 .build();
 
         // 1. Database is source of truth — persist before WebSocket delivery
-        ChatMessage saved = chatMessageRepository.saveAndFlush(chatMessage);
+        ChatMessage saved = chatMessageRepository.save(chatMessage);
         log.info("[CHAT PERSISTED] Text message id=[{}] from=[{}] to=[{}]", saved.getId(), senderId, request.getReceiverId());
 
         ChatMessageResponse response = ChatMessageResponse.fromEntity(saved);
@@ -113,7 +113,7 @@ public class ChatService {
                 .build();
 
         // 1. Database is source of truth
-        ChatMessage saved = chatMessageRepository.saveAndFlush(chatMessage);
+        ChatMessage saved = chatMessageRepository.save(chatMessage);
         log.info("[CHAT FILE PERSISTED] File message id=[{}] file=[{}] from=[{}] to=[{}]",
                 saved.getId(), storedFile.originalFileName(), senderId, receiverId);
 

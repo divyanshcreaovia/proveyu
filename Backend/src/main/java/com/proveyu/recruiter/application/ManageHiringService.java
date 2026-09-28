@@ -89,6 +89,8 @@ public class ManageHiringService {
                 .vacancies(req.getVacancies() != null ? req.getVacancies() : 1)
                 .targetClient(req.getTargetClient())
                 .lastDate(req.getLastDate())
+                .interviewRounds(req.getInterviewRounds())
+                .totalRounds(req.getTotalRounds() != null ? req.getTotalRounds() : 0)
                 .status(JobStatus.ACTIVE)
                 .build();
 
@@ -146,6 +148,8 @@ public class ManageHiringService {
         if (req.getVacancies() != null) job.setVacancies(req.getVacancies());
         if (req.getTargetClient() != null) job.setTargetClient(req.getTargetClient());
         if (req.getLastDate() != null) job.setLastDate(req.getLastDate());
+        if (req.getInterviewRounds() != null) job.setInterviewRounds(req.getInterviewRounds());
+        if (req.getTotalRounds() != null) job.setTotalRounds(req.getTotalRounds());
         if (req.getStatus() != null) job.setStatus(req.getStatus());
 
         Job updatedJob = jobRepository.save(job);
@@ -223,6 +227,7 @@ public class ManageHiringService {
                 .candidateScoreId(candidateScoreId)
                 .scoreSnapshot(scoreSnapshot)
                 .status(JobInvitationStatus.INVITED)
+                .interviewRound(req.getInterviewRound())
                 .message(req.getMessage() != null ? req.getMessage() : "You have been invited to interview for " + job.getTitle())
                 .notes(req.getNotes())
                 .build();
@@ -426,6 +431,9 @@ public class ManageHiringService {
 
         JobInvitationStatus oldStatus = invitation.getStatus();
         invitation.setStatus(req.getStatus());
+        if (req.getInterviewRound() != null && !req.getInterviewRound().isBlank()) {
+            invitation.setInterviewRound(req.getInterviewRound().trim());
+        }
         if (req.getNotes() != null && !req.getNotes().isBlank()) {
             String existingNotes = invitation.getNotes();
             invitation.setNotes(existingNotes != null && !existingNotes.isBlank()
@@ -440,12 +448,71 @@ public class ManageHiringService {
             handleInvitationAccepted(updated);
         } else if (req.getStatus() == JobInvitationStatus.DECLINE) {
             handleInvitationDeclined(updated);
+        } else if (req.getStatus() == JobInvitationStatus.REJECTED) {
+            handleInvitationRejected(updated);
+        } else if (req.getStatus() == JobInvitationStatus.INTERVIEWING
+                || req.getStatus() == JobInvitationStatus.OFFERED
+                || req.getStatus() == JobInvitationStatus.HIRED
+                || req.getStatus() == JobInvitationStatus.HIERED) {
+            markCandidateInterviewInvitationsAsRead(updated.getCandidateId());
+            handlePipelineStageAdvanced(updated, req.getStatus());
         }
 
         return enrichInvitationResponse(updated);
     }
 
+    private void markCandidateInterviewInvitationsAsRead(UUID candidateId) {
+        if (candidateId == null) return;
+        try {
+            User candidate = userRepository.findById(candidateId).orElse(null);
+            if (candidate != null) {
+                List<Notification> candidateNotifs = notificationRepository.findByUserOrderByCreatedAtDesc(candidate);
+                for (Notification n : candidateNotifs) {
+                    if ("INTERVIEW_INVITATION".equals(n.getType()) && !n.isRead()) {
+                        n.setRead(true);
+                        notificationRepository.save(n);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Failed to mark candidate interview invitation notifications as read: {}", e.getMessage());
+        }
+    }
+
+    private void handlePipelineStageAdvanced(JobInvitation invitation, JobInvitationStatus status) {
+        User recruiter = userRepository.findById(invitation.getRecruiterId()).orElse(null);
+        User candidate = userRepository.findById(invitation.getCandidateId()).orElse(null);
+        Job job = jobRepository.findById(invitation.getJobId()).orElse(null);
+
+        String jobTitle = job != null ? job.getTitle() : "Engineering Position";
+        String recruiterName = recruiter != null ? recruiter.getFullName() : "Recruiter";
+        String compName = (job != null && job.getTargetClient() != null && !job.getTargetClient().isBlank())
+                ? job.getTargetClient()
+                : (recruiter != null ? recruiter.getFullName() : "ProveYu Recruiter");
+
+        if (candidate != null) {
+            try {
+                String roundDetail = (invitation.getInterviewRound() != null && !invitation.getInterviewRound().isBlank())
+                        ? " (" + invitation.getInterviewRound() + ")"
+                        : "";
+                String stageText = (status == JobInvitationStatus.OFFERED) ? "an offer extended"
+                        : (status == JobInvitationStatus.HIRED || status == JobInvitationStatus.HIERED) ? "been hired"
+                        : ("an interview scheduled" + roundDetail);
+
+                Notification notif = new Notification();
+                notif.setUser(candidate);
+                notif.setType("STAGE_UPDATE");
+                notif.setMessage("Update for '" + jobTitle + "' at " + compName + ": You have " + stageText + "! Direct messaging is active.");
+                notif.setRead(false);
+                notificationRepository.save(notif);
+            } catch (Exception e) {
+                log.warn("Failed to notify candidate on stage change: {}", e.getMessage());
+            }
+        }
+    }
+
     private void handleInvitationAccepted(JobInvitation invitation) {
+        markCandidateInterviewInvitationsAsRead(invitation.getCandidateId());
         User recruiter = userRepository.findById(invitation.getRecruiterId()).orElse(null);
         User candidate = userRepository.findById(invitation.getCandidateId()).orElse(null);
         Job job = jobRepository.findById(invitation.getJobId()).orElse(null);
@@ -507,6 +574,7 @@ public class ManageHiringService {
     }
 
     private void handleInvitationDeclined(JobInvitation invitation) {
+        markCandidateInterviewInvitationsAsRead(invitation.getCandidateId());
         User recruiter = userRepository.findById(invitation.getRecruiterId()).orElse(null);
         User candidate = userRepository.findById(invitation.getCandidateId()).orElse(null);
         Job job = jobRepository.findById(invitation.getJobId()).orElse(null);
@@ -524,6 +592,32 @@ public class ManageHiringService {
                 notificationRepository.save(notif);
             } catch (Exception e) {
                 log.warn("Failed to notify recruiter on decline: {}", e.getMessage());
+            }
+        }
+    }
+
+    private void handleInvitationRejected(JobInvitation invitation) {
+        markCandidateInterviewInvitationsAsRead(invitation.getCandidateId());
+        User candidate = userRepository.findById(invitation.getCandidateId()).orElse(null);
+        Job job = jobRepository.findById(invitation.getJobId()).orElse(null);
+        String jobTitle = job != null ? job.getTitle() : "Position";
+        String compName = (job != null && job.getTargetClient() != null && !job.getTargetClient().isBlank())
+                ? job.getTargetClient()
+                : "our hiring team";
+
+        if (candidate != null) {
+            try {
+                Notification notif = new Notification();
+                notif.setUser(candidate);
+                notif.setType("CANDIDATE_REJECTED");
+                String roundDetail = (invitation.getInterviewRound() != null && !invitation.getInterviewRound().isBlank())
+                        ? " for " + invitation.getInterviewRound()
+                        : "";
+                notif.setMessage("Update for '" + jobTitle + "' at " + compName + ": Thank you for your interview and evaluation" + roundDetail + ". At this time, your application has not been selected.");
+                notif.setRead(false);
+                notificationRepository.save(notif);
+            } catch (Exception e) {
+                log.warn("Failed to notify candidate on rejection: {}", e.getMessage());
             }
         }
     }
@@ -579,10 +673,12 @@ public class ManageHiringService {
 
             boolean isInvited = false;
             JobInvitationStatus invStatus = null;
+            String curRound = null;
             Optional<JobInvitation> invOpt = jobInvitationRepository.findByJobIdAndCandidateId(jobId, user.getId());
             if (invOpt.isPresent()) {
                 isInvited = true;
                 invStatus = invOpt.get().getStatus();
+                curRound = invOpt.get().getInterviewRound();
             }
 
             String collegeExp = (cp.getCollegeName() != null ? cp.getCollegeName() : "Premier Institute") +
@@ -610,6 +706,9 @@ public class ManageHiringService {
                     .isInvited(isInvited)
                     .isShortlisted(isInvited)
                     .invitationStatus(invStatus)
+                    .currentRound(curRound)
+                    .interviewRounds(job.getInterviewRounds())
+                    .totalRounds(job.getTotalRounds())
                     .lastUpdated(cp.getUpdatedAt())
                     .build());
         }

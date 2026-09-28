@@ -7,8 +7,12 @@ export interface WsChatMessageEvent {
     id: string;
     senderId: string;
     receiverId: string;
-    message: string;
+    message?: string;
     messageType?: string;
+    filePath?: string;
+    fileName?: string;
+    fileSize?: number;
+    fileContentType?: string;
     status?: string;
     createdAt?: string;
   };

@@ -277,6 +277,38 @@
     .card-action-box {
       margin-top: 0.5rem;
 
+      .card-action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        width: 100%;
+
+        .btn-card-action {
+          flex: 1;
+        }
+
+        .btn-card-reject {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.76rem;
+          font-weight: 600;
+          padding: 0.45rem 0.6rem;
+          border-radius: 6px;
+          border: 1px solid #fed7aa;
+          background: #ffffff;
+          color: #dc2626;
+          transition: all 0.2s ease;
+          white-space: nowrap;
+
+          &:hover {
+            background: #fef2f2;
+            border-color: #fca5a5;
+            color: #b91c1c;
+          }
+        }
+      }
+
       .btn-card-action {
         width: 100%;
         font-size: 0.82rem;
@@ -633,6 +665,31 @@
         &:hover {
           background: #00704a;
         }
+      }
+
+      .btn-danger-custom {
+        background: #dc2626;
+        border: 1px solid #dc2626;
+        color: #ffffff;
+
+        &:hover {
+          background: #b91c1c;
+          border-color: #b91c1c;
+        }
+
+        &:disabled {
+          opacity: 0.65;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    &.modal-reject-dialog {
+      max-width: 520px;
+
+      .badge-danger-soft {
+        background: #fee2e2;
+        color: #dc2626;
       }
     }
   }

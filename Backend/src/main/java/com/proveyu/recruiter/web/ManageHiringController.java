@@ -184,6 +184,23 @@ public class ManageHiringController {
         return ResponseEntity.ok(ApiResponse.success(response, "Job invitation declined successfully"));
     }
 
+    @PutMapping("/invitations/{invitationId}/reject")
+    public ResponseEntity<ApiResponse<JobInvitationResponse>> rejectInvitation(
+            @PathVariable UUID invitationId,
+            @RequestBody(required = false) UpdateJobInvitationStatusRequest request,
+            Authentication authentication) {
+        UUID userId = resolveRecruiterId(authentication);
+        String notes = request != null && request.getNotes() != null && !request.getNotes().isBlank()
+                ? request.getNotes()
+                : "Failed interview evaluation / Rejected by recruiter";
+        UpdateJobInvitationStatusRequest req = UpdateJobInvitationStatusRequest.builder()
+                .status(com.proveyu.recruiter.domain.JobInvitationStatus.REJECTED)
+                .notes(notes)
+                .build();
+        JobInvitationResponse response = manageHiringService.updateInvitationStatus(invitationId, userId, req);
+        return ResponseEntity.ok(ApiResponse.success(response, "Candidate rejected and removed from hiring pipeline"));
+    }
+
     @GetMapping("/candidate/invitations")
     public ResponseEntity<ApiResponse<List<JobInvitationResponse>>> getCandidateInvitations(
             @RequestParam(required = false) UUID candidateId,

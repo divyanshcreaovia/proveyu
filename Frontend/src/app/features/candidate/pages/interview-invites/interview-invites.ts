@@ -8,9 +8,14 @@ import { ChatWebSocketService } from '../../../../shared/services/chat-websocket
 
 export interface ChatMessage {
   id: number | string;
-  text: string;
+  text?: string;
   sender: 'recruiter' | 'candidate' | 'system';
   time: string;
+  messageType?: 'TEXT' | 'FILE';
+  filePath?: string;
+  fileName?: string;
+  fileSize?: number;
+  fileContentType?: string;
 }
 
 export interface InterviewInvite {
@@ -70,6 +75,8 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
   interviews: InterviewInvite[] = [];
   selectedInterview: InterviewInvite | null = null;
   newMessage = '';
+  selectedFile: File | null = null;
+  isUploadingFile = false;
 
   @ViewChild('chatScrollContainer') chatScrollContainer?: ElementRef<HTMLDivElement>;
   @ViewChild('scrollBottomAnchor') scrollBottomAnchor?: ElementRef<HTMLDivElement>;
@@ -127,16 +134,23 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
 
     // Check if message belongs to currently open interview recruiter
     if (msgData.senderId === this.selectedInterview.recruiterId || msgData.receiverId === this.selectedInterview.recruiterId) {
-      const alreadyExists = this.selectedInterview.messages.some(m => 
-        m.id === msgData.id || (m.text === msgData.message && m.sender === sender)
+      const isAlreadyShown = this.selectedInterview.messages.some(m => 
+        (m.id && msgData.id && String(m.id) === String(msgData.id)) ||
+        (m.fileName && msgData.fileName && m.fileName === msgData.fileName) ||
+        (!m.fileName && !msgData.fileName && (m.text || '').trim() === (msgData.message || '').trim() && m.sender === sender)
       );
 
-      if (!alreadyExists) {
+      if (!isAlreadyShown) {
         this.selectedInterview.messages.push({
           id: msgData.id || Date.now(),
-          text: msgData.message,
+          text: msgData.message || '',
           sender,
-          time: msgData.createdAt ? new Date(msgData.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          time: msgData.createdAt ? new Date(msgData.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          messageType: msgData.messageType || (msgData.fileName ? 'FILE' : 'TEXT'),
+          fileName: msgData.fileName,
+          fileSize: msgData.fileSize,
+          fileContentType: msgData.fileContentType,
+          filePath: msgData.filePath
         });
         this.shouldScrollBottom = true;
         this.cdr.detectChanges();
@@ -151,18 +165,39 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
       next: (res) => {
         if (res.data && res.data.length > 0) {
           const backendList: InterviewInvite[] = res.data.map((inv: any, idx: number) => {
+            const rawStatus = (inv.status || '').toUpperCase();
             let status: 'Pending' | 'Accepted' | 'Declined' = 'Pending';
             let statusText = 'Decision Pending';
             let statusClass = 'expires';
 
-            if (inv.status === 'ACCEPT') {
+            if (rawStatus === 'ACCEPT') {
               status = 'Accepted';
               statusText = 'Accepted';
               statusClass = 'confirmed';
-            } else if (inv.status === 'DECLINE') {
+            } else if (rawStatus === 'INTERVIEWING' || rawStatus === 'INTERVIEW') {
+              status = 'Accepted';
+              statusText = 'Interviewing';
+              statusClass = 'confirmed';
+            } else if (rawStatus === 'OFFERED') {
+              status = 'Accepted';
+              statusText = 'Offer Extended';
+              statusClass = 'confirmed';
+            } else if (rawStatus === 'HIRED' || rawStatus === 'HIERED') {
+              status = 'Accepted';
+              statusText = 'Hired';
+              statusClass = 'confirmed';
+            } else if (rawStatus === 'DECLINE' || rawStatus === 'DECLINED') {
               status = 'Declined';
               statusText = 'Declined';
               statusClass = 'declined';
+            } else if (rawStatus === 'REJECTED') {
+              status = 'Declined';
+              statusText = 'Not Selected';
+              statusClass = 'declined';
+            } else {
+              status = 'Pending';
+              statusText = 'Decision Pending';
+              statusClass = 'expires';
             }
 
             const initials = inv.recruiterName
@@ -183,16 +218,20 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
             ];
 
             if (status === 'Accepted') {
+              const statusDesc = rawStatus === 'OFFERED' ? 'Offer Extended! Direct communication unlocked.'
+                : (rawStatus === 'HIRED' || rawStatus === 'HIERED') ? 'Hired! Welcome to the team.'
+                : (rawStatus === 'INTERVIEWING' || rawStatus === 'INTERVIEW') ? 'Interview Stage in progress. Now you can chat'
+                : 'Accepted. Now you can chat';
               msgs.push({
                 id: 2,
-                text: 'Accepted. Now you can chat',
+                text: statusDesc,
                 sender: 'system',
                 time: 'Just now'
               });
             } else if (status === 'Declined') {
               msgs.push({
                 id: 2,
-                text: 'Request Declined',
+                text: rawStatus === 'REJECTED' ? 'Application status: Not selected in interview evaluation.' : 'Request Declined',
                 sender: 'system',
                 time: 'Just now'
               });
@@ -233,6 +272,11 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
           if (this.selectedInterview && this.selectedInterview.status === 'Accepted' && this.selectedInterview.recruiterId) {
             this.loadChatMessages(this.selectedInterview.recruiterId);
           }
+
+          // If all invitations are accepted or progressing in hiring pipeline, clear stale invite notifications
+          if (backendList.every(i => i.status !== 'Pending')) {
+            this.markInviteNotificationsAsRead();
+          }
         } else {
           this.interviews = [];
           this.selectedInterview = null;
@@ -272,15 +316,114 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
+  onFileSelected(event: any) {
+    const file = event.target?.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        this.triggerToast('File size exceeds the 10MB limit.');
+        return;
+      }
+      this.selectedFile = file;
+      this.cdr.detectChanges();
+    }
+  }
+
+  removeSelectedFile() {
+    this.selectedFile = null;
+    const input = document.getElementById('candidateChatFileInput') as HTMLInputElement;
+    if (input) input.value = '';
+    this.cdr.detectChanges();
+  }
+
+  formatFileSize(bytes?: number): string {
+    if (!bytes || bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  }
+
+  getFileIconClass(fileName?: string, contentType?: string): string {
+    const ext = fileName ? fileName.substring(fileName.lastIndexOf('.')).toLowerCase() : '';
+    if (ext === '.pdf' || contentType?.includes('pdf')) return 'bi-file-earmark-pdf-fill text-danger';
+    if (['.jpg', '.jpeg', '.png', '.webp', '.svg'].includes(ext) || contentType?.includes('image')) return 'bi-file-earmark-image-fill text-primary';
+    if (['.doc', '.docx'].includes(ext) || contentType?.includes('word')) return 'bi-file-earmark-word-fill text-info';
+    if (['.zip', '.rar', '.7z', '.tar', '.gz'].includes(ext) || contentType?.includes('zip')) return 'bi-file-earmark-zip-fill text-warning';
+    if (['.xls', '.xlsx', '.csv'].includes(ext) || contentType?.includes('excel')) return 'bi-file-earmark-excel-fill text-success';
+    return 'bi-file-earmark-text-fill text-secondary';
+  }
+
+  downloadFile(msg: ChatMessage) {
+    if (!msg.id) return;
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
+    this.triggerToast(`Downloading ${msg.fileName || 'file'}...`);
+
+    this.http.get(`http://localhost:8080/api/v1/chat/messages/${msg.id}/file`, {
+      headers,
+      responseType: 'blob'
+    }).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = msg.fileName || 'attachment';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+      },
+      error: (err) => {
+        console.error('Candidate file download error:', err);
+        this.triggerToast('Could not download file. Please try again.');
+      }
+    });
+  }
+
+  viewFile(msg: ChatMessage) {
+    if (!msg.id) return;
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
+
+    this.http.get(`http://localhost:8080/api/v1/chat/messages/${msg.id}/file?inline=true`, {
+      headers,
+      responseType: 'blob'
+    }).subscribe({
+      next: (blob: Blob) => {
+        const fileType = msg.fileContentType || blob.type || 'application/octet-stream';
+        const fileBlob = new Blob([blob], { type: fileType });
+        const fileUrl = window.URL.createObjectURL(fileBlob);
+        window.open(fileUrl, '_blank');
+        setTimeout(() => window.URL.revokeObjectURL(fileUrl), 60000);
+      },
+      error: (err) => {
+        console.error('Candidate file preview error:', err);
+        if (token) {
+          window.open(`http://localhost:8080/api/v1/chat/messages/${msg.id}/file?inline=true&token=${encodeURIComponent(token)}`, '_blank');
+        } else {
+          this.triggerToast('Could not preview file. Please download it.');
+        }
+      }
+    });
+  }
+
   sendMessage() {
-    if (!this.selectedInterview || !this.selectedInterview.recruiterId || !this.newMessage.trim()) return;
+    if (!this.selectedInterview || !this.selectedInterview.recruiterId) return;
+
+    if (this.selectedFile) {
+      this.sendFileMessage();
+      return;
+    }
+
+    if (!this.newMessage.trim()) return;
 
     const textToSend = this.newMessage.trim();
     const msg: ChatMessage = {
       id: Date.now(),
       text: textToSend,
       sender: 'candidate',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      messageType: 'TEXT'
     };
     this.selectedInterview.messages.push(msg);
     this.newMessage = '';
@@ -307,6 +450,62 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
+  sendFileMessage() {
+    if (!this.selectedInterview || !this.selectedInterview.recruiterId || !this.selectedFile) return;
+
+    const recruiterId = this.selectedInterview.recruiterId;
+    const file = this.selectedFile;
+    const caption = this.newMessage.trim();
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
+
+    const formData = new FormData();
+    formData.append('receiverId', recruiterId);
+    formData.append('file', file);
+    if (caption) {
+      formData.append('message', caption);
+    }
+
+    this.isUploadingFile = true;
+    this.http.post<any>('http://localhost:8080/api/v1/chat/messages/file', formData, { headers }).subscribe({
+      next: (res) => {
+        this.isUploadingFile = false;
+        this.removeSelectedFile();
+        this.newMessage = '';
+
+        if (this.selectedInterview && res.data) {
+          const m = res.data;
+          const isAlreadyShown = this.selectedInterview.messages.some(existing => 
+            (existing.id && m.id && String(existing.id) === String(m.id)) ||
+            (existing.fileName && m.fileName && existing.fileName === m.fileName)
+          );
+          if (!isAlreadyShown) {
+            this.selectedInterview.messages.push({
+              id: m.id,
+              text: m.message || '',
+              sender: 'candidate',
+              time: m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now',
+              messageType: 'FILE',
+              fileName: m.fileName,
+              fileSize: m.fileSize,
+              fileContentType: m.fileContentType,
+              filePath: m.filePath
+            });
+            this.shouldScrollBottom = true;
+            this.cdr.detectChanges();
+            this.scrollToBottom(true);
+          }
+          this.triggerToast(`File "${m.fileName}" shared successfully!`);
+        }
+      },
+      error: (err) => {
+        this.isUploadingFile = false;
+        console.error('Candidate failed to upload file message:', err);
+        this.triggerToast(err?.error?.message || 'Failed to upload and send file. Please try again.');
+      }
+    });
+  }
+
   acceptRequest() {
     if (!this.selectedInterview) return;
 
@@ -330,6 +529,7 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
           if (this.selectedInterview.recruiterId) {
             this.loadChatMessages(this.selectedInterview.recruiterId);
           }
+          this.markInviteNotificationsAsRead();
         },
         error: (err) => {
           console.error('Accept API error:', err);
@@ -375,6 +575,7 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
           };
           this.selectedInterview.messages.push(systemMsg);
           this.triggerToast('Interview invite declined.');
+          this.markInviteNotificationsAsRead();
         },
         error: (err) => {
           console.error('Decline API error:', err);
@@ -407,15 +608,25 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
       next: (res) => {
         if (this.selectedInterview && res.data && res.data.content && res.data.content.length > 0) {
           const currentUserId = this.getCurrentUserId();
-          const loadedMsgs: ChatMessage[] = res.data.content.map((m: any) => {
+          const seen = new Set<string>();
+          const loadedMsgs: ChatMessage[] = [];
+          for (const m of res.data.content) {
+            const idKey = String(m.id || '');
+            if (idKey && seen.has(idKey)) continue;
+            if (idKey) seen.add(idKey);
             const isMe = currentUserId && (m.senderId === currentUserId);
-            return {
+            loadedMsgs.push({
               id: m.id,
-              text: m.message,
+              text: m.message || '',
               sender: (isMe ? 'candidate' : 'recruiter') as ('candidate' | 'recruiter'),
-              time: m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now'
-            };
-          });
+              time: m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now',
+              messageType: m.messageType || (m.fileName ? 'FILE' : 'TEXT'),
+              fileName: m.fileName,
+              fileSize: m.fileSize,
+              fileContentType: m.fileContentType,
+              filePath: m.filePath
+            });
+          }
 
           // System badge at the beginning
           loadedMsgs.unshift({
@@ -468,5 +679,22 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
     setTimeout(() => {
       this.showToast = false;
     }, 3500);
+  }
+
+  markInviteNotificationsAsRead() {
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    if (!token) return;
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    this.http.get<any>('http://localhost:8080/api/v1/notifications', { headers }).subscribe({
+      next: (res) => {
+        if (res && res.data) {
+          const unreadInvites = res.data.filter((n: any) => !n.read && n.type === 'INTERVIEW_INVITATION');
+          for (const notif of unreadInvites) {
+            this.http.put(`http://localhost:8080/api/v1/notifications/${notif.id}/read`, {}, { headers }).subscribe();
+          }
+        }
+      },
+      error: () => {}
+    });
   }
 }

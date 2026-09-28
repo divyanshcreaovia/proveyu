@@ -50,6 +50,8 @@ export interface JobRequirementPayload {
   targetClient?: string;
   lastDate?: string;
   companyId?: string;
+  interviewRounds?: string;
+  totalRounds?: number;
 }
 
 export interface BackendJobResponse {
@@ -74,6 +76,8 @@ export interface BackendJobResponse {
   lastDate?: string;
   status: string;
   totalInvitationsCount: number;
+  interviewRounds?: string;
+  totalRounds?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -160,5 +164,9 @@ export class RecruiterJobService {
 
   declineInvitation(invitationId: string): Observable<any> {
     return this.http.put<any>(`${this.baseUrl}/invitations/${invitationId}/decline`, {}, { headers: this.getHeaders() });
+  }
+
+  rejectCandidate(invitationId: string, notes?: string): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/invitations/${invitationId}/reject`, { notes }, { headers: this.getHeaders() });
   }
 }

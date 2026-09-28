@@ -112,6 +112,16 @@
                 </span>
               </div>
 
+              <!-- Line 5: Interview Evaluation Stages -->
+              <div class="mt-2 d-flex flex-wrap align-items-center gap-1" *ngIf="req.interviewRounds && req.interviewRounds.length > 0">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1" style="font-size: 0.72rem; font-weight: 600; border-radius: 6px;">
+                  <i class="bi bi-diagram-3-fill me-1"></i>{{ req.totalRounds || req.interviewRounds.length }} Rounds:
+                </span>
+                <span class="badge bg-white text-secondary border px-2 py-1" style="font-size: 0.7rem; border-radius: 6px;" *ngFor="let rnd of req.interviewRounds; let ri = index">
+                  {{ ri + 1 }}. {{ rnd }}
+                </span>
+              </div>
+
             </div>
           </div>
 
@@ -360,6 +370,111 @@
               <div class="input-with-icon" style="align-items: flex-start;">
                 <i class="bi bi-file-earmark-text input-icon" style="margin-top: 0.75rem;"></i>
                 <textarea class="form-control" rows="3" [(ngModel)]="newRequirement.description" name="description" placeholder="Specify key responsibilities, role expectations, and candidate evaluation criteria..."></textarea>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Section 3: Interview Rounds Configuration -->
+        <div class="form-section mt-4">
+          <div class="section-label-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <span class="section-number">3</span>
+              <span class="section-title">Interview Rounds & Evaluation Stages</span>
+            </div>
+            <div class="rounds-count-badge">
+              <i class="bi bi-diagram-3-fill me-1"></i>
+              <span>Total Rounds: <strong>{{ selectedRounds.length }}</strong></span>
+            </div>
+          </div>
+
+          <div class="interview-rounds-container p-3 rounded-3 bg-light border mt-2">
+            <!-- Preset Quick Add Chips -->
+            <label class="form-label small fw-semibold text-secondary mb-2">
+              <i class="bi bi-lightning-charge-fill text-warning me-1"></i>Select Interview Rounds:
+            </label>
+            <div class="preset-rounds-grid mb-3">
+              <button type="button" 
+                      class="btn-preset-round" 
+                      *ngFor="let preset of availableRoundPresets" 
+                      (click)="addPresetRound(preset)"
+                      title="Add {{ preset }}">
+                <i class="bi bi-plus-circle me-1"></i>{{ preset }}
+              </button>
+            </div>
+
+            <!-- Custom Round Input Field -->
+            <label class="form-label small fw-semibold text-secondary mb-1">
+              <i class="bi bi-pencil-square text-primary me-1"></i>Type If There Is Any Other Round:
+            </label>
+            <div class="custom-round-input-row mb-3">
+              <div class="input-with-icon flex-grow-1">
+                <i class="bi bi-chat-left-dots input-icon"></i>
+                <input type="text" 
+                       class="form-control" 
+                       [(ngModel)]="customRoundText" 
+                       name="customRoundText" 
+                       (keyup.enter)="addCustomRound()"
+                       placeholder="e.g. Coding Assignment, System Design, Culture Fit...">
+              </div>
+              <button type="button" 
+                      class="btn btn-add-custom-round" 
+                      (click)="addCustomRound()" 
+                      [disabled]="!customRoundText.trim()">
+                <i class="bi bi-plus-lg me-1"></i>Add Round
+              </button>
+            </div>
+
+            <!-- Configured Pipeline List -->
+            <div class="configured-rounds-box">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="small fw-semibold text-dark">
+                  <i class="bi bi-list-ol me-1 text-primary"></i>Configured Sequence ({{ selectedRounds.length }} Rounds)
+                </span>
+                <button type="button" 
+                        class="btn btn-link btn-sm text-danger p-0 text-decoration-none" 
+                        *ngIf="selectedRounds.length > 0"
+                        (click)="clearAllRounds()">
+                  <i class="bi bi-trash3 me-1"></i>Clear All
+                </button>
+              </div>
+
+              <!-- Empty state when no rounds are selected -->
+              <div *ngIf="selectedRounds.length === 0" class="text-center py-3 px-2 bg-white rounded-3 border border-dashed text-muted small">
+                <i class="bi bi-info-circle me-1 text-primary"></i>No interview rounds added yet. Click any preset round above or type a custom round to configure the interview flow.
+              </div>
+
+              <!-- List of configured rounds -->
+              <div class="rounds-sequence-list" *ngIf="selectedRounds.length > 0">
+                <div class="round-sequence-item" *ngFor="let round of selectedRounds; let i = index">
+                  <div class="round-item-left">
+                    <span class="round-number-pill">Round {{ i + 1 }}</span>
+                    <span class="round-name-text">{{ round }}</span>
+                  </div>
+                  <div class="round-item-actions">
+                    <button type="button" 
+                            class="btn-icon-order" 
+                            (click)="moveRoundUp(i)" 
+                            [disabled]="i === 0" 
+                            title="Move Up">
+                      <i class="bi bi-arrow-up"></i>
+                    </button>
+                    <button type="button" 
+                            class="btn-icon-order" 
+                            (click)="moveRoundDown(i)" 
+                            [disabled]="i === selectedRounds.length - 1" 
+                            title="Move Down">
+                      <i class="bi bi-arrow-down"></i>
+                    </button>
+                    <button type="button" 
+                            class="btn-icon-delete" 
+                            (click)="removeRound(i)" 
+                            title="Remove Round">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 

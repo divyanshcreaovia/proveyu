@@ -24,6 +24,8 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   chatThreads: CandidateChatThread[] = [];
   selectedThread: CandidateChatThread | null = null;
   isWsConnected = false;
+  selectedFile: File | null = null;
+  isUploadingFile = false;
 
   @ViewChild('chatScrollContainer') chatScrollContainer?: ElementRef<HTMLDivElement>;
   @ViewChild('scrollBottomAnchor') scrollBottomAnchor?: ElementRef<HTMLDivElement>;
@@ -186,12 +188,24 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
       next: (res) => {
         if (this.selectedThread && res.data && res.data.content && res.data.content.length > 0) {
           const currentUserId = this.getCurrentUserId();
-          const loaded: ChatMessage[] = res.data.content.map((m: any) => ({
-            id: m.id,
-            text: m.message,
-            sender: (currentUserId && m.senderId === currentUserId) ? 'recruiter' : 'candidate',
-            time: m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now'
-          }));
+          const seen = new Set<string>();
+          const loaded: ChatMessage[] = [];
+          for (const m of res.data.content) {
+            const idKey = String(m.id || '');
+            if (idKey && seen.has(idKey)) continue;
+            if (idKey) seen.add(idKey);
+            loaded.push({
+              id: m.id,
+              text: m.message || '',
+              sender: (currentUserId && m.senderId === currentUserId) ? 'recruiter' : 'candidate',
+              time: m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now',
+              messageType: m.messageType || (m.fileName ? 'FILE' : 'TEXT'),
+              fileName: m.fileName,
+              fileSize: m.fileSize,
+              fileContentType: m.fileContentType,
+              filePath: m.filePath
+            });
+          }
           this.selectedThread.messages = loaded;
           this.shouldScrollBottom = true;
           this.cdr.detectChanges();
@@ -209,15 +223,22 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
 
     // Check if message belongs to currently open thread
     if (this.selectedThread?.candidateUuid && (this.selectedThread.candidateUuid === msgData.senderId || this.selectedThread.candidateUuid === msgData.receiverId)) {
-      const alreadyExists = this.selectedThread.messages.some(m => 
-        m.id === msgData.id || (m.text === msgData.message && m.sender === (isMe ? 'recruiter' : 'candidate'))
+      const isAlreadyShown = this.selectedThread.messages.some(m => 
+        (m.id && msgData.id && String(m.id) === String(msgData.id)) ||
+        (m.fileName && msgData.fileName && m.fileName === msgData.fileName) ||
+        (!m.fileName && !msgData.fileName && (m.text || '').trim() === (msgData.message || '').trim() && m.sender === (isMe ? 'recruiter' : 'candidate'))
       );
-      if (!alreadyExists) {
+      if (!isAlreadyShown) {
         this.selectedThread.messages.push({
           id: msgData.id || Date.now(),
-          text: msgData.message,
+          text: msgData.message || '',
           sender: isMe ? 'recruiter' : 'candidate',
-          time: msgData.createdAt ? new Date(msgData.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          time: msgData.createdAt ? new Date(msgData.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          messageType: msgData.messageType || (msgData.fileName ? 'FILE' : 'TEXT'),
+          fileName: msgData.fileName,
+          fileSize: msgData.fileSize,
+          fileContentType: msgData.fileContentType,
+          filePath: msgData.filePath
         });
         this.selectedThread.lastMessageTime = 'Just now';
         this.shouldScrollBottom = true;
@@ -235,8 +256,107 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
+  onFileSelected(event: any) {
+    const file = event.target?.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        this.notificationService.showError('File size exceeds the 10MB limit.');
+        return;
+      }
+      this.selectedFile = file;
+      this.cdr.detectChanges();
+    }
+  }
+
+  removeSelectedFile() {
+    this.selectedFile = null;
+    const input = document.getElementById('chatFileInput') as HTMLInputElement;
+    if (input) input.value = '';
+    this.cdr.detectChanges();
+  }
+
+  formatFileSize(bytes?: number): string {
+    if (!bytes || bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  }
+
+  getFileIconClass(fileName?: string, contentType?: string): string {
+    const ext = fileName ? fileName.substring(fileName.lastIndexOf('.')).toLowerCase() : '';
+    if (ext === '.pdf' || contentType?.includes('pdf')) return 'bi-file-earmark-pdf-fill text-danger';
+    if (['.jpg', '.jpeg', '.png', '.webp', '.svg'].includes(ext) || contentType?.includes('image')) return 'bi-file-earmark-image-fill text-primary';
+    if (['.doc', '.docx'].includes(ext) || contentType?.includes('word')) return 'bi-file-earmark-word-fill text-info';
+    if (['.zip', '.rar', '.7z', '.tar', '.gz'].includes(ext) || contentType?.includes('zip')) return 'bi-file-earmark-zip-fill text-warning';
+    if (['.xls', '.xlsx', '.csv'].includes(ext) || contentType?.includes('excel')) return 'bi-file-earmark-excel-fill text-success';
+    return 'bi-file-earmark-text-fill text-secondary';
+  }
+
+  downloadFile(msg: ChatMessage) {
+    if (!msg.id) return;
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
+    this.notificationService.showInfo(`Downloading ${msg.fileName || 'file' }...`);
+
+    this.http.get(`http://localhost:8080/api/v1/chat/messages/${msg.id}/file`, {
+      headers,
+      responseType: 'blob'
+    }).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = msg.fileName || 'attachment';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+      },
+      error: (err) => {
+        console.error('File download failed:', err);
+        this.notificationService.showError('Could not download file. Please try again.');
+      }
+    });
+  }
+
+  viewFile(msg: ChatMessage) {
+    if (!msg.id) return;
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
+
+    this.http.get(`http://localhost:8080/api/v1/chat/messages/${msg.id}/file?inline=true`, {
+      headers,
+      responseType: 'blob'
+    }).subscribe({
+      next: (blob: Blob) => {
+        const fileType = msg.fileContentType || blob.type || 'application/octet-stream';
+        const fileBlob = new Blob([blob], { type: fileType });
+        const fileUrl = window.URL.createObjectURL(fileBlob);
+        window.open(fileUrl, '_blank');
+        setTimeout(() => window.URL.revokeObjectURL(fileUrl), 60000);
+      },
+      error: (err) => {
+        console.error('File preview failed:', err);
+        if (token) {
+          window.open(`http://localhost:8080/api/v1/chat/messages/${msg.id}/file?inline=true&token=${encodeURIComponent(token)}`, '_blank');
+        } else {
+          this.notificationService.showError('Could not preview file. Please try downloading it instead.');
+        }
+      }
+    });
+  }
+
   sendMessage() {
-    if (!this.selectedThread || !this.selectedThread.candidateUuid || !this.newMessage.trim()) return;
+    if (!this.selectedThread || !this.selectedThread.candidateUuid) return;
+
+    // Check if a file is staged for upload
+    if (this.selectedFile) {
+      this.sendFileMessage();
+      return;
+    }
+
+    if (!this.newMessage.trim()) return;
 
     const sentText = this.newMessage.trim();
     const candUuid = this.selectedThread.candidateUuid;
@@ -244,7 +364,8 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
       id: Date.now(),
       text: sentText,
       sender: 'recruiter',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      messageType: 'TEXT'
     };
 
     this.selectedThread.messages.push(msg);
@@ -268,6 +389,63 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
         error: (err) => console.warn('Recruiter chat post warning:', err)
       });
     }
+  }
+
+  sendFileMessage() {
+    if (!this.selectedThread || !this.selectedThread.candidateUuid || !this.selectedFile) return;
+
+    const candUuid = this.selectedThread.candidateUuid;
+    const file = this.selectedFile;
+    const caption = this.newMessage.trim();
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
+
+    const formData = new FormData();
+    formData.append('receiverId', candUuid);
+    formData.append('file', file);
+    if (caption) {
+      formData.append('message', caption);
+    }
+
+    this.isUploadingFile = true;
+    this.http.post<any>('http://localhost:8080/api/v1/chat/messages/file', formData, { headers }).subscribe({
+      next: (res) => {
+        this.isUploadingFile = false;
+        this.removeSelectedFile();
+        this.newMessage = '';
+
+        if (this.selectedThread && res.data) {
+          const m = res.data;
+          const isAlreadyShown = this.selectedThread.messages.some(existing => 
+            (existing.id && m.id && String(existing.id) === String(m.id)) ||
+            (existing.fileName && m.fileName && existing.fileName === m.fileName)
+          );
+          if (!isAlreadyShown) {
+            this.selectedThread.messages.push({
+              id: m.id,
+              text: m.message || '',
+              sender: 'recruiter',
+              time: m.createdAt ? new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now',
+              messageType: 'FILE',
+              fileName: m.fileName,
+              fileSize: m.fileSize,
+              fileContentType: m.fileContentType,
+              filePath: m.filePath
+            });
+            this.selectedThread.lastMessageTime = 'Just now';
+            this.shouldScrollBottom = true;
+            this.cdr.detectChanges();
+            this.scrollToBottom(true);
+          }
+          this.triggerToast(`File "${m.fileName}" shared successfully!`);
+        }
+      },
+      error: (err) => {
+        this.isUploadingFile = false;
+        console.error('Failed to upload file message:', err);
+        this.notificationService.showError(err?.error?.message || 'Failed to upload and send file. Please try again.');
+      }
+    });
   }
 
   scrollToBottom(smooth: boolean = false) {

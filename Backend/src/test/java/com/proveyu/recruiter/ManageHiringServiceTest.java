@@ -53,6 +53,18 @@ class ManageHiringServiceTest {
     @Mock
     private EmailService emailService;
 
+    @Mock
+    private com.proveyu.candidate.infrastructure.CandidateProfileRepository candidateProfileRepository;
+
+    @Mock
+    private com.proveyu.assessment.infrastructure.DomainRepository domainRepository;
+
+    @Mock
+    private com.proveyu.notification.domain.NotificationRepository notificationRepository;
+
+    @Mock
+    private com.proveyu.chat.infrastructure.ChatMessageRepository chatMessageRepository;
+
     @InjectMocks
     private ManageHiringService manageHiringService;
 
@@ -246,5 +258,13 @@ class ManageHiringServiceTest {
                 .build();
         JobInvitationResponse res4 = manageHiringService.updateInvitationStatus(invitationId, recruiterId, reqHired);
         assertThat(res4.getStatus()).isEqualTo(JobInvitationStatus.HIERED);
+
+        // 5. Move to REJECTED (e.g. failed interview round)
+        UpdateJobInvitationStatusRequest reqReject = UpdateJobInvitationStatusRequest.builder()
+                .status(JobInvitationStatus.REJECTED)
+                .notes("Failed technical interview round")
+                .build();
+        JobInvitationResponse res5 = manageHiringService.updateInvitationStatus(invitationId, recruiterId, reqReject);
+        assertThat(res5.getStatus()).isEqualTo(JobInvitationStatus.REJECTED);
     }
 }

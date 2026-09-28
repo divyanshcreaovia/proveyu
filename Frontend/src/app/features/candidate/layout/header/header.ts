@@ -42,12 +42,38 @@ export class Header implements OnInit {
           this.unreadCount = this.notifications.filter(n => !n.read).length;
           const invite = this.notifications.find(n => !n.read && n.type === 'INTERVIEW_INVITATION');
           if (invite) {
-            this.hasUnreadInvite = true;
-            this.unreadInviteMessage = invite.message;
+            // Verify if candidate genuinely has pending invitations before showing banner
+            this.checkCandidatePendingInvitations(invite, headers);
+          } else {
+            this.hasUnreadInvite = false;
           }
         }
       },
       error: (err) => console.error('Error loading notifications', err)
+    });
+  }
+
+  checkCandidatePendingInvitations(inviteNotif: any, headers: HttpHeaders) {
+    this.http.get<any>('http://localhost:8080/api/v1/recruiter/jobs/candidate/invitations', { headers }).subscribe({
+      next: (res) => {
+        const invitations: any[] = res?.data || [];
+        const hasPending = invitations.some(inv => {
+          const s = (inv.status || '').toUpperCase();
+          return s === 'INVITED' || s === 'SHORTLISTED' || s === 'PENDING';
+        });
+
+        if (hasPending) {
+          this.hasUnreadInvite = true;
+          this.unreadInviteMessage = inviteNotif.message;
+        } else {
+          // All candidate invitations are already accepted or processed; auto-mark stale notification as read
+          this.hasUnreadInvite = false;
+          this.markAsRead(inviteNotif);
+        }
+      },
+      error: () => {
+        this.hasUnreadInvite = false;
+      }
     });
   }
 
@@ -60,18 +86,21 @@ export class Header implements OnInit {
       this.markAsRead(notif);
     }
     this.showDropdown = false;
-    if (notif.type === 'INTERVIEW_INVITATION' || notif.type === 'INVITATION_CONFIRMED') {
+    if (notif.type === 'INTERVIEW_INVITATION' || notif.type === 'INVITATION_CONFIRMED' || notif.type === 'STAGE_UPDATE') {
       this.router.navigate(['/candidate/interview-invites']);
     }
   }
 
   goToInvites() {
-    this.hasUnreadInvite = false;
+    this.dismissInviteAlert();
     this.router.navigate(['/candidate/interview-invites']);
   }
 
   dismissInviteAlert() {
     this.hasUnreadInvite = false;
+    // Persist read status in backend so it does not reappear on page refresh
+    const unreadInvites = this.notifications.filter(n => !n.read && n.type === 'INTERVIEW_INVITATION');
+    unreadInvites.forEach(inv => this.markAsRead(inv));
   }
 
   markAsRead(notification: any, event?: Event) {

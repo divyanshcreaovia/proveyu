@@ -157,13 +157,66 @@
               </div>
               
               <div class="bubble-box">
+                <!-- Recruiter Chat Bubble -->
                 <div class="bubble-content" *ngIf="msg.sender === 'recruiter'">
-                  <span>{{ msg.text }}</span>
+                  <!-- File Attachment Box -->
+                  <div class="chat-file-card" *ngIf="msg.messageType === 'FILE' || msg.fileName">
+                    <div class="file-card-top">
+                      <div class="file-icon-wrap">
+                        <i class="bi" [ngClass]="getFileIconClass(msg.fileName, msg.fileContentType)"></i>
+                      </div>
+                      <div class="file-details">
+                        <span class="file-title" [title]="msg.fileName">{{ msg.fileName || 'Shared Document' }}</span>
+                        <span class="file-size-badge" *ngIf="msg.fileSize">
+                          <i class="bi bi-paperclip me-1"></i>{{ formatFileSize(msg.fileSize) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="file-actions-row">
+                      <button type="button" class="btn-file-action btn-view" (click)="viewFile(msg)" title="View / Preview File">
+                        <i class="bi bi-eye-fill"></i> View
+                      </button>
+                      <button type="button" class="btn-file-action btn-download" (click)="downloadFile(msg)" title="Download File">
+                        <i class="bi bi-download"></i> Download
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Text Caption (if provided) -->
+                  <div class="file-caption" *ngIf="msg.text && (msg.messageType === 'FILE' || msg.fileName)">{{ msg.text }}</div>
+                  <!-- Plain Text Message -->
+                  <span *ngIf="msg.messageType !== 'FILE' && !msg.fileName">{{ msg.text }}</span>
                 </div>
 
-                <!-- Candidate Chat Bubble -->
+                <!-- Candidate Chat Bubble (Dark Navy) -->
                 <div class="bubble-content bg-dark text-white" *ngIf="msg.sender === 'candidate'" style="background-color: #0f172a; color: #ffffff;">
-                  {{ msg.text }}
+                  <!-- File Attachment Box -->
+                  <div class="chat-file-card file-card-candidate" *ngIf="msg.messageType === 'FILE' || msg.fileName">
+                    <div class="file-card-top">
+                      <div class="file-icon-wrap">
+                        <i class="bi" [ngClass]="getFileIconClass(msg.fileName, msg.fileContentType)"></i>
+                      </div>
+                      <div class="file-details">
+                        <span class="file-title text-white" [title]="msg.fileName">{{ msg.fileName || 'Shared Document' }}</span>
+                        <span class="file-size-badge text-white-50" *ngIf="msg.fileSize">
+                          <i class="bi bi-paperclip me-1"></i>{{ formatFileSize(msg.fileSize) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="file-actions-row">
+                      <button type="button" class="btn-file-action btn-view" (click)="viewFile(msg)" title="View / Preview File">
+                        <i class="bi bi-eye-fill"></i> View
+                      </button>
+                      <button type="button" class="btn-file-action btn-download" (click)="downloadFile(msg)" title="Download File">
+                        <i class="bi bi-download"></i> Download
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Text Caption (if provided) -->
+                  <div class="file-caption text-white-50" *ngIf="msg.text && (msg.messageType === 'FILE' || msg.fileName)">{{ msg.text }}</div>
+                  <!-- Plain Text Message -->
+                  <ng-container *ngIf="msg.messageType !== 'FILE' && !msg.fileName">
+                    {{ msg.text }}
+                  </ng-container>
                 </div>
 
                 <span class="bubble-time">{{ msg.time }}</span>
@@ -197,13 +250,55 @@
             </div>
           </ng-container>
 
-          <!-- ACCEPTED STATUS: Unlocked Live Chat Input -->
+          <!-- ACCEPTED STATUS: Unlocked Live Chat Input with File Sharing -->
           <ng-container *ngIf="selectedInterview.status === 'Accepted'">
-            <div class="accepted-chat-input-box">
-              <input type="text" class="chat-control" placeholder="Type your message to recruiter..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage()">
-              <button type="button" class="btn-send-message" (click)="sendMessage()" title="Send message">
-                <i class="bi bi-send-fill" style="font-size: 0.75rem; margin-left: -2px;"></i>
-              </button>
+            <div class="chat-input-wrapper">
+              <!-- Staged File Preview Pill (Directly Above Input) -->
+              <div class="staged-file-preview-bar" *ngIf="selectedFile">
+                <div class="staged-file-info">
+                  <i class="bi" [ngClass]="getFileIconClass(selectedFile.name, selectedFile.type)"></i>
+                  <span class="staged-file-name" [title]="selectedFile.name">{{ selectedFile.name }}</span>
+                  <span class="staged-file-size">({{ formatFileSize(selectedFile.size) }})</span>
+                </div>
+                <button type="button" class="btn-remove-staged-file" (click)="removeSelectedFile()" title="Cancel file attachment">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+
+              <div class="accepted-chat-input-box">
+                <!-- Hidden Native File Input -->
+                <input type="file" 
+                       id="candidateChatFileInput" 
+                       #fileInput 
+                       (change)="onFileSelected($event)" 
+                       style="display: none;" 
+                       accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.txt,.zip,.csv,.xlsx">
+
+                <!-- Attachment Button -->
+                <button type="button" 
+                        class="btn-attach-file" 
+                        (click)="fileInput.click()" 
+                        [disabled]="isUploadingFile"
+                        title="Attach & share document or file">
+                  <i class="bi bi-paperclip"></i>
+                </button>
+
+                <input type="text" 
+                       class="chat-control" 
+                       [placeholder]="selectedFile ? 'Add a caption for this attachment (optional)...' : 'Type your message to recruiter...'" 
+                       [(ngModel)]="newMessage" 
+                       (keyup.enter)="sendMessage()"
+                       [disabled]="isUploadingFile">
+
+                <button type="button" 
+                        class="btn-send-message" 
+                        (click)="sendMessage()" 
+                        [disabled]="isUploadingFile || (!selectedFile && !newMessage.trim())" 
+                        title="Send message or attachment">
+                  <i class="bi bi-send-fill" *ngIf="!isUploadingFile" style="font-size: 0.75rem; margin-left: -2px;"></i>
+                  <span class="spinner-border spinner-border-sm" *ngIf="isUploadingFile"></span>
+                </button>
+              </div>
             </div>
           </ng-container>
 

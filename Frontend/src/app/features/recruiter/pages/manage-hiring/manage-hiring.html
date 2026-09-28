@@ -82,29 +82,40 @@
           <!-- Card Bottom Action Button / Badge (Matching Exact Screenshot) -->
           <div class="card-action-box">
             
-            <!-- Shortlisted Action Button: Move to Interview -->
-            <button class="btn btn-card-action btn-action-outline"
-                    *ngIf="col.nextStageButtonStyle === 'outline'"
-                    (click)="moveNext(candidate)">
-              <span>Move to Interview</span>
-              <i class="bi bi-arrow-right ms-1"></i>
-            </button>
+            <div class="card-action-buttons" *ngIf="col.id !== 'hired'">
+              <!-- Shortlisted Action Button: Move to Interview -->
+              <button class="btn btn-card-action btn-action-outline"
+                      *ngIf="col.nextStageButtonStyle === 'outline'"
+                      (click)="moveNext(candidate)">
+                <span>Move to Interview</span>
+                <i class="bi bi-arrow-right ms-1"></i>
+              </button>
 
-            <!-- Interviewing Action Button: Extend Offer -->
-            <button class="btn btn-card-action btn-action-solid-green"
-                    *ngIf="col.nextStageButtonStyle === 'solid-green'"
-                    (click)="moveNext(candidate)">
-              <span>Extend Offer</span>
-              <i class="bi bi-arrow-right ms-1"></i>
-            </button>
+              <!-- Interviewing Action Button: Extend Offer -->
+              <button class="btn btn-card-action btn-action-solid-green"
+                      *ngIf="col.nextStageButtonStyle === 'solid-green'"
+                      (click)="moveNext(candidate)">
+                <span>Extend Offer</span>
+                <i class="bi bi-arrow-right ms-1"></i>
+              </button>
 
-            <!-- Offered Action Button: Mark as Hired -->
-            <button class="btn btn-card-action btn-action-solid-orange"
-                    *ngIf="col.nextStageButtonStyle === 'solid-orange'"
-                    (click)="moveNext(candidate)">
-              <span>Mark as Hired</span>
-              <i class="bi bi-person-check-fill ms-1"></i>
-            </button>
+              <!-- Offered Action Button: Mark as Hired -->
+              <button class="btn btn-card-action btn-action-solid-orange"
+                      *ngIf="col.nextStageButtonStyle === 'solid-orange'"
+                      (click)="moveNext(candidate)">
+                <span>Mark as Hired</span>
+                <i class="bi bi-person-check-fill ms-1"></i>
+              </button>
+
+              <!-- Reject Option -->
+              <button type="button"
+                      class="btn btn-card-reject"
+                      (click)="openRejectModal(candidate, $event)"
+                      title="Reject candidate and remove from pipeline">
+                <i class="bi bi-x-circle me-1"></i>
+                <span>Reject</span>
+              </button>
+            </div>
 
             <!-- Hired Status Badge Pill: CLOSED & PLACED -->
             <div class="badge-closed-placed"
@@ -226,6 +237,10 @@
 
     <div class="modal-footer-custom">
       <button class="btn btn-outline-custom" (click)="closeDetailModal()">Close</button>
+      <button type="button" class="btn btn-danger-custom" (click)="openRejectModal(selectedCandidate); closeDetailModal()">
+        <i class="bi bi-x-circle me-1"></i>
+        <span>Reject Candidate</span>
+      </button>
       <button class="btn btn-outline-custom" *ngIf="selectedCandidate.candidateId" (click)="openChatWithCandidate(selectedCandidate)">
         <i class="bi bi-chat-dots-fill me-1"></i>
         <span>Chat with Candidate</span>
@@ -324,6 +339,65 @@
     <div class="modal-footer-custom">
       <button class="btn btn-outline-custom" (click)="closeAddModal()">Cancel</button>
       <button class="btn btn-primary-custom" (click)="saveNewCandidate()">Add Candidate</button>
+    </div>
+  </div>
+
+  <!-- Reject Candidate Confirmation Modal Backdrop -->
+  <div class="modal-backdrop-custom" *ngIf="showRejectModal" (click)="closeRejectModal()"></div>
+
+  <!-- Reject Candidate Confirmation Modal -->
+  <div class="modal-dialog-custom modal-reject-dialog" *ngIf="showRejectModal && candidateToReject">
+    <div class="modal-header-custom reject-header">
+      <div class="modal-header-content">
+        <div class="modal-icon-badge badge-danger-soft">
+          <i class="bi bi-person-x-fill text-danger"></i>
+        </div>
+        <div>
+          <h5 class="modal-title text-danger">Reject Candidate</h5>
+          <p class="modal-subtitle">Candidate will be removed from your active hiring pipeline</p>
+        </div>
+      </div>
+      <button type="button" class="btn-close-custom" (click)="closeRejectModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-body-custom">
+      <div class="alert alert-warning d-flex align-items-center gap-2 py-2 px-3 rounded-3 mb-3">
+        <i class="bi bi-exclamation-triangle-fill text-warning fs-5"></i>
+        <div class="small">
+          Are you sure you want to reject <strong>{{ candidateToReject.name }}</strong> ({{ candidateToReject.roleTrack }})? This will move them out of your hiring board.
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold small text-dark">Reason for Rejection <span class="text-danger">*</span></label>
+        <select class="form-select" [(ngModel)]="rejectReason">
+          <option value="Failed Interview Evaluation">Failed Interview Evaluation</option>
+          <option value="Technical Skills Not Matching Requirements">Technical Skills Not Matching Requirements</option>
+          <option value="Did Not Meet Coding / Domain Benchmark">Did Not Meet Coding / Domain Benchmark</option>
+          <option value="Communication / Culture Fit Mismatch">Communication / Culture Fit Mismatch</option>
+          <option value="Candidate Withdrew / Salary Expectation Mismatch">Candidate Withdrew / Salary Expectation Mismatch</option>
+          <option value="Other / Evaluation Incomplete">Other / Evaluation Incomplete</option>
+        </select>
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label fw-semibold small text-dark">Evaluation Notes & Feedback (Optional)</label>
+        <textarea class="form-control"
+                  rows="3"
+                  [(ngModel)]="rejectNote"
+                  placeholder="e.g. Candidate struggled in technical round with coding test and evaluation..."></textarea>
+      </div>
+    </div>
+
+    <div class="modal-footer-custom">
+      <button type="button" class="btn btn-outline-custom" (click)="closeRejectModal()" [disabled]="isRejecting">Cancel</button>
+      <button type="button" class="btn btn-danger-custom" (click)="confirmRejectCandidate()" [disabled]="isRejecting">
+        <i class="bi bi-trash3-fill me-1" *ngIf="!isRejecting"></i>
+        <span *ngIf="isRejecting" class="spinner-border spinner-border-sm me-1"></span>
+        <span>{{ isRejecting ? 'Rejecting...' : 'Confirm Rejection & Remove' }}</span>
+      </button>
     </div>
   </div>
 

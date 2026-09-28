@@ -1,10 +1,15 @@
 import { Injectable } from '@angular/core';
 
 export interface ChatMessage {
-  id: number;
-  text: string;
+  id: number | string;
+  text?: string;
   sender: 'recruiter' | 'candidate' | 'system';
   time: string;
+  messageType?: 'TEXT' | 'FILE';
+  filePath?: string;
+  fileName?: string;
+  fileSize?: number;
+  fileContentType?: string;
 }
 
 export interface CandidateChatThread {

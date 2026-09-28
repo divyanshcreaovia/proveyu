@@ -23,6 +23,8 @@ export interface Requirement {
   vacancies?: number;
   lastDate?: string;
   description?: string;
+  interviewRounds?: string[];
+  totalRounds?: number;
 }
 
 @Component({
@@ -38,6 +40,28 @@ export class PostRequirement implements OnInit {
   isSubmitting: boolean = false;
   isLoading: boolean = false;
   availableDomains: DomainItem[] = [];
+
+  // Predefined Round Presets requested by recruiter
+  availableRoundPresets: string[] = [
+    'Screening Round',
+    'Technical Round 1',
+    'Technical Round 2',
+    'HR Round',
+    'Manager Round',
+    'VP Round',
+    'Director Round'
+  ];
+
+  // Currently configured interview rounds for the job post
+  selectedRounds: string[] = [
+    'Screening Round',
+    'Technical Round 1',
+    'Technical Round 2',
+    'HR Round'
+  ];
+
+  // Custom round text input
+  customRoundText: string = '';
 
   constructor(
     private notificationService: NotificationService,
@@ -132,7 +156,9 @@ export class PostRequirement implements OnInit {
             description: job.description,
             workMode: job.workMode,
             vacancies: job.vacancies,
-            lastDate: job.lastDate
+            lastDate: job.lastDate,
+            interviewRounds: this.parseRounds(job.interviewRounds),
+            totalRounds: job.totalRounds || this.parseRounds(job.interviewRounds).length
           }));
           this.postedRequirements = mappedJobs;
         } else {
@@ -147,6 +173,60 @@ export class PostRequirement implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  addPresetRound(round: string) {
+    this.selectedRounds.push(round);
+    this.cdr.detectChanges();
+  }
+
+  addCustomRound() {
+    const trimmed = this.customRoundText.trim();
+    if (trimmed) {
+      this.selectedRounds.push(trimmed);
+      this.customRoundText = '';
+      this.cdr.detectChanges();
+    }
+  }
+
+  removeRound(index: number) {
+    if (index >= 0 && index < this.selectedRounds.length) {
+      this.selectedRounds.splice(index, 1);
+      this.cdr.detectChanges();
+    }
+  }
+
+  moveRoundUp(index: number) {
+    if (index > 0) {
+      const temp = this.selectedRounds[index];
+      this.selectedRounds[index] = this.selectedRounds[index - 1];
+      this.selectedRounds[index - 1] = temp;
+      this.cdr.detectChanges();
+    }
+  }
+
+  moveRoundDown(index: number) {
+    if (index < this.selectedRounds.length - 1) {
+      const temp = this.selectedRounds[index];
+      this.selectedRounds[index] = this.selectedRounds[index + 1];
+      this.selectedRounds[index + 1] = temp;
+      this.cdr.detectChanges();
+    }
+  }
+
+  clearAllRounds() {
+    this.selectedRounds = [];
+    this.cdr.detectChanges();
+  }
+
+  parseRounds(roundsVal: any): string[] {
+    if (!roundsVal) return [];
+    if (Array.isArray(roundsVal)) return roundsVal;
+    try {
+      const parsed = JSON.parse(roundsVal);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {}
+    return String(roundsVal).split(',').map((s: string) => s.trim()).filter(Boolean);
   }
 
   formatDate(dateStr: string): string {
@@ -206,6 +286,8 @@ export class PostRequirement implements OnInit {
       vacancies: Number(this.newRequirement.vacancies) || 1,
       targetClient: this.newRequirement.targetClient.trim(),
       lastDate: this.newRequirement.lastDate || this.getDefaultLastDate(),
+      interviewRounds: JSON.stringify(this.selectedRounds),
+      totalRounds: this.selectedRounds.length,
     };
 
     this.isSubmitting = true;
@@ -231,7 +313,9 @@ export class PostRequirement implements OnInit {
           workMode: payload.workMode,
           vacancies: payload.vacancies,
           lastDate: payload.lastDate,
-          description: payload.description
+          description: payload.description,
+          interviewRounds: [...this.selectedRounds],
+          totalRounds: this.selectedRounds.length
         };
 
         this.postedRequirements = [newCard, ...this.postedRequirements];
@@ -264,7 +348,9 @@ export class PostRequirement implements OnInit {
           workMode: payload.workMode,
           vacancies: payload.vacancies,
           lastDate: payload.lastDate,
-          description: payload.description
+          description: payload.description,
+          interviewRounds: [...this.selectedRounds],
+          totalRounds: this.selectedRounds.length
         };
 
         this.postedRequirements = [fallbackCard, ...this.postedRequirements];
@@ -281,6 +367,8 @@ export class PostRequirement implements OnInit {
   }
 
   private resetForm(): void {
+    this.selectedRounds = ['Screening Round', 'Technical Round 1', 'Technical Round 2', 'HR Round'];
+    this.customRoundText = '';
     this.newRequirement = {
       jobTitle: 'Associate QA Automation Engineer',
       domainTrack: 'QA & Testing',

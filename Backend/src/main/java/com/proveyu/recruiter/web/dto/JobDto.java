@@ -43,6 +43,8 @@ public class JobDto {
         private String targetClient;
         private LocalDate lastDate;
         private UUID companyId;
+        private String interviewRounds;
+        private Integer totalRounds;
     }
 
     @Data
@@ -69,6 +71,8 @@ public class JobDto {
         private String targetClient;
         private LocalDate lastDate;
         private JobStatus status;
+        private String interviewRounds;
+        private Integer totalRounds;
     }
 
     @Data
@@ -100,6 +104,8 @@ public class JobDto {
         private String targetClient;
         private LocalDate lastDate;
         private JobStatus status;
+        private String interviewRounds;
+        private Integer totalRounds;
         private long totalInvitationsCount;
         private Instant createdAt;
         private Instant updatedAt;
@@ -130,6 +136,8 @@ public class JobDto {
                     .targetClient(job.getTargetClient())
                     .lastDate(job.getLastDate())
                     .status(job.getStatus())
+                    .interviewRounds(job.getInterviewRounds())
+                    .totalRounds(job.getTotalRounds())
                     .totalInvitationsCount(invitationsCount)
                     .createdAt(job.getCreatedAt())
                     .updatedAt(job.getUpdatedAt())
@@ -147,6 +155,7 @@ public class JobDto {
 
         private UUID candidateScoreId;
         private Double scoreSnapshot;
+        private String interviewRound;
         private String message;
         private String notes;
     }
@@ -159,6 +168,7 @@ public class JobDto {
         @NotNull(message = "Status is required")
         private JobInvitationStatus status;
 
+        private String interviewRound;
         private String notes;
     }
 
@@ -205,6 +215,9 @@ public class JobDto {
         private UUID candidateScoreId;
         private Double scoreSnapshot;
         private JobInvitationStatus status;
+        private String interviewRound;
+        private String interviewRounds;
+        private Integer totalRounds;
         private String message;
         private String notes;
         private Instant createdAt;
@@ -221,6 +234,8 @@ public class JobDto {
             String title = null;
             String track = null;
 
+            String interviewRounds = null;
+            Integer totalRounds = null;
             if (inv.getJob() != null) {
                 title = inv.getJob().getTitle();
                 track = inv.getJob().getRoleTrack();
@@ -231,6 +246,8 @@ public class JobDto {
                 mode = inv.getJob().getWorkMode();
                 desc = inv.getJob().getDescription();
                 skills = inv.getJob().getRequiredSkills();
+                interviewRounds = inv.getJob().getInterviewRounds();
+                totalRounds = inv.getJob().getTotalRounds();
             }
 
             if (company == null || company.strip() == "") {
@@ -270,6 +287,9 @@ public class JobDto {
                     .candidateScoreId(inv.getCandidateScoreId())
                     .scoreSnapshot(inv.getScoreSnapshot())
                     .status(inv.getStatus())
+                    .interviewRound(inv.getInterviewRound())
+                    .interviewRounds(interviewRounds)
+                    .totalRounds(totalRounds)
                     .message(inv.getMessage())
                     .notes(inv.getNotes())
                     .createdAt(inv.getCreatedAt())
@@ -301,6 +321,9 @@ public class JobDto {
         private boolean isInvited;
         private boolean isShortlisted;
         private JobInvitationStatus invitationStatus;
+        private String currentRound;
+        private String interviewRounds;
+        private Integer totalRounds;
         private Instant lastUpdated;
     }
 }
