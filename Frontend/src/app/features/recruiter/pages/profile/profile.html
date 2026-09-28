@@ -42,15 +42,30 @@
       <div class="col-md-5 border-start-md ps-md-5 mt-4 mt-md-0">
         <div class="d-flex justify-content-between mb-2">
           <span class="fw-bold text-navy">Organization Verification</span>
-          <span class="fw-bold text-success">{{ completionScore }}%</span>
+          <span class="fw-bold" [class.text-danger]="completionScore < 40" [class.text-warning]="completionScore >= 40 && completionScore < 70" [class.text-success]="completionScore >= 70">
+            {{ completionScore }}%
+          </span>
         </div>
         <div class="progress rounded-pill bg-light-blue" style="height: 10px;">
-          <div class="progress-bar bg-success rounded-pill" role="progressbar" [style.width]="completionScore + '%'" [attr.aria-valuenow]="completionScore" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="progress-bar rounded-pill transition-all"
+            role="progressbar"
+            [style.width]="completionScore + '%'"
+            [class.bg-danger]="completionScore < 40"
+            [class.bg-warning]="completionScore >= 40 && completionScore < 70"
+            [class.bg-success]="completionScore >= 70"
+            [attr.aria-valuenow]="completionScore"
+            aria-valuemin="0"
+            aria-valuemax="100">
+          </div>
         </div>
         <p class="text-muted-custom small mt-3 mb-0">
-          Complete corporate domain & GSTIN verification to publish hiring requirements to invigilated candidates.
+          <span *ngIf="completionScore < 40">⚠️ Fill in your company details to get started.</span>
+          <span *ngIf="completionScore >= 40 && completionScore < 70">📋 Almost there! Add website, headline & hiring requirements.</span>
+          <span *ngIf="completionScore >= 70 && completionScore < 100">✅ Looking good! Complete remaining fields to reach 100%.</span>
+          <span *ngIf="completionScore === 100">🎉 Profile complete! You're ready to publish hiring requirements.</span>
         </p>
       </div>
+
     </div>
   </div>
 
@@ -99,15 +114,15 @@
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Representative Full Name <span class="text-danger">*</span></label>
-                <input type="text" class="form-control py-2" [(ngModel)]="recruiterInfo.contactName">
+                <input type="text" class="form-control py-2" name="contactName" [(ngModel)]="recruiterInfo.contactName">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Work Email Address (Read Only)</label>
-                <input type="email" class="form-control py-2" [(ngModel)]="recruiterInfo.workEmail" readonly>
+                <input type="email" class="form-control py-2" name="workEmail" [(ngModel)]="recruiterInfo.workEmail" readonly>
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Direct Phone Number <span class="text-danger">*</span></label>
-                <input type="tel" class="form-control py-2" [(ngModel)]="recruiterInfo.phone">
+                <input type="tel" class="form-control py-2" name="phone" [(ngModel)]="recruiterInfo.phone">
               </div>
               <div class="col-md-6">
                 <label class="form-label text-muted-custom small fw-medium">Hiring HQ / Location <span class="text-danger">*</span></label>

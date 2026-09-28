@@ -24,11 +24,22 @@
 
       <!-- Success Alert Banner -->
       <div *ngIf="loginSuccessMessage"
-        class="alert alert-success d-flex align-items-center mb-4 rounded-3 py-2.5 px-3 fs-7 border-0 shadow-sm"
+        class="alert alert-success d-flex align-items-center mb-4 rounded-3 py-2 px-3 fs-7 border-0 shadow-sm"
         role="alert">
         <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
         <div>{{ loginSuccessMessage }}</div>
       </div>
+
+      <!-- Error Alert Banner -->
+      <div *ngIf="loginErrorMessage"
+        class="alert alert-danger d-flex align-items-center mb-4 rounded-3 py-2 px-3 fs-7 border-0 shadow-sm"
+        role="alert">
+        <svg class="me-2 flex-shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <div>{{ loginErrorMessage }}</div>
+      </div>
+
 
       <!-- Login Form -->
       <form (ngSubmit)="onLogin($event)">

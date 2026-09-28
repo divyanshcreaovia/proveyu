@@ -27,19 +27,9 @@ export class Profile implements OnInit {
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.http.get<any>('http://localhost:8080/api/v1/recruiters/profile', {
-      headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` }
-    }).subscribe({
-      next: (res) => {
-        if (res.data) {
-          this.recruiterInfo = { ...this.recruiterInfo, ...res.data };
-          this.hiringPreferences = { ...this.hiringPreferences, ...res.data };
-          this.cdr.detectChanges();
-        }
-      },
-      error: (err) => console.error('Failed to load profile', err)
-    });
+    this.loadProfile();
   }
+
 
   recruiterInfo = {
     contactName: '',
@@ -93,12 +83,13 @@ export class Profile implements OnInit {
       headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` }
     }).subscribe({
       next: () => {
-        this.saveNotification = 'Company profile & hiring settings saved successfully!';
+        this.saveNotification = 'Profile saved successfully!';
         sessionStorage.setItem('candidateFullName', this.recruiterInfo.contactName);
+        // Reload profile data from server to confirm saved values
+        this.loadProfile();
         setTimeout(() => {
           this.saveNotification = '';
-          window.location.reload();
-        }, 1500);
+        }, 2500);
       },
       error: (err) => {
         console.error('Failed to save profile', err);
@@ -106,6 +97,64 @@ export class Profile implements OnInit {
       }
     });
   }
+
+  loadProfile() {
+    this.http.get<any>('http://localhost:8080/api/v1/recruiters/profile', {
+      headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` }
+    }).subscribe({
+      next: (res) => {
+        if (res.data) {
+          this.recruiterInfo = {
+            contactName: res.data.contactName || '',
+            workEmail:   res.data.workEmail   || '',
+            phone:       res.data.phone        || '',
+            city:        res.data.city         || '',
+            companyName: res.data.companyName  || '',
+            orgType:     res.data.orgType      || '',
+            website:     res.data.website      || '',
+            headline:    res.data.headline     || '',
+            about:       res.data.about        || '',
+            avatar:      res.data.avatar       || '',
+            linkedin:    res.data.linkedin     || '',
+          };
+          this.hiringPreferences = {
+            hiringVolume:    res.data.hiringVolume    || '',
+            candidateLevel:  res.data.candidateLevel  || '',
+            primaryTrack:    res.data.primaryTrack    || '',
+            preferredCities: res.data.preferredCities || '',
+            customNotes:     res.data.customNotes     || '',
+          };
+          this.calculateCompletionScore();
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => console.error('Failed to load profile', err)
+    });
+  }
+
+  calculateCompletionScore() {
+    // Each field has a weight. Total = 100%
+    const fields: { value: string; weight: number }[] = [
+      { value: this.recruiterInfo.companyName,  weight: 15 },
+      { value: this.recruiterInfo.contactName,  weight: 10 },
+      { value: this.recruiterInfo.workEmail,    weight: 5  },
+      { value: this.recruiterInfo.phone,        weight: 10 },
+      { value: this.recruiterInfo.city,         weight: 10 },
+      { value: this.recruiterInfo.orgType,      weight: 10 },
+      { value: this.recruiterInfo.website,      weight: 10 },
+      { value: this.recruiterInfo.headline,     weight: 10 },
+      { value: this.recruiterInfo.about,        weight: 10 },
+      { value: this.hiringPreferences.hiringVolume, weight: 10 },
+    ];
+
+    const earned = fields
+      .filter(f => f.value && f.value.trim() !== '')
+      .reduce((sum, f) => sum + f.weight, 0);
+
+    this.completionScore = Math.min(earned, 100);
+  }
+
+
 
   shareProfile() {
     this.saveNotification = 'Public Recruiter Profile link copied to clipboard!';
