@@ -1,0 +1,107 @@
+@use './settings-common' as *;
+
+.college-profile-page {
+  @extend .college-settings-wrapper;
+
+  /* Profile Hero Card */
+  .profile-hero-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 1.25rem 1.6rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+
+    .college-logo-wrapper {
+      position: relative;
+
+      .logo-box {
+        width: 68px;
+        height: 68px;
+        border-radius: 12px;
+        border: 1.5px solid #e2e8f0;
+        background: #ffffff;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+
+      .btn-logo-edit {
+        position: absolute;
+        bottom: -4px;
+        right: -4px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #16122b;
+        color: #ffffff;
+        border: 2px solid #ffffff;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease;
+
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+
+  /* Profile Tabs Card */
+  .profile-tabs-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+
+    .tabs-header-bar {
+      background: #fafafa;
+    }
+
+    .nav-tabs {
+      .nav-link {
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: none !important;
+        border-bottom: 2.5px solid transparent !important;
+        border-radius: 0 !important;
+        padding: 0.65rem 0.4rem 0.75rem 0.4rem !important;
+        margin-bottom: -1px;
+        transition: all 0.2s ease;
+        background: transparent !important;
+
+        &:hover {
+          color: #16122b;
+          border-color: rgba(22, 18, 43, 0.2) !important;
+        }
+
+        &.active {
+          color: #16122b !important;
+          font-weight: 700 !important;
+          border-bottom: 2.5px solid #16122b !important;
+        }
+      }
+    }
+  }
+
+  .form-control-color {
+    width: 42px;
+    height: 34px;
+    padding: 2px;
+    cursor: pointer;
+  }
+}

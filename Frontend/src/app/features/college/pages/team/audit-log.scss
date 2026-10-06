@@ -1,0 +1,110 @@
+.audit-log-page {
+  min-height: calc(100vh - 70px);
+  background-color: transparent;
+  font-family: inherit;
+
+  .welcome-banner-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    color: #0f172a;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+
+    .banner-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+
+      .banner-text {
+        flex: 1;
+        min-width: 300px;
+
+        .welcome-title {
+          font-size: 1.65rem;
+          font-weight: 800;
+          color: #0f172a;
+          margin-bottom: 0.4rem;
+          letter-spacing: -0.02em;
+        }
+
+        .welcome-subtitle {
+          font-size: 0.92rem;
+          color: #64748b;
+          margin: 0;
+          max-width: 720px;
+        }
+      }
+
+      .banner-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+    }
+  }
+
+  .btn-outline-custom {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
+    padding: 0.55rem 1.2rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      background: #16122b;
+      border-color: #16122b;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+  }
+
+  .dashboard-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  }
+
+  .modern-table {
+    border-collapse: separate;
+    border-spacing: 0;
+
+    thead th {
+      background: #f8fafc;
+      color: #475569;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      border-top: none;
+    }
+
+    tbody td {
+      padding: 1rem 1rem;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.85rem;
+      vertical-align: middle;
+    }
+
+    .table-row-hover {
+      transition: background 0.15s ease;
+
+      &:hover {
+        background-color: #f8fafc !important;
+      }
+    }
+  }
+}

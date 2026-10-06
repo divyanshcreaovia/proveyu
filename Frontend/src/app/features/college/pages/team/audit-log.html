@@ -1,0 +1,71 @@
+<div class="audit-log-page container-fluid p-0">
+
+  <!-- Header Banner -->
+  <div class="welcome-banner-card mb-4">
+    <div class="banner-content">
+      <div class="banner-text">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <a routerLink="/college/team" class="btn btn-sm btn-outline-custom rounded-pill px-3 py-1 extra-small fw-bold">
+            <i class="bi bi-arrow-left me-1"></i> Back to Team
+          </a>
+          <span class="badge bg-danger-subtle text-danger rounded-pill px-2.5 py-1 extra-small fw-bold">
+            <i class="bi bi-lock-fill me-1"></i> Immutable Trail
+          </span>
+        </div>
+        <h3 class="welcome-title">System Audit Log & Compliance Trail</h3>
+        <p class="welcome-subtitle">
+          Cryptographically signed records of all administrative actions, student roster updates, tier shifts, and credential dispatches.
+        </p>
+      </div>
+      <div class="banner-actions">
+        <button class="btn btn-outline-custom">
+          <i class="bi bi-download me-1 text-primary"></i> Export Audit Archive
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audit Table Card -->
+  <div class="dashboard-card p-0 mb-4 overflow-hidden border">
+    <div class="table-responsive">
+      <table class="table modern-table align-middle mb-0">
+        <thead>
+          <tr>
+            <th class="ps-4">Timestamp</th>
+            <th>Officer / User</th>
+            <th>Action Performed</th>
+            <th>Target Module</th>
+            <th class="pe-4 text-end">Audit Evidence & Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let log of auditLogs" class="table-row-hover">
+            <td class="ps-4 font-monospace text-secondary extra-small fw-bold">
+              <span class="d-inline-flex align-items-center">
+                <i class="bi bi-clock-history me-2 text-primary fs-6"></i>
+                <span>{{ log.time }}</span>
+              </span>
+            </td>
+            <td>
+              <div class="fw-bold text-dark">{{ log.user }}</div>
+            </td>
+            <td>
+              <span class="badge bg-light text-dark border rounded-pill px-3 py-1 fw-bold extra-small">
+                {{ log.action }}
+              </span>
+            </td>
+            <td>
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 extra-small font-monospace">
+                {{ log.module }}
+              </span>
+            </td>
+            <td class="pe-4 text-end text-muted extra-small font-monospace">
+              {{ log.detail }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

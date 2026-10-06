@@ -1,0 +1,10 @@
+<div class="app-layout d-flex vh-100 overflow-hidden" style="background-color: var(--grapeslab-bg, #f8fafc);">
+  <app-college-sidebar></app-college-sidebar>
+  <div class="main-content flex-grow-1 d-flex flex-column h-100 overflow-hidden" style="min-width: 0;">
+    <app-college-header [title]="activeTitle"></app-college-header>
+    <main class="content-wrapper px-4 pt-0 pb-4 flex-grow-1 overflow-y-auto w-100" style="width: 100%;">
+      <router-outlet></router-outlet>
+    </main>
+    <app-college-footer></app-college-footer>
+  </div>
+</div>

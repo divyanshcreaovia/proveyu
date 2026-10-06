@@ -1,0 +1,144 @@
+<div class="college-test-config-page container-fluid p-0">
+
+  <!-- Toast Notification Overlay -->
+  <div class="toast-notification position-fixed bottom-0 end-0 p-3 z-3" *ngIf="isSaved">
+    <div class="alert alert-dark rounded-4 shadow-lg border-0 d-flex align-items-center gap-3 text-white px-4 py-3 mb-0" role="alert">
+      <i class="bi bi-check-circle-fill text-success fs-5"></i>
+      <span class="fw-semibold">Default assessment settings updated successfully!</span>
+    </div>
+  </div>
+
+
+
+  <!-- Hero Card: Matching Profile & Billing Hero Structure -->
+  <div class="config-hero-card mb-4">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7 d-flex align-items-center gap-4">
+        <div class="config-icon-wrapper flex-shrink-0">
+          <div class="icon-box">
+            <i class="bi bi-sliders2 text-primary fs-2"></i>
+          </div>
+        </div>
+
+        <div>
+          <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+            <h4 class="hero-title mb-0">Assessment Engine Defaults</h4>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-0.5 font-monospace font-11 fw-bold">
+              Global Policy
+            </span>
+          </div>
+
+          <div class="text-secondary extra-small mb-1.5 d-flex align-items-center flex-wrap gap-2">
+            <span><i class="bi bi-shield-check text-success me-1"></i> AI-Proctoring Active</span>
+            <span class="text-muted">•</span>
+            <span><i class="bi bi-diagram-3 text-purple me-1"></i> Applicable across all 7 bundled tests</span>
+          </div>
+
+          <div class="text-muted font-11">
+            Controls automated tier categorization cutoffs, student result visibility, and reminder triggers.
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5 border-start-lg ps-lg-4">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fw-bold text-dark font-11 text-uppercase font-monospace">Benchmark Standard</span>
+          <span class="fw-bold text-primary font-monospace font-11">ProveYu Standard v2.4</span>
+        </div>
+        <div class="row g-2 mt-2 pt-1 text-center">
+          <div class="col-6">
+            <div class="p-2 rounded-3 bg-light border">
+              <div class="metric-value text-dark font-monospace">{{ config.tier1Cutoff }}%</div>
+              <div class="metric-label">Tier 1 Threshold</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-2 rounded-3 bg-light border">
+              <div class="metric-value text-dark font-monospace">{{ config.tier2Cutoff }}%</div>
+              <div class="metric-label">Tier 2 Threshold</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Card matching Profile & Billing tabs card -->
+  <div class="config-tabs-card">
+    <div class="p-4 p-md-5">
+      <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+        <div>
+          <h5 class="section-heading mb-0.5">Default Tier Cutoff Thresholds</h5>
+          <p class="section-subheading mb-0">Minimum benchmark scores required to earn Tier 1 or Tier 2 Skill Passports</p>
+        </div>
+      </div>
+
+      <div class="row g-4 mb-4">
+        <div class="col-md-6">
+          <label class="form-label">Tier 1 Minimum Cutoff Score (70 - 100%)</label>
+          <div class="input-group">
+            <input type="number" class="form-control" [(ngModel)]="config.tier1Cutoff">
+            <span class="input-group-text bg-light">%</span>
+          </div>
+          <span class="text-muted font-11 mt-1 d-block">Candidates reaching this score are automatically listed on the enterprise recruiter portal.</span>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Tier 2 Minimum Cutoff Score (60 - 70%)</label>
+          <div class="input-group">
+            <input type="number" class="form-control" [(ngModel)]="config.tier2Cutoff">
+            <span class="input-group-text bg-light">%</span>
+          </div>
+          <span class="text-muted font-11 mt-1 d-block">Eligible for mid-tier interviews and diagnostic improvement tracks.</span>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center justify-content-between mt-4 mb-3 pb-2 border-bottom">
+        <div>
+          <h5 class="section-heading mb-0.5">Scoring, Feedback & Automated Reminders</h5>
+          <p class="section-subheading mb-0">Student visibility and proctoring operational triggers</p>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column gap-3 mb-4">
+        <label class="p-3 border rounded-3 d-flex align-items-center justify-content-between cursor-pointer bg-white">
+          <div>
+            <div class="fw-bold text-dark extra-small">Show scores immediately after test submission</div>
+            <div class="text-muted font-11">When enabled, students can see sectional accuracy right upon completing the proctored assessment.</div>
+          </div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="config.showScoresImmediately">
+          </div>
+        </label>
+
+        <label class="p-3 border rounded-3 d-flex align-items-center justify-content-between cursor-pointer bg-white">
+          <div>
+            <div class="fw-bold text-dark extra-small">Show detailed section-wise feedback in candidate portal</div>
+            <div class="text-muted font-11">Provides question-by-question topic mastery breakdowns to enrolled college students.</div>
+          </div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="config.showDetailedFeedback">
+          </div>
+        </label>
+
+        <label class="p-3 border rounded-3 d-flex align-items-center justify-content-between cursor-pointer bg-white">
+          <div>
+            <div class="fw-bold text-dark extra-small">Automatically send email reminders 24h prior to assessment</div>
+            <div class="text-muted font-11">Dispatches email & SMS notices with exam slot and lab reporting instructions.</div>
+          </div>
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="config.emailReminders">
+          </div>
+        </label>
+      </div>
+
+      <!-- Bottom Save Action Bar -->
+      <div class="d-flex justify-content-end align-items-center mt-5 pt-3 border-top">
+        <button class="btn btn-dark-pill px-5" (click)="saveDefaults()">
+          Save Config Defaults
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

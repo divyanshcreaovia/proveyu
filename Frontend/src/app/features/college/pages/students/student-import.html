@@ -1,0 +1,126 @@
+<div class="student-import-page container-fluid p-0">
+  
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <a routerLink="/college/students" class="btn btn-sm btn-light rounded-circle p-2 border me-1" title="Back to Students">
+        <i class="bi bi-arrow-left fs-5"></i>
+      </a>
+      <div>
+        <h4 class="fw-bold text-dark mb-1">Bulk CSV Student Import</h4>
+        <p class="text-muted extra-small mb-0">Upload your batch student list CSV to populate campus roster automatically.</p>
+      </div>
+    </div>
+
+    <button class="btn btn-outline-primary rounded-pill px-3 py-1.5 fw-bold extra-small">
+      <i class="bi bi-download me-1"></i> Download CSV Template
+    </button>
+  </div>
+
+  <div class="alert alert-success border-0 rounded-4 shadow-xs p-3 mb-4" *ngIf="isImported">
+    <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+    <strong>Success!</strong> 340 valid student rows imported successfully into MGM CET roster. Redirecting...
+  </div>
+
+  <!-- Upload Drag & Drop Zone -->
+  <div class="card border-2 border-dashed rounded-4 p-5 mb-4 text-center bg-white" *ngIf="!isFileUploaded">
+    <div class="py-4">
+      <i class="bi bi-cloud-arrow-up text-primary display-4 d-block mb-3"></i>
+      <h5 class="fw-bold text-dark mb-1">Drag & Drop CSV File Here</h5>
+      <p class="text-muted small mb-3">Supported file formats: CSV, XLSX (Max 10MB file size)</p>
+
+      <div class="d-flex align-items-center justify-content-center gap-2">
+        <label class="btn btn-primary rounded-pill px-4 py-2 fw-bold extra-small shadow-sm cursor-pointer m-0">
+          <i class="bi bi-folder2-open me-1"></i> Browse Computer
+          <input type="file" class="d-none" accept=".csv" (change)="onFileSelected($event)">
+        </label>
+        <button class="btn btn-light border rounded-pill px-3 py-2 fw-bold extra-small" (click)="triggerSimulatedUpload()">
+          Demo Sample Upload
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview & Validation Screen -->
+  <div *ngIf="isFileUploaded && !isImported">
+    <div class="card border-0 shadow-2xs rounded-4 p-4 mb-4 bg-white">
+      <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-3">
+        <div>
+          <h6 class="fw-bold text-dark mb-0"><i class="bi bi-file-earmark-spreadsheet text-success me-1"></i> {{ fileName }}</h6>
+          <span class="text-muted extra-small">Previewing first 5 rows of 350 student entries</span>
+        </div>
+        <button class="btn btn-sm btn-light border text-danger rounded-pill px-3 py-1 extra-small fw-bold" (click)="resetImport()">
+          <i class="bi bi-trash me-1"></i> Remove File
+        </button>
+      </div>
+
+      <!-- Validation Stats Cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 bg-success-subtle text-success border border-success-subtle d-flex align-items-center justify-content-between">
+            <div><span class="extra-small text-uppercase font-monospace d-block">Valid Rows</span><h4 class="fw-bold mb-0">340 Rows</h4></div>
+            <i class="bi bi-check-circle-fill fs-3"></i>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 bg-warning-subtle text-warning border border-warning-subtle d-flex align-items-center justify-content-between">
+            <div><span class="extra-small text-uppercase font-monospace d-block">Validation Warnings</span><h4 class="fw-bold mb-0">10 Rows</h4></div>
+            <i class="bi bi-exclamation-triangle-fill fs-3"></i>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-3 bg-danger-subtle text-danger border border-danger-subtle d-flex align-items-center justify-content-between">
+            <div><span class="extra-small text-uppercase font-monospace d-block">Critical Errors</span><h4 class="fw-bold mb-0">0 Rows</h4></div>
+            <i class="bi bi-x-circle-fill fs-3"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview Table -->
+      <div class="table-responsive mb-4">
+        <table class="table table-hover align-middle mb-0 extra-small">
+          <thead class="bg-light-subtle font-monospace text-uppercase text-muted">
+            <tr>
+              <th>Roll Number</th>
+              <th>Student Name</th>
+              <th>Email Address</th>
+              <th>Batch</th>
+              <th>Branch</th>
+              <th>Validation Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of previewRows">
+              <td class="font-monospace fw-bold">{{ row.roll }}</td>
+              <td>{{ row.name }}</td>
+              <td>{{ row.email }}</td>
+              <td>{{ row.batch }}</td>
+              <td>{{ row.branch }}</td>
+              <td>
+                <span class="badge rounded-pill px-2.5 py-1 extra-small fw-bold" [ngClass]="row.valid ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'">
+                  {{ row.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Validation Error Details -->
+      <div class="alert alert-warning border-0 rounded-3 p-3 mb-4 extra-small">
+        <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-1"></i> Row Validation Warnings Breakdown:</h6>
+        <ul class="mb-0 ps-3">
+          <li *ngFor="let err of errors">{{ err }}</li>
+        </ul>
+      </div>
+
+      <!-- Actions Bar -->
+      <div class="d-flex align-items-center justify-content-end gap-3">
+        <button class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-bold extra-small" (click)="resetImport()">Abort Import</button>
+        <button class="btn btn-success rounded-pill px-5 py-2 fw-bold extra-small shadow-sm" (click)="confirmImport()">
+          <i class="bi bi-check-lg me-1"></i> Import All Valid (340 Rows)
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

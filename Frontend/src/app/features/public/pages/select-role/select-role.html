@@ -25,45 +25,64 @@
         </p>
       </div>
 
-      <!-- Extended Width Dual Role Cards -->
-      <div class="row g-4 justify-content-center mx-auto" style="max-width: 1140px;">
+      <!-- Extended Width Triple Role Cards -->
+      <div class="row g-4 justify-content-center mx-auto" style="max-width: 1200px;">
 
         <!-- Candidate Card -->
-        <div class="col-md-6">
+        <div class="col-md-4">
           <div
-            class="card card-shadow border-0 h-100 p-4 p-md-5 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
+            class="card card-shadow border-0 h-100 p-4 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
             (click)="selectRole('candidate')">
 
             <span class="point-pill-btn point-pill-primary mx-auto mb-3">FOR JOB SEEKERS & FRESHERS</span>
 
-            <h2 class="h4 fw-bold text-navy mb-3">I'm a Candidate — Get Verified</h2>
+            <h2 class="h5 fw-bold text-navy mb-3">I'm a Candidate — Get Verified</h2>
             <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
               Get your skills invigilated and verified at a partner exam centre. Earn a multi-dimensional Skill Passport
               and get hired on merit.
             </p>
 
-            <button class="btn btn-primary-custom w-100 py-3 fw-bold text-white shadow mt-auto">
+            <button class="btn btn-primary-custom w-100 py-2.5 fw-bold text-white shadow mt-auto">
               Start Candidate Verification &rarr;
             </button>
           </div>
         </div>
 
         <!-- Recruiter Card -->
-        <div class="col-md-6">
+        <div class="col-md-4">
           <div
-            class="card card-shadow border border-primary border-opacity-25 h-100 p-4 p-md-5 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
+            class="card card-shadow border border-primary border-opacity-25 h-100 p-4 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
             (click)="selectRole('recruiter')">
 
             <span class="point-pill-btn point-pill-success mx-auto mb-3">FOR RECRUITERS & AGENCIES</span>
 
-            <h2 class="h4 fw-bold text-navy mb-3">I'm Hiring — Access Verified Talent</h2>
+            <h2 class="h5 fw-bold text-navy mb-3">I'm Hiring — Access Verified Talent</h2>
             <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
               Access pre-verified candidate passports with zero remote proctoring cheating or resume inflation. Hire 2x
               faster.
             </p>
 
-            <button class="btn btn-outline-custom w-100 py-3 fw-bold text-navy mt-auto">
+            <button class="btn btn-outline-custom w-100 py-2.5 fw-bold text-navy mt-auto">
               Continue as Recruiter / Agency &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- College TPO Card -->
+        <div class="col-md-4">
+          <div
+            class="card card-shadow border border-warning border-opacity-50 h-100 p-4 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
+            routerLink="/college/dashboard">
+
+            <span class="point-pill-btn bg-warning-subtle text-dark border border-warning-subtle mx-auto mb-3">FOR COLLEGES & UNIVERSITIES</span>
+
+            <h2 class="h5 fw-bold text-navy mb-3">College Placement Portal</h2>
+            <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
+              Manage campus students, schedule proctored center assessments, track tier readiness, and connect with recruiting companies.
+            </p>
+
+            <button class="btn btn-warning w-100 py-2.5 fw-bold text-dark mt-auto shadow-sm">
+              Open College Portal &rarr;
             </button>
           </div>
         </div>

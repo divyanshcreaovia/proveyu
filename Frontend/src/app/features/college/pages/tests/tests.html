@@ -1,0 +1,629 @@
+<div class="tests-page container-fluid p-0">
+
+  <!-- Toast Notification Alert -->
+  <div *ngIf="toastMessage"
+    class="toast-alert-floating shadow-lg rounded-4 p-3 bg-dark text-white d-flex align-items-center gap-3">
+    <div
+      class="toast-icon bg-primary-subtle text-primary rounded-circle p-2 d-flex align-items-center justify-content-center">
+      <i class="bi bi-info-circle-fill fs-5"></i>
+    </div>
+    <div class="flex-grow-1">
+      <div class="fw-bold extra-small text-uppercase tracking-wider text-light opacity-75">Notification</div>
+      <div class="small text-white">{{ toastMessage }}</div>
+    </div>
+    <button type="button" class="btn-close btn-close-white ms-auto" (click)="toastMessage = null"></button>
+  </div>
+
+  <!-- =================================================================================== -->
+  <!-- SCREEN 1: TEST LIST OVERVIEW (COMPLETED ASSESSMENTS) -->
+  <!-- =================================================================================== -->
+  <div *ngIf="currentView === 'list'">
+
+    <!-- Welcome Banner Card (Executive Theme) -->
+    <div class="welcome-banner-card mb-4">
+      <div class="banner-content">
+        <div class="banner-text">
+          <h2 class="welcome-title">Proctored Assessment History</h2>
+          <p class="welcome-subtitle">
+            Overview & diagnostic breakdown of proctored offline evaluations completed by candidates across ProveYu
+            physical test centers.
+          </p>
+        </div>
+        <div class="banner-actions" style="min-width: 320px;">
+          <div class="search-input-box">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" [(ngModel)]="searchQuery" placeholder="Search tests by title or venue..."
+              class="form-control">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test Cards Grid -->
+    <div class="row g-4">
+      <div class="col-lg-6" *ngFor="let t of getFilteredTests()">
+        <div
+          class="card border-0 shadow-2xs rounded-4 p-4 bg-white h-100 transition-all hover-translate position-relative">
+
+          <!-- Card Header & Badge -->
+          <div class="d-flex align-items-start justify-content-between mb-3 border-bottom pb-3">
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                <h5 class="fw-bold text-dark mb-0 fs-6">{{ t.title }}</h5>
+                <span
+                  class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 extra-small fw-bold border border-success-subtle">
+                  <i class="bi bi-check-circle-fill me-1"></i> Completed
+                </span>
+              </div>
+
+              <div class="d-flex align-items-center gap-3 text-muted extra-small mt-2">
+                <span><i class="bi bi-key-fill text-primary me-1"></i>Key: <code
+                    class="text-dark fw-bold">{{ t.testKey }}</code></span>
+                <span><i class="bi bi-calendar3 me-1"></i>Date: {{ t.date }} ({{ t.startTime }})</span>
+              </div>
+            </div>
+
+            <!-- Top Right Chevron Button -->
+            <button (click)="viewTestDetail(t)" class="btn btn-action-circle ms-2" title="View Details">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Meta Logistics Info Row -->
+          <div
+            class="bg-light-subtle rounded-3 p-3 mb-3.5 border extra-small text-muted d-flex align-items-center justify-content-between flex-wrap gap-2.5">
+            <div><i class="bi bi-geo-alt text-danger me-1"></i><strong>Venue:</strong> {{ t.venue }}</div>
+            <div><i class="bi bi-clock me-1 text-primary"></i><strong>Duration:</strong> {{ t.durationMinutes }} mins
+            </div>
+            <div><i class="bi bi-people me-1 text-success"></i><strong>Batches:</strong> {{ t.eligibleBatches.join(', ')
+              }}</div>
+          </div>
+
+          <!-- Stat Strip -->
+          <div class="row g-2 text-center p-3 bg-light rounded-3 mb-3 border">
+            <div class="col-3 border-end">
+              <span class="d-block extra-small text-muted">Registered</span>
+              <strong class="text-dark fs-6 font-monospace">{{ t.totalRegistered }}</strong>
+            </div>
+            <div class="col-3 border-end">
+              <span class="d-block extra-small text-muted">Attended</span>
+              <strong class="text-primary fs-6 font-monospace">{{ t.totalAttended }}</strong>
+            </div>
+            <div class="col-3 border-end">
+              <span class="d-block extra-small text-muted">Pass Rate</span>
+              <strong class="text-success fs-6 font-monospace">{{ getTestPassRate(t.id) }}%</strong>
+            </div>
+            <div class="col-3">
+              <span class="d-block extra-small text-muted">Avg Score</span>
+              <strong class="text-dark fs-6 font-monospace">{{ getTestAvgScore(t.id) }}</strong>
+            </div>
+          </div>
+
+          <!-- Footer Action Bar -->
+          <div class="d-flex align-items-center justify-content-between pt-2">
+            <span class="extra-small text-muted">
+              <i class="bi bi-shield-check text-success me-1"></i>Admin Verified & Published
+            </span>
+            <button (click)="viewTestDetail(t)" class="btn btn-primary-custom">
+              <span>View Details</span>
+              <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="getFilteredTests().length === 0" class="text-center py-5 bg-white rounded-4 shadow-2xs border my-4">
+      <i class="bi bi-journal-x fs-1 text-muted d-block mb-2"></i>
+      <h5 class="fw-bold text-dark mb-1">No Completed Tests Found</h5>
+      <p class="text-muted small mb-3">No test results match your search query.</p>
+      <button (click)="searchQuery = ''" class="btn btn-outline-dark rounded-pill px-4 py-2 extra-small fw-bold">
+        Reset Search
+      </button>
+    </div>
+
+  </div>
+
+
+  <!-- =================================================================================== -->
+  <!-- SCREEN 2: TEST DETAIL DRILL-DOWN (DRILL-DOWN OVERVIEW) -->
+  <!-- =================================================================================== -->
+  <div *ngIf="currentView === 'detail' && activeTest">
+
+    <!-- Top Navigation Header Card -->
+    <div class="welcome-banner-card mb-4">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <button (click)="backToList()" class="btn btn-action-circle" title="Back to Tests">
+            <i class="bi bi-arrow-left"></i>
+          </button>
+          <div>
+            <h4 class="welcome-title mb-1">{{ activeTest.title }}</h4>
+            <p class="welcome-subtitle mb-0">Detailed diagnostic metrics, score breakdown, and candidate tier placement.
+            </p>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <button (click)="exportFilteredResults()" class="btn btn-outline-custom">
+            <i class="bi bi-download me-1"></i> Export (Excel/PDF)
+          </button>
+          <button (click)="openSendFacultyModal()" class="btn btn-primary-custom">
+            <i class="bi bi-send-fill me-1"></i> Send to Training Team
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- A. Header Band -->
+    <div class="card border-0 shadow-2xs rounded-4 p-4 bg-white mb-4">
+      <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 border-bottom pb-3 mb-3">
+        <div>
+          <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+            <h4 class="fw-bold text-dark mb-0 fs-5">{{ activeTest.title }}</h4>
+            <span
+              class="badge bg-success-subtle text-success rounded-pill px-3 py-1 extra-small fw-bold border border-success-subtle">
+              <i class="bi bi-check-circle-fill me-1"></i> Completed
+            </span>
+          </div>
+
+          <div class="d-flex align-items-center gap-3 text-muted extra-small mt-2 flex-wrap">
+            <span><i class="bi bi-key-fill text-primary me-1"></i>Key: <code
+                class="text-dark fw-bold">{{ activeTest.testKey }}</code></span>
+            <span><i class="bi bi-calendar3 me-1"></i>Date: <strong>{{ activeTest.date }} ({{ activeTest.startTime
+                }})</strong></span>
+            <span><i class="bi bi-geo-alt-fill text-danger me-1"></i>Venue: <strong>{{ activeTest.venue
+                }}</strong></span>
+            <span><i class="bi bi-clock me-1 text-primary"></i>Duration: <strong>{{ activeTest.durationMinutes }}
+                mins</strong></span>
+          </div>
+        </div>
+
+        <div class="bg-light-subtle px-3.5 py-2.5 rounded-3 text-end extra-small">
+          <div class="text-muted mb-0.5">Invigilators</div>
+          <div class="fw-bold text-dark">{{ activeTest.invigilators.join(', ') }}</div>
+        </div>
+      </div>
+
+      <!-- Metric Tiles Row (6 Stat Tiles) -->
+      <div class="row g-3">
+        <div class="col-6 col-md-2">
+          <div class="p-3 bg-light rounded-3 border text-center">
+            <div class="extra-small text-muted mb-1">Total Registered</div>
+            <div class="fs-5 fw-bold text-dark font-monospace">{{ totalRegisteredCount }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="p-3 bg-light rounded-3 border text-center">
+            <div class="extra-small text-muted mb-1">Attended</div>
+            <div class="fs-5 fw-bold text-primary font-monospace">{{ totalAttendedCount }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="p-3 bg-light rounded-3 border text-center">
+            <div class="extra-small text-muted mb-1">Absent</div>
+            <div class="fs-5 fw-bold text-secondary font-monospace">{{ totalAbsentCount }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="p-3 bg-light rounded-3 border text-center">
+            <div class="extra-small text-muted mb-1">Pass Rate</div>
+            <div class="fs-5 fw-bold text-success font-monospace">{{ detailPassRate }}%</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="p-3 bg-light rounded-3 border text-center">
+            <div class="extra-small text-muted mb-1">Avg Score</div>
+            <div class="fs-5 fw-bold text-dark font-monospace">{{ detailAvgScore }} / 90</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="p-3 bg-light rounded-3 border text-center">
+            <div class="extra-small text-muted mb-1">Median / Max</div>
+            <div class="fs-6 fw-bold text-dark font-monospace">{{ detailMedianScore }} / {{ detailHighestScore }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- B. Tier Distribution & Training Chip Section -->
+    <div class="row g-3 mb-4">
+
+      <!-- Tier 1 Tile -->
+      <div class="col-md-3">
+        <div (click)="filterByTier('Tier 1')"
+          class="card border-0 shadow-2xs rounded-4 p-3 bg-white transition-all cursor-pointer h-100 tier-tile-card"
+          [ngClass]="{'active-tier-select border-success': selectedResultTierFilter === 'Tier 1'}">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 extra-small fw-bold">Tier 1
+              Candidates</span>
+            <i class="bi bi-award-fill text-success fs-5"></i>
+          </div>
+          <div class="d-flex align-items-baseline gap-2">
+            <span class="fs-3 fw-bold text-dark font-monospace">{{ tier1Count }}</span>
+            <span class="text-muted extra-small">({{ tier1Percentage }}% of test takers)</span>
+          </div>
+          <p class="text-muted extra-small mb-0 mt-1">Score &ge; {{ activeTest.tier1Cutoff }} marks (High Ready)</p>
+        </div>
+      </div>
+
+      <!-- Tier 2 Tile -->
+      <div class="col-md-3">
+        <div (click)="filterByTier('Tier 2')"
+          class="card border-0 shadow-2xs rounded-4 p-3 bg-white transition-all cursor-pointer h-100 tier-tile-card"
+          [ngClass]="{'active-tier-select border-primary': selectedResultTierFilter === 'Tier 2'}">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge bg-primary-subtle text-primary rounded-pill px-2.5 py-1 extra-small fw-bold">Tier 2
+              Candidates</span>
+            <i class="bi bi-shield-check text-primary fs-5"></i>
+          </div>
+          <div class="d-flex align-items-baseline gap-2">
+            <span class="fs-3 fw-bold text-dark font-monospace">{{ tier2Count }}</span>
+            <span class="text-muted extra-small">({{ tier2Percentage }}% of test takers)</span>
+          </div>
+          <p class="text-muted extra-small mb-0 mt-1">Score {{ activeTest.tier2Cutoff }} - {{ activeTest.tier1Cutoff - 1
+            }} (Moderate Ready)</p>
+        </div>
+      </div>
+
+      <!-- Tier 3 Tile -->
+      <div class="col-md-3">
+        <div (click)="filterByTier('Tier 3')"
+          class="card border-0 shadow-2xs rounded-4 p-3 bg-white transition-all cursor-pointer h-100 tier-tile-card"
+          [ngClass]="{'active-tier-select border-danger': selectedResultTierFilter === 'Tier 3'}">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge bg-danger-subtle text-danger rounded-pill px-2.5 py-1 extra-small fw-bold">Tier 3
+              Candidates</span>
+            <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+          </div>
+          <div class="d-flex align-items-baseline gap-2">
+            <span class="fs-3 fw-bold text-dark font-monospace">{{ tier3Count }}</span>
+            <span class="text-muted extra-small">({{ tier3Percentage }}% of test takers)</span>
+          </div>
+          <p class="text-muted extra-small mb-0 mt-1">Score &lt; {{ activeTest.tier2Cutoff }} marks (Needs Training)</p>
+        </div>
+      </div>
+
+      <!-- Quick Action Filter: "Needs Training Only" -->
+      <div class="col-md-3">
+        <div (click)="toggleNeedsTrainingFilter()"
+          class="card border-0 shadow-2xs rounded-4 p-3 transition-all cursor-pointer h-100 border-warning"
+          [ngClass]="onlyNeedsTrainingFilter ? 'bg-dark text-white' : 'bg-warning-subtle text-dark'">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="badge bg-warning text-dark rounded-pill px-2.5 py-1 extra-small fw-bold">Action Needed</span>
+            <i class="bi bi-lightning-charge-fill text-warning fs-5"></i>
+          </div>
+          <div class="d-flex align-items-baseline gap-2">
+            <span class="fs-3 fw-bold font-monospace"
+              [ngClass]="onlyNeedsTrainingFilter ? 'text-warning' : 'text-dark'">{{ needsTrainingCount }}</span>
+            <span class="extra-small" [ngClass]="onlyNeedsTrainingFilter ? 'text-white-50' : 'text-muted'">Students
+              Flagged</span>
+          </div>
+          <p class="extra-small mb-0 mt-1 fw-bold" [ngClass]="onlyNeedsTrainingFilter ? 'text-warning' : 'text-dark'">
+            <i class="bi bi-filter me-1"></i>{{ onlyNeedsTrainingFilter ? 'Showing Needs Training Subset' : 'Click to
+            filter Needing Training (' + needsTrainingCount + ')' }}
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- C. Section-Wise Performance Mini Bar Visual -->
+    <div class="card border-0 shadow-2xs rounded-4 p-4 bg-white mb-4">
+      <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+        <h6 class="fw-bold text-dark mb-0 fs-6">Section-Wise Performance Breakdown</h6>
+        <span class="extra-small text-muted">Average score per section against max capacity (30 marks each)</span>
+      </div>
+
+      <div class="row g-4">
+        <!-- Coding Section Bar -->
+        <div class="col-md-4">
+          <div class="p-3 bg-light rounded-3 border">
+            <div class="d-flex justify-content-between extra-small font-monospace mb-1">
+              <span class="fw-bold text-dark"><i class="bi bi-code-slash me-1 text-primary"></i>Coding Section</span>
+              <span class="fw-bold text-primary">{{ sectionAvgCoding }} / 30</span>
+            </div>
+            <div class="progress rounded-pill mb-2" style="height: 10px;">
+              <div class="progress-bar bg-primary" [style.width.%]="(sectionAvgCoding / 30) * 100"></div>
+            </div>
+            <div class="d-flex justify-content-between extra-small text-muted">
+              <span>Avg: {{ sectionAvgCoding }} marks</span>
+              <span>Pass Ratio: 82%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aptitude Section Bar -->
+        <div class="col-md-4">
+          <div class="p-3 bg-light rounded-3 border">
+            <div class="d-flex justify-content-between extra-small font-monospace mb-1">
+              <span class="fw-bold text-dark"><i class="bi bi-calculator me-1 text-success"></i>Aptitude Section</span>
+              <span class="fw-bold text-success">{{ sectionAvgAptitude }} / 30</span>
+            </div>
+            <div class="progress rounded-pill mb-2" style="height: 10px;">
+              <div class="progress-bar bg-success" [style.width.%]="(sectionAvgAptitude / 30) * 100"></div>
+            </div>
+            <div class="d-flex justify-content-between extra-small text-muted">
+              <span>Avg: {{ sectionAvgAptitude }} marks</span>
+              <span>Pass Ratio: 74%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Communication Section Bar -->
+        <div class="col-md-4">
+          <div class="p-3 bg-light rounded-3 border">
+            <div class="d-flex justify-content-between extra-small font-monospace mb-1">
+              <span class="fw-bold text-dark"><i class="bi bi-chat-quote me-1 text-info"></i>Communication
+                Section</span>
+              <span class="fw-bold text-info">{{ sectionAvgComm }} / 30</span>
+            </div>
+            <div class="progress rounded-pill mb-2" style="height: 10px;">
+              <div class="progress-bar bg-info" [style.width.%]="(sectionAvgComm / 30) * 100"></div>
+            </div>
+            <div class="d-flex justify-content-between extra-small text-muted">
+              <span>Avg: {{ sectionAvgComm }} marks</span>
+              <span>Pass Ratio: 88%</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- D. Full Student Results Table (Executive Minimal Theme) -->
+    <div class="dashboard-card p-0 overflow-hidden mb-4">
+
+      <!-- Table Header & Filter Toolbar -->
+      <div class="filter-toolbar-card border-0 border-bottom rounded-0 p-3 mb-0">
+        <div class="row g-2 align-items-center">
+
+          <!-- Search input -->
+          <div class="col-md-3">
+            <div class="search-input-box">
+              <i class="bi bi-search search-icon"></i>
+              <input type="text" [(ngModel)]="resultSearchQuery" placeholder="Search candidate by name / roll..."
+                class="form-control" style="height: 38px; font-size: 0.8rem;">
+            </div>
+          </div>
+
+          <!-- Pass/Fail Filter -->
+          <div class="col-6 col-md-2">
+            <select [(ngModel)]="selectedPassFailFilter" class="form-select filter-select"
+              style="height: 38px; font-size: 0.8rem;">
+              <option value="All">All Results (Pass/Fail)</option>
+              <option value="Pass">Pass Only</option>
+              <option value="Fail">Fail Only</option>
+            </select>
+          </div>
+
+          <!-- Tier Filter -->
+          <div class="col-6 col-md-2">
+            <select [(ngModel)]="selectedResultTierFilter" class="form-select filter-select"
+              style="height: 38px; font-size: 0.8rem;">
+              <option value="All">All Tiers</option>
+              <option value="Tier 1">Tier 1</option>
+              <option value="Tier 2">Tier 2</option>
+              <option value="Tier 3">Tier 3</option>
+            </select>
+          </div>
+
+          <!-- Placement Status Filter -->
+          <div class="col-6 col-md-2">
+            <select [(ngModel)]="selectedPlacementStatusFilter" class="form-select filter-select"
+              style="height: 38px; font-size: 0.8rem;">
+              <option value="All">All Placement Status</option>
+              <option value="Placed">Placed</option>
+              <option value="Unplaced">Unplaced</option>
+            </select>
+          </div>
+
+          <!-- Listed on Platform Filter -->
+          <div class="col-6 col-md-3 text-end">
+            <select [(ngModel)]="selectedListedFilter" class="form-select filter-select d-inline-block w-auto"
+              style="height: 38px; font-size: 0.8rem;">
+              <option value="All">All Passport Status</option>
+              <option value="Yes">Passport Published</option>
+              <option value="No">Passport Not Published</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Table Body -->
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th class="ps-4">Roll Number</th>
+              <th>Student Name & Branch</th>
+              <th class="text-center">Overall Score</th>
+              <th class="text-center">ProveYu Tier</th>
+              <th class="text-center">Result</th>
+              <th>Section Breakdown</th>
+              <th class="text-center">Passport Live</th>
+              <th class="text-center">Shortlists</th>
+              <th class="text-center">Placement</th>
+              <th class="pe-4 text-center">Training Flag</th>
+            </tr>
+          </thead>
+          <tbody class="small">
+            <tr *ngFor="let r of filteredActiveResults"
+              [ngClass]="{'bg-warning-subtle': r.needsTraining && onlyNeedsTrainingFilter}">
+
+              <!-- Roll No -->
+              <td class="ps-4 font-monospace fw-bold text-dark">{{ r.rollNumber }}</td>
+
+              <!-- Name & Branch -->
+              <td>
+                <div class="d-flex align-items-center gap-2.5">
+                  <div
+                    class="avatar rounded-circle fw-bold d-flex align-items-center justify-content-center flex-shrink-0"
+                    style="width: 34px; height: 34px; font-size: 0.75rem;">
+                    {{ r.name.substring(0, 2).toUpperCase() }}
+                  </div>
+                  <div>
+                    <span class="fw-bold text-dark d-block mb-0.5">{{ r.name }}</span>
+                    <span class="text-muted extra-small" style="font-size: 0.75rem;">{{ r.branch }} &bull; {{ r.email
+                      }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Overall Score -->
+              <td class="text-center font-monospace fs-6 fw-bold text-dark">{{ r.overallScore }} <span
+                  class="text-muted extra-small fw-normal">/ 90</span></td>
+
+              <!-- Tier -->
+              <td class="text-center">
+                <span *ngIf="r.tier === 'Tier 1'"
+                  class="badge rounded-pill px-3 py-1 extra-small fw-bold bg-success-subtle text-success border border-success-subtle">Tier
+                  1</span>
+                <span *ngIf="r.tier === 'Tier 2'"
+                  class="badge rounded-pill px-3 py-1 extra-small fw-bold bg-primary-subtle text-primary border border-primary-subtle">Tier
+                  2</span>
+                <span *ngIf="r.tier === 'Tier 3'"
+                  class="badge rounded-pill px-3 py-1 extra-small fw-bold bg-danger-subtle text-danger border border-danger-subtle">Tier
+                  3</span>
+              </td>
+
+              <!-- Pass/Fail (Subtle minimal style) -->
+              <td class="text-center">
+                <span *ngIf="r.passFail === 'Pass'"
+                  class="badge rounded-pill px-3 py-1 extra-small fw-bold bg-success-subtle text-success border border-success-subtle">Pass</span>
+                <span *ngIf="r.passFail === 'Fail'"
+                  class="badge rounded-pill px-3 py-1 extra-small fw-bold bg-danger-subtle text-danger border border-danger-subtle">Fail</span>
+              </td>
+
+              <!-- Section Breakdown -->
+              <td>
+                <div class="d-flex align-items-center gap-1 font-monospace extra-small">
+                  <span class="badge bg-light text-dark border px-2 py-0.5" style="font-size: 0.7rem;">Coding: {{
+                    r.sectionScores['Coding'] }}</span>
+                  <span class="badge bg-light text-dark border px-2 py-0.5" style="font-size: 0.7rem;">Apt: {{
+                    r.sectionScores['Aptitude'] }}</span>
+                  <span class="badge bg-light text-dark border px-2 py-0.5" style="font-size: 0.7rem;">Comm: {{
+                    r.sectionScores['Communication'] }}</span>
+                </div>
+              </td>
+
+              <!-- Listed on Platform (Passport Signal) -->
+              <td class="text-center">
+                <span *ngIf="r.listedOnPlatform"
+                  class="badge rounded-pill px-2.5 py-1 extra-small fw-bold bg-success-subtle text-success border border-success-subtle">
+                  <i class="bi bi-check-circle-fill me-1"></i> Live
+                </span>
+                <span *ngIf="!r.listedOnPlatform"
+                  class="badge rounded-pill px-2.5 py-1 extra-small bg-secondary-subtle text-secondary border border-secondary-subtle">
+                  Not Listed
+                </span>
+              </td>
+
+              <!-- Shortlisted By Companies -->
+              <td class="text-center">
+                <span
+                  class="badge rounded-pill px-2.5 py-1 extra-small fw-bold bg-light-subtle text-dark border font-monospace">
+                  {{ r.shortlistedByCompanies }} Companies
+                </span>
+              </td>
+
+              <!-- Placement Status -->
+              <td class="text-center">
+                <span *ngIf="r.placementStatus === 'Placed'"
+                  class="badge rounded-pill px-3 py-1 extra-small fw-bold bg-success-subtle text-success border border-success-subtle">Placed</span>
+                <span *ngIf="r.placementStatus === 'Unplaced'"
+                  class="badge rounded-pill px-3 py-1 extra-small bg-secondary-subtle text-muted border border-secondary-subtle">Unplaced</span>
+              </td>
+
+              <!-- Training Flag & Tooltip -->
+              <td class="pe-4 text-center">
+                <span *ngIf="r.needsTraining"
+                  class="badge rounded-pill px-3 py-1 extra-small fw-bold bg-danger-subtle text-danger border border-danger-subtle cursor-pointer"
+                  [title]="r.trainingReason || 'Needs Remedial Training'">
+                  <i class="bi bi-exclamation-triangle-fill me-1"></i> Flagged
+                </span>
+                <span *ngIf="!r.needsTraining"
+                  class="badge rounded-pill px-2.5 py-1 extra-small bg-light-subtle text-muted border">
+                  Satisfactory
+                </span>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Table Footer Summary -->
+      <div class="p-3 bg-white border-top d-flex align-items-center justify-content-between extra-small text-muted">
+        <div>Showing <strong>{{ filteredActiveResults.length }}</strong> of <strong>{{ activeResults.length }}</strong>
+          candidate records</div>
+        <div class="d-flex align-items-center gap-2">
+          <button (click)="exportFilteredResults()" class="btn btn-outline-custom">
+            <i class="bi bi-file-earmark-excel me-1"></i> Export Filtered Results
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =================================================================================== -->
+  <!-- MODAL: SEND TO TRAINING TEAM FACULTY NOTIFICATION -->
+  <!-- =================================================================================== -->
+  <div *ngIf="showSendFacultyModal" class="modal-backdrop-custom d-flex align-items-center justify-content-center">
+    <div class="modal-card-custom bg-white rounded-4 shadow-lg p-4 border" style="max-width: 550px; width: 92%;">
+
+      <!-- Modal Header -->
+      <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+        <div>
+          <h5 class="fw-bold text-dark mb-0 fs-6">Send to Training Team</h5>
+          <p class="text-muted extra-small mb-0">Dispatch candidate diagnostic report to training faculty.</p>
+        </div>
+        <button (click)="closeSendFacultyModal()" class="btn-close"></button>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label extra-small text-muted fw-bold">Training Faculty Recipient Email</label>
+        <input type="email" [(ngModel)]="facultyForm.email" class="form-control form-control-sm">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label extra-small text-muted fw-bold">Subject Line</label>
+        <input type="text" [(ngModel)]="facultyForm.subject" class="form-control form-control-sm">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label extra-small text-muted fw-bold">Instructions & Notes</label>
+        <textarea [(ngModel)]="facultyForm.notes" rows="3" class="form-control form-control-sm"></textarea>
+      </div>
+
+      <!-- Attached candidates summary badge -->
+      <div class="p-3 bg-light rounded-3 border mb-4 extra-small d-flex align-items-center justify-content-between">
+        <span class="text-muted"><i class="bi bi-paperclip me-1 text-primary"></i>Attached Candidate Subset:</span>
+        <span class="badge bg-dark text-white rounded-pill px-3 py-1 font-monospace fw-bold">
+          {{ filteredActiveResults.length }} Candidates
+        </span>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="d-flex align-items-center justify-content-end gap-2 border-top pt-3">
+        <button (click)="closeSendFacultyModal()"
+          class="btn btn-outline-secondary rounded-pill px-4 py-2 extra-small fw-bold">Cancel</button>
+        <button (click)="sendFacultyAlert()"
+          class="btn btn-warning rounded-pill px-4 py-2 extra-small fw-bold text-dark shadow-sm">
+          <i class="bi bi-send-fill me-1"></i> Dispatch Training Alert
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

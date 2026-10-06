@@ -1,0 +1,208 @@
+<div class="student-detail-page container-fluid p-0">
+  
+  <!-- Back button & Header Card -->
+  <div class="card border-0 shadow-2xs rounded-4 p-4 mb-4 bg-white">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <a routerLink="/college/students" class="btn btn-action-circle me-1" title="Back to Roster">
+          <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+          <div class="d-flex align-items-center gap-2">
+            <h4 class="fw-bold text-dark mb-0">{{ student.name }}</h4>
+            <span class="badge bg-success text-white rounded-pill px-3 py-1 extra-small fw-bold">✓ {{ student.placementStatus }}</span>
+            <span class="badge badge-tier-1 rounded-pill px-2.5 py-1 extra-small fw-bold">Tier 1</span>
+          </div>
+          <p class="text-muted extra-small mb-0 mt-0.5 font-monospace">
+            Roll: {{ student.roll }} • Branch: {{ student.branch }} • Batch {{ student.batch }}
+          </p>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <a [routerLink]="['/college/students', student.id, 'edit']" class="btn btn-outline-custom">
+          <i class="bi bi-pencil me-1"></i> Edit Student
+        </a>
+        <button class="btn btn-primary-custom">
+          <i class="bi bi-envelope me-1"></i> Send Email
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left Column: Personal, Academic Info & College Drives -->
+    <div class="col-lg-4">
+      <!-- Section 1: Personal Information -->
+      <div class="card border-0 shadow-2xs rounded-4 p-4 mb-4 bg-white">
+        <h6 class="fw-bold text-dark mb-3 text-uppercase font-monospace extra-small border-bottom pb-2">
+          <i class="bi bi-person-badge text-primary me-1"></i> Personal Information
+        </h6>
+        <div class="d-flex flex-column gap-3.5 extra-small py-1">
+          <div><span class="text-muted d-block mb-0.5">Full Name:</span><strong class="text-dark fs-6 d-block">{{ student.name }}</strong></div>
+          <div><span class="text-muted d-block mb-0.5">Email Address:</span><strong class="text-dark d-block">{{ student.email }}</strong></div>
+          <div><span class="text-muted d-block mb-0.5">Phone Number:</span><strong class="text-dark d-block">{{ student.phone }}</strong></div>
+          <div><span class="text-muted d-block mb-0.5">Location:</span><strong class="text-dark d-block">{{ student.location }}</strong></div>
+          <div><span class="text-muted d-block mb-0.5">Date of Birth:</span><strong class="text-dark d-block">{{ student.dob }}</strong></div>
+        </div>
+      </div>
+
+      <!-- Section 2: Educational Background -->
+      <div class="card border-0 shadow-2xs rounded-4 p-4 mb-4 bg-white">
+        <h6 class="fw-bold text-dark mb-3 text-uppercase font-monospace extra-small border-bottom pb-2">
+          <i class="bi bi-mortarboard text-primary me-1"></i> Educational Background
+        </h6>
+        <div class="d-flex flex-column gap-3.5 extra-small py-1">
+          <div><span class="text-muted d-block mb-0.5">College:</span><strong class="text-dark fs-6 d-block">{{ student.college }}</strong></div>
+          <div><span class="text-muted d-block mb-0.5">Degree & Branch:</span><strong class="text-dark d-block">{{ student.degree }} - {{ student.branch }}</strong></div>
+          <div><span class="text-muted d-block mb-0.5">CGPA Score:</span><strong class="text-dark font-monospace d-block">{{ student.cgpa }}</strong></div>
+          <div><span class="text-muted d-block mb-0.5">Expected Graduation:</span><strong class="text-dark d-block">{{ student.gradDate }}</strong></div>
+          <div class="mt-1">
+            <span class="text-muted d-block mb-1.5">Key Skills:</span>
+            <div class="d-flex flex-wrap gap-1.5">
+              <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1" *ngFor="let sk of student.skills">{{ sk }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6A: College Placement Drives & Shortlists (Left Column) -->
+      <div class="card border-0 shadow-2xs rounded-4 p-4 bg-white">
+        <h6 class="fw-bold text-dark mb-3 text-uppercase font-monospace extra-small border-bottom pb-2">
+          <i class="bi bi-mortarboard-fill text-primary me-1"></i> College Drive Opportunities
+        </h6>
+
+        <div class="d-flex flex-column gap-2">
+          <div class="p-2.5 rounded-3 border bg-light-subtle d-flex flex-column gap-1 extra-small" *ngFor="let drv of collegeDrives">
+            <div class="d-flex align-items-center justify-content-between">
+              <span class="fw-bold text-dark">{{ drv.company }}</span>
+            </div>
+            <span class="text-muted extra-small">{{ drv.role }}</span>
+            <div class="mt-1">
+              <span class="badge rounded-pill px-2.5 py-1 extra-small fw-bold {{ drv.badge }}">{{ drv.status }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: ProveYu & Placement Data -->
+    <div class="col-lg-8">
+      <!-- Section 3: ProveYu Verification Banner -->
+      <div class="card border-0 shadow-2xs rounded-4 p-4 mb-4 bg-white">
+        <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+          <h6 class="fw-bold text-dark mb-0 text-uppercase font-monospace extra-small">
+            <i class="bi bi-shield-check text-success me-1"></i> ProveYu Passport & Proctor Verification
+          </h6>
+          <span class="badge bg-success-subtle text-success rounded-pill px-3 py-1 fw-bold extra-small">✓ Physical Lab Verified</span>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-3 text-center border-end">
+            <span class="text-muted extra-small d-block">Assigned Tier</span>
+            <h5 class="fw-bold text-primary mb-0 mt-1">{{ student.tier }}</h5>
+          </div>
+          <div class="col-md-3 text-center border-end">
+            <span class="text-muted extra-small d-block">Passport Score</span>
+            <h5 class="fw-bold text-dark mb-0 mt-1 font-monospace">{{ student.passportScore }}</h5>
+          </div>
+          <div class="col-md-3 text-center border-end">
+            <span class="text-muted extra-small d-block">Campus Rank</span>
+            <h5 class="fw-bold text-dark mb-0 mt-1 font-monospace">{{ student.percentile }}</h5>
+          </div>
+          <div class="col-md-3 text-center">
+            <span class="text-muted extra-small d-block">Proctor Rating</span>
+            <h5 class="fw-bold text-warning mb-0 mt-1">{{ student.proctorRating }}</h5>
+          </div>
+        </div>
+
+        <div class="mt-3 pt-3 border-top d-flex justify-content-end gap-2">
+          <a [routerLink]="['/college/results/students', student.id]" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold extra-small">
+            View Full Passport Breakdown
+          </a>
+        </div>
+      </div>
+
+      <!-- Section 4: Test Evaluation History -->
+      <div class="card border-0 shadow-2xs rounded-4 p-4 mb-4 bg-white">
+        <h6 class="fw-bold text-dark mb-3 text-uppercase font-monospace extra-small border-bottom pb-2">
+          <i class="bi bi-clock-history text-primary me-1"></i> Proctored Test History
+        </h6>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 extra-small">
+            <thead class="bg-light-subtle font-monospace text-uppercase text-muted">
+              <tr>
+                <th>Test Name</th>
+                <th>Evaluation Date</th>
+                <th>Score</th>
+                <th>Coding</th>
+                <th>Aptitude</th>
+                <th>Comm.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of testHistory">
+                <td class="fw-bold text-dark">{{ t.name }}</td>
+                <td>{{ t.date }}</td>
+                <td><span class="badge bg-primary text-white rounded-pill font-monospace px-2 py-0.5">{{ t.score }}</span></td>
+                <td>{{ t.coding }}</td>
+                <td>{{ t.aptitude }}</td>
+                <td>{{ t.comm }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 5: Placement Status -->
+      <div class="card border-0 shadow-2xs rounded-4 p-4 mb-4 bg-white">
+        <h6 class="fw-bold text-dark mb-3 text-uppercase font-monospace extra-small border-bottom pb-2">
+          <i class="bi bi-briefcase text-success me-1"></i> Placement Details
+        </h6>
+
+        <div class="row g-3 extra-small">
+          <div class="col-md-6">
+            <span class="text-muted d-block">Hiring Company:</span>
+            <strong class="text-dark fs-6">{{ student.company }}</strong>
+          </div>
+          <div class="col-md-6">
+            <span class="text-muted d-block">Job Title:</span>
+            <strong class="text-dark fs-6">{{ student.position }}</strong>
+          </div>
+          <div class="col-md-4">
+            <span class="text-muted d-block">Offered CTC:</span>
+            <strong class="text-success font-monospace fs-6">{{ student.ctc }}</strong>
+          </div>
+          <div class="col-md-4">
+            <span class="text-muted d-block">Offer Date:</span>
+            <strong class="text-dark">{{ student.offerDate }}</strong>
+          </div>
+          <div class="col-md-4">
+            <span class="text-muted d-block">Expected Joining:</span>
+            <strong class="text-dark">{{ student.joiningDate }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6B: Recruiter Invites & Matches on ProveYu (Right Column) -->
+      <div class="card border-0 shadow-2xs rounded-4 p-4 bg-white">
+        <h6 class="fw-bold text-dark mb-3 text-uppercase font-monospace extra-small border-bottom pb-2">
+          <i class="bi bi-building-check text-primary me-1"></i> Recruiter Invites & Matches on ProveYu
+        </h6>
+
+        <div class="d-flex flex-column gap-2">
+          <div class="p-3 rounded-3 border bg-light-subtle d-flex align-items-center justify-content-between extra-small" *ngFor="let inv of recruiterInvites">
+            <div>
+              <span class="fw-bold text-dark d-block mb-0.5">{{ inv.company }}</span>
+              <span class="text-muted extra-small">{{ inv.role }}</span>
+            </div>
+            <span class="badge rounded-pill px-3 py-1.5 fw-bold {{ inv.badge }}">{{ inv.status }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

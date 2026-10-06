@@ -1,0 +1,56 @@
+<div class="ticket-form-page container-fluid p-0">
+  
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <a routerLink="/college/support" class="btn btn-sm btn-light rounded-circle p-2 border me-1" title="Back to Help">
+      <i class="bi bi-arrow-left fs-6"></i>
+    </a>
+    <div>
+      <h4 class="hero-title mb-0.5">Submit Support Ticket</h4>
+      <p class="section-subheading mb-0">Submit a query or technical issue to your dedicated ProveYu campus manager.</p>
+    </div>
+  </div>
+
+  <div class="alert alert-success border-0 rounded-4 shadow-xs p-3 mb-4" *ngIf="isSubmitted">
+    <i class="bi bi-check-circle-fill me-2 fs-6"></i>
+    <strong>Ticket #12345 created successfully!</strong> Our campus support team will respond within 4 hours.
+  </div>
+
+  <div class="card border rounded-4 p-4 bg-white" style="max-width: 600px;">
+    <form (ngSubmit)="submitTicket()">
+      <div class="mb-3">
+        <label class="form-label extra-small fw-semibold text-secondary">Subject / Title *</label>
+        <input type="text" class="form-control form-control-sm rounded-3 border" required [(ngModel)]="subject" name="subject" placeholder="Issue with Test 4 score sync...">
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label extra-small fw-semibold text-secondary">Category *</label>
+          <select class="form-select form-select-sm rounded-3 border" [(ngModel)]="category" name="category">
+            <option value="Technical Issue">Technical Issue</option>
+            <option value="Billing & Invoice">Billing & Invoice</option>
+            <option value="Student Data Import">Student Data Import</option>
+            <option value="Other">Other Query</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label extra-small fw-semibold text-secondary">Priority Level</label>
+          <select class="form-select form-select-sm rounded-3 border" [(ngModel)]="priority" name="priority">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Urgent">Urgent</option>
+          </select>
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="form-label extra-small fw-semibold text-secondary">Description *</label>
+        <textarea class="form-control form-control-sm rounded-3 border" rows="4" required [(ngModel)]="description" name="description"></textarea>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2">
+        <a routerLink="/college/support" class="btn btn-outline-pill">Cancel</a>
+        <button type="submit" class="btn btn-dark-pill">Submit Ticket</button>
+      </div>
+    </form>
+  </div>
+
+</div>

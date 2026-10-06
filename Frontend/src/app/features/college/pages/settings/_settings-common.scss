@@ -1,0 +1,177 @@
+/* Shared College Settings Layout, Typography & Components Standardized */
+.college-settings-wrapper {
+  font-family: inherit;
+  background-color: transparent;
+
+  /* Pill Buttons Matching Global College Theme (Dashboard/Students/Results) */
+  .btn-dark-pill {
+    background: #16122b;
+    color: #ffffff;
+    border: 1px solid #16122b;
+    border-radius: 50px;
+    padding: 0.45rem 1.15rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover, &.active {
+      background: #262045;
+      border-color: #262045;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(22, 18, 43, 0.2);
+    }
+
+    &:disabled {
+      background: #94a3b8;
+      border-color: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+  }
+
+  .btn-outline-pill {
+    background: #ffffff;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    border-radius: 50px;
+    padding: 0.45rem 1.15rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+  }
+
+  .btn-outline-custom {
+    background: #ffffff;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    font-size: 0.78rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #16122b;
+      border-color: #16122b;
+      color: #ffffff;
+
+      i {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  /* Standardized Form Elements - compact and polished */
+  .form-label {
+    font-size: 0.76rem !important;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    color: #475569;
+  }
+
+  .form-control,
+  .form-select {
+    border: 1px solid #cbd5e1;
+    background-color: #f8fafc;
+    color: #0f172a;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    padding: 0.48rem 0.75rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: #94a3b8;
+    }
+
+    &:focus {
+      border-color: #16122b;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(22, 18, 43, 0.1);
+      outline: none;
+    }
+  }
+
+  .input-group-text {
+    border: 1px solid #cbd5e1;
+    font-size: 0.8rem;
+    padding: 0.48rem 0.75rem;
+  }
+
+  /* Standardized Typography Sizes (matching rest of app) */
+  .hero-title {
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .section-heading {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+  }
+
+  .section-subheading {
+    font-size: 0.76rem;
+    color: #64748b;
+    margin: 0;
+  }
+
+  .metric-value {
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .metric-label {
+    font-size: 0.68rem;
+    color: #64748b;
+  }
+
+  /* Micro helper fonts */
+  .font-10 { font-size: 0.65rem; }
+  .font-11 { font-size: 0.72rem; }
+  .font-12 { font-size: 0.76rem; }
+  .extra-small { font-size: 0.76rem; }
+
+  .border-start-lg {
+    @media (min-width: 992px) {
+      border-left: 1px solid #e2e8f0;
+    }
+  }
+
+  .tab-fade-in {
+    animation: fadeIn 0.25s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

@@ -29,6 +29,6 @@ export class App implements OnInit {
   }
 
   private checkRoute(url: string) {
-    this.isPortalRoute = url.includes('/candidate') || url.includes('/recruiter');
+    this.isPortalRoute = url.includes('/candidate') || url.includes('/recruiter') || url.includes('/college');
   }
 }

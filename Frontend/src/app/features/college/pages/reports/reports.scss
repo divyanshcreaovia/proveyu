@@ -1,0 +1,223 @@
+.reports-page {
+  min-height: calc(100vh - 70px);
+  background-color: transparent;
+  font-family: inherit;
+
+  /* Welcome Banner Card (Executive Theme) */
+  .welcome-banner-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    color: #0f172a;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+
+    .banner-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+
+      .banner-text {
+        flex: 1;
+        min-width: 300px;
+
+        .welcome-title {
+          font-size: 1.65rem;
+          font-weight: 800;
+          color: #0f172a;
+          margin-bottom: 0.4rem;
+          letter-spacing: -0.02em;
+        }
+
+        .welcome-subtitle {
+          font-size: 0.92rem;
+          color: #64748b;
+          margin: 0;
+          max-width: 720px;
+        }
+      }
+
+      .banner-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+    }
+  }
+
+  /* Custom Buttons */
+  .btn-primary-custom {
+    background: #16122b;
+    border: 1px solid #16122b;
+    color: #ffffff;
+    padding: 0.65rem 1.3rem;
+    border-radius: 50px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      background: #262045;
+      border-color: #262045;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(22, 18, 43, 0.2);
+    }
+  }
+
+  .btn-outline-custom {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
+    padding: 0.55rem 1.15rem;
+    border-radius: 50px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      background: #16122b;
+      border-color: #16122b;
+      color: #ffffff;
+      transform: translateY(-1px);
+
+      i {
+        color: #ffffff !important;
+      }
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  /* Filter Toolbar */
+  .filter-toolbar-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+
+    .search-input-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+
+      .search-icon {
+        position: absolute;
+        left: 14px;
+        color: #64748b;
+        font-size: 0.9rem;
+      }
+
+      .filter-input {
+        padding-left: 2.3rem;
+        height: 38px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        font-size: 0.85rem;
+        background: #f8fafc;
+        transition: all 0.2s;
+
+        &:focus {
+          background: #ffffff;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+      }
+    }
+
+    .filter-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .filter-select {
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      font-size: 0.85rem;
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-weight: 600;
+      padding: 0.35rem 2rem 0.35rem 0.85rem;
+      cursor: pointer;
+
+      &:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+    }
+  }
+
+  /* Report Card Design */
+  .report-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+    transition: all 0.25s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      border-color: #cbd5e1;
+    }
+
+    .report-icon-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      flex-shrink: 0;
+    }
+
+    .report-category-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .report-card-footer {
+      border-color: #f1f5f9 !important;
+    }
+  }
+
+  /* Spinner Animation */
+  .spin {
+    display: inline-block;
+    animation: rotate 1s linear infinite;
+  }
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

@@ -1,0 +1,434 @@
+<div class="college-profile-page container-fluid p-0">
+
+  <!-- Toast Notification Overlay -->
+  <div class="toast-notification position-fixed bottom-0 end-0 p-3 z-3" *ngIf="toastMessage">
+    <div class="alert alert-dark rounded-4 shadow-lg border-0 d-flex align-items-center gap-3 text-white px-4 py-3 mb-0" role="alert">
+      <i class="bi bi-check-circle-fill text-success fs-5"></i>
+      <span class="fw-semibold">{{ toastMessage }}</span>
+    </div>
+  </div>
+
+
+
+  <!-- Profile Hero / Header Card -->
+  <div class="profile-hero-card mb-4">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7 d-flex align-items-center gap-4">
+        <!-- Logo with camera badge -->
+        <div class="college-logo-wrapper flex-shrink-0">
+          <div class="logo-box">
+            <img [src]="profile.logo" [alt]="profile.collegeName" (error)="onLogoError($event)">
+          </div>
+          <button class="btn btn-logo-edit" title="Upload Official Crest / Logo">
+            <i class="bi bi-camera-fill"></i>
+          </button>
+        </div>
+
+        <!-- Title & Badges -->
+        <div>
+          <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+            <h4 class="hero-title mb-0">{{ profile.collegeName }}</h4>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-0.5 font-monospace font-11">
+              {{ profile.shortCode }}
+            </span>
+          </div>
+
+          <div class="text-secondary extra-small mb-1.5 d-flex align-items-center flex-wrap gap-2">
+            <span><i class="bi bi-shield-check text-success me-1"></i> {{ profile.naacGrade }}</span>
+            <span class="text-muted">•</span>
+            <span><i class="bi bi-award text-purple me-1"></i> {{ profile.affiliation }}</span>
+            <span class="text-muted">•</span>
+            <span><i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ profile.city }}, {{ profile.state }}</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-3">
+            <a [href]="profile.website" target="_blank" class="text-decoration-none extra-small fw-semibold text-primary d-inline-flex align-items-center gap-1">
+              <i class="bi bi-globe2"></i> {{ profile.website }}
+              <i class="bi bi-box-arrow-up-right font-10"></i>
+            </a>
+            <span class="text-muted font-11 font-monospace">AISHE: {{ profile.aisheCode }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Institutional Verification & Metric Card -->
+      <div class="col-lg-5 border-start-lg ps-lg-4">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fw-bold text-dark font-11 text-uppercase font-monospace">Profile Health</span>
+          <span class="fw-bold text-success font-monospace font-11">{{ profileCompletionScore }}% Completed</span>
+        </div>
+        <div class="progress rounded-pill bg-light" style="height: 6px;">
+          <div class="progress-bar bg-success rounded-pill" role="progressbar" [style.width]="profileCompletionScore + '%'"></div>
+        </div>
+
+        <div class="row g-2 mt-2 pt-1 text-center">
+          <div class="col-4">
+            <div class="p-2 rounded-3 bg-light border">
+              <div class="metric-value text-dark font-monospace">{{ profile.enrolledInProveYu }}</div>
+              <div class="metric-label">Tested Students</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="p-2 rounded-3 bg-light border">
+              <div class="metric-value text-success font-monospace">{{ profile.placementRate }}%</div>
+              <div class="metric-label">Placement Rate</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="p-2 rounded-3 bg-light border">
+              <div class="metric-value text-primary font-monospace">{{ profile.highestCtc }}</div>
+              <div class="metric-label">Highest CTC</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Content Container Card with Clean Nav Tabs -->
+  <div class="profile-tabs-card">
+    <div class="tabs-header-bar px-4 pt-3 border-bottom">
+      <ul class="nav nav-tabs border-0 gap-4">
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'institution'" (click)="activeTab = 'institution'">
+            <i class="bi bi-building me-1.5"></i> Institutional Details
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'tpo'" (click)="activeTab = 'tpo'">
+            <i class="bi bi-person-badge me-1.5"></i> Placement Cell (TPO)
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'departments'" (click)="activeTab = 'departments'">
+            <i class="bi bi-diagram-3 me-1.5"></i> Departments & Co-ordinators
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'accreditation'" (click)="activeTab = 'accreditation'">
+            <i class="bi bi-patch-check me-1.5"></i> Accreditation & Ranking
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'branding'" (click)="activeTab = 'branding'">
+            <i class="bi bi-palette me-1.5"></i> Domain & Custom Branding
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="p-4 p-md-5">
+
+      <!-- TAB 1: Institutional Details -->
+      <div *ngIf="activeTab === 'institution'" class="tab-fade-in">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h5 class="section-heading mb-0.5">Institutional Information</h5>
+            <p class="section-subheading mb-0">Official registration, affiliation, and campus headquarters data</p>
+          </div>
+          <span class="badge bg-light text-secondary border font-monospace extra-small">ID: {{ profile.shortCode }}</span>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <div class="col-md-8">
+            <label class="form-label extra-small fw-bold text-secondary">Full Institutional Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="profile.collegeName">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label extra-small fw-bold text-secondary">College Short Code / Acronym <span class="text-danger">*</span></label>
+            <input type="text" class="form-control font-monospace" [(ngModel)]="profile.shortCode">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label extra-small fw-bold text-secondary">University Affiliation & Approvals</label>
+            <input type="text" class="form-control" [(ngModel)]="profile.affiliation">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label extra-small fw-bold text-secondary">Year of Establishment</label>
+            <input type="number" class="form-control" [(ngModel)]="profile.establishedYear">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label extra-small fw-bold text-secondary">AISHE / NIRF Code</label>
+            <input type="text" class="form-control font-monospace" [(ngModel)]="profile.aisheCode">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label extra-small fw-bold text-secondary">Official Website URL</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-link-45deg"></i></span>
+              <input type="url" class="form-control border-start-0" [(ngModel)]="profile.website">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label extra-small fw-bold text-secondary">General Enquiries Email</label>
+            <input type="email" class="form-control" [(ngModel)]="profile.contactEmail">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label extra-small fw-bold text-secondary">Board Line Telephone</label>
+            <input type="tel" class="form-control" [(ngModel)]="profile.contactPhone">
+          </div>
+
+          <div class="col-12">
+            <label class="form-label extra-small fw-bold text-secondary">Campus Address Line</label>
+            <input type="text" class="form-control" [(ngModel)]="profile.addressLine">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label extra-small fw-bold text-secondary">City</label>
+            <input type="text" class="form-control" [(ngModel)]="profile.city">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label extra-small fw-bold text-secondary">State / Province</label>
+            <input type="text" class="form-control" [(ngModel)]="profile.state">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label extra-small fw-bold text-secondary">Postal Pincode</label>
+            <input type="text" class="form-control font-monospace" [(ngModel)]="profile.pincode">
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: Training & Placement Cell (TPO) -->
+      <div *ngIf="activeTab === 'tpo'" class="tab-fade-in">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h5 class="fw-bold text-dark mb-1 fs-6">Placement Cell Leadership (Head TPO)</h5>
+            <p class="text-muted extra-small mb-0">Primary point of contact for corporate recruiters and ProveYu campus desk</p>
+          </div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle extra-small fw-bold">Active Primary Admin</span>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <label class="form-label extra-small fw-bold text-secondary">Head TPO Full Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="profile.tpoName">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label extra-small fw-bold text-secondary">Designation / Role Title <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="profile.tpoDesignation">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label extra-small fw-bold text-secondary">Official TPO Email Address <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-envelope-at"></i></span>
+              <input type="email" class="form-control border-start-0" [(ngModel)]="profile.tpoEmail">
+            </div>
+            <span class="text-muted font-11 mt-1 d-block">All corporate shortlist notifications and dossiers will be dispatched here.</span>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label extra-small fw-bold text-secondary">Mobile Number (WhatsApp Enabled) <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-telephone"></i></span>
+              <input type="tel" class="form-control border-start-0 font-monospace" [(ngModel)]="profile.tpoPhone">
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label extra-small fw-bold text-secondary">Alternate TPO Direct Line</label>
+            <input type="tel" class="form-control font-monospace" [(ngModel)]="profile.tpoAltPhone">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label extra-small fw-bold text-secondary">LinkedIn Profile URL</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-linkedin"></i></span>
+              <input type="url" class="form-control border-start-0" [(ngModel)]="profile.tpoLinkedin">
+            </div>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label extra-small fw-bold text-secondary">TPO Cabin / Office Location inside Campus</label>
+            <input type="text" class="form-control" [(ngModel)]="profile.tpoCabin">
+          </div>
+        </div>
+
+        <!-- Corporate Placement Track Record -->
+        <h6 class="fw-bold text-dark mt-4 mb-3 fs-6">Placement Statistics & Marquee Recruiters</h6>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label extra-small fw-bold text-secondary">Average Placement Rate (%)</label>
+            <div class="input-group">
+              <input type="number" class="form-control" [(ngModel)]="profile.placementRate">
+              <span class="input-group-text bg-light">%</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label extra-small fw-bold text-secondary">Average Batch CTC</label>
+            <input type="text" class="form-control font-monospace" [(ngModel)]="profile.avgCtc">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label extra-small fw-bold text-secondary">Highest Secured CTC</label>
+            <input type="text" class="form-control font-monospace" [(ngModel)]="profile.highestCtc">
+          </div>
+          <div class="col-12">
+            <label class="form-label extra-small fw-bold text-secondary">Key Corporate Hiring Partners</label>
+            <input type="text" class="form-control" [(ngModel)]="profile.topRecruiters">
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: Departments & Faculty Coordinators -->
+      <div *ngIf="activeTab === 'departments'" class="tab-fade-in">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom flex-wrap gap-2">
+          <div>
+            <h5 class="fw-bold text-dark mb-1 fs-6">Academic Departments & Placement Coordinators</h5>
+            <p class="text-muted extra-small mb-0">Department leads who oversee proctored batches and candidate cutoffs</p>
+          </div>
+          <button class="btn btn-sm btn-dark-pill" (click)="showAddDept = !showAddDept">
+            <i class="bi bi-plus-lg me-1"></i> Add Department Lead
+          </button>
+        </div>
+
+        <!-- Add Department Drawer / Card -->
+        <div class="card p-3 mb-4 border rounded-3 bg-light-subtle" *ngIf="showAddDept">
+          <h6 class="fw-bold text-dark mb-3 extra-small text-uppercase font-monospace">Add Department Coordinator</h6>
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label class="form-label font-11 fw-bold text-secondary">Department Name *</label>
+              <input type="text" class="form-control form-control-sm" placeholder="e.g. Civil Engineering" [(ngModel)]="newDept.department">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label font-11 fw-bold text-secondary">HOD / Lead Name *</label>
+              <input type="text" class="form-control form-control-sm" placeholder="e.g. Prof. Arvind Gupta" [(ngModel)]="newDept.name">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label font-11 fw-bold text-secondary">Email Address</label>
+              <input type="email" class="form-control form-control-sm" placeholder="hod@college.edu" [(ngModel)]="newDept.email">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label font-11 fw-bold text-secondary">Phone Number</label>
+              <input type="tel" class="form-control form-control-sm" placeholder="+91 99999 99999" [(ngModel)]="newDept.phone">
+            </div>
+          </div>
+          <div class="d-flex justify-content-end gap-2 mt-3">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 extra-small" (click)="showAddDept = false">Cancel</button>
+            <button class="btn btn-sm btn-primary-custom px-3 extra-small" (click)="addDepartment()">Save Coordinator</button>
+          </div>
+        </div>
+
+        <!-- Departments Table / List -->
+        <div class="table-responsive border rounded-3 bg-white">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+              <tr class="extra-small text-uppercase text-secondary font-monospace">
+                <th class="ps-3 py-3">Department</th>
+                <th class="py-3">Faculty In-charge / HOD</th>
+                <th class="py-3">Email Address</th>
+                <th class="py-3">Contact</th>
+                <th class="text-end pe-3 py-3">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let dept of departments; let i = index">
+                <td class="ps-3 py-3 fw-bold text-dark fs-6">{{ dept.department }}</td>
+                <td class="py-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-sm rounded-circle bg-navy text-white d-flex align-items-center justify-content-center fw-bold" style="width: 28px; height: 28px; font-size: 0.75rem;">
+                      {{ dept.name.charAt(0) }}
+                    </div>
+                    <span class="fw-semibold text-dark extra-small">{{ dept.name }}</span>
+                  </div>
+                </td>
+                <td class="py-3 extra-small text-secondary font-monospace">{{ dept.email }}</td>
+                <td class="py-3 extra-small text-secondary font-monospace">{{ dept.phone }}</td>
+                <td class="text-end pe-3 py-3">
+                  <button class="btn btn-sm btn-outline-danger border-0 p-1 rounded-circle" (click)="removeDepartment(i)" title="Remove Department">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 4: Accreditation & Ranking -->
+      <div *ngIf="activeTab === 'accreditation'" class="tab-fade-in">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h5 class="fw-bold text-dark mb-1 fs-6">Accreditations, Affiliations & Certifications</h5>
+            <p class="text-muted extra-small mb-0">Verified quality seals shared with recruitment partners for institutional credibility</p>
+          </div>
+          <span class="badge bg-purple-subtle text-purple border border-purple-subtle extra-small fw-bold">Verified Quality Seals</span>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <label class="form-label extra-small fw-bold text-secondary">NAAC Accreditation Status & Score</label>
+            <input type="text" class="form-control" [(ngModel)]="profile.naacGrade">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label extra-small fw-bold text-secondary">NIRF Ranking Band</label>
+            <input type="text" class="form-control" [(ngModel)]="profile.nirfRankBand">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label extra-small fw-bold text-secondary">ISO Certification Details</label>
+            <input type="text" class="form-control" [(ngModel)]="profile.isoCertified">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label extra-small fw-bold text-secondary">NBA Accreditation</label>
+            <div class="p-2 border rounded-3 d-flex align-items-center justify-content-between bg-light">
+              <span class="extra-small fw-bold text-dark">Programs NBA Accredited</span>
+              <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="profile.nbaAccredited">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: Domain & Branding -->
+      <div *ngIf="activeTab === 'branding'" class="tab-fade-in">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h5 class="fw-bold text-dark mb-1 fs-6">Campus Subdomain & White-Labeling</h5>
+            <p class="text-muted extra-small mb-0">Customize the candidate test portal and executive placement reports</p>
+          </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <label class="form-label extra-small fw-bold text-secondary">Dedicated Assessment Subdomain</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light text-muted border-end-0">https://</span>
+              <input type="text" class="form-control border-start-0 font-monospace" [(ngModel)]="profile.portalSubdomain">
+            </div>
+            <span class="text-muted font-11 mt-1 d-block">Students will sign in via this URL to take proctored assessments.</span>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label extra-small fw-bold text-secondary">Primary Theme Color</label>
+            <div class="d-flex align-items-center gap-2">
+              <input type="color" class="form-control form-control-color border" [(ngModel)]="profile.primaryColor">
+              <input type="text" class="form-control font-monospace" [(ngModel)]="profile.primaryColor">
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label extra-small fw-bold text-secondary">Accent / Highlight Color</label>
+            <div class="d-flex align-items-center gap-2">
+              <input type="color" class="form-control form-control-color border" [(ngModel)]="profile.accentColor">
+              <input type="text" class="form-control font-monospace" [(ngModel)]="profile.accentColor">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Save Action Bar -->
+      <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+        <span class="text-muted extra-small">
+          <i class="bi bi-clock-history me-1"></i> Last modified: Today, 04:30 PM by Sanjay Jadhav
+        </span>
+        <button class="btn btn-dark-pill px-5" (click)="saveChanges()">
+          Save Changes
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

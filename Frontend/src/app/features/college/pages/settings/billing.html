@@ -1,0 +1,358 @@
+<div class="college-billing-page container-fluid p-0">
+
+  <!-- Toast Notification Overlay -->
+  <div class="toast-notification position-fixed bottom-0 end-0 p-3 z-3" *ngIf="toastMessage">
+    <div class="alert alert-dark rounded-4 shadow-lg border-0 d-flex align-items-center gap-3 text-white px-4 py-3 mb-0" role="alert">
+      <i class="bi bi-check-circle-fill text-success fs-5"></i>
+      <span class="fw-semibold">{{ toastMessage }}</span>
+    </div>
+  </div>
+
+
+
+  <!-- Billing Hero Card: Matching Profile Hero Card Layout -->
+  <div class="billing-hero-card mb-4">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7 d-flex align-items-center gap-4">
+        <!-- Plan Badge Icon Wrapper (matching college logo) -->
+        <div class="plan-icon-wrapper flex-shrink-0">
+          <div class="icon-box">
+            <i class="bi bi-award-fill text-primary fs-2"></i>
+          </div>
+          <span class="plan-status-dot" title="Active Enterprise Subscription"></span>
+        </div>
+
+        <!-- Title & Plan Info -->
+        <div>
+          <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+            <h4 class="hero-title mb-0">{{ plan.name }}</h4>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-0.5 font-monospace font-11 fw-bold">
+              Active Subscription
+            </span>
+          </div>
+
+          <div class="text-secondary extra-small mb-1.5 d-flex align-items-center flex-wrap gap-2">
+            <span><i class="bi bi-shield-check text-success me-1"></i> 7 Proctored Tests Bundle</span>
+            <span class="text-muted">•</span>
+            <span><i class="bi bi-people-fill text-purple me-1"></i> 350 Enrolled Students</span>
+            <span class="text-muted">•</span>
+            <span><i class="bi bi-calendar3 text-danger me-1"></i> Renewal: {{ plan.renewalDate }}</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-3">
+            <span class="text-muted font-11 font-monospace">Contract Ref: <strong>CTR-CAMPUS-7701</strong></span>
+            <span class="text-muted font-11">•</span>
+            <span class="text-muted font-11 font-monospace">GST Compliance: <strong>HSN/SAC 998313</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Health & Settlement Progress (matching profile health) -->
+      <div class="col-lg-5 border-start-lg ps-lg-4">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <span class="fw-bold text-dark font-11 text-uppercase font-monospace">Settlement Status</span>
+          <span class="fw-bold text-success font-monospace font-11">{{ plan.paidPercentage }}% Paid</span>
+        </div>
+        <div class="progress rounded-pill bg-light" style="height: 6px;">
+          <div class="progress-bar bg-success rounded-pill" role="progressbar" [style.width]="plan.paidPercentage + '%'"></div>
+        </div>
+
+        <div class="row g-2 mt-2 pt-1 text-center">
+          <div class="col-4">
+            <div class="p-2 rounded-3 bg-light border">
+              <div class="metric-value text-dark font-monospace">₹{{ (plan.ratePerStudent | number) }}</div>
+              <div class="metric-label">Rate / Student</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="p-2 rounded-3 bg-light border">
+              <div class="metric-value text-dark font-monospace">₹12.25L</div>
+              <div class="metric-label">Total Contract</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="p-2 rounded-3 bg-light border">
+              <div class="metric-value text-success font-monospace">₹10.50L</div>
+              <div class="metric-label">Disbursed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Billing Tabs & Content Container Card -->
+  <div class="billing-tabs-card">
+    <!-- Clean Tab Navigation Header -->
+    <div class="tabs-header-bar px-4 pt-3 border-bottom">
+      <ul class="nav nav-tabs border-0 gap-4">
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'invoices'" (click)="activeTab = 'invoices'">
+            <i class="bi bi-receipt-cutoff me-1.5"></i> Invoices Breakdown
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'subscription'" (click)="activeTab = 'subscription'">
+            <i class="bi bi-box-seam me-1.5"></i> Package & License Terms
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'payment-methods'" (click)="activeTab = 'payment-methods'">
+            <i class="bi bi-bank me-1.5"></i> Payment Methods & Bank NEFT
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="p-4 p-md-5">
+
+      <!-- TAB 1: Invoices Breakdown & Outstanding Balance -->
+      <div *ngIf="activeTab === 'invoices'" class="tab-fade-in">
+        
+        <!-- Outstanding Banner Card (Clean executive styling) -->
+        <div class="outstanding-banner-card p-3 rounded-3 border mb-4">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle font-11 fw-bold">
+                  Payment Due Milestone
+                </span>
+                <span class="text-muted font-11 font-monospace">Invoice #INV-2026-004</span>
+              </div>
+              <h5 class="section-heading mb-0.5">Final Milestone Disbursement Outstanding</h5>
+              <p class="section-subheading mb-0">
+                Due Date: <strong class="text-dark">Nov 15, 2026</strong> • Includes placement dossiers, recruiter listings, and student skill passport seals.
+              </p>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+              <div class="text-end">
+                <span class="text-muted font-11 text-uppercase font-monospace d-block">Outstanding Balance</span>
+                <div class="fw-bold text-dark font-monospace fs-5">₹{{ plan.outstandingBalance | number }}</div>
+              </div>
+              <button class="btn btn-dark-pill px-4" (click)="toggleInlinePay()" [disabled]="plan.outstandingBalance === 0">
+                <span>{{ plan.outstandingBalance === 0 ? 'Fully Paid' : (showPaySection ? 'Close Payment Form' : 'Pay Now') }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Inline Direct Payment Form on the Page -->
+          <div class="inline-pay-section mt-3 pt-3 border-top" *ngIf="showPaySection">
+            <div class="d-flex align-items-center justify-content-between mb-2.5">
+              <div>
+                <h6 class="section-heading mb-0">Authorize Campus Tranche Settlement</h6>
+                <span class="text-muted font-11">Paying: <strong>{{ selectedInvoice?.num }}</strong> ({{ selectedInvoice?.amount }})</span>
+              </div>
+              <button class="btn btn-sm btn-link text-muted p-0 text-decoration-none" (click)="closePaySection()">
+                <i class="bi bi-x-circle me-1"></i> Cancel
+              </button>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="p-3 border rounded-3 d-flex align-items-center justify-content-between cursor-pointer bg-white h-100" [class.border-primary]="selectedPayMethod === 'neft'">
+                  <div class="d-flex align-items-center gap-3">
+                    <input type="radio" name="payMethod" value="neft" [(ngModel)]="selectedPayMethod" class="form-check-input">
+                    <div>
+                      <div class="fw-bold text-dark extra-small">RTGS / NEFT Direct Corporate Wire</div>
+                      <div class="text-muted font-11">Virtual A/C: <strong>HDFCVAC7701MGMCET</strong> (IFSC: HDFC0000240)</div>
+                    </div>
+                  </div>
+                  <i class="bi bi-bank fs-4 text-secondary"></i>
+                </label>
+              </div>
+
+              <div class="col-md-6">
+                <label class="p-3 border rounded-3 d-flex align-items-center justify-content-between cursor-pointer bg-white h-100" [class.border-primary]="selectedPayMethod === 'card'">
+                  <div class="d-flex align-items-center gap-3">
+                    <input type="radio" name="payMethod" value="card" [(ngModel)]="selectedPayMethod" class="form-check-input">
+                    <div>
+                      <div class="fw-bold text-dark extra-small">Corporate Card / Institutional NetBanking</div>
+                      <div class="text-muted font-11">Instant transaction clearance with corporate GST receipt</div>
+                    </div>
+                  </div>
+                  <i class="bi bi-credit-card-2-front fs-4 text-secondary"></i>
+                </label>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-2">
+              <span class="text-muted extra-small">
+                <i class="bi bi-shield-check text-success me-1"></i> Authorized by TPO Finance Cell • Instant settlement clearance
+              </span>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-pill" (click)="closePaySection()">Cancel</button>
+                <button class="btn btn-dark-pill px-4" [disabled]="isProcessingPayment" (click)="processPayment()">
+                  <i class="bi me-2" [ngClass]="isProcessingPayment ? 'bi-arrow-repeat spin' : 'bi-lock-fill'"></i>
+                  <span>{{ isProcessingPayment ? 'Authorizing Payment...' : 'Confirm & Authorize ' + selectedInvoice?.amount }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoices List Table Section -->
+        <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom flex-wrap gap-2">
+          <div>
+            <h5 class="fw-bold text-dark mb-1 fs-6">Institutional Tranche Invoices</h5>
+            <p class="text-muted extra-small mb-0">Official audit trail and GST breakdown for campus budget reconciliation</p>
+          </div>
+          <span class="badge bg-light text-secondary border font-monospace extra-small">4 Milestones (3 Settled)</span>
+        </div>
+
+        <div class="table-responsive border rounded-3 bg-white mb-4">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+              <tr class="extra-small text-uppercase text-secondary font-monospace">
+                <th class="ps-3 py-3">Invoice Number</th>
+                <th class="py-3">Milestone Description</th>
+                <th class="py-3">Billing Date</th>
+                <th class="py-3">Due Date</th>
+                <th class="py-3">Amount</th>
+                <th class="py-3">Status</th>
+                <th class="text-end pe-3 py-3">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let inv of invoices">
+                <td class="ps-3 py-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-file-earmark-text text-primary"></i>
+                    <span class="font-monospace fw-bold text-dark extra-small">{{ inv.num }}</span>
+                  </div>
+                </td>
+                <td class="py-3">
+                  <div class="extra-small fw-semibold text-dark">{{ inv.description }}</div>
+                  <div class="text-muted font-11 mt-0.5" *ngIf="inv.transactionRef">
+                    <span class="text-success"><i class="bi bi-check2-circle me-1"></i>{{ inv.paymentMethod }}</span>
+                    <span class="mx-1">•</span>
+                    <span class="font-monospace">Ref: {{ inv.transactionRef }}</span>
+                  </div>
+                </td>
+                <td class="py-3 extra-small text-secondary">{{ inv.date }}</td>
+                <td class="py-3 extra-small text-secondary">{{ inv.dueDate }}</td>
+                <td class="py-3 font-monospace fw-bold text-dark fs-6">{{ inv.amount }}</td>
+                <td class="py-3">
+                  <span class="badge rounded-pill px-3 py-1 font-monospace extra-small fw-bold"
+                    [ngClass]="inv.status === 'Paid' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning-emphasis border border-warning-subtle'">
+                    <i class="bi bi-circle-fill me-1" style="font-size: 0.4rem;"></i>
+                    {{ inv.status === 'Paid' ? 'Paid' : 'Due ' + inv.dueDate }}
+                  </span>
+                </td>
+                <td class="text-end pe-3 py-3">
+                  <div class="d-flex align-items-center justify-content-end gap-2">
+                    <button class="btn btn-sm btn-outline-custom rounded-pill px-3 py-1 extra-small fw-bold" (click)="downloadInvoice(inv)">
+                      <i class="bi bi-download me-1 text-secondary"></i> PDF
+                    </button>
+                    <button class="btn btn-sm btn-dark-pill px-3 py-1 extra-small" *ngIf="inv.status !== 'Paid'" (click)="toggleInlinePay(inv)">
+                      Pay Now
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Audit Footer Notice -->
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-3 border-top text-muted extra-small">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-shield-lock-fill text-success fs-6"></i>
+            <span>Bank-grade 256-bit encrypted transactions. Tax Invoice is GST compliant (HSN/SAC 998313).</span>
+          </div>
+          <div class="font-monospace">
+            Finance Support: <strong>finance@proveyu.com</strong>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 2: Package & License Terms -->
+      <div *ngIf="activeTab === 'subscription'" class="tab-fade-in">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h5 class="fw-bold text-dark mb-1 fs-6">Campus Bundle Specifications</h5>
+            <p class="text-muted extra-small mb-0">Detailed breakdown of included tests, candidate allocations, and platform entitlements</p>
+          </div>
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle extra-small fw-bold">Active Contract</span>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-light-subtle h-100">
+              <h6 class="fw-bold text-dark extra-small text-uppercase font-monospace mb-2">Included Deliverables</h6>
+              <ul class="list-unstyled extra-small text-secondary mb-0 d-flex flex-column gap-2">
+                <li><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>7 Proctored Assessments</strong> per student (Diagnostic to Final Placements).</li>
+                <li><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>Skill Passports</strong> issued to all qualifying Tier 1 & Tier 2 candidates.</li>
+                <li><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>Recruiter Directory Access:</strong> Direct shortlisting by enterprise hiring partners.</li>
+                <li><i class="bi bi-check-circle-fill text-success me-2"></i> <strong>Executive Dean / TPO Dossier:</strong> Real-time cohort analytics and comparative curves.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-light-subtle h-100">
+              <h6 class="fw-bold text-dark extra-small text-uppercase font-monospace mb-2">Student License Allocation</h6>
+              <div class="d-flex justify-content-between extra-small mb-2">
+                <span>Contracted Student Seats:</span>
+                <strong class="font-monospace text-dark">350 Students</strong>
+              </div>
+              <div class="d-flex justify-content-between extra-small mb-2">
+                <span>Total Test Capacity:</span>
+                <strong class="font-monospace text-dark">2,450 Proctoring Sessions</strong>
+              </div>
+              <div class="d-flex justify-content-between extra-small mb-2">
+                <span>Contract Validity:</span>
+                <strong class="font-monospace text-dark">1 Academic Year (Until Sep 30, 2027)</strong>
+              </div>
+              <div class="d-flex justify-content-between extra-small pt-2 border-top">
+                <span class="fw-bold text-dark">Additional Student Add-on:</span>
+                <strong class="font-monospace text-primary">₹3,500 / Student</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: Payment Methods & Institutional Bank NEFT -->
+      <div *ngIf="activeTab === 'payment-methods'" class="tab-fade-in">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+          <div>
+            <h5 class="fw-bold text-dark mb-1 fs-6">Institutional Bank Wire & Virtual Account</h5>
+            <p class="text-muted extra-small mb-0">Official virtual accounts for NEFT / RTGS payments from university finance accounts</p>
+          </div>
+          <span class="badge bg-success-subtle text-success border border-success-subtle extra-small fw-bold">Verified Virtual A/C</span>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-white">
+              <span class="text-muted font-11 text-uppercase font-monospace d-block mb-1">Beneficiary Name</span>
+              <strong class="text-dark extra-small">PROVEYU EDUTECH ENTERPRISE SOLUTIONS PVT LTD</strong>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-white">
+              <span class="text-muted font-11 text-uppercase font-monospace d-block mb-1">Bank Name & Branch</span>
+              <strong class="text-dark extra-small">HDFC Bank Ltd., Corporate Banking Branch, Mumbai</strong>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-white">
+              <span class="text-muted font-11 text-uppercase font-monospace d-block mb-1">Virtual Account Number (Unique to MGM CET)</span>
+              <strong class="text-dark extra-small font-monospace">HDFCVAC7701MGMCET</strong>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 border rounded-3 bg-white">
+              <span class="text-muted font-11 text-uppercase font-monospace d-block mb-1">IFSC Code</span>
+              <strong class="text-dark extra-small font-monospace">HDFC0000240</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
