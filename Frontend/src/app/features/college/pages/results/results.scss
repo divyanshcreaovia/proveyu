@@ -1,0 +1,680 @@
+.results-page {
+  min-height: calc(100vh - 70px);
+  background-color: transparent;
+  font-family: inherit;
+
+  /* Welcome Banner Card (Executive Theme) */
+  .welcome-banner-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    color: #0f172a;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+
+    .banner-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+
+      .banner-text {
+        flex: 1;
+        min-width: 300px;
+
+        .welcome-title {
+          font-size: 1.65rem;
+          font-weight: 800;
+          color: #0f172a;
+          margin-bottom: 0.4rem;
+          letter-spacing: -0.02em;
+        }
+
+        .welcome-subtitle {
+          font-size: 0.92rem;
+          color: #64748b;
+          margin: 0;
+          max-width: 720px;
+        }
+      }
+
+      .banner-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+    }
+  }
+
+  /* Custom Buttons */
+  .btn-primary-custom {
+    background: #16122b;
+    border: 1px solid #16122b;
+    color: #ffffff;
+    padding: 0.65rem 1.3rem;
+    border-radius: 50px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      background: #262045;
+      border-color: #262045;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(22, 18, 43, 0.2);
+    }
+  }
+
+  .btn-outline-custom {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
+    padding: 0.65rem 1.3rem;
+    border-radius: 50px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+
+    &:hover {
+      background: #16122b;
+      border-color: #16122b;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+  }
+
+  /* Executive KPI Stat Cards Grid (Matching Dashboard) */
+  .kpi-stats-grid {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    @media (max-width: 576px) {
+      grid-template-columns: 1fr !important;
+    }
+
+    .kpi-card {
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1px solid #e2e8f0;
+      padding: 1.25rem 1.4rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+      transition: all 0.25s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        border-color: #cbd5e1;
+      }
+
+      .kpi-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.6rem;
+
+        .kpi-tag {
+          font-size: 0.7rem;
+          font-weight: 700;
+          color: #64748b;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+
+        .kpi-badge {
+          font-size: 0.7rem;
+          font-weight: 700;
+          color: #16a34a;
+          background: #dcfce7;
+          padding: 2px 8px;
+          border-radius: 50px;
+        }
+      }
+
+      .kpi-value-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.3rem;
+
+        .kpi-value {
+          font-size: 1.6rem;
+          font-weight: 800;
+          line-height: 1.2;
+
+          &.text-navy {
+            color: #0f172a;
+          }
+
+          &.text-success {
+            color: #16a34a;
+          }
+
+          &.text-warning {
+            color: #d97706;
+          }
+
+          &.text-danger {
+            color: #dc2626;
+          }
+        }
+
+        .kpi-icon-box {
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          background: #f1f5f9;
+          color: #0f172a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.1rem;
+        }
+      }
+
+      .kpi-subtext {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #64748b;
+      }
+    }
+  }
+
+  /* General Dashboard Card Container (Matching Dashboard) */
+  .dashboard-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  }
+
+  .card-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 1rem;
+    margin-bottom: 1.2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .card-header-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    .card-header-subtitle {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin: 0.2rem 0 0 0;
+    }
+
+    .header-action-link {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #16122b;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: #262045;
+        transform: translateX(2px);
+      }
+    }
+  }
+
+  /* Filter Toolbar & Input Elements */
+  .filter-toolbar-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  }
+
+  .search-input-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .form-control {
+      padding-left: 2.3rem;
+      border-radius: 50px;
+      border: 1px solid #e2e8f0;
+      font-size: 0.82rem;
+      background: #f8fafc;
+      transition: all 0.2s ease;
+
+      &:focus {
+        background: #ffffff;
+        border-color: #16122b;
+        box-shadow: 0 0 0 3px rgba(22, 18, 43, 0.08);
+      }
+    }
+  }
+
+  .filter-select {
+    border-radius: 50px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #0f172a;
+    background-color: #f8fafc;
+    padding: 0.45rem 2.2rem 0.45rem 1rem;
+    width: auto;
+    min-width: 140px;
+    margin: 0.15rem 0.25rem;
+
+    &:focus {
+      border-color: #16122b;
+      box-shadow: 0 0 0 3px rgba(22, 18, 43, 0.08);
+    }
+  }
+
+  /* Table Customization (Strict match with /college/students) */
+  .table {
+    thead th {
+      color: #64748b;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding-top: 0.9rem;
+      padding-bottom: 0.9rem;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    tbody tr {
+      transition: background-color 0.15s ease;
+
+      &:hover {
+        background-color: #f8fafc;
+      }
+    }
+
+    tbody td {
+      border-bottom-color: #f1f5f9;
+      font-size: 0.88rem;
+      padding-top: 0.9rem;
+      padding-bottom: 0.9rem;
+    }
+  }
+
+  .avatar {
+    background-color: #16122b !important;
+    color: #ffffff !important;
+    border: 1px solid #16122b;
+    margin-right: 0.4rem;
+  }
+
+  .hover-primary {
+    color: #0f172a !important;
+    font-size: 0.88rem;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: #16122b !important;
+      text-decoration: underline !important;
+    }
+  }
+
+  /* Pagination Styling (Matching /college/students) */
+  .pagination {
+    .page-item.active .page-link {
+      background-color: #16122b;
+      border-color: #16122b;
+      color: #ffffff;
+    }
+
+    .page-link {
+      color: #0f172a;
+      border-color: #e2e8f0;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+
+      &:hover {
+        background-color: #f1f5f9;
+        color: #16122b;
+      }
+    }
+  }
+
+  /* Subtle Custom Badges matching /college/students */
+  .badge-tier-1 {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+  }
+
+  .badge-tier-2 {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+  }
+
+  .badge-tier-3 {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  .extra-small {
+    font-size: 0.75rem;
+  }
+
+  .bg-gradient-navy {
+    background: linear-gradient(135deg, #16122b 0%, #262045 100%);
+  }
+
+  .bg-white-10 {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .bg-white-20 {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .transition-all {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hover-shadow-sm:hover {
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    border-color: #cbd5e1 !important;
+  }
+
+  /* Specific Executive Padding & Styling for Skill Breakdown & Migration Cards (Matching KPI Card in Image 1) */
+  .section-stat-card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    padding: 1.35rem 1.5rem !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      border-color: #cbd5e1;
+    }
+
+    &.needs-focus-card {
+      border-color: #fecaca;
+      background: #fffafa;
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+    }
+
+    .stat-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.85rem;
+      line-height: 1.35;
+    }
+
+    .stat-metric-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+
+      .stat-score-val {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1;
+      }
+
+      .stat-score-max {
+        font-size: 0.82rem;
+        color: #64748b;
+        font-weight: 600;
+      }
+    }
+
+    .stat-action-footer {
+      padding-top: 0.85rem;
+      border-top: 1px solid #f1f5f9;
+      margin-top: 0.5rem;
+    }
+  }
+
+  .tier-cycle-card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    padding: 1.35rem 1.4rem !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+    transition: all 0.25s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      border-color: #cbd5e1;
+    }
+  }
+
+  /* Dedicated Scoped Styling for Platform-Wide Benchmark Widget */
+  .benchmark-widget {
+    .benchmark-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.55rem 0.85rem !important; /* Compact padding strictly isolated to this widget */
+      border-radius: 10px;
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      font-size: 0.78rem;
+    }
+
+    .benchmark-rank-pill {
+      padding: 0.55rem 0.85rem !important; /* Compact padding strictly isolated to rank pill */
+      border-radius: 10px;
+      background-color: #eef2ff;
+      color: #4f46e5;
+      border: 1px solid #e0e7ff;
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+  }
+}
+
+/* Modal Styling */
+.modal-backdrop-custom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(6px);
+  z-index: 1055;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-dialog-custom {
+  width: 92%;
+  max-width: 720px;
+  background: #ffffff;
+  border-radius: 20px;
+  z-index: 1060;
+  box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.25);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-header-custom {
+  padding: 1.25rem 1.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+
+  .modal-header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .modal-icon-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .modal-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.15rem 0;
+    letter-spacing: -0.01em;
+  }
+
+  .modal-subtitle {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin: 0;
+  }
+
+  .btn-close-custom {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+    }
+  }
+}
+
+.modal-body-custom {
+  padding: 1.5rem 1.75rem;
+  overflow-y: auto;
+  flex: 1;
+
+  .form-label {
+    font-size: 0.82rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .form-control,
+  .form-select {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.55rem 0.85rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+
+    &:focus {
+      background-color: #ffffff;
+      border-color: #00875a;
+      box-shadow: 0 0 0 3px rgba(0, 135, 90, 0.12);
+    }
+  }
+}
+
+.modal-footer-custom {
+  padding: 1.1rem 1.75rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  background: #ffffff;
+}
+
+.custom-scroll {
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f8fafc;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}

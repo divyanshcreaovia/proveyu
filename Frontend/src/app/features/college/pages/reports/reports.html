@@ -1,0 +1,110 @@
+<div class="reports-page container-fluid p-0">
+
+  <!-- Toast Notification Banner -->
+  <div class="toast-notification-banner position-fixed top-0 start-50 translate-middle-x mt-3 z-3" *ngIf="toastMessage">
+    <div class="alert alert-dark bg-dark text-white border-0 shadow-lg rounded-pill px-4 py-2.5 d-flex align-items-center gap-2.5 m-0 small">
+      <i class="bi bi-info-circle-fill text-warning fs-6"></i>
+      <span class="fw-semibold">{{ toastMessage }}</span>
+    </div>
+  </div>
+
+  <!-- Welcome / Diagnostic Header Banner -->
+  <div class="welcome-banner-card mb-4">
+    <div class="banner-content">
+      <div class="banner-text">
+        <h3 class="welcome-title">Reports & Data Exports</h3>
+        <p class="welcome-subtitle">
+          Generate official institutional dossiers, tier progression matrices, placement reports, and executive board summaries.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter & Search Toolbar Card -->
+  <div class="filter-toolbar-card mb-4">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <!-- Search Input -->
+      <div class="search-input-box flex-grow-1" style="max-width: 420px;">
+        <i class="bi bi-search search-icon"></i>
+        <input type="text" class="form-control filter-input"
+          placeholder="Search reports by title, topic, or format..."
+          [(ngModel)]="searchQuery" />
+      </div>
+
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <!-- Category Filter -->
+        <div class="d-flex align-items-center gap-2">
+          <span class="filter-label">Category:</span>
+          <select class="form-select filter-select" [(ngModel)]="selectedCategory">
+            <option value="All">All Categories</option>
+            <option value="Diagnostic & Analytics">Diagnostic & Analytics</option>
+            <option value="Student Roster">Student Roster</option>
+            <option value="Placements & Drives">Placements & Drives</option>
+            <option value="Executive Leadership">Executive Leadership</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reports Grid (Same Card Design Layout, Themed to Match Results & Placements) -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-6" *ngFor="let rep of filteredReports">
+      <div class="report-card h-100 p-4 d-flex flex-column justify-content-between">
+        
+        <div>
+          <!-- Top Tag & Format Pill -->
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="report-icon-box me-1" [style.background-color]="rep.iconBg" [style.color]="rep.iconColor">
+                <i class="bi {{ rep.icon }}"></i>
+              </div>
+              <div class="ps-1">
+                <span class="report-category-tag d-block">{{ rep.category }}</span>
+              </div>
+            </div>
+
+            <span class="badge rounded-pill px-3 py-1 font-monospace extra-small fw-bold"
+              [ngClass]="rep.format.includes('PDF') ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-success-subtle text-success border border-success-subtle'">
+              {{ rep.format }}
+            </span>
+          </div>
+
+          <!-- Title & Description -->
+          <h5 class="fw-bold text-dark mb-2 mt-3 pt-1 fs-6">{{ rep.title }}</h5>
+          <p class="text-secondary extra-small mb-4 line-clamp-2" style="line-height: 1.55;">
+            {{ rep.desc }}
+          </p>
+        </div>
+
+        <!-- Footer Row: Action Buttons -->
+        <div class="report-card-footer pt-3 border-top d-flex align-items-center justify-content-end gap-2">
+          <button class="btn btn-sm btn-outline-custom rounded-pill px-3 py-1 extra-small fw-bold"
+            [disabled]="downloadingId === rep.id"
+            (click)="downloadReport(rep, 'PDF')">
+            <i class="bi me-1" [ngClass]="downloadingId === rep.id ? 'bi-arrow-repeat spin' : 'bi-file-earmark-pdf text-danger'"></i>
+            PDF
+          </button>
+          <button class="btn btn-sm btn-outline-custom rounded-pill px-3 py-1 extra-small fw-bold"
+            *ngIf="rep.format !== 'PDF Only'"
+            [disabled]="downloadingId === rep.id"
+            (click)="downloadReport(rep, 'Excel')">
+            <i class="bi me-1" [ngClass]="downloadingId === rep.id ? 'bi-arrow-repeat spin' : 'bi-file-earmark-excel text-success'"></i>
+            Excel
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="col-12" *ngIf="filteredReports.length === 0">
+      <div class="report-card text-center py-5">
+        <i class="bi bi-file-earmark-text text-muted fs-1 d-block mb-2"></i>
+        <div class="fw-bold text-dark">No reports matched your search</div>
+        <div class="text-muted extra-small">Try clearing search terms or selecting another category.</div>
+      </div>
+    </div>
+  </div>
+
+</div>

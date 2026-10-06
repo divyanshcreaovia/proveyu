@@ -1,0 +1,285 @@
+.tests-page {
+  font-size: 0.875rem;
+
+  /* Welcome Banner Card (Executive Theme) */
+  .welcome-banner-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem;
+    color: #0f172a;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+
+    .banner-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .welcome-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 0.25rem;
+    }
+
+    .welcome-subtitle {
+      font-size: 0.88rem;
+      color: #64748b;
+      margin-bottom: 0;
+    }
+  }
+
+  .btn-action-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #f8fafc;
+    color: #0f172a;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #16122b;
+      border-color: #16122b;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+  }
+
+  .btn-primary-custom {
+    background: #16122b;
+    border: 1px solid #16122b;
+    color: #ffffff;
+    padding: 0.55rem 1.25rem;
+    border-radius: 50px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+
+    &:hover {
+      background: #262045;
+      border-color: #262045;
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(22, 18, 43, 0.2);
+    }
+  }
+
+  .btn-outline-custom {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
+    padding: 0.55rem 1.25rem;
+    border-radius: 50px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+
+    &:hover {
+      background: #16122b;
+      border-color: #16122b;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+  }
+
+  .search-input-box {
+    position: relative;
+    width: 100%;
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+    }
+
+    .form-control {
+      padding-left: 2.5rem;
+      border-radius: 50px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      font-size: 0.85rem;
+      height: 42px;
+
+      &:focus {
+        background: #ffffff;
+        border-color: #16122b;
+        box-shadow: 0 0 0 3px rgba(22, 18, 43, 0.1);
+      }
+    }
+  }
+
+  .extra-small {
+    font-size: 0.75rem;
+  }
+
+  .tracking-wider {
+    letter-spacing: 0.05em;
+  }
+
+  .hover-translate {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+    }
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  // Toast alert overlay
+  .toast-alert-floating {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1060;
+    min-width: 320px;
+    max-width: 440px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: slideUpIn 0.3s ease-out;
+  }
+
+  // Live Pulse Ring Animation
+  .pulse-ring {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulseRing 1.5s infinite;
+  }
+
+  .status-dot-pulse {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: pulseDot 1.2s infinite ease-in-out;
+  }
+
+  // Tier Tile Interactive Card Styling
+  .tier-tile-card {
+    border: 2px solid transparent !important;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    &.active-tier-select {
+      background-color: #f8fafc !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+    }
+  }
+
+  // Table customization
+  .table {
+    th {
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+  }
+
+  .table-warning-subtle {
+    background-color: rgba(255, 193, 7, 0.08) !important;
+  }
+
+  // Modal Backdrop Custom
+  .modal-backdrop-custom {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1050;
+    animation: fadeIn 0.2s ease-out;
+
+    .modal-card-custom {
+      animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  }
+}
+
+// Keyframe Animations
+@keyframes slideUpIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgba(255, 193, 7, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+  }
+}
+
+@keyframes pulseDot {
+
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

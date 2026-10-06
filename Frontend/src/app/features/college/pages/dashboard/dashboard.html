@@ -1,0 +1,456 @@
+<div class="college-dashboard-compact container-fluid p-0">
+
+  <!-- =================================================================================== -->
+  <!-- DASHBOARD TOP HEADER BAR (EXACT MATCH TO REFERENCE IMAGE) -->
+  <!-- =================================================================================== -->
+  <div class="welcome-banner-card dashboard-top-header mb-4">
+    <div class="banner-content d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div class="header-text-group">
+        <h3 class="header-main-title">Dashboard</h3>
+        <p class="header-sub-title">Overview of placement activities and key metrics</p>
+      </div>
+
+      <div class="header-actions-group d-flex align-items-center gap-3">
+        <!-- Academic Year Dropdown Picker -->
+        <div class="academic-year-box bg-white border rounded-3 px-3 py-1.5 d-flex align-items-center gap-2.5 shadow-2xs">
+          <span class="text-muted extra-small font-12 fw-medium text-nowrap">Academic Year</span>
+          <select class="form-select form-select-sm border-0 bg-transparent fw-bold text-dark ps-1 pe-4 py-0 cursor-pointer shadow-none font-13" [(ngModel)]="selectedAcademicYear">
+            <option *ngFor="let year of academicYears" [value]="year">{{ year }}</option>
+          </select>
+        </div>
+
+        <!-- Search Input Box (Search Anything... with Right Icon) -->
+        <div class="header-search-box position-relative">
+          <input
+            type="text"
+            class="form-control form-control-sm rounded-3 bg-white border ps-3 py-1.5 pe-5 text-dark extra-small font-13 shadow-2xs"
+            placeholder="Search anything..."
+            [(ngModel)]="searchQuery" />
+          <i class="bi bi-search search-icon"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================================================================================== -->
+  <!-- TOP ROW: 5 COMPACT KPI STAT CARDS -->
+  <!-- =================================================================================== -->
+  <div class="row g-3 mb-3">
+    <div class="col-xl-2-4 col-md-4 col-sm-6" *ngFor="let kpi of kpiStats">
+      <div class="kpi-card-compact">
+        <div class="kpi-header">
+          <div class="kpi-icon-wrapper" [style.background-color]="kpi.iconBg" [style.color]="kpi.iconColor">
+            <i class="bi {{ kpi.icon }}"></i>
+          </div>
+          <span class="kpi-label">{{ kpi.title }}</span>
+        </div>
+        <div class="kpi-body">
+          <h3 class="kpi-value">{{ kpi.value }}</h3>
+          <div class="kpi-trend" [class.trend-up]="kpi.changePositive">
+            <i class="bi bi-arrow-up-short"></i>
+            <span>{{ kpi.change }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =================================================================================== -->
+  <!-- SECOND ROW: PLACEMENT OVERVIEW (5) + DRIVE STATUS (4) + TOP RECRUITERS (3) -->
+  <!-- =================================================================================== -->
+  <div class="row g-3 mb-3">
+
+    <!-- 1. Placement Overview Chart -->
+    <div class="col-lg-5">
+      <div class="dashboard-widget-card h-100">
+        <div class="widget-header">
+          <div class="d-flex align-items-center gap-2">
+            <h5 class="widget-title">Placement Overview</h5>
+          </div>
+          <select class="form-select form-select-sm filter-dropdown" [(ngModel)]="selectedOverviewFilter">
+            <option *ngFor="let tf of timeFilters" [value]="tf">{{ tf }}</option>
+          </select>
+        </div>
+
+        <!-- Custom Legend Row -->
+        <div class="chart-legend-row mb-2">
+          <div class="legend-item">
+            <span class="legend-dot bg-indigo"></span>
+            <span class="legend-text">Offers Made</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot bg-emerald"></span>
+            <span class="legend-text">Students Placed</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-line bg-purple"></span>
+            <span class="legend-text">Placement Rate (%)</span>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <highcharts-chart [options]="placementOverviewOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Drive Status Donut Chart -->
+    <div class="col-lg-4">
+      <div class="dashboard-widget-card h-100">
+        <div class="widget-header">
+          <h5 class="widget-title">Drive Status</h5>
+          <select class="form-select form-select-sm filter-dropdown" [(ngModel)]="selectedDriveStatusFilter">
+            <option *ngFor="let tf of timeFilters" [value]="tf">{{ tf }}</option>
+          </select>
+        </div>
+
+        <div class="d-flex align-items-center justify-content-between h-100 py-1">
+          <div class="donut-chart-wrapper position-relative" style="width: 58%;">
+            <highcharts-chart [options]="driveStatusOptions" style="width: 100%; height: 220px; display: block;"></highcharts-chart>
+            <div class="donut-center-overlay">
+              <span class="count">64</span>
+              <span class="sub">Total Drives</span>
+            </div>
+          </div>
+          <div class="donut-legend-list" style="width: 40%;">
+            <div *ngFor="let item of driveStatusList" class="donut-legend-item mb-2.5">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="legend-dot" [style.background-color]="item.color"></span>
+                <span class="legend-name">{{ item.label }}</span>
+              </div>
+              <div class="legend-val font-monospace ps-3">
+                <strong class="text-dark">{{ item.count }}</strong>
+                <span class="text-muted extra-small"> ({{ item.percentage }}%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Top Recruiters List -->
+    <div class="col-lg-3">
+      <div class="dashboard-widget-card h-100 d-flex flex-column">
+        <div class="widget-header">
+          <h5 class="widget-title">Top Recruiters</h5>
+          <a routerLink="/college/placements" class="widget-link-btn">View all <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="table-responsive recruiters-list-scroll flex-grow-1">
+          <table class="table table-borderless table-sm align-middle mb-0">
+            <thead>
+              <tr class="text-muted extra-small border-bottom">
+                <th class="ps-1 fw-normal sortable-header" (click)="toggleRecruiterSort('name')" style="cursor: pointer; user-select: none;">
+                  Company
+                  <i class="bi ms-1" [ngClass]="{
+                    'bi-arrow-down-up opacity-50': recruiterSortKey !== 'name',
+                    'bi-sort-alpha-down text-primary fw-bold': recruiterSortKey === 'name' && recruiterSortAsc,
+                    'bi-sort-alpha-up-alt text-primary fw-bold': recruiterSortKey === 'name' && !recruiterSortAsc
+                  }"></i>
+                </th>
+                <th class="pe-1 text-end fw-normal sortable-header" (click)="toggleRecruiterSort('offers')" style="cursor: pointer; user-select: none;">
+                  Offers
+                  <i class="bi ms-1" [ngClass]="{
+                    'bi-arrow-down-up opacity-50': recruiterSortKey !== 'offers',
+                    'bi-sort-numeric-down text-primary fw-bold': recruiterSortKey === 'offers' && !recruiterSortAsc,
+                    'bi-sort-numeric-up-alt text-primary fw-bold': recruiterSortKey === 'offers' && recruiterSortAsc
+                  }"></i>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let rec of getFilteredTopRecruiters()" class="recruiter-row">
+                <td class="ps-1 py-1.5">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="company-badge-avatar" [style.background-color]="rec.bg" [style.color]="rec.text">
+                      {{ rec.logoLetter }}
+                    </span>
+                    <span class="fw-semibold text-dark small-text">{{ rec.name }}</span>
+                  </div>
+                </td>
+                <td class="pe-1 text-end py-1.5 font-monospace fw-bold text-dark small-text">
+                  {{ rec.offers }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =================================================================================== -->
+  <!-- THIRD ROW: RECENT DRIVES (4) + TOP PERFORMERS (4) + PLACEMENT FUNNEL (4) -->
+  <!-- =================================================================================== -->
+  <div class="row g-3 mb-3">
+
+    <!-- 1. Recent Drives Table (Col 4) -->
+    <div class="col-lg-4">
+      <div class="dashboard-widget-card h-100 d-flex flex-column">
+        <div class="widget-header">
+          <h5 class="widget-title">Recent Drives</h5>
+          <a routerLink="/college/placements" class="widget-link-btn">View all <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="table-responsive recruiters-list-scroll flex-grow-1">
+          <table class="table table-hover align-middle mb-0 extra-small-table">
+            <thead>
+              <tr class="text-muted extra-small border-bottom">
+                <th class="ps-2 py-2">Company</th>
+                <th class="py-2">Role</th>
+                <th class="py-2 text-center">Eligible</th>
+                <th class="pe-2 text-end">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let drive of recentDrives">
+                <td class="ps-2 py-2 fw-semibold text-dark">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="company-badge-avatar xs" [style.background-color]="drive.bg" [style.color]="drive.text">
+                      {{ drive.code }}
+                    </span>
+                    <span class="text-truncate" style="max-width: 85px;">{{ drive.company }}</span>
+                  </div>
+                </td>
+                <td class="py-2 text-muted text-truncate" style="max-width: 90px;">{{ drive.role }}</td>
+                <td class="py-2 text-center font-monospace fw-bold text-dark">{{ drive.eligible }}</td>
+                <td class="pe-2 text-end py-2">
+                  <span class="status-pill {{ drive.statusClass }}">{{ drive.status }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Top Campus Performers Leaderboard (Col 4) -->
+    <div class="col-lg-4">
+      <div class="dashboard-widget-card h-100 d-flex flex-column">
+        <div class="widget-header align-items-start">
+          <div>
+            <h5 class="widget-title mb-0.5">Top Campus Performers</h5>
+            <span class="text-muted extra-small">Highest scoring candidates ready for high-CTC drives</span>
+          </div>
+          <select class="form-select form-select-sm filter-dropdown ms-2" [(ngModel)]="selectedPerformerFilter">
+            <option *ngFor="let pf of performerFilters" [value]="pf">{{ pf }}</option>
+          </select>
+        </div>
+
+        <div class="table-responsive recruiters-list-scroll flex-grow-1 mt-1">
+          <table class="table table-borderless table-sm align-middle mb-0">
+            <thead>
+              <tr class="text-muted extra-small border-bottom">
+                <th class="ps-1 fw-normal text-center" style="width: 32px;">Rank</th>
+                <th class="fw-normal">Candidate & Roll</th>
+                <th class="fw-normal d-none d-xl-table-cell">Branch</th>
+                <th class="text-center fw-normal">Score</th>
+                <th class="pe-1 text-end fw-normal">Tier</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of currentTopPerformers" class="recruiter-row">
+                <td class="ps-1 py-1.5 text-center">
+                  <span class="rank-badge" [ngClass]="{
+                    'rank-1': p.rank === 1,
+                    'rank-2': p.rank === 2,
+                    'rank-3': p.rank === 3,
+                    'rank-other': p.rank > 3
+                  }">#{{ p.rank }}</span>
+                </td>
+                <td class="py-1.5">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="company-badge-avatar xs flex-shrink-0" [style.background-color]="p.avatarBg" style="color: #ffffff; font-size: 0.6rem; font-weight: 700;">
+                      {{ getInitials(p.name) }}
+                    </span>
+                    <div class="text-truncate">
+                      <div class="fw-semibold text-dark extra-small text-truncate" style="max-width: 95px;">{{ p.name }}</div>
+                      <div class="font-monospace text-muted micro-text" style="font-size: 0.65rem;">{{ p.rollNo }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-1.5 text-muted extra-small text-truncate d-none d-xl-table-cell" style="max-width: 85px;">
+                  {{ p.branch }}
+                </td>
+                <td class="py-1.5 text-center font-monospace fw-bold text-dark extra-small">
+                  {{ p.score }}<span class="text-muted micro-text" style="font-size: 0.65rem;">/100</span>
+                </td>
+                <td class="pe-1 text-end py-1.5">
+                  <span class="badge bg-success-subtle text-success border border-success-subtle extra-small rounded-pill px-1.5 py-0.5">
+                    {{ p.tier }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="widget-footer text-center mt-auto">
+          <a routerLink="/college/results/analytics" class="readiness-footer-link">
+            View readiness leaderboard <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Placement Funnel (Col 4) -->
+    <div class="col-lg-4">
+      <div class="dashboard-widget-card h-100">
+        <div class="widget-header">
+          <h5 class="widget-title">Placement Funnel</h5>
+          <select class="form-select form-select-sm filter-dropdown" [(ngModel)]="selectedFunnelFilter">
+            <option *ngFor="let tf of timeFilters" [value]="tf">{{ tf }}</option>
+          </select>
+        </div>
+
+        <div class="funnel-list py-1">
+          <div *ngFor="let item of placementFunnel" class="funnel-item mb-2.5">
+            <div class="d-flex justify-content-between align-items-center mb-1 extra-small">
+              <span class="funnel-stage-name fw-medium text-secondary">{{ item.stage }}</span>
+              <span class="funnel-stage-count font-monospace fw-bold text-dark">{{ item.formattedCount }}</span>
+            </div>
+            <div class="progress funnel-progress-bg">
+              <div class="progress-bar funnel-progress-bar" [style.width.%]="item.percentage"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =================================================================================== -->
+  <!-- FOURTH ROW: READINESS ASSESSMENT EVALUATIONS (DONUT TIER BREAKDOWN + SESSION BAR CHART) -->
+  <!-- =================================================================================== -->
+  <div class="row g-3 mb-3">
+
+    <!-- 1. Assessment Readiness Tier Breakdown Donut -->
+    <div class="col-lg-5">
+      <div class="dashboard-widget-card h-100 d-flex flex-column">
+        <div class="widget-header">
+          <h5 class="widget-title">Readiness Tier Breakdown</h5>
+          <select class="form-select form-select-sm filter-dropdown" [(ngModel)]="selectedAssessmentFilter" (change)="onReadinessTierFilterChange()">
+            <option *ngFor="let tf of readinessTierFilters" [value]="tf">{{ tf }}</option>
+          </select>
+        </div>
+
+        <div class="d-flex align-items-center justify-content-between my-auto py-2">
+          <div class="donut-chart-wrapper position-relative" style="width: 58%;">
+            <highcharts-chart [options]="assessmentReadinessOptions" style="width: 100%; height: 220px; display: block;"></highcharts-chart>
+            <div class="donut-center-overlay">
+              <span class="count">{{ currentReadinessStats.totalEvaluated }}</span>
+              <span class="sub">Evaluated</span>
+            </div>
+          </div>
+          <div class="donut-legend-list" style="width: 40%;">
+            <div *ngFor="let item of assessmentReadinessList" class="donut-legend-item mb-3">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="legend-dot" [style.background-color]="item.color"></span>
+                <span class="legend-name extra-small fw-bold text-dark">{{ item.label }}</span>
+              </div>
+              <div class="legend-val font-monospace ps-3">
+                <strong class="text-dark extra-small">{{ item.count }} Tests</strong>
+                <span class="text-muted extra-small"> ({{ item.percentage }}%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="widget-footer d-flex align-items-center justify-content-between mt-auto">
+          <span>Avg Score: <strong class="text-dark font-monospace">{{ currentReadinessStats.avgScore }} / 100</strong></span>
+          <span>Completion Rate: <strong class="text-success font-monospace">{{ currentReadinessStats.completionRate }}%</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Session Assessment Attendance & Participation Bar Chart -->
+    <div class="col-lg-7">
+      <div class="dashboard-widget-card h-100 d-flex flex-column">
+        <div class="widget-header">
+          <div>
+            <h5 class="widget-title">Session Test Participation</h5>
+            <span class="text-muted extra-small">Live candidate attendance & score breakdown per assessment</span>
+          </div>
+          <span class="badge bg-primary-subtle text-primary extra-small px-2.5 py-1 rounded-pill fw-bold">Hover for Detailed Tooltip</span>
+        </div>
+
+        <div class="chart-container my-auto">
+          <highcharts-chart [options]="sessionTestsChartOptions" style="width: 100%; height: 235px; display: block;"></highcharts-chart>
+        </div>
+
+        <div class="widget-footer d-flex align-items-center justify-content-between mt-auto">
+          <span>Total Session Tests: <strong class="text-dark font-monospace">4 Tests</strong></span>
+          <span>Total Candidate Attempts: <strong class="text-primary font-monospace">1,303 Submissions</strong></span>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <!-- =================================================================================== -->
+  <!-- FIFTH ROW: PLACEMENT POLICY COMPLIANCE (5) + DRIVE CALENDAR (7) -->
+  <!-- =================================================================================== -->
+  <div class="row g-3">
+
+    <!-- 1. Placement Policy Compliance -->
+    <div class="col-lg-5">
+      <div class="dashboard-widget-card h-100">
+        <div class="widget-header">
+          <h5 class="widget-title">Placement Policy Compliance</h5>
+          <a routerLink="/college/team" class="widget-link-btn">View details <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="row g-2 py-1">
+          <div *ngFor="let item of policyCompliance" class="col-6">
+            <div class="compliance-sub-card">
+              <div class="compliance-icon-box" [style.background-color]="item.iconBg" [style.color]="item.iconColor">
+                <i class="bi {{ item.icon }}"></i>
+              </div>
+              <div class="compliance-info">
+                <span class="compliance-label">{{ item.title }}</span>
+                <div class="compliance-value-row">
+                  <h4 class="compliance-count">{{ item.count }}</h4>
+                  <span class="compliance-subtext">{{ item.sub }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Drive Calendar -->
+    <div class="col-lg-7">
+      <div class="dashboard-widget-card h-100">
+        <div class="widget-header">
+          <h5 class="widget-title">Drive Calendar</h5>
+          <a routerLink="/college/placements" class="widget-link-btn">View calendar <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="row g-2 py-1">
+          <div *ngFor="let event of driveCalendar" class="col-md-3 col-6">
+            <div class="calendar-event-card">
+              <div class="calendar-date-box" [style.background-color]="event.dateBg">
+                <span class="date-day">{{ event.day }}</span>
+                <span class="date-month">{{ event.month }}</span>
+              </div>
+              <div class="calendar-event-details">
+                <h6 class="event-company">{{ event.company }}</h6>
+                <span class="event-role">{{ event.role }}</span>
+                <div class="mt-1.5">
+                  <span class="status-pill {{ event.statusClass }}">{{ event.status }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

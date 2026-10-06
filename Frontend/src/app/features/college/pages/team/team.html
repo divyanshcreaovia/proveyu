@@ -1,0 +1,464 @@
+<div class="team-page container-fluid p-0">
+
+  <!-- Toast Notification Banner -->
+  <div class="toast-notification-banner position-fixed top-0 start-50 translate-middle-x mt-3 z-3" *ngIf="toastMessage">
+    <div class="alert alert-dark bg-dark text-white border-0 shadow-lg rounded-pill px-4 py-2.5 d-flex align-items-center gap-2.5 m-0 small">
+      <i class="bi bi-info-circle-fill text-warning fs-6"></i>
+      <span class="fw-semibold">{{ toastMessage }}</span>
+    </div>
+  </div>
+
+  <!-- Welcome / Diagnostic Header Banner -->
+  <div class="welcome-banner-card mb-4">
+    <div class="banner-content">
+      <div class="banner-text">
+        <h3 class="welcome-title">TPO Team & Role Management</h3>
+        <p class="welcome-subtitle">
+          Manage administrative privileges, departmental faculty coordinators, test invigilators, and RBAC governance.
+        </p>
+      </div>
+      <div class="banner-actions">
+        <a routerLink="/college/team/audit" class="btn btn-outline-custom">
+          <i class="bi bi-shield-check text-primary me-1"></i> Audit Logs
+        </a>
+        <button class="btn btn-outline-custom" (click)="exportTeamRoster()">
+          <i class="bi bi-file-earmark-excel-fill text-success me-1"></i> Export Roster
+        </button>
+        <button class="btn btn-primary-custom" (click)="openInviteModal()">
+          <i class="bi bi-person-plus-fill me-1"></i> Invite Member
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Executive 4-Card KPI Stat Strip -->
+  <div class="kpi-stats-grid mb-4">
+    <!-- Card 1: Total Team -->
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <span class="kpi-tag">Total Staff</span>
+        <span class="kpi-badge">Active Roster</span>
+      </div>
+      <div class="kpi-value-row">
+        <div class="kpi-value text-navy">{{ totalMembers }}</div>
+        <div class="kpi-icon-box"><i class="bi bi-people"></i></div>
+      </div>
+      <div class="kpi-subtext">Registered officers & faculty</div>
+    </div>
+
+    <!-- Card 2: Active Officers -->
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <span class="kpi-tag">Active Status</span>
+        <span class="kpi-badge text-success bg-success-subtle">Online</span>
+      </div>
+      <div class="kpi-value-row">
+        <div class="kpi-value text-navy">{{ activeMembers }}</div>
+        <div class="kpi-icon-box"><i class="bi bi-check2-circle text-success"></i></div>
+      </div>
+      <div class="kpi-subtext">Enabled with login access</div>
+    </div>
+
+    <!-- Card 3: Faculty Coordinators -->
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <span class="kpi-tag">Coordinators</span>
+        <span class="kpi-badge">Dept Heads</span>
+      </div>
+      <div class="kpi-value-row">
+        <div class="kpi-value text-navy">{{ facultyCoordinators }}</div>
+        <div class="kpi-icon-box"><i class="bi bi-mortarboard text-primary"></i></div>
+      </div>
+      <div class="kpi-subtext">CSE, IT & Core Branches</div>
+    </div>
+
+    <!-- Card 4: Invigilators & Staff -->
+    <div class="kpi-card">
+      <div class="kpi-top">
+        <span class="kpi-tag">Test Invigilators</span>
+        <span class="kpi-badge">Lab Proctors</span>
+      </div>
+      <div class="kpi-value-row">
+        <div class="kpi-value text-navy">{{ invigilatorsCount }}</div>
+        <div class="kpi-icon-box"><i class="bi bi-person-workspace text-warning"></i></div>
+      </div>
+      <div class="kpi-subtext">Live assessment monitoring</div>
+    </div>
+  </div>
+
+  <!-- Integrated Navigation Tab Switcher Card -->
+  <div class="dashboard-card mb-4 p-3 px-4">
+    <div class="d-flex align-items-center gap-3 overflow-auto py-1">
+      <button class="btn btn-sm rounded-pill font-inter fw-bold extra-small transition-all"
+        [ngClass]="activeTab === 'members' ? 'btn-dark-pill' : 'btn-outline-pill'"
+        (click)="setTab('members')">
+        <i class="bi bi-person-lines-fill me-1.5"></i>
+        1. Staff Members & Access Roster ({{ filteredMembers.length }})
+      </button>
+
+      <button class="btn btn-sm rounded-pill font-inter fw-bold extra-small transition-all"
+        [ngClass]="activeTab === 'roles_matrix' ? 'btn-dark-pill' : 'btn-outline-pill'"
+        (click)="setTab('roles_matrix')">
+        <i class="bi bi-grid-3x3-gap-fill me-1.5"></i>
+        2. Role-Based Access Control (RBAC Matrix)
+      </button>
+    </div>
+  </div>
+
+  <!-- TAB 1: MEMBERS ROSTER -->
+  <div *ngIf="activeTab === 'members'">
+    <!-- Filter Toolbar -->
+    <div class="filter-toolbar-card mb-4">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <!-- Search Input -->
+        <div class="search-input-box flex-grow-1" style="max-width: 380px;">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" class="form-control filter-input" placeholder="Search by name, email, department, role..."
+            [(ngModel)]="searchQuery" />
+        </div>
+
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+          <!-- Role Filter -->
+          <div class="d-flex align-items-center gap-2">
+            <span class="filter-label">Role:</span>
+            <select class="form-select filter-select" [(ngModel)]="selectedRoleFilter">
+              <option value="All">All Roles</option>
+              <option value="Head TPO">Head TPO</option>
+              <option value="Coordinator">Faculty Coordinator</option>
+              <option value="Admin">Admin Staff</option>
+              <option value="Invigilator">Test Invigilator</option>
+            </select>
+          </div>
+
+          <!-- Department Filter -->
+          <div class="d-flex align-items-center gap-2">
+            <span class="filter-label">Department:</span>
+            <select class="form-select filter-select" [(ngModel)]="selectedDeptFilter">
+              <option value="All">All Departments</option>
+              <option value="TPO Central Cell">TPO Central Cell</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Electronics & Telecomm">Electronics & Telecomm</option>
+              <option value="Placement Cell Operations">Placement Cell Operations</option>
+              <option value="Lab & Infrastructure">Lab & Infrastructure</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Members Table Card -->
+    <div class="dashboard-card p-0 mb-4 overflow-hidden border">
+      <div class="table-responsive">
+        <table class="table modern-table align-middle mb-0">
+          <thead>
+            <tr>
+              <th class="ps-4">Team Member</th>
+              <th>Department</th>
+              <th>Role & Designation</th>
+              <th>Access Level</th>
+              <th>Last Active</th>
+              <th>Status</th>
+              <th class="pe-4 text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of filteredMembers" class="table-row-hover">
+              <!-- Member Info -->
+              <td class="ps-4">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="member-avatar rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
+                    [style.background-color]="m.avatarColor">
+                    {{ m.name.charAt(0) }}
+                  </div>
+                  <div>
+                    <div class="fw-bold text-dark fs-6">{{ m.name }}</div>
+                    <div class="text-secondary extra-small font-monospace">{{ m.email }} • {{ m.phone }}</div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Department -->
+              <td>
+                <span class="text-dark fw-semibold extra-small">{{ m.department }}</span>
+              </td>
+
+              <!-- Role Designation Badge -->
+              <td>
+                <span class="badge rounded-pill px-3 py-1.5 fw-bold"
+                  [ngClass]="{
+                    'bg-dark text-white': m.role.includes('Head'),
+                    'bg-primary-subtle text-primary border border-primary-subtle': m.role.includes('Coordinator'),
+                    'bg-success-subtle text-success border border-success-subtle': m.role.includes('Admin'),
+                    'bg-warning-subtle text-warning border border-warning-subtle': m.role.includes('Invigilator')
+                  }">
+                  {{ m.role }}
+                </span>
+              </td>
+
+              <!-- Access Level (Pill Badge Instead of Bar) -->
+              <td>
+                <span class="badge rounded-pill px-3 py-1 font-monospace extra-small fw-bold"
+                  [ngClass]="{
+                    'bg-dark text-white': m.access.includes('100'),
+                    'bg-primary-subtle text-primary border border-primary-subtle': m.access.includes('80'),
+                    'bg-info-subtle text-info-emphasis border border-info-subtle': m.access.includes('60'),
+                    'bg-secondary-subtle text-dark border border-secondary-subtle': m.access.includes('40')
+                  }">
+                  <i class="bi bi-shield-check me-1"></i>{{ m.access }}
+                </span>
+              </td>
+
+              <!-- Last Active -->
+              <td>
+                <span class="text-secondary extra-small font-monospace">
+                  <i class="bi bi-clock me-1 text-muted"></i>{{ m.lastActive }}
+                </span>
+              </td>
+
+              <!-- Status -->
+              <td>
+                <span class="badge rounded-pill px-2.5 py-1 fw-bold extra-small cursor-pointer"
+                  [ngClass]="m.status === 'Active' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning border border-warning-subtle'"
+                  (click)="toggleMemberStatus(m)">
+                  {{ m.status === 'Active' ? '● Active' : '○ Pending' }}
+                </span>
+              </td>
+
+              <!-- Actions -->
+              <td class="pe-4 text-end">
+                <div class="d-flex align-items-center justify-content-end gap-1.5">
+                  <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 extra-small fw-bold border"
+                    (click)="openEditModal(m)">
+                    <i class="bi bi-pencil me-1"></i> Edit
+                  </button>
+                  <button *ngIf="m.status === 'Pending Invite'" class="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 extra-small fw-bold"
+                    (click)="resendInvite(m)" title="Resend Email">
+                    <i class="bi bi-send"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Empty State -->
+            <tr *ngIf="filteredMembers.length === 0">
+              <td colspan="7" class="text-center py-5">
+                <i class="bi bi-people text-muted fs-1 d-block mb-2"></i>
+                <div class="fw-bold text-dark">No team members match your criteria</div>
+                <div class="text-muted extra-small">Try clearing your filters or search terms.</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: ROLES & PERMISSIONS MATRIX (Fully Working & Interactive) -->
+  <div *ngIf="activeTab === 'roles_matrix'">
+    <div class="dashboard-card p-4 mb-4">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3">
+        <div>
+          <h5 class="fw-bold text-dark mb-1">Institutional Privilege & RBAC Matrix</h5>
+          <p class="text-muted extra-small mb-0">
+            Click on any permission checkbox/badge below to grant or revoke institutional portal authorizations in real-time.
+          </p>
+        </div>
+        
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 extra-small fw-bold border"
+            (click)="resetMatrixPermissions()">
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset to Default
+          </button>
+          <button class="btn btn-sm btn-primary-custom" (click)="saveMatrixPermissions()">
+            <i class="bi bi-check2-circle me-1"></i> Save Privilege Policy
+          </button>
+        </div>
+      </div>
+
+      <div class="table-responsive border rounded-3 overflow-hidden">
+        <table class="table modern-table align-middle mb-0">
+          <thead>
+            <tr>
+              <th class="ps-4" style="width: 40%;">Portal Feature & Capability</th>
+              <th class="text-center" style="width: 15%;">
+                <div class="fw-bold text-dark">Super Admin</div>
+                <div class="text-muted extra-small font-monospace">(Head TPO)</div>
+              </th>
+              <th class="text-center" style="width: 15%;">
+                <div class="fw-bold text-dark">Coordinator</div>
+                <div class="text-muted extra-small font-monospace">(Faculty Dept)</div>
+              </th>
+              <th class="text-center" style="width: 15%;">
+                <div class="fw-bold text-dark">Placement Staff</div>
+                <div class="text-muted extra-small font-monospace">(Operations)</div>
+              </th>
+              <th class="text-center" style="width: 15%;">
+                <div class="fw-bold text-dark">Test Invigilator</div>
+                <div class="text-muted extra-small font-monospace">(Lab Proctors)</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of roleMatrix" class="table-row-hover">
+              <td class="ps-4">
+                <span class="fw-bold text-dark fs-6 d-block">{{ item.feature }}</span>
+                <span class="text-muted extra-small">Institutional module access rule</span>
+              </td>
+
+              <!-- Super Admin (Locked / Full) -->
+              <td class="text-center">
+                <button type="button" class="btn btn-sm p-1 border-0" (click)="togglePermission(item, 'headTpo')"
+                  title="Super Admin has mandatory full access">
+                  <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                </button>
+              </td>
+
+              <!-- Faculty Coordinator (Clickable Toggle) -->
+              <td class="text-center">
+                <button type="button" class="btn btn-sm p-1 border-0 cursor-pointer rbac-toggle-btn"
+                  (click)="togglePermission(item, 'coordinator')"
+                  [title]="item.coordinator ? 'Click to Revoke' : 'Click to Grant'">
+                  <i class="bi fs-4 transition-all"
+                    [ngClass]="item.coordinator ? 'bi-check-circle-fill text-success' : 'bi-x-circle text-secondary opacity-50'"></i>
+                </button>
+              </td>
+
+              <!-- Admin Staff (Clickable Toggle) -->
+              <td class="text-center">
+                <button type="button" class="btn btn-sm p-1 border-0 cursor-pointer rbac-toggle-btn"
+                  (click)="togglePermission(item, 'adminStaff')"
+                  [title]="item.adminStaff ? 'Click to Revoke' : 'Click to Grant'">
+                  <i class="bi fs-4 transition-all"
+                    [ngClass]="item.adminStaff ? 'bi-check-circle-fill text-success' : 'bi-x-circle text-secondary opacity-50'"></i>
+                </button>
+              </td>
+
+              <!-- Test Invigilator (Clickable Toggle) -->
+              <td class="text-center">
+                <button type="button" class="btn btn-sm p-1 border-0 cursor-pointer rbac-toggle-btn"
+                  (click)="togglePermission(item, 'invigilator')"
+                  [title]="item.invigilator ? 'Click to Revoke' : 'Click to Grant'">
+                  <i class="bi fs-4 transition-all"
+                    [ngClass]="item.invigilator ? 'bi-check-circle-fill text-success' : 'bi-x-circle text-secondary opacity-50'"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVITE MODAL -->
+  <div class="modal fade show d-block" style="background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px);" *ngIf="showInviteModal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+        <div class="modal-header border-bottom px-4 py-3 bg-light-subtle">
+          <h5 class="modal-title fw-bold text-dark fs-6 d-flex align-items-center gap-2">
+            <i class="bi bi-person-plus-fill text-primary"></i> Invite New Team Member
+          </h5>
+          <button type="button" class="btn-close" (click)="closeInviteModal()"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form (ngSubmit)="submitInvite()">
+            <div class="mb-3">
+              <label class="form-label extra-small fw-bold text-secondary">Full Name *</label>
+              <input type="text" class="form-control rounded-3" placeholder="e.g. Dr. Rajesh Verma" [(ngModel)]="inviteForm.name" name="name" required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label extra-small fw-bold text-secondary">Official Institutional Email *</label>
+              <input type="email" class="form-control rounded-3" placeholder="e.g. rajesh@mgmcet.ac.in" [(ngModel)]="inviteForm.email" name="email" required />
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label extra-small fw-bold text-secondary">Phone Number</label>
+                <input type="text" class="form-control rounded-3" placeholder="+91 98..." [(ngModel)]="inviteForm.phone" name="phone" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label extra-small fw-bold text-secondary">Department</label>
+                <select class="form-select rounded-3" [(ngModel)]="inviteForm.department" name="department">
+                  <option value="Computer Science">Computer Science</option>
+                  <option value="Information Technology">Information Technology</option>
+                  <option value="Electronics & Telecomm">Electronics & Telecomm</option>
+                  <option value="Mechanical Engineering">Mechanical Engineering</option>
+                  <option value="TPO Central Cell">TPO Central Cell</option>
+                  <option value="Placement Cell Operations">Placement Cell Operations</option>
+                  <option value="Lab & Infrastructure">Lab & Infrastructure</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label extra-small fw-bold text-secondary">Role & Privilege Level *</label>
+              <select class="form-select rounded-3" [(ngModel)]="inviteForm.role" name="role">
+                <option value="Faculty Coordinator (CSE)">Faculty Coordinator (80% Access)</option>
+                <option value="Faculty Coordinator (IT)">Faculty Coordinator (80% Access)</option>
+                <option value="Admin Placement Officer">Admin Placement Officer (60% Access)</option>
+                <option value="Test & Lab Invigilator">Test Invigilator (40% Access)</option>
+              </select>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="button" class="btn btn-outline-secondary rounded-pill px-4 extra-small fw-bold" (click)="closeInviteModal()">Cancel</button>
+              <button type="submit" class="btn btn-primary-custom">Send Email Invite</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT ACCESS MODAL -->
+  <div class="modal fade show d-block" style="background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px);" *ngIf="showEditModal && selectedMember">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+        <div class="modal-header border-bottom px-4 py-3 bg-light-subtle">
+          <h5 class="modal-title fw-bold text-dark fs-6 d-flex align-items-center gap-2">
+            <i class="bi bi-shield-lock-fill text-primary"></i> Edit Member Access & Role
+          </h5>
+          <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label class="form-label extra-small fw-bold text-secondary">Member Name</label>
+            <input type="text" class="form-control rounded-3" [(ngModel)]="selectedMember.name" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label extra-small fw-bold text-secondary">Email Address</label>
+            <input type="text" class="form-control rounded-3 bg-light" [value]="selectedMember.email" disabled />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label extra-small fw-bold text-secondary">Department</label>
+            <input type="text" class="form-control rounded-3" [(ngModel)]="selectedMember.department" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label extra-small fw-bold text-secondary">Role</label>
+            <input type="text" class="form-control rounded-3" [(ngModel)]="selectedMember.role" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label extra-small fw-bold text-secondary">Access Tier</label>
+            <select class="form-select rounded-3" [(ngModel)]="selectedMember.access">
+              <option value="Full Access (100%)">Full Access (100%)</option>
+              <option value="80% Access">80% Access (Faculty Coordinator)</option>
+              <option value="60% Access">60% Access (Admin Officer)</option>
+              <option value="40% Access">40% Access (Invigilator)</option>
+            </select>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-outline-secondary rounded-pill px-4 extra-small fw-bold" (click)="closeEditModal()">Cancel</button>
+            <button type="button" class="btn btn-primary-custom" (click)="saveEditMember()">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

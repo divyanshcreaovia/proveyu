@@ -1,0 +1,401 @@
+.college-header {
+  background-color: transparent;
+
+  /* Actions wrapper with comfortable gap between bell and profile */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px !important;
+  }
+
+  /* ==========================================================================
+     1. NOTIFICATIONS SECTION (Fully Isolated)
+     ========================================================================== */
+  .notif-dropdown-wrapper {
+    .circle-action-btn {
+      width: 36px;
+      height: 36px;
+      transition: all 0.2s ease-in-out;
+      background-color: #ffffff;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      border: 1px solid #e2e8f0 !important;
+
+      i {
+        font-size: 0.95rem;
+        color: #64748b;
+        transition: color 0.15s ease;
+      }
+
+      &:hover, &.active-btn {
+        background-color: #f8fafc;
+        border-color: #cbd5e1 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+
+        i {
+          color: #0f172a;
+        }
+      }
+    }
+
+    .badge-dot-indicator {
+      width: 8px;
+      height: 8px;
+      top: 7px;
+      right: 7px;
+      border: 1.5px solid #ffffff;
+    }
+
+    .notifications-dropdown {
+      z-index: 1050;
+      width: 360px;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12) !important;
+      animation: fadeInSlideDown 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+
+      .dropdown-header {
+        padding: 12px 16px !important;
+        background-color: #f8fafc;
+
+        .notif-header-title {
+          font-size: 0.88rem;
+          color: #0f172a;
+        }
+
+        .notif-badge {
+          font-size: 0.68rem;
+        }
+
+        .mark-read-link {
+          font-size: 0.72rem;
+          color: #64748b;
+          text-decoration: none;
+
+          &:hover {
+            color: #0f172a;
+          }
+        }
+      }
+
+      .notif-item-icon-box {
+        width: 36px;
+        height: 36px;
+        background: #f8fafc;
+        color: #0f172a;
+        font-size: 1rem;
+        border: 1px solid #e2e8f0;
+      }
+
+      .notif-item-title {
+        font-size: 0.82rem;
+      }
+
+      .notif-item-time {
+        font-size: 0.68rem;
+      }
+
+      .notif-item-desc {
+        font-size: 0.75rem;
+      }
+
+      .unread-bg {
+        background-color: #fcfaff;
+      }
+
+      .dropdown-item-row {
+        transition: background-color 0.15s ease;
+        &:hover {
+          background-color: #f8fafc;
+        }
+      }
+    }
+  }
+
+  /* ==========================================================================
+     2. PROFILE SECTION (Structured, Generous Padding, Professional Design)
+     ========================================================================== */
+  .profile-dropdown-wrapper {
+    .profile-pill-box {
+      padding: 3px 12px 3px 4px !important;
+      gap: 9px !important;
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0 !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+
+      .avatar {
+        width: 30px;
+        height: 30px;
+        font-size: 0.75rem;
+        letter-spacing: 0.4px;
+        background: #16122b !important;
+        border: 1.5px solid #ffffff;
+      }
+
+      .profile-user-name {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #0f172a;
+        letter-spacing: -0.01em;
+        line-height: 1;
+      }
+
+      .profile-chevron {
+        font-size: 0.65rem;
+        margin-left: 2px;
+        color: #94a3b8;
+        transition: transform 0.2s ease, color 0.2s ease;
+      }
+
+      &:hover {
+        border-color: #cbd5e1 !important;
+        box-shadow: 0 3px 10px rgba(15, 23, 42, 0.07);
+        transform: translateY(-1px);
+
+        .profile-chevron {
+          color: #475569;
+        }
+      }
+    }
+
+    /* Professional Profile Dropdown Menu Card */
+    .profile-menu {
+      z-index: 1050;
+      width: 240px;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12), 0 4px 12px rgba(15, 23, 42, 0.04) !important;
+      animation: fadeInSlideDown 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: 16px !important;
+
+      /* Header User Card */
+      .profile-header-card {
+        background-color: #f8fafc;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+
+        .avatar-sm {
+          width: 38px;
+          height: 38px;
+          font-size: 0.82rem;
+          letter-spacing: 0.5px;
+          background: linear-gradient(135deg, #16122b 0%, #2e265c 100%) !important;
+          border: 2px solid #ffffff;
+        }
+
+        .profile-dropdown-name {
+          font-size: 0.88rem;
+          color: #0f172a;
+          line-height: 1.25;
+          letter-spacing: -0.01em;
+        }
+
+        .profile-dropdown-role {
+          font-size: 0.72rem;
+          color: #64748b;
+          line-height: 1.2;
+        }
+      }
+
+      /* Action Menu Links with dedicated icon boxes */
+      .profile-action-link {
+        padding: 8px 10px !important;
+        transition: all 0.15s ease-in-out;
+        border-radius: 10px !important;
+
+        .item-icon-box {
+          width: 28px;
+          height: 28px;
+          background-color: #f8fafc;
+          border: 1px solid #f1f5f9;
+          transition: all 0.15s ease-in-out;
+
+          i {
+            font-size: 0.88rem;
+            color: #475569;
+          }
+        }
+
+        .profile-action-text {
+          font-size: 0.8rem;
+          color: #334155;
+          letter-spacing: -0.01em;
+        }
+
+        &:hover {
+          background-color: #f8fafc;
+
+          .item-icon-box {
+            background-color: #ffffff;
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+            i {
+              color: #0f172a;
+            }
+          }
+
+          .profile-action-text {
+            color: #0f172a;
+          }
+        }
+
+        /* Logout Specific State */
+        &.logout-link {
+          &:hover {
+            background-color: #fff1f2;
+
+            .logout-icon-box {
+              background-color: #ffffff;
+              border-color: #fecdd3;
+              box-shadow: 0 2px 6px rgba(225, 29, 72, 0.1);
+
+              i {
+                color: #e11d48;
+              }
+            }
+
+            .profile-action-text {
+              color: #e11d48;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .btn-expand-btn {
+    font-size: 0.72rem;
+    color: #7c3aed;
+    border: 1px solid #ede9fe !important;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #f3e8ff !important;
+      color: #6d28d9 !important;
+      transform: translateY(-1px);
+    }
+  }
+
+  .font-10 { font-size: 0.65rem; }
+  .font-11 { font-size: 0.72rem; }
+  .font-12 { font-size: 0.78rem; }
+  .font-13 { font-size: 0.84rem; }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+}
+
+/* ==========================================================================
+   3. EXPANDED NOTIFICATIONS MODAL (Dedicated Namespace)
+   ========================================================================== */
+.modal-backdrop-custom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 1rem;
+
+  .modal-card-custom {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
+    width: 100%;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+    animation: modalSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-dark-pill {
+    background: #16122b !important;
+    color: #ffffff !important;
+    border: 1px solid #16122b !important;
+    border-radius: 50px !important;
+  }
+
+  .btn-outline-pill {
+    background: #ffffff !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 50px !important;
+
+    &:hover {
+      background: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+    }
+  }
+
+  .notif-item-card {
+    border-color: #e2e8f0 !important;
+    border-radius: 12px !important;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: #cbd5e1 !important;
+      background-color: #faf8ff !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+  }
+
+  .btn-outline-custom-btn {
+    background: #ffffff;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+  }
+}
+
+/* Custom Scrollbar Utility */
+.custom-scroll {
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f8fafc;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
+
+@keyframes fadeInSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

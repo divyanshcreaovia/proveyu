@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { RecruiterChatService } from '../../services/recruiter-chat.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 
@@ -29,7 +29,7 @@ export interface CandidateProfileItem {
 @Component({
   selector: 'app-candidate-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   templateUrl: './candidate-detail.html',
   styleUrl: './candidate-detail.scss',
 })

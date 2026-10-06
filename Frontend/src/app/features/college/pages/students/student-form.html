@@ -1,0 +1,141 @@
+<div class="student-form-page container-fluid p-0">
+  
+  <div class="welcome-banner-card mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <a routerLink="/college/students" class="btn btn-action-circle" title="Back to Students">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <div>
+        <h4 class="welcome-title mb-1">Add / Edit Student Record</h4>
+        <p class="welcome-subtitle mb-0">Fill in student personal, academic, and portfolio links for ProveYu proctored evaluation.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-success border-0 rounded-3 shadow-xs p-3 mb-4" *ngIf="isSaved">
+    <i class="bi bi-check-circle-fill me-2"></i> Student profile saved successfully! Redirecting to roster...
+  </div>
+
+  <form (ngSubmit)="onSubmit()" #studentForm="ngForm">
+    <!-- Section 1: Personal Information -->
+    <div class="card border-0 shadow-2xs rounded-4 p-4 mb-4 bg-white">
+      <h6 class="fw-bold text-dark mb-3 text-uppercase font-monospace extra-small border-bottom pb-2">
+        <i class="bi bi-person-fill text-primary me-1"></i> Section 1: Personal Information
+      </h6>
+
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label extra-small fw-bold text-secondary">Roll Number *</label>
+          <input type="text" class="form-control form-control-sm rounded-3 border" required [(ngModel)]="formData.rollNumber" name="rollNumber">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label extra-small fw-bold text-secondary">First Name *</label>
+          <input type="text" class="form-control form-control-sm rounded-3 border" required [(ngModel)]="formData.firstName" name="firstName">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label extra-small fw-bold text-secondary">Last Name *</label>
+          <input type="text" class="form-control form-control-sm rounded-3 border" required [(ngModel)]="formData.lastName" name="lastName">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label extra-small fw-bold text-secondary">College Email Address *</label>
+          <input type="email" class="form-control form-control-sm rounded-3 border" required [(ngModel)]="formData.email" name="email">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label extra-small fw-bold text-secondary">Mobile Phone Number</label>
+          <input type="tel" class="form-control form-control-sm rounded-3 border" [(ngModel)]="formData.phone" name="phone">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label extra-small fw-bold text-secondary">Date of Birth</label>
+          <input type="date" class="form-control form-control-sm rounded-3 border" [(ngModel)]="formData.dob" name="dob">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label extra-small fw-bold text-secondary">Gender</label>
+          <select class="form-select form-select-sm rounded-3 border" [(ngModel)]="formData.gender" name="gender">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="col-md-8">
+          <label class="form-label extra-small fw-bold text-secondary">Residential Address</label>
+          <input type="text" class="form-control form-control-sm rounded-3 border" [(ngModel)]="formData.address" name="address">
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Academic Information -->
+    <div class="card border-0 shadow-2xs rounded-4 p-4 mb-4 bg-white">
+      <h6 class="fw-bold text-dark mb-3 text-uppercase font-monospace extra-small border-bottom pb-2">
+        <i class="bi bi-mortarboard-fill text-primary me-1"></i> Section 2: Academic Information
+      </h6>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label extra-small fw-bold text-secondary">College Name</label>
+          <input type="text" class="form-control form-control-sm rounded-3 border bg-light" readonly [(ngModel)]="formData.collegeName" name="collegeName">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label extra-small fw-bold text-secondary">Batch Year *</label>
+          <select class="form-select form-select-sm rounded-3 border" [(ngModel)]="formData.batchYear" name="batchYear">
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label extra-small fw-bold text-secondary">Branch / Department *</label>
+          <input type="text" class="form-control form-control-sm rounded-3 border" required [(ngModel)]="formData.branch" name="branch">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label extra-small fw-bold text-secondary">Degree Name</label>
+          <input type="text" class="form-control form-control-sm rounded-3 border" [(ngModel)]="formData.degree" name="degree">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label extra-small fw-bold text-secondary">CGPA / Percentage</label>
+          <input type="text" class="form-control form-control-sm rounded-3 border" [(ngModel)]="formData.cgpa" name="cgpa">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label extra-small fw-bold text-secondary">Expected Graduation Date</label>
+          <input type="date" class="form-control form-control-sm rounded-3 border" [(ngModel)]="formData.gradDate" name="gradDate">
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Professional Links & Resume -->
+    <div class="card border-0 shadow-2xs rounded-4 p-4 mb-4 bg-white">
+      <h6 class="fw-bold text-dark mb-3 text-uppercase font-monospace extra-small border-bottom pb-2">
+        <i class="bi bi-link-45deg text-primary me-1"></i> Section 3: Professional Links & Resume
+      </h6>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label extra-small fw-bold text-secondary">Upload Resume (PDF only)</label>
+          <input type="file" class="form-control form-control-sm rounded-3 border" accept=".pdf">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label extra-small fw-bold text-secondary">LinkedIn Profile URL</label>
+          <input type="url" class="form-control form-control-sm rounded-3 border" [(ngModel)]="formData.linkedin" name="linkedin">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label extra-small fw-bold text-secondary">GitHub Profile URL</label>
+          <input type="url" class="form-control form-control-sm rounded-3 border" [(ngModel)]="formData.github" name="github">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label extra-small fw-bold text-secondary">Portfolio Website URL</label>
+          <input type="url" class="form-control form-control-sm rounded-3 border" [(ngModel)]="formData.portfolio" name="portfolio">
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Action Controls -->
+    <div class="d-flex align-items-center justify-content-end gap-3 pb-4">
+      <a routerLink="/college/students" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-bold extra-small">Cancel</a>
+      <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold extra-small shadow-sm">Save Student</button>
+    </div>
+  </form>
+
+</div>

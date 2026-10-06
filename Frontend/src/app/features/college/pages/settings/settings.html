@@ -1,0 +1,19 @@
+<div class="college-settings-container container-fluid p-0">
+  <!-- Common Top Settings Route Tabs Navigation -->
+  <div class="settings-top-navbar d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+    <div class="d-flex align-items-center gap-2">
+      <a *ngFor="let tab of settingsTabs"
+         [routerLink]="tab.route"
+         routerLinkActive="active"
+         class="btn btn-sm btn-settings-pill">
+        <i [class]="'bi ' + tab.icon + ' me-2'"></i>
+        <span>{{ tab.label }}</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Router Outlet for Child Settings Pages -->
+  <div class="settings-content-wrapper">
+    <router-outlet></router-outlet>
+  </div>
+</div>

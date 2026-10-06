@@ -1,0 +1,45 @@
+<div class="team-invite-page container-fluid p-0">
+  
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <a routerLink="/college/team" class="btn btn-sm btn-light rounded-circle p-2 border me-1" title="Back to Team">
+      <i class="bi bi-arrow-left fs-5"></i>
+    </a>
+    <div>
+      <h4 class="fw-bold text-dark mb-1">Invite New Team Member</h4>
+      <p class="text-muted extra-small mb-0">Grant permissions to faculty coordinators, invigilators, or admin staff.</p>
+    </div>
+  </div>
+
+  <div class="alert alert-success border-0 rounded-4 shadow-xs p-3 mb-4" *ngIf="isSent">
+    <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+    <strong>Invite sent successfully!</strong> Email link sent to {{ email }}.
+  </div>
+
+  <div class="card border-0 shadow-2xs rounded-4 p-4 bg-white" style="max-width: 600px;">
+    <form (ngSubmit)="sendInvite()">
+      <div class="mb-3">
+        <label class="form-label extra-small fw-bold text-secondary">Email Address *</label>
+        <input type="email" class="form-control form-control-sm rounded-3 border" required [(ngModel)]="email" name="email" placeholder="faculty@mgmcet.ac.in">
+      </div>
+      <div class="mb-3">
+        <label class="form-label extra-small fw-bold text-secondary">Role & Permission Level *</label>
+        <select class="form-select form-select-sm rounded-3 border" [(ngModel)]="role" name="role">
+          <option value="Faculty Coordinator">Faculty Coordinator (80% Access)</option>
+          <option value="Admin Staff">Admin Staff (50% Access)</option>
+          <option value="Test Invigilator">Test Invigilator (40% Access)</option>
+          <option value="Read-Only Viewer">Read-Only Viewer (10% Access)</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="form-label extra-small fw-bold text-secondary">Department / Batch Context</label>
+        <input type="text" class="form-control form-control-sm rounded-3 border" [(ngModel)]="department" name="department">
+      </div>
+
+      <div class="d-flex justify-content-end gap-2">
+        <a routerLink="/college/team" class="btn btn-outline-secondary rounded-pill px-4 py-1.5 fw-bold extra-small">Cancel</a>
+        <button type="submit" class="btn btn-primary rounded-pill px-4 py-1.5 fw-bold extra-small shadow-sm">Send Invite Email</button>
+      </div>
+    </form>
+  </div>
+
+</div>

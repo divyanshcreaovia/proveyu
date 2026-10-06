@@ -1,0 +1,147 @@
+@use './settings-common' as *;
+
+.college-billing-page {
+  @extend .college-settings-wrapper;
+
+  /* Billing Hero Card matching Profile Hero Card exactly */
+  .billing-hero-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 1.25rem 1.6rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+
+    .plan-icon-wrapper {
+      position: relative;
+
+      .icon-box {
+        width: 68px;
+        height: 68px;
+        border-radius: 12px;
+        border: 1.5px solid #e2e8f0;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+
+        i {
+          font-size: 1.6rem !important;
+        }
+      }
+
+      .plan-status-dot {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: #10b981;
+        border: 2px solid #ffffff;
+      }
+    }
+  }
+
+  /* Billing Tabs Card matching Profile Tabs Card */
+  .billing-tabs-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+
+    .tabs-header-bar {
+      background: #fafafa;
+    }
+
+    .nav-tabs {
+      .nav-link {
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: none !important;
+        border-bottom: 2.5px solid transparent !important;
+        border-radius: 0 !important;
+        padding: 0.65rem 0.4rem 0.75rem 0.4rem !important;
+        margin-bottom: -1px;
+        transition: all 0.2s ease;
+        background: transparent !important;
+
+        &:hover {
+          color: #16122b;
+          border-color: rgba(22, 18, 43, 0.2) !important;
+        }
+
+        &.active {
+          color: #16122b !important;
+          font-weight: 700 !important;
+          border-bottom: 2.5px solid #16122b !important;
+        }
+      }
+    }
+  }
+
+  /* Outstanding Banner Card inside tab */
+  .outstanding-banner-card {
+    background: #fffbeb;
+    border-color: #fde68a !important;
+  }
+
+  /* Invoices Table */
+  .table {
+    font-size: 0.78rem;
+
+    thead th {
+      font-weight: 700;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background-color: #f8fafc;
+      }
+    }
+  }
+
+  /* Inline Pay Section inside Outstanding Banner Card */
+  .inline-pay-section {
+    animation: inlineSlideDown 0.25s ease-out forwards;
+
+    .cursor-pointer {
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: #94a3b8 !important;
+        background-color: #f8fafc !important;
+      }
+    }
+  }
+
+  @keyframes inlineSlideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .spin {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+}

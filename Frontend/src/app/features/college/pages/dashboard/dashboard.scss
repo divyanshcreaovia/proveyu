@@ -1,0 +1,745 @@
+.college-dashboard-compact {
+  background-color: transparent;
+  padding: 0.25rem 0.5rem 1.5rem 0.5rem;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Custom 5-Column Grid Support */
+  .col-xl-2-4 {
+    @media (min-width: 1200px) {
+      flex: 0 0 auto;
+      width: 20%;
+    }
+  }
+
+  /* ----------------------------------------------------------------------------------- */
+  /* TOP HEADER BAR */
+  /* ----------------------------------------------------------------------------------- */
+  .dashboard-top-header {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.25rem 1.75rem;
+    color: #0f172a;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+    margin-bottom: 1.25rem;
+
+    .header-text-group {
+      .header-main-title {
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.15rem;
+      }
+
+      .header-sub-title {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 400;
+        margin-bottom: 0;
+      }
+    }
+
+    .header-actions-group {
+      .academic-year-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        height: 42px;
+        padding: 0 1.1rem;
+        min-width: 240px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        white-space: nowrap;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+
+        span {
+          color: #64748b;
+          font-size: 0.83rem;
+          white-space: nowrap;
+          margin: 0;
+          flex-shrink: 0;
+        }
+
+        select {
+          color: #0f172a;
+          font-weight: 700;
+          font-size: 0.875rem;
+          cursor: pointer;
+          white-space: nowrap;
+          padding-right: 1.85rem !important;
+          padding-left: 0.25rem !important;
+          background-position: right 0.25rem center !important;
+
+          &:focus {
+            box-shadow: none;
+          }
+        }
+      }
+
+      .header-search-box {
+        position: relative;
+        width: 280px;
+
+        input {
+          height: 42px;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+          background: #ffffff;
+          font-size: 0.875rem;
+          color: #0f172a;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+          padding-left: 1rem;
+          padding-right: 2.75rem !important;
+
+          &::placeholder {
+            color: #94a3b8;
+          }
+
+          &:focus {
+            border-color: #0d8abc;
+            box-shadow: 0 0 0 3px rgba(13, 138, 188, 0.15);
+          }
+        }
+
+        .search-icon {
+          position: absolute;
+          right: 0.95rem;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 0.95rem;
+          color: #64748b;
+          pointer-events: none;
+          line-height: 1;
+        }
+      }
+    }
+  }
+
+  /* ----------------------------------------------------------------------------------- */
+  /* TOP KPI STAT CARDS */
+  /* ----------------------------------------------------------------------------------- */
+  .kpi-card-compact {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+      border-color: #cbd5e1;
+    }
+
+    .kpi-header {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 0.6rem;
+
+      .kpi-icon-wrapper {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+
+      .kpi-label {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #475569;
+        line-height: 1.2;
+      }
+    }
+
+    .kpi-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+
+      .kpi-value {
+        font-size: 1.55rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0;
+        line-height: 1.2;
+      }
+
+      .kpi-trend {
+        display: flex;
+        align-items: center;
+        gap: 0.1rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #10b981;
+
+        i {
+          font-size: 1.1rem;
+          margin-left: -2px;
+        }
+
+        &.trend-up {
+          color: #10b981;
+        }
+      }
+    }
+  }
+
+  /* ----------------------------------------------------------------------------------- */
+  /* GENERAL DASHBOARD WIDGET CARDS */
+  /* ----------------------------------------------------------------------------------- */
+  .dashboard-widget-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.25rem;
+
+      .widget-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+      }
+
+      .filter-dropdown {
+        width: auto;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #334155;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 0.25rem 1.6rem 0.25rem 0.6rem;
+
+        &:focus {
+          border-color: #3b82f6;
+          box-shadow: none;
+        }
+      }
+
+      .widget-link-btn {
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: #3b82f6;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: color 0.15s ease;
+
+        &:hover {
+          color: #1d4ed8;
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .widget-footer {
+      border-top: 1px solid #f1f5f9;
+      padding-top: 0.85rem;
+      margin-top: 0.95rem;
+      font-size: 0.76rem;
+      color: #64748b;
+    }
+  }
+
+
+  /* ----------------------------------------------------------------------------------- */
+  /* CUSTOM LEGENDS & CHARTS */
+  /* ----------------------------------------------------------------------------------- */
+  .chart-legend-row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    font-size: 0.74rem;
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+
+      .legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+
+        &.bg-indigo {
+          background-color: #3b82f6;
+        }
+
+        &.bg-emerald {
+          background-color: #10b981;
+        }
+      }
+
+      .legend-line {
+        width: 14px;
+        height: 3px;
+        border-radius: 2px;
+
+        &.bg-purple {
+          background-color: #8b5cf6;
+        }
+      }
+
+      .legend-text {
+        color: #64748b;
+        font-weight: 500;
+      }
+    }
+  }
+
+  /* Donut Center Overlay - 100% Centered */
+  .donut-center-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.1;
+    z-index: 2;
+
+    .count {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1;
+    }
+
+    .sub {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #64748b;
+      margin-top: 2px;
+    }
+  }
+
+  .donut-legend-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+
+    .donut-legend-item {
+      display: flex;
+      flex-direction: column;
+
+      .legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+      }
+
+      .legend-name {
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: #334155;
+      }
+
+      .legend-val {
+        font-size: 0.76rem;
+        padding-left: 1rem;
+      }
+    }
+  }
+
+  /* ----------------------------------------------------------------------------------- */
+  /* READINESS ASSESSMENT REPORT ITEMS */
+  /* ----------------------------------------------------------------------------------- */
+  .assessment-report-item {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.65rem 0.85rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #ffffff;
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .assessment-icon-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background-color: #e0e7ff;
+      color: #4f46e5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .assessment-item-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+    }
+  }
+
+
+  /* ----------------------------------------------------------------------------------- */
+  /* RECRUITERS & RECENT DRIVES */
+  /* ----------------------------------------------------------------------------------- */
+  .recruiters-list-scroll {
+    flex: 1 1 0%;
+    min-height: 290px;
+    max-height: 330px;
+    overflow-y: auto;
+    padding-right: 2px;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    table {
+      margin-bottom: 0;
+      width: 100%;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background-color: #ffffff;
+
+      th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #ffffff;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e2e8f0 !important;
+        font-size: 0.75rem;
+        color: #475569;
+        box-shadow: 0 1px 0 #e2e8f0;
+        transition: color 0.15s ease, background-color 0.15s ease;
+
+        &.sortable-header:hover {
+          color: #2563eb;
+          background-color: #f8fafc;
+        }
+      }
+    }
+
+    tbody {
+      td {
+        padding-top: 0.45rem;
+        padding-bottom: 0.45rem;
+        border-bottom: 1px solid #f8fafc;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+    }
+  }
+
+  .company-badge-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+
+    &.xs {
+      width: 22px;
+      height: 22px;
+      font-size: 0.6rem;
+      border-radius: 4px;
+    }
+  }
+
+  .rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 5px;
+    border-radius: 4px;
+    min-width: 22px;
+
+    &.rank-1 {
+      background-color: #FEF3C7;
+      color: #D97706;
+      border: 1px solid #FDE68A;
+    }
+    &.rank-2 {
+      background-color: #F1F5F9;
+      color: #475569;
+      border: 1px solid #E2E8F0;
+    }
+    &.rank-3 {
+      background-color: #FFEDD5;
+      color: #C2410C;
+      border: 1px solid #FED7AA;
+    }
+    &.rank-other {
+      background-color: #F8FAFC;
+      color: #64748B;
+    }
+  }
+
+  .small-text {
+    font-size: 0.78rem;
+  }
+
+  .extra-small-table {
+    thead th {
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+    }
+
+    tbody td {
+      font-size: 0.76rem;
+      border-bottom-color: #f1f5f9;
+    }
+  }
+
+  /* ----------------------------------------------------------------------------------- */
+  /* STATUS PILLS */
+  /* ----------------------------------------------------------------------------------- */
+  .status-pill {
+    display: inline-block;
+    padding: 0.2rem 0.65rem;
+    border-radius: 50px;
+    font-size: 0.68rem;
+    font-weight: 700;
+
+    &.status-pill-ongoing {
+      background-color: #dcfce7;
+      color: #15803d;
+    }
+
+    &.status-pill-completed {
+      background-color: #f1f5f9;
+      color: #475569;
+    }
+
+    &.status-pill-upcoming {
+      background-color: #e0f2fe;
+      color: #0369a1;
+    }
+
+    &.status-pill-upcoming-purple {
+      background-color: #f3e8ff;
+      color: #7e22ce;
+    }
+
+    &.status-pill-upcoming-orange {
+      background-color: #ffedd5;
+      color: #c2410c;
+    }
+  }
+
+  /* ----------------------------------------------------------------------------------- */
+  /* STUDENT READINESS FOOTER */
+  /* ----------------------------------------------------------------------------------- */
+  .readiness-footer-link {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #3b82f6;
+    text-decoration: none;
+
+    &:hover {
+      color: #1d4ed8;
+      text-decoration: underline;
+    }
+  }
+
+  /* ----------------------------------------------------------------------------------- */
+  /* PLACEMENT FUNNEL */
+  /* ----------------------------------------------------------------------------------- */
+  .funnel-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: calc(100% - 40px);
+
+    .funnel-item {
+      .funnel-stage-name {
+        font-size: 0.76rem;
+      }
+
+      .funnel-stage-count {
+        font-size: 0.78rem;
+      }
+
+      .funnel-progress-bg {
+        height: 7px;
+        background-color: #f1f5f9;
+        border-radius: 4px;
+
+        .funnel-progress-bar {
+          background-color: #3b82f6;
+          border-radius: 4px;
+        }
+      }
+    }
+  }
+
+  /* ----------------------------------------------------------------------------------- */
+  /* POLICY COMPLIANCE SUB-CARDS */
+  /* ----------------------------------------------------------------------------------- */
+  .compliance-sub-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.75rem 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .compliance-icon-box {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .compliance-info {
+      display: flex;
+      flex-direction: column;
+
+      .compliance-label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #475569;
+        line-height: 1.2;
+      }
+
+      .compliance-value-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.35rem;
+
+        .compliance-count {
+          font-size: 1.15rem;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0;
+          line-height: 1.2;
+        }
+
+        .compliance-subtext {
+          font-size: 0.68rem;
+          color: #64748b;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  /* ----------------------------------------------------------------------------------- */
+  /* DRIVE CALENDAR EVENT CARDS */
+  /* ----------------------------------------------------------------------------------- */
+  .calendar-event-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.65rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+
+    .calendar-date-box {
+      width: 42px;
+      height: 44px;
+      border-radius: 8px;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      line-height: 1.1;
+
+      .date-day {
+        font-size: 1.05rem;
+        font-weight: 800;
+      }
+
+      .date-month {
+        font-size: 0.58rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+      }
+    }
+
+    .calendar-event-details {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+
+      .event-company {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .event-role {
+        font-size: 0.68rem;
+        color: #64748b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .extra-small {
+    font-size: 0.72rem;
+  }
+}
