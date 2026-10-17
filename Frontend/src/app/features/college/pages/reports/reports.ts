@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 export interface ReportItem {
   id: string;
@@ -24,6 +25,7 @@ export interface ReportItem {
   styleUrl: './reports.scss',
 })
 export class Reports {
+  constructor(private notificationService: NotificationService) {}
   toastMessage: string | null = null;
   downloadingId: string | null = null;
 
@@ -125,10 +127,7 @@ export class Reports {
   }
 
   showToast(msg: string) {
-    this.toastMessage = msg;
-    setTimeout(() => {
-      this.toastMessage = null;
-    }, 3500);
+    this.notificationService.showSuccess(msg);
   }
 
   downloadReport(rep: ReportItem, format: string) {

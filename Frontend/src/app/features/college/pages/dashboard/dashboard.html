@@ -12,20 +12,21 @@
 
       <div class="header-actions-group d-flex align-items-center gap-3">
         <!-- Academic Year Dropdown Picker -->
-        <div class="academic-year-box bg-white border rounded-3 px-3 py-1.5 d-flex align-items-center gap-2.5 shadow-2xs">
+        <div
+          class="academic-year-box bg-white border rounded-3 px-3 py-1.5 d-flex align-items-center gap-2.5 shadow-2xs">
           <span class="text-muted extra-small font-12 fw-medium text-nowrap">Academic Year</span>
-          <select class="form-select form-select-sm border-0 bg-transparent fw-bold text-dark ps-1 pe-4 py-0 cursor-pointer shadow-none font-13" [(ngModel)]="selectedAcademicYear">
+          <select
+            class="form-select form-select-sm border-0 bg-transparent fw-bold text-dark ps-1 pe-4 py-0 cursor-pointer shadow-none font-13"
+            [(ngModel)]="selectedAcademicYear">
             <option *ngFor="let year of academicYears" [value]="year">{{ year }}</option>
           </select>
         </div>
 
         <!-- Search Input Box (Search Anything... with Right Icon) -->
         <div class="header-search-box position-relative">
-          <input
-            type="text"
+          <input type="text"
             class="form-control form-control-sm rounded-3 bg-white border ps-3 py-1.5 pe-5 text-dark extra-small font-13 shadow-2xs"
-            placeholder="Search anything..."
-            [(ngModel)]="searchQuery" />
+            placeholder="Search anything..." [(ngModel)]="searchQuery" />
           <i class="bi bi-search search-icon"></i>
         </div>
       </div>
@@ -90,7 +91,8 @@
         </div>
 
         <div class="chart-container">
-          <highcharts-chart [options]="placementOverviewOptions" style="width: 100%; height: 250px; display: block;"></highcharts-chart>
+          <highcharts-chart [options]="placementOverviewOptions"
+            style="width: 100%; height: 250px; display: block;"></highcharts-chart>
         </div>
       </div>
     </div>
@@ -107,7 +109,8 @@
 
         <div class="d-flex align-items-center justify-content-between h-100 py-1">
           <div class="donut-chart-wrapper position-relative" style="width: 58%;">
-            <highcharts-chart [options]="driveStatusOptions" style="width: 100%; height: 220px; display: block;"></highcharts-chart>
+            <highcharts-chart [options]="driveStatusOptions"
+              style="width: 100%; height: 220px; display: block;"></highcharts-chart>
             <div class="donut-center-overlay">
               <span class="count">64</span>
               <span class="sub">Total Drives</span>
@@ -141,7 +144,8 @@
           <table class="table table-borderless table-sm align-middle mb-0">
             <thead>
               <tr class="text-muted extra-small border-bottom">
-                <th class="ps-1 fw-normal sortable-header" (click)="toggleRecruiterSort('name')" style="cursor: pointer; user-select: none;">
+                <th class="ps-1 fw-normal sortable-header" (click)="toggleRecruiterSort('name')"
+                  style="cursor: pointer; user-select: none;">
                   Company
                   <i class="bi ms-1" [ngClass]="{
                     'bi-arrow-down-up opacity-50': recruiterSortKey !== 'name',
@@ -149,7 +153,8 @@
                     'bi-sort-alpha-up-alt text-primary fw-bold': recruiterSortKey === 'name' && !recruiterSortAsc
                   }"></i>
                 </th>
-                <th class="pe-1 text-end fw-normal sortable-header" (click)="toggleRecruiterSort('offers')" style="cursor: pointer; user-select: none;">
+                <th class="pe-1 text-end fw-normal sortable-header" (click)="toggleRecruiterSort('offers')"
+                  style="cursor: pointer; user-select: none;">
                   Offers
                   <i class="bi ms-1" [ngClass]="{
                     'bi-arrow-down-up opacity-50': recruiterSortKey !== 'offers',
@@ -208,7 +213,8 @@
               <tr *ngFor="let drive of recentDrives">
                 <td class="ps-2 py-2 fw-semibold text-dark">
                   <div class="d-flex align-items-center gap-2">
-                    <span class="company-badge-avatar xs" [style.background-color]="drive.bg" [style.color]="drive.text">
+                    <span class="company-badge-avatar xs" [style.background-color]="drive.bg"
+                      [style.color]="drive.text">
                       {{ drive.code }}
                     </span>
                     <span class="text-truncate" style="max-width: 85px;">{{ drive.company }}</span>
@@ -262,11 +268,13 @@
                 </td>
                 <td class="py-1.5">
                   <div class="d-flex align-items-center gap-2">
-                    <span class="company-badge-avatar xs flex-shrink-0" [style.background-color]="p.avatarBg" style="color: #ffffff; font-size: 0.6rem; font-weight: 700;">
+                    <span class="company-badge-avatar xs flex-shrink-0" [style.background-color]="p.avatarBg"
+                      style="color: #ffffff; font-size: 0.6rem; font-weight: 700;">
                       {{ getInitials(p.name) }}
                     </span>
                     <div class="text-truncate">
-                      <div class="fw-semibold text-dark extra-small text-truncate" style="max-width: 95px;">{{ p.name }}</div>
+                      <div class="fw-semibold text-dark extra-small text-truncate" style="max-width: 95px;">{{ p.name }}
+                      </div>
                       <div class="font-monospace text-muted micro-text" style="font-size: 0.65rem;">{{ p.rollNo }}</div>
                     </div>
                   </div>
@@ -278,7 +286,8 @@
                   {{ p.score }}<span class="text-muted micro-text" style="font-size: 0.65rem;">/100</span>
                 </td>
                 <td class="pe-1 text-end py-1.5">
-                  <span class="badge bg-success-subtle text-success border border-success-subtle extra-small rounded-pill px-1.5 py-0.5">
+                  <span
+                    class="badge bg-success-subtle text-success border border-success-subtle extra-small rounded-pill px-1.5 py-0.5">
                     {{ p.tier }}
                   </span>
                 </td>
@@ -331,14 +340,16 @@
       <div class="dashboard-widget-card h-100 d-flex flex-column">
         <div class="widget-header">
           <h5 class="widget-title">Readiness Tier Breakdown</h5>
-          <select class="form-select form-select-sm filter-dropdown" [(ngModel)]="selectedAssessmentFilter" (change)="onReadinessTierFilterChange()">
+          <select class="form-select form-select-sm filter-dropdown" [(ngModel)]="selectedAssessmentFilter"
+            (change)="onReadinessTierFilterChange()">
             <option *ngFor="let tf of readinessTierFilters" [value]="tf">{{ tf }}</option>
           </select>
         </div>
 
         <div class="d-flex align-items-center justify-content-between my-auto py-2">
           <div class="donut-chart-wrapper position-relative" style="width: 58%;">
-            <highcharts-chart [options]="assessmentReadinessOptions" style="width: 100%; height: 220px; display: block;"></highcharts-chart>
+            <highcharts-chart [options]="assessmentReadinessOptions"
+              style="width: 100%; height: 220px; display: block;"></highcharts-chart>
             <div class="donut-center-overlay">
               <span class="count">{{ currentReadinessStats.totalEvaluated }}</span>
               <span class="sub">Evaluated</span>
@@ -360,8 +371,10 @@
 
 
         <div class="widget-footer d-flex align-items-center justify-content-between mt-auto">
-          <span>Avg Score: <strong class="text-dark font-monospace">{{ currentReadinessStats.avgScore }} / 100</strong></span>
-          <span>Completion Rate: <strong class="text-success font-monospace">{{ currentReadinessStats.completionRate }}%</strong></span>
+          <span>Avg Score: <strong class="text-dark font-monospace">{{ currentReadinessStats.avgScore }} /
+              100</strong></span>
+          <span>Completion Rate: <strong class="text-success font-monospace">{{ currentReadinessStats.completionRate
+              }}%</strong></span>
         </div>
       </div>
     </div>
@@ -374,11 +387,13 @@
             <h5 class="widget-title">Session Test Participation</h5>
             <span class="text-muted extra-small">Live candidate attendance & score breakdown per assessment</span>
           </div>
-          <span class="badge bg-primary-subtle text-primary extra-small px-2.5 py-1 rounded-pill fw-bold">Hover for Detailed Tooltip</span>
+          <span class="badge bg-primary-subtle text-primary extra-small px-2.5 py-1 rounded-pill fw-bold">Hover for
+            Detailed Tooltip</span>
         </div>
 
         <div class="chart-container my-auto">
-          <highcharts-chart [options]="sessionTestsChartOptions" style="width: 100%; height: 235px; display: block;"></highcharts-chart>
+          <highcharts-chart [options]="sessionTestsChartOptions"
+            style="width: 100%; height: 235px; display: block;"></highcharts-chart>
         </div>
 
         <div class="widget-footer d-flex align-items-center justify-content-between mt-auto">
@@ -428,7 +443,8 @@
       <div class="dashboard-widget-card h-100">
         <div class="widget-header">
           <h5 class="widget-title">Drive Calendar</h5>
-          <a routerLink="/college/placements" class="widget-link-btn">View calendar <i class="bi bi-arrow-right"></i></a>
+          <a routerLink="/college/placements" class="widget-link-btn">View calendar <i
+              class="bi bi-arrow-right"></i></a>
         </div>
 
         <div class="row g-2 py-1">

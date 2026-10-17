@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 export interface StudentScoreRecord {
   id: string;
@@ -49,25 +50,14 @@ export interface TierMigration {
   styleUrl: './results.scss',
 })
 export class Results {
+  constructor(private notificationService: NotificationService) {}
   // Top-Level Filter Bar States
   selectedBatch: string = 'All';      // 'All' | '2024' | '2023'
   selectedBranch: string = 'All';     // 'All' | 'Computer Science' | 'Information Tech' | 'Electronics'
   selectedTest: string = 'All';       // 'All' | 'Test 1' | 'Test 2' | 'Test 3' | 'Test 4'
   selectedTier: string = 'All';       // 'All' | 'Tier 1' | 'Tier 2' | 'Tier 3'
 
-  // Progression Chart Branch Comparator Filter
-  progressionBranchView: string = 'All';
-
-  // Search Query for Result Table
-  searchQuery: string = '';
-
-  // Modals & Drawers Display State
-  showSectionDrillDownModal: boolean = false;
-  activeSection: SectionBreakdown | null = null;
-  weakSectionStudents: StudentScoreRecord[] = [];
-
   showAlertFacultyModal: boolean = false;
-  toastMessage: string | null = null;
 
   // Faculty Notification Form
   facultyForm = {
@@ -75,6 +65,9 @@ export class Results {
     subject: '[Action Required] Remedial Batch Assignment for Weak Section Candidates',
     customNotes: 'Please schedule extra practice sessions for candidates scoring <60% in Quantitative Aptitude.'
   };
+
+  // Progression Chart Branch Comparator Filter
+  progressionBranchView: string = 'All';
 
   // Master Evaluation Dataset
   masterEvaluationRecords: StudentScoreRecord[] = [
@@ -100,61 +93,13 @@ export class Results {
     { from: 'Tier 3 (<60)', to: 'Tier 3 (<60)', studentCount: 6, label: 'Stagnant in Tier 3 — Requires Faculty Remedial Training', type: 'at_risk' }
   ];
 
-  // ----------------------------------------------------
-  // PAGINATION (Matching /college/students)
-  // ----------------------------------------------------
-  currentPage: number = 1;
-  pageSize: number = 10;
-
   get filteredRecords(): StudentScoreRecord[] {
-    const q = this.searchQuery.trim().toLowerCase();
     return this.masterEvaluationRecords.filter(r => {
       const matchesBatch = this.selectedBatch === 'All' || r.batch === this.selectedBatch;
       const matchesBranch = this.selectedBranch === 'All' || r.branch === this.selectedBranch;
       const matchesTier = this.selectedTier === 'All' || r.tier === this.selectedTier;
-      const matchesSearch = !q ||
-        r.name.toLowerCase().includes(q) ||
-        r.rollNumber.toLowerCase().includes(q) ||
-        r.branch.toLowerCase().includes(q) ||
-        r.tier.toLowerCase().includes(q) ||
-        r.status.toLowerCase().includes(q) ||
-        r.email.toLowerCase().includes(q);
-      return matchesBatch && matchesBranch && matchesTier && matchesSearch;
+      return matchesBatch && matchesBranch && matchesTier;
     });
-  }
-
-  get totalPages(): number {
-    return Math.ceil(this.filteredRecords.length / this.pageSize) || 1;
-  }
-
-  get totalPagesArray(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
-  }
-
-  get pagedFilteredRecords(): StudentScoreRecord[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.filteredRecords.slice(start, start + this.pageSize);
-  }
-
-  goToPage(page: number, event?: Event) {
-    if (event) event.preventDefault();
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-    }
-  }
-
-  nextPage(event?: Event) {
-    if (event) event.preventDefault();
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-    }
-  }
-
-  prevPage(event?: Event) {
-    if (event) event.preventDefault();
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
   }
 
   // ----------------------------------------------------
@@ -255,31 +200,6 @@ export class Results {
       .slice(0, 5);
   }
 
-  // ----------------------------------------------------
-  // DRILL-DOWN ACTIONS FOR WEAK SECTIONS
-  // ----------------------------------------------------
-  openSectionDrillDown(sec: SectionBreakdown) {
-    this.activeSection = sec;
-    // Get students scoring lowest in this section (<60% threshold)
-    const threshold = sec.maxScore * 0.6;
-    this.weakSectionStudents = this.filteredRecords.filter(r => r[sec.key] < threshold)
-      .sort((a, b) => a[sec.key] - b[sec.key]);
-
-    // If no students below threshold, show lowest 4 for diagnostic practice
-    if (this.weakSectionStudents.length === 0) {
-      this.weakSectionStudents = [...this.filteredRecords]
-        .sort((a, b) => a[sec.key] - b[sec.key])
-        .slice(0, 4);
-    }
-
-    this.showSectionDrillDownModal = true;
-  }
-
-  closeSectionDrillDown() {
-    this.showSectionDrillDownModal = false;
-    this.activeSection = null;
-  }
-
   assignRemedialModule(student: StudentScoreRecord) {
     student.remedialAssigned = true;
     this.showToast(`📌 Remedial training assigned to ${student.name} (${student.rollNumber})!`);
@@ -298,7 +218,7 @@ export class Results {
 
   sendFacultyAlert() {
     this.closeAlertFacultyModal();
-    this.showToast(`🚀 Diagnostic Alert & Weak Candidates Roster emailed to ${this.facultyForm.facultyEmail}!`);
+    this.showToast(`🚀 Diagnostic Alert & Remedial Notice emailed to ${this.facultyForm.facultyEmail}!`);
   }
 
   // ----------------------------------------------------
@@ -313,9 +233,6 @@ export class Results {
   }
 
   showToast(msg: string) {
-    this.toastMessage = msg;
-    setTimeout(() => {
-      this.toastMessage = null;
-    }, 3500);
+    this.notificationService.showSuccess(msg);
   }
 }

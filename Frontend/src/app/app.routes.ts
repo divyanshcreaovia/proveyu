@@ -173,6 +173,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/college/pages/placements/placements').then(m => m.Placements)
       },
       {
+        path: 'placements/add-requirement',
+        loadComponent: () => import('./features/college/pages/placements/add-requirement').then(m => m.AddRequirement)
+      },
+      {
         path: 'team',
         loadComponent: () => import('./features/college/pages/team/team').then(m => m.Team)
       },

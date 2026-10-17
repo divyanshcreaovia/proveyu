@@ -1,16 +1,18 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 @Component({
   selector: 'app-college-test-config',
   standalone: true,
-  imports: [RouterLink, CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './test-config.html',
   styleUrl: './test-config.scss',
 })
 export class TestConfig {
+  constructor(private notificationService: NotificationService) {}
+
   config = {
     tier1Cutoff: 70,
     tier2Cutoff: 60,
@@ -25,6 +27,7 @@ export class TestConfig {
 
   saveDefaults() {
     this.isSaved = true;
+    this.notificationService.showSuccess('Default assessment settings updated successfully!');
     setTimeout(() => this.isSaved = false, 2000);
   }
 }

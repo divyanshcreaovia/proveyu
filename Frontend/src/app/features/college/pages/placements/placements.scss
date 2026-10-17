@@ -1,3 +1,5 @@
+@use './selection-pipeline-modal' as *;
+
 .placements-page {
   min-height: calc(100vh - 70px);
   background-color: transparent;
@@ -235,8 +237,7 @@
     color: #ffffff !important;
     border: 1px solid #16122b !important;
     border-radius: 50px !important;
-    padding: 0.65rem 1.45rem !important;
-    margin-right: 0.35rem;
+    padding: 0.5rem 1.15rem !important;
     box-shadow: 0 4px 12px rgba(22, 18, 43, 0.15);
   }
 
@@ -245,8 +246,7 @@
     color: #64748b !important;
     border: 1px solid #e2e8f0 !important;
     border-radius: 50px !important;
-    padding: 0.65rem 1.45rem !important;
-    margin-right: 0.35rem;
+    padding: 0.5rem 1.15rem !important;
     transition: all 0.2s ease;
 
     &:hover {
@@ -447,6 +447,266 @@
     animation: fadeInExpand 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  /* Enterprise Requirement Drives Table Styling */
+  .placement-drives-table {
+    .company-avatar-box {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      background: #16122b;
+      color: #ffffff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 10px rgba(22, 18, 43, 0.2);
+    }
+
+    .ctc-package-badge {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: 8px;
+      padding: 4px 12px;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .text-purple-category {
+      color: #7c3aed;
+      background: #f3e8ff;
+      border: 1px solid #e9d5ff;
+    }
+
+    .bg-purple-subtle {
+      background: #f3e8ff;
+    }
+
+    .text-purple {
+      color: #7c3aed;
+    }
+
+    .border-purple-subtle {
+      border-color: #e9d5ff;
+    }
+
+    .drive-table-row {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+      &:hover {
+        background-color: #f8fafc !important;
+      }
+
+      &.row-expanded {
+        background-color: #f1f5f9 !important;
+      }
+
+      &.row-blurred {
+        opacity: 0.45;
+        filter: blur(1.5px);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+        &:hover {
+          opacity: 0.9;
+          filter: blur(0px);
+        }
+      }
+    }
+  }
+
+  /* ==========================================================================
+     EXPANDED ACCORDION DETAIL ROW STYLING
+     ========================================================================== */
+  .expanded-detail-row {
+    animation: fadeInExpand 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+    .selection-rounds-card {
+      border-radius: 12px;
+      padding: .5rem .5rem;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+
+      .rounds-pipeline-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+
+        .rounds-label {
+          font-size: 0.72rem;
+          font-weight: 800;
+          color: #64748b;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          font-family: monospace;
+          margin-right: 0.5rem;
+        }
+
+        .rounds-list {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 0.65rem;
+        }
+
+        .round-step-pill {
+          background: #f8fafc;
+          color: #0f172a;
+          border: 1px solid #e2e8f0;
+          border-radius: 50px;
+          padding: 0.4rem 0.9rem;
+          font-size: 0.76rem;
+          font-weight: 600;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.45rem;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+          transition: all 0.15s ease;
+
+          .round-num {
+            color: #64748b;
+            font-family: monospace;
+            font-weight: 700;
+          }
+
+          &:hover {
+            border-color: #cbd5e1;
+            background: #ffffff;
+            transform: translateY(-1px);
+          }
+        }
+
+        .round-connector-arrow {
+          color: #94a3b8;
+          font-size: 0.7rem;
+          margin: 0 0.15rem;
+        }
+      }
+    }
+
+    /* Standalone Drive Criteria Card (Independent Styling) */
+    .drive-criteria-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 1.15rem 1.35rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.02);
+
+      .criteria-card-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1fr auto;
+        gap: 1.25rem;
+        align-items: center;
+
+        @media (max-width: 992px) {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+      }
+
+      .criteria-col {
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+
+        .criteria-col-header {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          font-size: 0.73rem;
+          font-weight: 700;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+          font-family: inherit;
+
+          .icon-primary {
+            color: #2563eb;
+          }
+
+          .icon-secondary {
+            color: #64748b;
+          }
+        }
+
+        .criteria-pills-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.4rem;
+
+          .criteria-pill {
+            background: #ffffff;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+            border-radius: 50px;
+            padding: 0.25rem 0.65rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            font-family: monospace;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+          }
+        }
+
+        .criteria-col-content {
+          display: flex;
+          flex-direction: column;
+          gap: 0.15rem;
+
+          .contact-name,
+          .terms-title {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.2;
+          }
+
+          .contact-details,
+          .terms-details {
+            font-size: 0.73rem;
+            color: #64748b;
+          }
+
+          .contact-details {
+            font-family: monospace;
+          }
+        }
+
+        &.criteria-col-action {
+          align-items: flex-end;
+          justify-content: center;
+
+          @media (max-width: 992px) {
+            align-items: flex-start;
+          }
+
+          .status-toggle-btn {
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            padding: 0.45rem 1.15rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+
+            &:hover {
+              background: #1e293b;
+              transform: translateY(-1px);
+              box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
+            }
+
+            &:active {
+              transform: translateY(0);
+            }
+          }
+        }
+      }
+    }
+  }
+
   /* Sticky Table Header */
   .sticky-thead {
     position: sticky;
@@ -475,6 +735,10 @@
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
+
+  &.backdrop-fullscreen {
+    padding: 0 !important;
+  }
 }
 
 .modal-dialog-compact {
@@ -655,5 +919,366 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Gmail Style Webmail Composer Modal Component */
+.gmail-composer-modal {
+  width: 92% !important;
+  max-width: 820px !important;
+  height: auto !important;
+  max-height: 90vh !important;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 25px 60px -10px rgba(15, 23, 42, 0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+  animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s ease-in-out;
+
+  &.gmail-fullscreen {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    height: 94vh !important;
+    max-height: 94vh !important;
+    border-radius: 12px;
+
+    .gmail-body-area {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      overflow-y: auto;
+    }
+  }
+
+  .gmail-header {
+    background: #202124;
+    color: #ffffff;
+    padding: 0.85rem 1.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+
+    .gmail-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+
+      .gmail-icon {
+        color: #ea4335;
+        font-size: 1.1rem;
+      }
+
+      .gmail-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #f8fafc;
+        letter-spacing: -0.01em;
+        margin: 0;
+      }
+    }
+
+    .gmail-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+
+      .ctrl-icon {
+        color: #9aa0a6;
+        cursor: pointer;
+        font-size: 0.95rem;
+        transition: color 0.15s ease;
+
+        &:hover {
+          color: #ffffff;
+        }
+      }
+    }
+  }
+
+  .gmail-field-row {
+    display: flex;
+    align-items: center;
+    padding: 0.65rem 1.35rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+
+    .gmail-field-label {
+      width: 70px;
+      font-weight: 700;
+      color: #64748b;
+      font-size: 0.8rem;
+    }
+
+    .gmail-field-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 0.88rem;
+      color: #0f172a;
+      font-weight: 600;
+
+      &::placeholder {
+        color: #94a3b8;
+      }
+
+      &:focus {
+        outline: none;
+        box-shadow: none;
+      }
+    }
+  }
+
+  .gmail-toolbar {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.55rem 1.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    flex-shrink: 0;
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .toolbar-btn {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      padding: 0.28rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+
+      &:hover {
+        background: #f1f5f9;
+        border-color: #94a3b8;
+        color: #0f172a;
+      }
+    }
+
+    .tag-btn {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      font-weight: 700;
+      border-radius: 50px;
+      padding: 0.22rem 0.65rem;
+      font-size: 0.73rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+
+      &:hover {
+        background: #16122b;
+        color: #ffffff;
+        border-color: #16122b;
+      }
+    }
+  }
+
+  .gmail-body-area {
+    padding: 1.35rem;
+    flex: 1 1 auto;
+    min-height: 220px;
+    max-height: 480px;
+    overflow-y: auto;
+    background: #ffffff;
+
+    .gmail-textarea {
+      width: 100%;
+      height: 100%;
+      min-height: 180px;
+      border: none;
+      outline: none;
+      resize: none;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #0f172a;
+      font-family: inherit;
+
+      &:focus {
+        outline: none;
+        box-shadow: none;
+      }
+    }
+  }
+
+  .gmail-footer {
+    padding: 0.85rem 1.35rem;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+
+    .gmail-send-btn {
+      background: #1a73e8;
+      color: #ffffff;
+      border: none;
+      border-radius: 50px;
+      padding: 0.55rem 1.6rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(26, 115, 232, 0.25);
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #1557b0;
+        box-shadow: 0 6px 16px rgba(26, 115, 232, 0.35);
+        transform: translateY(-1px);
+      }
+    }
+
+    .gmail-footer-tools {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .footer-tool-icon {
+        font-size: 1.15rem;
+        color: #5f6368;
+        cursor: pointer;
+        transition: color 0.15s ease;
+
+        &:hover {
+          color: #202124;
+        }
+      }
+    }
+  }
+}
+
+/* Placed & Offered Candidates Dedicated Modal Component Styles handled in selection-pipeline-modal.scss */
+
+
+/* Dedicated Standalone Form Modal Styling (Edit Drive Metrics, Log Corporate Drive, etc.) */
+.proveyu-form-modal {
+  .modal-content {
+    background: #ffffff !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.25) !important;
+  }
+
+  .modal-header {
+    background: #16122b !important;
+    padding: 1.25rem 1.5rem !important;
+    border-bottom: none !important;
+
+    .modal-title {
+      color: #ffffff !important;
+      font-weight: 800 !important;
+      font-size: 1.05rem !important;
+      letter-spacing: -0.01em;
+    }
+
+    .modal-subtitle,
+    span {
+      color: rgba(255, 255, 255, 0.75) !important;
+      font-size: 0.8rem !important;
+    }
+
+    .btn-close {
+      filter: invert(1) grayscale(100%) brightness(200%) !important;
+      opacity: 0.8 !important;
+
+      &:hover {
+        opacity: 1 !important;
+      }
+    }
+  }
+
+  .modal-body {
+    background: #ffffff !important;
+    padding: 1.5rem 1.75rem !important;
+
+    .form-label {
+      font-size: 0.82rem !important;
+      font-weight: 700 !important;
+      color: #64748b !important;
+      margin-bottom: 0.45rem !important;
+    }
+
+    .form-control,
+    .form-select {
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 12px !important;
+      padding: 0.6rem 0.9rem !important;
+      font-size: 0.85rem !important;
+      color: #0f172a !important;
+      background-color: #ffffff !important;
+      transition: all 0.2s ease !important;
+
+      &:focus {
+        border-color: #6366f1 !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12) !important;
+        background-color: #ffffff !important;
+      }
+    }
+  }
+
+  .modal-footer {
+    background: #ffffff !important;
+    padding: 1.15rem 1.75rem !important;
+    border-top: 1px solid #f1f5f9 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    .btn-cancel {
+      border: 1px solid #cbd5e1 !important;
+      background: #ffffff !important;
+      color: #475569 !important;
+      border-radius: 50px !important;
+      padding: 0.5rem 1.35rem !important;
+      font-size: 0.82rem !important;
+      font-weight: 700 !important;
+      transition: all 0.2s ease !important;
+
+      &:hover {
+        background: #f8fafc !important;
+        color: #0f172a !important;
+        border-color: #94a3b8 !important;
+      }
+    }
+
+    .btn-submit {
+      background: #16122b !important;
+      color: #ffffff !important;
+      border: none !important;
+      border-radius: 50px !important;
+      padding: 0.55rem 1.5rem !important;
+      font-size: 0.82rem !important;
+      font-weight: 700 !important;
+      box-shadow: 0 4px 12px rgba(22, 18, 43, 0.2) !important;
+      transition: all 0.2s ease !important;
+
+      &:hover {
+        background: #231d45 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(22, 18, 43, 0.3) !important;
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
   }
 }
