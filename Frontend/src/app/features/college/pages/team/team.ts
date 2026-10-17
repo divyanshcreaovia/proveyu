@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 export interface TeamMember {
   id: string;
@@ -32,6 +33,7 @@ export interface RoleMatrixItem {
   styleUrl: './team.scss',
 })
 export class Team {
+  constructor(private notificationService: NotificationService) {}
   toastMessage: string | null = null;
   activeTab: 'members' | 'roles_matrix' = 'members';
 
@@ -191,10 +193,7 @@ export class Team {
   }
 
   showToast(msg: string) {
-    this.toastMessage = msg;
-    setTimeout(() => {
-      this.toastMessage = null;
-    }, 3500);
+    this.notificationService.showSuccess(msg);
   }
 
   openInviteModal() {

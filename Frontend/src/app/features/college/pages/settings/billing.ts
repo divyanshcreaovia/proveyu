@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 export interface InvoiceItem {
   num: string;
@@ -100,15 +101,12 @@ export class Billing {
     }
   ];
 
-  constructor() {
+  constructor(private notificationService: NotificationService) {
     this.selectedInvoice = this.invoices[3];
   }
 
   showToast(msg: string) {
-    this.toastMessage = msg;
-    setTimeout(() => {
-      this.toastMessage = null;
-    }, 3500);
+    this.notificationService.showSuccess(msg);
   }
 
   downloadInvoice(inv: InvoiceItem) {

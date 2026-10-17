@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 export interface CollegeTicketReply {
   id: string;
@@ -41,6 +42,7 @@ interface FAQ {
   styleUrl: './support.scss',
 })
 export class Support {
+  constructor(private notificationService: NotificationService) {}
   searchQuery: string = '';
   selectedCategory: string = 'All';
   activeTicketFilter: string = 'all';
@@ -237,10 +239,7 @@ export class Support {
   }
 
   showToast(msg: string) {
-    this.toastMessage = msg;
-    setTimeout(() => {
-      this.toastMessage = null;
-    }, 3500);
+    this.notificationService.showSuccess(msg);
   }
 
   copyToClipboard(text: string, label: string) {

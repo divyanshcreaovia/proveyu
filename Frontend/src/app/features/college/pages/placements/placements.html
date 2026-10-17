@@ -1,26 +1,20 @@
 <div class="placements-page container-fluid p-0">
 
-  <!-- System Notification Toast -->
-  <div class="toast-notification-banner position-fixed top-0 start-50 translate-middle-x mt-3 z-3" *ngIf="toastMessage">
-    <div
-      class="alert alert-dark bg-dark text-white border-0 shadow-lg rounded-pill px-4 py-2.5 d-flex align-items-center gap-2.5 m-0 small">
-      <span class="fw-semibold">{{ toastMessage }}</span>
-    </div>
-  </div>
-
   <!-- Welcome Banner Card -->
   <div class="welcome-banner-card mb-4">
     <div class="banner-content">
       <div class="banner-text">
         <h3 class="welcome-title">Campus Placement Hub</h3>
         <p class="welcome-subtitle">
-          Auto-match candidates by CGPA & Tier, dispatch invitation emails, track drive statuses, and manage corporate offers with end-to-end data consistency.
+          Configure company parameters, auto-match candidates by CGPA & Tier, dispatch invitation emails, track
+          selection process rounds, and manage corporate offers with end-to-end data consistency.
         </p>
       </div>
       <div class="banner-actions">
-        <button class="btn btn-primary-custom" (click)="openAddModal()" *ngIf="activeTab === 'requirements'">
+        <a routerLink="/college/placements/add-requirement" class="btn btn-primary-custom"
+          *ngIf="activeTab === 'requirements'">
           <i class="bi bi-plus-circle me-1"></i> Add Company Requirement
-        </button>
+        </a>
         <button class="btn btn-primary-custom" (click)="openAddDriveModal()" *ngIf="activeTab === 'drives_tracker'">
           <i class="bi bi-calendar-plus me-1"></i> Log Corporate Drive
         </button>
@@ -79,275 +73,363 @@
     </div>
   </div>
 
-  <!-- Integrated Navigation Tab Switcher Card (Removed Student Placement Status Roster) -->
-  <div class="dashboard-card mb-4 p-3 px-4">
-    <div class="d-flex align-items-center gap-3 overflow-auto py-1">
-      <button class="btn btn-sm rounded-pill font-inter fw-bold extra-small transition-all"
-        [ngClass]="activeTab === 'requirements' ? 'btn-dark-pill' : 'btn-outline-pill'"
-        (click)="setTab('requirements')">
-        1. Requirement Drives & Auto-Match Engine ({{ companies.length }})
-      </button>
-
-      <button class="btn btn-sm rounded-pill font-inter fw-bold extra-small transition-all"
-        [ngClass]="activeTab === 'drives_tracker' ? 'btn-dark-pill' : 'btn-outline-pill'"
-        (click)="setTab('drives_tracker')">
-        2. Corporate Drives & Interview Tracker ({{ companies.length }})
-      </button>
-    </div>
-  </div>
-
   <!-- TAB 1: REQUIREMENT DRIVES & AUTO-MATCH ENGINE -->
   <div *ngIf="activeTab === 'requirements'">
 
-    <!-- Filter & Search Toolbar (Matching Results & Students toolbar) -->
+    <!-- Filter & Search Toolbar with Integrated Navigation Tabs -->
     <div class="filter-toolbar-card mb-4">
       <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-        <div class="search-input-box" style="width: 320px;">
+
+        <!-- Navigation Tab Switcher Pills -->
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <button class="btn btn-sm btn-dark-pill rounded-pill font-inter fw-bold extra-small transition-all"
+            (click)="setTab('requirements')">
+            Requirement Drives ({{ companies.length }})
+          </button>
+
+          <button class="btn btn-sm btn-outline-pill rounded-pill font-inter fw-bold extra-small transition-all"
+            (click)="setTab('drives_tracker')">
+            Corporate Tracker ({{ companies.length }})
+          </button>
+        </div>
+
+        <div class="search-input-box" style="width: 280px;">
           <i class="bi bi-search search-icon"></i>
           <input type="text" class="form-control" style="height: 38px; font-size: 0.8rem;"
             placeholder="Search company, role, or industry..." [(ngModel)]="searchCompanyQuery">
         </div>
 
-        <div class="d-flex align-items-center gap-2.5 flex-wrap">
-          <label class="extra-small fw-bold text-muted mb-0 font-monospace text-uppercase">Drive Mode:</label>
-          <select class="form-select filter-select" [(ngModel)]="selectedModeFilter">
-            <option value="All">All Modes</option>
-            <option value="On-Campus">On-Campus</option>
-            <option value="Virtual">Virtual</option>
-            <option value="Hybrid">Hybrid</option>
-          </select>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+          <div class="d-flex align-items-center gap-2">
+            <label class="extra-small fw-bold text-muted mb-0 font-monospace text-uppercase">Drive Mode:</label>
+            <select class="form-select filter-select" [(ngModel)]="selectedModeFilter">
+              <option value="All">All Modes</option>
+              <option value="On-Campus">On-Campus</option>
+              <option value="Virtual">Virtual</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <label class="extra-small fw-bold text-muted mb-0 font-monospace text-uppercase">Drive Status:</label>
+            <select class="form-select filter-select" [(ngModel)]="selectedStatusFilter">
+              <option value="All">All Statuses</option>
+              <option value="Scheduled">Scheduled</option>
+              <option value="Ongoing">Ongoing</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Company Requirement Cards List -->
-    <div class="d-flex flex-column gap-4">
-      <div class="dashboard-card p-0 overflow-hidden transition-all shadow-2xs" *ngFor="let c of getFilteredCompanies()">
+    <!-- Company Requirement Drives Table Card -->
+    <div class="dashboard-card p-0 overflow-hidden shadow-2xs border-0">
 
-        <!-- Card Header Main Info -->
-        <div style="padding: 1.25rem 1.5rem;">
-          <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
-            
-            <!-- Left: Company Avatar & Details Column -->
-            <div class="d-flex align-items-start flex-grow-1">
-              <!-- TC Avatar Box (48px Rounded Square Tile) -->
-              <div class="d-flex align-items-center justify-content-center flex-shrink-0"
-                style="width: 48px; height: 48px; min-width: 48px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 10px; margin-right: 1.25rem; margin-top: 2px;">
-                <span style="color: #4f46e5; font-weight: 700; font-size: 1rem; font-family: inherit;">{{ c.companyName.substring(0, 2).toUpperCase() }}</span>
-              </div>
+      <div class="table-responsive custom-scroll">
+        <table class="table align-middle mb-0 placement-drives-table">
+          <thead class="sticky-thead">
+            <tr>
+              <th class="ps-4" style="min-width: 210px;">Company & Role</th>
+              <th style="min-width: 120px;">Drive Mode</th>
+              <th style="min-width: 130px;">Conduct Date</th>
+              <th style="min-width: 120px;">Package (CTC)</th>
+              <th style="min-width: 120px;">Drive Status</th>
+              <th style="min-width: 140px;">Auto-Matched</th>
+              <th style="min-width: 120px;">Placed</th>
+              <th class="pe-4 text-end" style="min-width: 140px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let c of getFilteredCompanies()">
+              <!-- Main Row -->
+              <tr class="table-custom-row drive-table-row cursor-pointer" [class.row-expanded]="c.isExpanded"
+                [class.row-blurred]="hasExpandedCompany && !c.isExpanded" (click)="toggleExpand(c)">
 
-              <!-- Details Column -->
-              <div class="flex-grow-1">
-                
-                <!-- Line 1: Title & Pills Row -->
-                <div class="d-flex align-items-center flex-wrap" style="margin-bottom: 0.35rem;">
-                  <h5 class="mb-0" style="font-weight: 700; font-size: 1.05rem; color: #111827; margin-right: 0.85rem; letter-spacing: -0.01em;">{{ c.companyName }}</h5>
-                  <span class="badge rounded-pill" style="background: #f3f4f6; border: 1px solid #e5e7eb; color: #6b7280; font-weight: 500; font-size: 0.75rem; padding: 4px 11px; margin-right: 0.5rem;">{{ c.industry }}</span>
-                  <span class="badge rounded-pill" style="background: #f3f4f6; border: 1px solid #e5e7eb; color: #6b7280; font-weight: 500; font-size: 0.75rem; padding: 4px 11px; margin-right: 0.5rem;">
-                    {{ c.driveMode }}
-                  </span>
-                  <span class="badge rounded-pill px-2.5 py-1 extra-small fw-bold"
-                    [ngClass]="c.status === 'Completed' ? 'bg-success-subtle text-success border border-success-subtle' : c.status === 'Ongoing' ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-primary-subtle text-primary border border-primary-subtle'">
-                    {{ c.status }}
-                  </span>
-                </div>
-
-                <!-- Line 2: Roles Row -->
-                <div class="d-flex align-items-center" style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.35rem;">
-                  <i class="bi bi-briefcase" style="color: #6b7280; font-size: 0.95rem; margin-right: 0.5rem;"></i>
-                  <span>
-                    <strong style="font-weight: 600; color: #374151; margin-right: 0.35rem;">Roles:</strong>
-                    <span style="color: #6b7280; font-weight: 400;">{{ c.roles }}</span>
-                  </span>
-                </div>
-
-                <!-- Line 3: Date & Venue Row -->
-                <div class="d-flex flex-wrap align-items-center" style="font-size: 0.85rem; color: #6b7280;">
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-calendar3" style="color: #6b7280; font-size: 0.95rem; margin-right: 0.5rem;"></i>
-                    <span style="color: #6b7280; font-weight: 400;">{{ c.driveDate }}</span>
-                  </div>
-
-                  <span style="color: #d1d5db; margin: 0 0.85rem; font-weight: 300;">|</span>
-
-                  <div class="d-flex align-items-center">
-                    <i class="bi bi-geo-alt" style="color: #6b7280; font-size: 0.95rem; margin-right: 0.5rem;"></i>
-                    <span style="color: #6b7280; font-weight: 400;">{{ c.venue }}</span>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <!-- Right: Package Highlight & Action Buttons Column -->
-            <div class="text-md-end flex-shrink-0">
-              <!-- Offered Package Box -->
-              <div class="d-inline-block text-center"
-                style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; padding: 6px 16px; min-width: 140px; margin-bottom: 0.75rem;">
-                <span class="d-block" style="color: #047857; font-size: 0.6rem; letter-spacing: 0.05em; font-weight: 700; text-transform: uppercase; margin-bottom: 2px;">OFFERED PACKAGE</span>
-                <span style="color: #047857; font-size: 1.25rem; font-weight: 800; font-family: inherit;">{{ c.packageLpa }} LPA</span>
-              </div>
-
-              <!-- Action Buttons Row -->
-              <div class="d-flex align-items-center justify-content-md-end gap-3 flex-wrap">
-                <!-- Matched Count Pill Badge -->
-                <span class="badge rounded-pill d-inline-flex align-items-center"
-                  style="background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155; font-weight: 600; font-size: 0.8rem; padding: 7px 15px;">
-                  <i class="bi bi-people text-secondary" style="margin-right: 0.5rem; font-size: 0.95rem;"></i>
-                  <span>{{ getMatchedStudents(c).length }} Eligible Candidates Matched</span>
-                </span>
-
-                <!-- View Placed Button -->
-                <button class="btn btn-sm btn-outline-custom rounded-pill d-inline-flex align-items-center"
-                  style="font-weight: 700; font-size: 0.8rem; padding: 7px 18px;"
-                  (click)="openSelectedCandidatesModal('Placed & Offered Candidates', c)">
-                  <i class="bi bi-trophy text-warning" style="margin-right: 0.5rem; font-size: 0.85rem;"></i>
-                  <span>View Placed ({{ c.offers }})</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Criteria Badges & Roster Toggle Footer Row -->
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3"
-          style="background: #ffffff; border-top: 1px solid #f1f5f9; padding: 1rem 1.5rem;">
-          <div class="d-flex flex-wrap align-items-center gap-2">
-            <span style="font-weight: 700; color: #111827; font-size: 0.85rem; margin-right: 0.5rem;">Auto-Match Criteria:</span>
-            <span class="badge rounded-pill" style="background: #ffffff; border: 1px solid #e5e7eb; color: #374151; font-weight: 600; font-size: 0.78rem; padding: 4px 12px;">Min CGPA: {{ c.minCgpa }}+</span>
-            <span class="badge rounded-pill" style="background: #ffffff; border: 1px solid #e5e7eb; color: #374151; font-weight: 600; font-size: 0.78rem; padding: 4px 12px;">ProveYu Tiers: {{ c.tierCutoffs.join(', ') }}</span>
-            <span class="badge rounded-pill" style="background: #ffffff; border: 1px solid #e5e7eb; color: #374151; font-weight: 600; font-size: 0.78rem; padding: 4px 12px;" *ngIf="c.minProveYuScore">Min Score: {{ c.minProveYuScore }}+</span>
-            <span class="badge rounded-pill" style="background: #ffffff; border: 1px solid #e5e7eb; color: #374151; font-weight: 600; font-size: 0.78rem; padding: 4px 12px;">Branch: {{ c.branchFilter }}</span>
-          </div>
-
-          <!-- Clean Crisp View Matched Roster Toggle -->
-          <button class="roster-toggle-btn d-inline-flex align-items-center ms-auto"
-            (click)="toggleExpand(c)">
-            <span>{{ c.isExpanded ? 'Hide Matched Roster' : 'View Matched Roster' }} ({{ getMatchedStudents(c).length }})</span>
-            <i class="bi ms-2" [ngClass]="c.isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-          </button>
-        </div>
-
-        <!-- Card Body Expanded: Matched Roster Table -->
-        <div class="p-4 bg-light-subtle card-body-expanded" *ngIf="c.isExpanded">
-          
-          <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-            <div class="d-flex align-items-center gap-2">
-              <div class="form-check m-0">
-                <input class="form-check-input" type="checkbox" [id]="'selectAll_' + c.id"
-                  [checked]="isAllSelected(c)" (change)="toggleSelectAll(c, $event)">
-                <label class="form-check-label fw-bold text-dark extra-small cursor-pointer" [for]="'selectAll_' + c.id">
-                  Select All {{ getMatchedStudents(c).length }} Candidates
-                </label>
-              </div>
-              <span class="badge bg-secondary-subtle text-dark rounded-pill font-monospace">
-                Selected: {{ getSelectedCount(c) }} / {{ getMatchedStudents(c).length }}
-              </span>
-            </div>
-
-            <div class="d-flex align-items-center gap-2">
-              <button class="btn btn-sm btn-outline-custom rounded-pill px-3.5 py-1.5 extra-small fw-bold"
-                (click)="exportSelectedCsv(c)">
-                <i class="bi bi-file-earmark-excel text-success me-1"></i> Export Selected CSV
-              </button>
-              <button class="btn btn-sm btn-primary-custom rounded-pill px-3.5 py-1.5 extra-small fw-bold"
-                (click)="openMailModal(c)">
-                <i class="bi bi-envelope-fill me-1"></i> Send Bulk Drive Mail ({{ getSelectedCount(c) }})
-              </button>
-            </div>
-          </div>
-
-          <!-- Matched Students Table -->
-          <div class="table-responsive bg-white rounded-3 border shadow-2xs mb-3 custom-scroll table-custom-container">
-            <table class="table align-middle mb-0 extra-small">
-              <thead class="sticky-thead">
-                <tr>
-                  <th class="ps-3" style="width: 40px;">Select</th>
-                  <th>Roll Number</th>
-                  <th>Candidate Name & Email</th>
-                  <th>Branch</th>
-                  <th>CGPA</th>
-                  <th>ProveYu Tier</th>
-                  <th>Passport Score</th>
-                  <th>Status</th>
-                  <th class="pe-3 text-end">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let s of getPaginatedMatchedStudents(c)" class="table-custom-row">
-                  <td class="ps-3">
-                    <input class="form-check-input" type="checkbox"
-                      [checked]="isStudentSelected(c.id, s.id)"
-                      (change)="toggleStudentSelection(c.id, s.id)">
-                  </td>
-                  <td style="font-weight: 700; color: #0f172a; font-size: 0.85rem;" class="font-monospace">{{ s.roll }}</td>
-                  <td>
-                    <div class="d-flex align-items-center gap-2.5">
-                      <div
-                        class="avatar rounded-circle fw-bold d-flex align-items-center justify-content-center flex-shrink-0"
-                        style="width: 32px; height: 32px; font-size: 0.72rem;">
-                        {{ s.name.substring(0, 2).toUpperCase() }}
+                <!-- Company & Role -->
+                <td class="ps-4">
+                  <div class="d-flex align-items-center gap-3 py-1">
+                    <div class="company-avatar-box flex-shrink-0">
+                      {{ c.companyName.substring(0, 2).toUpperCase() }}
+                    </div>
+                    <div>
+                      <div class="mb-0.5">
+                        <strong class="text-dark fs-6 font-inter fw-bold">{{ c.companyName }}</strong>
                       </div>
-                      <div>
-                        <span class="fw-bold text-dark d-block mb-0.5" style="font-size: 0.85rem;">{{ s.name }}</span>
-                        <span class="text-muted extra-small">{{ s.email }}</span>
+                      <div class="extra-small text-dark font-monospace fw-semibold">
+                        {{ c.roles }}
                       </div>
                     </div>
-                  </td>
-                  <td style="color: #475569; font-size: 0.85rem; font-weight: 500;">{{ s.branch }}</td>
-                  <td><strong class="font-monospace text-dark fs-6">{{ s.cgpa }}</strong></td>
-                  <td>
-                    <span class="badge rounded-pill px-3 py-1 extra-small fw-bold"
-                      [ngClass]="s.tier === 'Tier 1' ? 'bg-success-subtle text-success border border-success-subtle' : s.tier === 'Tier 2' ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'">
-                      {{ s.tier }}
+                  </div>
+                </td>
+
+                <!-- Drive Mode -->
+                <td>
+                  <div class="py-1">
+                    <span class="badge rounded-pill px-2.5 py-1 extra-small font-monospace fw-bold"
+                      [ngClass]="c.driveMode === 'On-Campus' ? 'bg-primary-subtle text-primary border border-primary-subtle' : c.driveMode === 'Virtual' ? 'bg-info-subtle text-info border border-info-subtle' : 'bg-warning-subtle text-warning border border-warning-subtle'">
+                      <i class="bi" [ngClass]="c.driveMode === 'Virtual' ? 'bi-display' : 'bi-building'"></i> {{
+                      c.driveMode }}
                     </span>
-                  </td>
-                  <td>
-                    <span class="badge bg-light text-dark border px-2.5 py-1 extra-small font-monospace">
-                      {{ s.proveYuScore }} / 100
+                  </div>
+                </td>
+
+                <!-- Conduct Date -->
+                <td>
+                  <div class="py-1">
+                    <div class="extra-small text-dark font-monospace fw-semibold">
+                      <i class="bi bi-calendar-event text-secondary me-1"></i>{{ c.driveDate }}
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Package CTC -->
+                <td>
+                  <strong class="font-monospace text-success fs-6">{{ c.packageLpa }} LPA</strong>
+                </td>
+
+                <!-- Drive Status -->
+                <td>
+                  <div class="py-1">
+                    <span class="extra-small font-monospace fw-semibold text-dark">
+                      {{ c.status }}
                     </span>
-                  </td>
-                  <td>
-                    <span class="badge rounded-pill px-3 py-1 extra-small fw-bold bg-secondary-subtle text-secondary border border-secondary-subtle">
-                      Eligible Unplaced
+                  </div>
+                </td>
+
+                <!-- Auto-Matched -->
+                <td>
+                  <div class="py-1">
+                    <span class="extra-small font-monospace fw-semibold text-dark">
+                      {{ getMatchedStudents(c).length }} Matched
                     </span>
-                  </td>
-                  <td class="pe-3 text-end">
-                    <button class="btn btn-sm btn-outline-custom rounded-pill px-3 py-1 extra-small fw-bold text-success border-success-subtle"
-                      (click)="markStudentPlaced(s, c)">
-                      <i class="bi bi-check-lg me-1"></i> Mark Placed
+                  </div>
+                </td>
+
+                <!-- Placed -->
+                <td>
+                  <div class="py-1">
+                    <span class="extra-small font-monospace fw-semibold text-dark">
+                      {{ c.offers }} Placed
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Actions / Expand -->
+                <td class="pe-4 text-end">
+                  <div class="d-flex align-items-center justify-content-end gap-1.5 py-1">
+                    <button
+                      class="btn btn-xs rounded-pill px-3 py-1.5 extra-small fw-bold transition-all d-inline-flex align-items-center gap-1"
+                      [ngClass]="c.isExpanded ? 'btn-dark' : 'btn-outline-custom'"
+                      (click)="$event.stopPropagation(); toggleExpand(c)">
+                      <span>{{ c.isExpanded ? 'Hide Details' : 'Details & Roster' }}</span>
+                      <i class="bi" [ngClass]="c.isExpanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
                     </button>
-                  </td>
-                </tr>
+                  </div>
+                </td>
+              </tr>
 
-                <tr *ngIf="getMatchedStudents(c).length === 0">
-                  <td colspan="9" class="text-center py-4 text-muted">
-                    No unplaced candidates match this criteria.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+              <!-- Expanded Details & Roster Row -->
+              <tr *ngIf="c.isExpanded" class="expanded-detail-row">
+                <td colspan="8" class="p-0 bg-light-subtle">
+                  <div class="p-3.5 px-4 border-bottom bg-white shadow-2xs">
 
-          <!-- Matched Students Pagination Footer -->
-          <div class="p-3 border-top d-flex align-items-center justify-content-between extra-small text-muted bg-white rounded-bottom"
-            *ngIf="getMatchedStudents(c).length > companyPageSize">
-            <span>Showing {{ getPaginatedMatchedStudents(c).length }} of {{ getMatchedStudents(c).length }} matched candidates</span>
-            <ul class="pagination pagination-sm mb-0">
-              <li class="page-item" [class.disabled]="getCompanyPage(c.id) === 1">
-                <a class="page-link" href="#" (click)="$event.preventDefault(); setCompanyPage(c.id, getCompanyPage(c.id) - 1)">Previous</a>
-              </li>
-              <li class="page-item" *ngFor="let p of [].constructor(getCompanyTotalPages(c)); let i = index" [class.active]="getCompanyPage(c.id) === (i + 1)">
-                <a class="page-link" href="#" (click)="$event.preventDefault(); setCompanyPage(c.id, i + 1)">{{ i + 1 }}</a>
-              </li>
-              <li class="page-item" [class.disabled]="getCompanyPage(c.id) === getCompanyTotalPages(c)">
-                <a class="page-link" href="#" (click)="$event.preventDefault(); setCompanyPage(c.id, getCompanyPage(c.id) + 1)">Next</a>
-              </li>
-            </ul>
-          </div>
+                    <!-- Top Card: Selection Rounds Pipeline (Default visible for every company) -->
+                    <div class="selection-rounds-card mb-3">
+                      <div class="rounds-pipeline-row">
+                        <span class="rounds-label">SELECTION ROUNDS:</span>
+                        <div class="rounds-list">
+                          <ng-container *ngFor="let round of getSelectionRounds(c); let idx = index; let last = last">
+                            <span class="round-step-pill">
+                              <span class="round-num">{{ idx + 1 }}.</span> {{ round }}
+                            </span>
+                            <i *ngIf="!last" class="bi bi-chevron-right round-connector-arrow"></i>
+                          </ng-container>
+                        </div>
+                      </div>
+                    </div>
 
-        </div>
+                    <!-- Drive Config & Criteria Bar (Standalone Dedicated Card) -->
+                    <div class="drive-criteria-card">
+                      <div class="criteria-card-grid">
 
+                        <!-- Column 1: Auto-Match Criteria -->
+                        <div class="criteria-col criteria-col-match">
+                          <div class="criteria-col-header">
+                            <i class="bi bi-funnel-fill icon-primary"></i>
+                            <span>Auto-Match Criteria:</span>
+                          </div>
+                          <div class="criteria-pills-list">
+                            <span class="criteria-pill">Min CGPA: {{ c.minCgpa }}+</span>
+                            <span class="criteria-pill">Tiers: {{ c.tierCutoffs.join(', ') }}</span>
+                            <span class="criteria-pill" *ngIf="c.minProveYuScore">Score: {{ c.minProveYuScore }}+</span>
+                            <span class="criteria-pill">Branch: {{ c.branchFilter }}</span>
+                          </div>
+                        </div>
+
+                        <!-- Column 2: HR POC Contact -->
+                        <div class="criteria-col criteria-col-hr" *ngIf="c.hrContactName">
+                          <div class="criteria-col-header">
+                            <i class="bi bi-person icon-secondary"></i>
+                            <span>HR POC Contact:</span>
+                          </div>
+                          <div class="criteria-col-content">
+                            <strong class="contact-name">{{ c.hrContactName }}</strong>
+                            <span class="contact-details">{{ c.hrContactEmail }} | {{ c.hrContactPhone }}</span>
+                          </div>
+                        </div>
+
+                        <!-- Column 3: Terms & Stipend -->
+                        <div class="criteria-col criteria-col-terms" *ngIf="c.employmentType">
+                          <div class="criteria-col-header">
+                            <i class="bi bi-briefcase icon-secondary"></i>
+                            <span>Terms & Stipend:</span>
+                          </div>
+                          <div class="criteria-col-content">
+                            <strong class="terms-title">{{ c.employmentType }}</strong>
+                            <span class="terms-details">Stipend: {{ c.stipendMonthly || 'N/A' }} | Bond: {{
+                              c.bondDurationMonths ? c.bondDurationMonths + ' Mo' : 'No Bond' }}</span>
+                          </div>
+                        </div>
+
+                        <!-- Column 4: Status Action -->
+                        <div class="criteria-col criteria-col-action">
+                          <div class="criteria-col-header">
+                            <span>Status Action:</span>
+                          </div>
+                          <button type="button" class="status-toggle-btn"
+                            (click)="changeDriveStatus(c, c.status === 'Scheduled' ? 'Ongoing' : c.status === 'Ongoing' ? 'Completed' : 'Scheduled')">
+                            Toggle: {{ c.status }}
+                          </button>
+                        </div>
+
+                      </div>
+                    </div>
+
+                    <!-- Matched Roster Section Header & Bulk Action Controls -->
+                    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="form-check m-0">
+                          <input class="form-check-input" type="checkbox" [id]="'selectAll_' + c.id"
+                            [checked]="isAllSelected(c)" (change)="toggleSelectAll(c, $event)">
+                          <label class="form-check-label fw-bold text-dark extra-small cursor-pointer"
+                            [for]="'selectAll_' + c.id">
+                            Select All {{ getMatchedStudents(c).length }} Candidates
+                          </label>
+                        </div>
+                        <span class="badge bg-secondary-subtle text-dark rounded-pill font-monospace">
+                          Selected: {{ getSelectedCount(c) }} / {{ getMatchedStudents(c).length }}
+                        </span>
+                      </div>
+
+                      <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-sm btn-outline-custom rounded-pill px-3.5 py-1.5 extra-small fw-bold"
+                          (click)="openSelectedCandidatesModal('Candidate Selection & Placement Pipeline', c)">
+                          <i class="bi bi-diagram-3-fill text-primary me-1"></i> Selection Pipeline ({{ c.offers }}
+                          Placed)
+                        </button>
+                        <button class="btn btn-sm btn-outline-custom rounded-pill px-3.5 py-1.5 extra-small fw-bold"
+                          (click)="exportSelectedCsv(c)">
+                          <i class="bi bi-file-earmark-excel text-success me-1"></i> Export Selected CSV
+                        </button>
+                        <button class="btn btn-sm btn-primary-custom rounded-pill px-3.5 py-1.5 extra-small fw-bold"
+                          (click)="openMailModal(c)">
+                          <i class="bi bi-envelope-fill me-1"></i> Send Bulk Drive Mail ({{ getSelectedCount(c) }})
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Matched Students Sub-Table -->
+                    <div
+                      class="table-responsive bg-white rounded-3 border shadow-2xs mb-3 custom-scroll table-custom-container">
+                      <table class="table align-middle mb-0 extra-small">
+                        <thead class="sticky-thead">
+                          <tr>
+                            <th class="ps-3" style="width: 40px;">Select</th>
+                            <th>Roll Number</th>
+                            <th>Candidate Name & Email</th>
+                            <th>Branch</th>
+                            <th>CGPA</th>
+                            <th>ProveYu Tier</th>
+                            <th>Passport Score</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let s of getPaginatedMatchedStudents(c)" class="table-custom-row">
+                            <td class="ps-3">
+                              <input class="form-check-input" type="checkbox" [checked]="isStudentSelected(c.id, s.id)"
+                                (change)="toggleStudentSelection(c.id, s.id)">
+                            </td>
+                            <td style="font-weight: 700; color: #0f172a; font-size: 0.85rem;" class="font-monospace">{{
+                              s.roll }}</td>
+                            <td>
+                              <div>
+                                <span class="fw-bold text-dark d-block mb-0.5" style="font-size: 0.85rem;">{{ s.name
+                                  }}</span>
+                                <span class="text-muted extra-small">{{ s.email }}</span>
+                              </div>
+                            </td>
+                            <td style="color: #475569; font-size: 0.85rem; font-weight: 500;">{{ s.branch }}</td>
+                            <td><strong class="font-monospace text-dark fs-6">{{ s.cgpa }}</strong></td>
+                            <td>
+                              <span class="badge rounded-pill px-3 py-1 extra-small fw-bold"
+                                [ngClass]="s.tier === 'Tier 1' ? 'bg-success-subtle text-success border border-success-subtle' : s.tier === 'Tier 2' ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'">
+                                {{ s.tier }}
+                              </span>
+                            </td>
+                            <td>
+                              <span class="badge bg-light text-dark border px-2.5 py-1 extra-small font-monospace">
+                                {{ s.proveYuScore }} / 100
+                              </span>
+                            </td>
+                          </tr>
+                          <tr *ngIf="getPaginatedMatchedStudents(c).length === 0">
+                            <td colspan="7" class="text-center py-4 text-muted extra-small">
+                              No candidates matched current filters.
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <!-- Roster Pagination -->
+                    <div
+                      class="roster-pagination-footer d-flex align-items-center justify-content-between flex-wrap gap-2 py-3 px-1 mt-1"
+                      style="margin-bottom: 8px !important;" *ngIf="getMatchedStudents(c).length > 0">
+                      <span class="extra-small text-muted font-monospace">
+                        Showing {{ getPaginatedMatchedStudents(c).length }} of {{ getMatchedStudents(c).length }}
+                        matched candidates (10 per page)
+                      </span>
+                      <div class="d-flex align-items-center gap-1">
+                        <button class="btn btn-xs btn-outline-custom rounded-pill px-3 py-1 extra-small fw-bold"
+                          [disabled]="getCompanyPage(c.id) === 1"
+                          (click)="setCompanyPage(c.id, getCompanyPage(c.id) - 1)">
+                          Prev
+                        </button>
+                        <span class="extra-small font-monospace px-2">Page {{ getCompanyPage(c.id) }} of {{
+                          getCompanyTotalPages(c) }}</span>
+                        <button class="btn btn-xs btn-outline-custom rounded-pill px-3 py-1 extra-small fw-bold"
+                          [disabled]="getCompanyPage(c.id) >= getCompanyTotalPages(c)"
+                          (click)="setCompanyPage(c.id, getCompanyPage(c.id) + 1)">
+                          Next
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+
+            <tr *ngIf="getFilteredCompanies().length === 0">
+              <td colspan="7" class="text-center py-5 text-muted">
+                <i class="bi bi-search fs-2 d-block mb-2 text-secondary opacity-50"></i>
+                <span class="fw-bold d-block">No requirement drives match your filter criteria.</span>
+                <span class="extra-small">Try adjusting search query or drive mode / category filters.</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -355,345 +437,747 @@
 
   <!-- TAB 2: CORPORATE DRIVES & INTERVIEW TRACKER -->
   <div *ngIf="activeTab === 'drives_tracker'">
-    <div class="dashboard-card p-4 mb-4">
-      
-      <!-- Toolbar & Filters -->
-      <div class="card-header-flex mb-4 pb-3">
-        <div class="header-left">
-          <h4 class="card-header-title">Corporate Drives & Interview Tracker</h4>
-          <p class="card-header-subtitle">Monitor corporate drive attendance, interviews conducted, and confirmed offer metrics with consistent drive data</p>
+    <div class="filter-toolbar-card mb-4">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+
+        <!-- Navigation Tab Switcher Pills -->
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <button class="btn btn-sm btn-outline-pill rounded-pill font-inter fw-bold extra-small transition-all"
+            (click)="setTab('requirements')">
+            Requirement Drives ({{ companies.length }})
+          </button>
+
+          <button class="btn btn-sm btn-dark-pill rounded-pill font-inter fw-bold extra-small transition-all"
+            (click)="setTab('drives_tracker')">
+            Corporate Tracker ({{ companies.length }})
+          </button>
+        </div>
+
+        <div class="search-input-box" style="width: 280px;">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" class="form-control" style="height: 38px; font-size: 0.8rem;"
+            placeholder="Search company or venue..." [(ngModel)]="searchDriveQuery">
         </div>
 
         <div class="d-flex align-items-center gap-2.5 flex-wrap">
-          <div class="search-input-box" style="width: 280px;">
-            <i class="bi bi-search search-icon"></i>
-            <input type="text" class="form-control" style="height: 38px; font-size: 0.8rem;"
-              placeholder="Search drive or venue..." [(ngModel)]="searchDriveQuery">
+          <label class="extra-small fw-bold text-muted mb-0 font-monospace text-uppercase">Status:</label>
+          <select class="form-select filter-select" [(ngModel)]="selectedDriveStatusFilter">
+            <option value="All">All Statuses</option>
+            <option value="Completed">Completed</option>
+            <option value="Ongoing">Ongoing</option>
+            <option value="Scheduled">Scheduled</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Corporate Drives Table -->
+    <div class="dashboard-card p-0 overflow-hidden shadow-2xs">
+      <div class="table-responsive custom-scroll">
+        <table class="table align-middle mb-0 extra-small">
+          <thead class="sticky-thead">
+            <tr>
+              <th class="ps-4">Company & Industry</th>
+              <th>Package (CTC)</th>
+              <th>Drive Date</th>
+              <th>Mode & Venue</th>
+              <th>Attended</th>
+              <th>Offers Issued</th>
+              <th>Status</th>
+              <th class="pe-4 text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let d of getPaginatedDriveRecords()" class="table-custom-row">
+              <td class="ps-4">
+                <div class="d-flex align-items-center gap-3">
+                  <div
+                    class="d-flex align-items-center justify-content-center rounded-2 bg-light border fw-bold text-primary"
+                    style="width: 38px; height: 38px; min-width: 38px; font-size: 0.85rem;">
+                    {{ d.companyName.substring(0, 2).toUpperCase() }}
+                  </div>
+                  <div>
+                    <strong class="text-dark d-block fs-6 mb-0.5">{{ d.companyName }}</strong>
+                    <span class="text-muted extra-small">{{ d.industry }}</span>
+                  </div>
+                </div>
+              </td>
+              <td><strong class="font-monospace text-success fs-6">{{ d.packageLpa }} LPA</strong></td>
+              <td><span class="font-monospace fw-semibold text-dark">{{ d.driveDate }}</span></td>
+              <td>
+                <span class="d-block fw-semibold text-dark">{{ d.driveMode }}</span>
+                <span class="text-muted extra-small">{{ d.venue }}</span>
+              </td>
+              <td><strong class="font-monospace text-dark fs-6">{{ d.attended }}</strong></td>
+              <td>
+                <span class="extra-small font-monospace fw-semibold text-dark">
+                  {{ d.offers }} Offers
+                </span>
+              </td>
+              <td>
+                <span class="extra-small font-monospace fw-semibold text-dark">
+                  {{ d.status }}
+                </span>
+              </td>
+              <td class="pe-4 text-end">
+                <div class="d-flex align-items-center justify-content-end gap-2.5">
+                  <button class="btn btn-xs btn-outline-custom rounded-pill px-3 py-1.5 extra-small fw-bold"
+                    (click)="openSelectedCandidatesModal('Candidate Selection & Placement Pipeline', d)">
+                    <i class="bi bi-diagram-3-fill me-1 text-primary"></i> Selection & Placed
+                  </button>
+                  <button class="btn btn-xs btn-dark rounded-pill px-3 py-1.5 extra-small fw-bold ms-1"
+                    (click)="openEditDriveModal(d)">
+                    <i class="bi bi-pencil me-1"></i> Edit
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination for Tracker -->
+      <div class="d-flex align-items-center justify-content-between p-3 px-4 border-top">
+        <span class="extra-small text-muted font-monospace">
+          Showing {{ getPaginatedDriveRecords().length }} of {{ getFilteredDriveRecords().length }} drives (10 per page)
+        </span>
+        <div class="d-flex align-items-center gap-1">
+          <button class="btn btn-xs btn-outline-custom rounded-pill px-3 py-1 extra-small fw-bold"
+            [disabled]="drivesCurrentPage === 1" (click)="setDrivesPage(drivesCurrentPage - 1)">
+            Prev
+          </button>
+          <span class="extra-small font-monospace px-2">Page {{ drivesCurrentPage }} of {{ drivesTotalPages }}</span>
+          <button class="btn btn-xs btn-outline-custom rounded-pill px-3 py-1 extra-small fw-bold"
+            [disabled]="drivesCurrentPage >= drivesTotalPages" (click)="setDrivesPage(drivesCurrentPage + 1)">
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CANDIDATE SELECTION & PLACEMENT PIPELINE -->
+  <div class="modal-backdrop-custom" [class.backdrop-fullscreen]="isModalFullscreen"
+    *ngIf="showSelectedCandidatesModal">
+    <div class="placed-roster-modal" [class.is-fullscreen]="isModalFullscreen">
+
+      <!-- Modal Header (Dark Purple Gradient) -->
+      <div class="placed-header">
+        <div class="header-title-group">
+          <div class="header-icon-box">
+            <i class="bi bi-people-fill"></i>
+          </div>
+          <div>
+            <h6 class="placed-title">{{ activeModalTitle }}</h6>
+            <span class="placed-subtitle font-monospace">{{ activeModalSubtitle }}</span>
+          </div>
+        </div>
+        <div class="header-actions-group">
+          <button type="button" class="header-fullscreen-btn" (click)="toggleModalFullscreen()"
+            [title]="isModalFullscreen ? 'Exit Full Screen' : 'Toggle Full Screen'">
+            <i class="bi" [ngClass]="isModalFullscreen ? 'bi-fullscreen-exit' : 'bi-arrows-fullscreen'"></i>
+          </button>
+          <i class="bi bi-x-lg close-icon" (click)="closeSelectedCandidatesModal()" title="Close"></i>
+        </div>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="placed-body custom-scroll" *ngIf="activeModalDrive">
+
+        <!-- Drive Basic Info Header Banner -->
+        <div class="drive-basic-info-banner" *ngIf="activeModalDrive">
+          <div class="drive-info-main">
+            <div class="drive-logo-wrap" [class.has-custom-logo]="hasValidCustomLogo(activeModalDrive)">
+              <img *ngIf="hasValidCustomLogo(activeModalDrive)" [src]="activeModalDrive.logo"
+                [alt]="activeModalDrive.companyName" class="drive-company-logo"
+                (error)="onDriveLogoError(activeModalDrive.id)">
+              <div class="drive-logo-fallback" *ngIf="!hasValidCustomLogo(activeModalDrive)">
+                {{ getCompanyInitials(activeModalDrive.companyName) }}
+              </div>
+            </div>
+            <div class="drive-title-details">
+              <div class="drive-headline-line">
+                <h5 class="drive-company-name">{{ activeModalDrive.companyName }}</h5>
+                <span class="drive-status-badge" [ngClass]="'status-' + (activeModalDrive.status | lowercase)">
+                  {{ activeModalDrive.status }}
+                </span>
+                <span class="drive-package-badge">
+                  {{ activeModalDrive.packageLpa }} LPA
+                </span>
+              </div>
+              <div class="drive-subline">
+                <span class="drive-role">{{ activeModalDrive.roles }}</span>
+                <span class="divider-dot">&bull;</span>
+                <span class="drive-industry">{{ activeModalDrive.industry }}</span>
+                <span class="divider-dot" *ngIf="activeModalDrive.employmentType">&bull;</span>
+                <span class="drive-type" *ngIf="activeModalDrive.employmentType">{{ activeModalDrive.employmentType
+                  }}</span>
+              </div>
+            </div>
           </div>
 
-          <button class="btn btn-primary-custom" (click)="openAddDriveModal()">
-            <i class="bi bi-calendar-plus me-1"></i> Log Drive
+          <div class="drive-meta-chips-grid">
+            <div class="meta-chip-item">
+              <span class="meta-chip-label">Date & Mode:</span>
+              <span class="meta-chip-val">{{ activeModalDrive.driveDate || 'Scheduled' }} &bull; {{
+                activeModalDrive.driveMode }}</span>
+            </div>
+            <div class="meta-chip-item" *ngIf="activeModalDrive.minCgpa">
+              <span class="meta-chip-label">Eligibility:</span>
+              <span class="meta-chip-val">Min CGPA {{ activeModalDrive.minCgpa }} &bull; {{
+                activeModalDrive.branchFilter || 'All Branches' }}</span>
+            </div>
+            <div class="meta-chip-item" *ngIf="activeModalDrive.venue">
+              <span class="meta-chip-label">Venue:</span>
+              <span class="meta-chip-val">{{ activeModalDrive.venue }}</span>
+            </div>
+            <div class="meta-chip-item" *ngIf="activeModalDrive.hrContactName">
+              <span class="meta-chip-label">HR Contact:</span>
+              <span class="meta-chip-val">{{ activeModalDrive.hrContactName }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Horizontal Interactive Workflow Cards -->
+        <div class="stages-workflow-row">
+          <ng-container *ngFor="let round of getSelectionRounds(activeModalDrive); let idx = index">
+            <div class="stage-workflow-card" [class.is-active-card]="activeModalRoundFilter === round"
+              (click)="setActiveModalRoundFilter(round)">
+              <div class="card-info">
+                <div class="card-top-line">
+                  <h6 class="card-title">{{ getRoundCardMeta(round, idx).shortTitle }}</h6>
+                  <span class="card-badge">{{ getRoundCandidatesCount(activeModalDrive, round) }}</span>
+                </div>
+                <p class="card-subtext">{{ getRoundCardMeta(round, idx).subtitle }}</p>
+              </div>
+            </div>
+            <i class="bi bi-chevron-right stage-separator-arrow"></i>
+          </ng-container>
+
+          <!-- Final Card: Placed & Offered (Green Theme) -->
+          <div class="stage-workflow-card is-placed-card" [class.is-active-card]="activeModalRoundFilter === 'Placed'"
+            (click)="setActiveModalRoundFilter('Placed')">
+            <div class="card-info">
+              <div class="card-top-line">
+                <h6 class="card-title">Placed & Offered</h6>
+                <span class="card-badge">{{ getRoundCandidatesCount(activeModalDrive, 'Placed') }}</span>
+              </div>
+              <p class="card-subtext">Offer released</p>
+            </div>
+          </div>
+
+          <!-- Card: Rejected Candidates (Muted Red Theme) -->
+          <div class="stage-workflow-card is-rejected-card"
+            [class.is-active-card]="activeModalRoundFilter === 'Rejected'"
+            (click)="setActiveModalRoundFilter('Rejected')">
+            <div class="card-info">
+              <div class="card-top-line">
+                <h6 class="card-title">Rejected</h6>
+                <span class="card-badge">{{ getRoundCandidatesCount(activeModalDrive, 'Rejected') }}</span>
+              </div>
+              <p class="card-subtext">Not Selected</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Tabs & Search Bar Strip -->
+        <div class="filter-search-strip">
+          <div class="tabs-pill-group">
+            <button type="button" class="filter-tab-pill" [class.active-pill]="activeModalRoundFilter === 'All'"
+              (click)="setActiveModalRoundFilter('All')">
+              All Pipeline <span class="tab-count-badge">{{ getRoundCandidatesCount(activeModalDrive, 'All') }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill" *ngFor="let round of getSelectionRounds(activeModalDrive)"
+              [class.active-pill]="activeModalRoundFilter === round" (click)="setActiveModalRoundFilter(round)">
+              {{ round }} <span class="tab-count-badge">{{ getRoundCandidatesCount(activeModalDrive, round) }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill placed-pill"
+              [class.active-pill]="activeModalRoundFilter === 'Placed'" (click)="setActiveModalRoundFilter('Placed')">
+              <span>Placed & Offered</span>
+              <span class="tab-count-badge">{{ getRoundCandidatesCount(activeModalDrive, 'Placed') }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill rejected-pill"
+              [class.active-pill]="activeModalRoundFilter === 'Rejected'"
+              (click)="setActiveModalRoundFilter('Rejected')">
+              <span>Rejected</span>
+              <span class="tab-count-badge">{{ getRoundCandidatesCount(activeModalDrive, 'Rejected') }}</span>
+            </button>
+          </div>
+
+          <!-- Search Input Box -->
+          <div class="search-pill-box">
+            <i class="bi bi-search search-pill-icon"></i>
+            <input type="text" class="search-pill-input" placeholder="Search candidates by name, roll, branch..."
+              [(ngModel)]="placeModalSearchQuery">
+          </div>
+        </div>
+
+        <!-- Batch Action Toolbar (When 1+ candidates selected) -->
+        <div class="d-flex align-items-center justify-content-between p-2 px-3 bg-white border rounded-3 mb-1"
+          *ngIf="modalSelectedCandidateIds.length > 0">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary text-white rounded-pill px-3 py-1 font-monospace extra-small">
+              {{ modalSelectedCandidateIds.length }} Selected
+            </span>
+            <span class="extra-small text-muted">Batch candidate progression actions</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-3 py-1 extra-small fw-bold"
+              (click)="bulkDemoteSelectedCandidates()">
+              <i class="bi bi-chevron-left me-1"></i> Prev Round
+            </button>
+            <button type="button" class="btn btn-xs btn-primary rounded-pill px-3 py-1 extra-small fw-bold"
+              (click)="bulkAdvanceSelectedCandidates()">
+              Next Round <i class="bi bi-chevron-right ms-1"></i>
+            </button>
+            <button type="button" class="btn btn-xs btn-success rounded-pill px-3 py-1 extra-small fw-bold text-white"
+              (click)="bulkMarkSelectedCandidatesPlaced()">
+              <i class="bi bi-check-circle-fill me-1"></i> Mark Placed ({{ modalSelectedCandidateIds.length }})
+            </button>
+            <button type="button" class="btn btn-xs btn-outline-danger rounded-pill px-3 py-1 extra-small fw-bold"
+              (click)="bulkRejectSelectedCandidates()">
+              Reject ({{ modalSelectedCandidateIds.length }})
+            </button>
+          </div>
+        </div>
+
+        <!-- Candidate Selection Roster Table Card -->
+        <div class="placed-table-card">
+          <div class="table-responsive custom-scroll">
+            <table class="table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th class="ps-3 text-center" style="width: 48px;">
+                    <input class="form-check-input" type="checkbox" [checked]="isAllModalCandidatesSelected()"
+                      (change)="toggleSelectAllModalCandidates()">
+                  </th>
+                  <th style="width: 140px;">Roll Number</th>
+                  <th style="width: 250px;">Candidate Details</th>
+                  <th style="width: 220px;">Branch & Academics</th>
+                  <th style="min-width: 400px;">Selection Pipeline Stage</th>
+                  <th class="pe-4 text-end" style="width: 190px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let s of getPaginatedModalPipelineCandidates()" class="placed-table-row">
+                  <td class="ps-3 text-center">
+                    <input class="form-check-input" type="checkbox" [checked]="isModalCandidateSelected(s.id)"
+                      (change)="toggleModalCandidateSelection(s.id)">
+                  </td>
+                  <td>
+                    <span class="roll-box-pill font-monospace">{{ s.roll }}</span>
+                  </td>
+                  <td>
+                    <div class="candidate-details-box">
+                      <div class="cand-name font-inter">{{ s.name }}</div>
+                      <div class="cand-email font-monospace">{{ s.email }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="branch-academics-box">
+                      <div class="branch-line">
+                        <span>{{ s.branch }}</span>
+                      </div>
+                      <div class="academics-sub-line">
+                        <span class="cgpa-tag">CGPA <strong>{{ s.cgpa }}</strong></span>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Selection Pipeline Stage Column with Dual-Row Header + Stepper -->
+                  <td>
+                    <div class="stage-pipeline-column">
+                      <!-- Row 1: Stage Pill + Step progress text -->
+                      <div class="stage-top-bar">
+                        <ng-container
+                          *ngIf="getCandidateRound(activeModalDrive.id, s) !== 'Placed' && getCandidateRound(activeModalDrive.id, s) !== 'Rejected'">
+                          <div class="stage-pill-neutral">
+                            <span class="r-tag">R{{ getCandidateRoundIndex(activeModalDrive, s) + 1 }}</span>
+                            <span class="r-name">{{ getCandidateRound(activeModalDrive.id, s) }}</span>
+                          </div>
+                          <span class="step-progress-hint">
+                            Step {{ getCandidateRoundIndex(activeModalDrive, s) + 1 }} of {{
+                            getSelectionRounds(activeModalDrive).length }}
+                          </span>
+                        </ng-container>
+
+                        <ng-container *ngIf="getCandidateRound(activeModalDrive.id, s) === 'Placed'">
+                          <div class="stage-pill-placed">
+                            <span>Placed &bull; {{ s.ctcOffered || activeModalDrive.packageLpa + ' LPA' }}</span>
+                          </div>
+                          <span class="step-progress-hint text-success fw-semibold">
+                            All Rounds Cleared
+                          </span>
+                        </ng-container>
+
+                        <ng-container *ngIf="getCandidateRound(activeModalDrive.id, s) === 'Rejected'">
+                          <div class="stage-pill-rejected">
+                            <span>Rejected</span>
+                          </div>
+                        </ng-container>
+                      </div>
+
+                      <!-- Row 2: Connected Horizontal Stepper Nodes -->
+                      <div class="stepper-horizontal-nodes">
+                        <ng-container
+                          *ngFor="let r of getSelectionRounds(activeModalDrive); let rIdx = index; let isLast = last">
+                          <div class="stage-node-item"
+                            [class.is-active]="getCandidateRound(activeModalDrive.id, s) !== 'Placed' && getCandidateRound(activeModalDrive.id, s) !== 'Rejected' && getCandidateRoundIndex(activeModalDrive, s) === rIdx"
+                            [class.is-done]="getCandidateRound(activeModalDrive.id, s) === 'Placed' || (getCandidateRound(activeModalDrive.id, s) !== 'Rejected' && getCandidateRoundIndex(activeModalDrive, s) > rIdx)"
+                            [class.is-rejected]="getCandidateRound(activeModalDrive.id, s) === 'Rejected'" [title]="r">
+                            <div class="node-bubble">
+                              <span>{{ rIdx + 1 }}</span>
+                            </div>
+                            <span class="node-text">{{ getRoundShortLabel(r) }}</span>
+                          </div>
+                          <div *ngIf="!isLast" class="stage-connector-line"
+                            [class.is-done]="getCandidateRound(activeModalDrive.id, s) === 'Placed' || (getCandidateRound(activeModalDrive.id, s) !== 'Rejected' && getCandidateRoundIndex(activeModalDrive, s) > rIdx)">
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Actions Cell Group (Unified Control Center) -->
+                  <td class="pe-4 text-end">
+                    <div class="actions-cell-group">
+                      <!-- If candidate is still in selection rounds -->
+                      <ng-container
+                        *ngIf="getCandidateRound(activeModalDrive.id, s) !== 'Placed' && getCandidateRound(activeModalDrive.id, s) !== 'Rejected'">
+                        <div class="actions-stepper-row">
+                          <button type="button" class="btn-step-nav btn-prev"
+                            [disabled]="getCandidateRoundIndex(activeModalDrive, s) === 0"
+                            (click)="demoteCandidateRound(s, activeModalDrive)" title="Move back to previous round">
+                            &lt; Prev
+                          </button>
+                          <button type="button" class="btn-step-nav btn-next"
+                            (click)="promoteCandidateRound(s, activeModalDrive)"
+                            title="Advance candidate to next round">
+                            Next &gt;
+                          </button>
+                        </div>
+                        <button type="button" class="btn-direct-reject" (click)="rejectCandidate(s, activeModalDrive)"
+                          title="Reject candidate from this drive">
+                          Reject
+                        </button>
+                      </ng-container>
+
+                      <!-- If candidate is already Placed & Offered -->
+                      <ng-container *ngIf="getCandidateRound(activeModalDrive.id, s) === 'Placed'">
+                        <span class="offer-date-chip">
+                          {{ s.offerDate || 'Oct 12, 2026' }}
+                        </span>
+                        <button type="button" class="btn-revoke-offer"
+                          (click)="demoteCandidateRound(s, activeModalDrive)"
+                          title="Revoke offer and return candidate to pipeline">
+                          Revoke Offer
+                        </button>
+                      </ng-container>
+
+                      <!-- If candidate is Rejected -->
+                      <ng-container *ngIf="getCandidateRound(activeModalDrive.id, s) === 'Rejected'">
+                        <span class="rejected-status-chip">
+                          Rejected
+                        </span>
+                        <button type="button" class="btn-reconsider-candidate"
+                          (click)="reconsiderCandidate(s, activeModalDrive)" title="Restore candidate back to Round 1">
+                          Reconsider
+                        </button>
+                      </ng-container>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Empty State -->
+                <tr *ngIf="getFilteredModalPipelineCandidates().length === 0">
+                  <td colspan="6" class="text-center py-5 text-muted extra-small">
+                    <i class="bi bi-people d-block fs-2 mb-2 text-secondary opacity-50"></i>
+                    No candidates found for "{{ activeModalRoundFilter }}" stage.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer with Candidate Stats, Pagination, and Close Button -->
+      <div class="placed-footer">
+        <div class="footer-left-group" *ngIf="activeModalDrive">
+          <div class="footer-candidate-counter">
+            <i class="bi bi-people-fill text-primary"></i>
+            <span>Showing <strong>{{ getPaginatedModalPipelineCandidates().length }}</strong> of <strong>{{
+                getFilteredModalPipelineCandidates().length }}</strong> candidates</span>
+          </div>
+          <span class="selection-counter-chip" *ngIf="modalSelectedCandidateIds.length > 0">
+            <i class="bi bi-check-circle-fill text-primary me-1"></i>
+            {{ modalSelectedCandidateIds.length }} selected
+          </span>
+        </div>
+
+        <div class="footer-right-group">
+          <div class="pagination-container" *ngIf="getFilteredModalPipelineCandidates().length > 0">
+            <button type="button" class="btn-pagination-nav" [disabled]="selectedModalCurrentPage === 1"
+              (click)="setModalPipelinePage(selectedModalCurrentPage - 1)">
+              <i class="bi bi-chevron-left me-1"></i> Prev
+            </button>
+            <div class="page-indicator-pill">
+              Page <strong>{{ selectedModalCurrentPage }}</strong> of <strong>{{ modalPipelineTotalPages }}</strong>
+            </div>
+            <button type="button" class="btn-pagination-nav"
+              [disabled]="selectedModalCurrentPage >= modalPipelineTotalPages"
+              (click)="setModalPipelinePage(selectedModalCurrentPage + 1)">
+              Next <i class="bi bi-chevron-right ms-1"></i>
+            </button>
+          </div>
+
+          <div class="footer-action-separator"></div>
+
+          <button type="button" class="placed-close-btn" (click)="closeSelectedCandidatesModal()">
+            <i class="bi bi-x-lg me-1"></i> Close Window
           </button>
         </div>
       </div>
 
-      <!-- Drives Grid -->
-      <div class="row g-4 mb-3">
-        <div class="col-md-6" *ngFor="let item of getPaginatedDriveRecords()">
-          <div class="bg-white border h-100 d-flex flex-column justify-content-between"
-            style="border-color: #e5e7eb !important; border-radius: 14px; padding: 1.25rem 1.35rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-            
-            <!-- Top Header Row -->
-            <div class="d-flex align-items-start justify-content-between mb-3">
+    </div>
+  </div>
+
+
+  <!-- MODAL: BULK MAIL COMPOSER (GMAIL STYLE WEBMAIL INTERFACE) -->
+  <div class="modal-backdrop-custom" *ngIf="showMailModal">
+    <div class="gmail-composer-modal" [class.gmail-fullscreen]="isMailFullScreen">
+
+      <!-- Gmail Dark Header Bar -->
+      <div class="gmail-header">
+        <div class="gmail-title-group">
+          <h6 class="gmail-title">New Message &mdash; {{ activeCompanyForMail?.companyName }} Placement Dispatch</h6>
+        </div>
+        <div class="gmail-controls">
+          <i class="bi bi-dash-lg ctrl-icon" (click)="toggleMailFullScreen()" title="Minimize / Restore"></i>
+          <i class="bi" [ngClass]="isMailFullScreen ? 'bi-arrows-angle-contract' : 'bi-arrows-angle-expand'"
+            (click)="toggleMailFullScreen()" class="ctrl-icon"
+            [title]="isMailFullScreen ? 'Exit Full Screen' : 'Full Screen'"></i>
+          <i class="bi bi-x-lg ctrl-icon" (click)="closeMailModal()" title="Close"></i>
+        </div>
+      </div>
+
+      <!-- Gmail Recipient & Subject Header Fields -->
+      <div class="gmail-field-row">
+        <span class="gmail-field-label">From:</span>
+        <span class="text-dark font-monospace extra-small fw-bold">Training & Placement Office
+          &lt;tpo.hiring@mgmcet.ac.in&gt;</span>
+      </div>
+
+      <div class="gmail-field-row">
+        <span class="gmail-field-label">To:</span>
+        <div class="d-flex align-items-center gap-3 flex-wrap flex-grow-1">
+          <span class="badge bg-dark text-white rounded-pill px-3 py-1.5 extra-small font-monospace fw-semibold">
+            <i class="bi bi-people-fill me-1"></i> {{ activeCompanyForMail ? getSelectedCount(activeCompanyForMail) : 0
+            }} Selected Candidates
+          </span>
+          <span class="extra-small text-muted font-monospace ms-2">Bcc: Auto-Matched Shortlisted Candidates</span>
+        </div>
+      </div>
+
+      <div class="gmail-field-row">
+        <span class="gmail-field-label">Subject:</span>
+        <input type="text" class="gmail-field-input font-monospace" [(ngModel)]="mailForm.subject"
+          placeholder="Subject line...">
+        <div class="ms-auto d-flex align-items-center gap-2">
+          <select class="form-select filter-select py-0 px-2 extra-small font-monospace"
+            style="height: 28px; min-width: 220px;" [ngModel]="selectedMailTemplate"
+            (change)="onMailTemplateChange($any($event).target.value)">
+            <option value="invite">Preset: Drive Invitation Notice</option>
+            <option value="round">Preset: Selection Round Schedule</option>
+            <option value="offer">Preset: Placement Offer Letter</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Gmail Formatting & Tag Toolbar -->
+      <div class="gmail-toolbar">
+        <div class="toolbar-group">
+          <!-- Compose vs Preview Tab Switcher -->
+          <button type="button" class="btn btn-xs rounded-pill extra-small fw-bold transition-all px-3 py-1 me-2"
+            [ngClass]="activeMailTab === 'compose' ? 'btn-dark' : 'btn-outline-custom'"
+            (click)="activeMailTab = 'compose'">
+            <i class="bi bi-pencil-square me-1"></i> Compose Editor
+          </button>
+          <button type="button" class="btn btn-xs rounded-pill extra-small fw-bold transition-all px-3 py-1 me-3"
+            [ngClass]="activeMailTab === 'preview' ? 'btn-dark' : 'btn-outline-custom'"
+            (click)="activeMailTab = 'preview'">
+            <i class="bi bi-eye-fill me-1"></i> Gmail Preview
+          </button>
+
+          <!-- Quick Variable Merge Tags -->
+          <span class="extra-small text-muted fw-bold font-monospace me-1">Insert Tag:</span>
+          <button type="button" class="tag-btn" (click)="insertMergeTag('{Student Name}')">+ Name</button>
+          <button type="button" class="tag-btn" (click)="insertMergeTag('{Roll Number}')">+ Roll</button>
+          <button type="button" class="tag-btn" (click)="insertMergeTag('{Branch}')">+ Branch</button>
+        </div>
+
+        <div class="toolbar-group">
+          <span
+            class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 extra-small font-monospace fw-bold">
+            CTC: {{ activeCompanyForMail?.packageLpa }} LPA
+          </span>
+        </div>
+      </div>
+
+      <!-- Gmail Body Editor / Live Gmail Preview -->
+      <div class="gmail-body-area custom-scroll">
+        <!-- Editor View -->
+        <div *ngIf="activeMailTab === 'compose'" class="d-flex flex-column h-100">
+          <textarea class="gmail-textarea flex-grow-1" rows="11" [(ngModel)]="mailForm.body"
+            placeholder="Compose email message..."></textarea>
+
+          <!-- Dynamic Attachment Chips inside Compose Editor -->
+          <div class="pt-2 border-top mt-2 d-flex align-items-center gap-2 flex-wrap"
+            *ngIf="mailForm.includeAdmitCard || mailForm.includeDriveNotice">
+            <span class="extra-small text-muted font-monospace"><i class="bi bi-paperclip me-1"></i> Attached
+              Files:</span>
+            <span *ngIf="mailForm.includeAdmitCard"
+              class="badge bg-light text-dark border px-2.5 py-1 extra-small font-monospace fw-semibold d-inline-flex align-items-center gap-1">
+              <i class="bi bi-file-earmark-pdf-fill text-danger"></i> ProveYu_Candidate_AdmitCard.pdf
+              <i class="bi bi-x ms-1 cursor-pointer" (click)="toggleAttachment('admitCard')" title="Remove"></i>
+            </span>
+            <span *ngIf="mailForm.includeDriveNotice"
+              class="badge bg-light text-dark border px-2.5 py-1 extra-small font-monospace fw-semibold d-inline-flex align-items-center gap-1">
+              <i class="bi bi-file-earmark-text-fill text-primary"></i> {{ activeCompanyForMail?.companyName
+              }}_Drive_Notice.pdf
+              <i class="bi bi-x ms-1 cursor-pointer" (click)="toggleAttachment('notice')" title="Remove"></i>
+            </span>
+          </div>
+        </div>
+
+        <!-- Gmail Live Preview View -->
+        <div *ngIf="activeMailTab === 'preview'" class="p-3 bg-white rounded-3">
+          <div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom">
+            <div class="d-flex align-items-center gap-3">
+              <div class="rounded-circle bg-dark text-white d-flex align-items-center justify-content-center fw-bold"
+                style="width: 40px; height: 40px; font-size: 0.9rem;">
+                TPO
+              </div>
               <div>
-                <h6 class="mb-1" style="font-weight: 700; font-size: 1.05rem; color: #111827; letter-spacing: -0.01em;">{{ item.companyName }}</h6>
-                <div class="d-flex align-items-center" style="font-size: 0.82rem; color: #6b7280; font-weight: 500;">
-                  <i class="bi bi-geo-alt" style="color: #9ca3af; font-size: 0.9rem; margin-right: 0.4rem;"></i>
-                  <span>{{ item.venue }}</span>
-                  <span style="color: #9ca3af; margin: 0 0.5rem; font-size: 0.75rem;">•</span>
-                  <i class="bi bi-calendar3" style="color: #9ca3af; font-size: 0.9rem; margin-right: 0.4rem;"></i>
-                  <span>{{ item.driveDate }}</span>
-                </div>
-              </div>
-
-              <!-- Status Badge Pill -->
-              <div>
-                <span *ngIf="item.status === 'Completed'" 
-                  class="badge rounded-pill d-inline-flex align-items-center"
-                  style="background: #d1fae5; color: #047857; font-size: 0.78rem; font-weight: 600; padding: 5px 12px;">
-                  <i class="bi bi-check-circle-fill" style="margin-right: 0.35rem; font-size: 0.8rem;"></i> Completed
-                </span>
-
-                <span *ngIf="item.status === 'Ongoing'" 
-                  class="badge rounded-pill d-inline-flex align-items-center"
-                  style="background: #fef3c7; color: #d97706; font-size: 0.78rem; font-weight: 600; padding: 5px 12px;">
-                  <i class="bi bi-clock-fill" style="margin-right: 0.35rem; font-size: 0.8rem;"></i> Ongoing
-                </span>
-
-                <span *ngIf="item.status === 'Scheduled'" 
-                  class="badge rounded-pill d-inline-flex align-items-center"
-                  style="background: #e0e7ff; color: #4338ca; font-size: 0.78rem; font-weight: 600; padding: 5px 12px;">
-                  <i class="bi bi-calendar-event-fill" style="margin-right: 0.35rem; font-size: 0.8rem;"></i> Scheduled
-                </span>
-
-                <span *ngIf="item.status !== 'Completed' && item.status !== 'Ongoing' && item.status !== 'Scheduled'" 
-                  class="badge rounded-pill d-inline-flex align-items-center"
-                  style="background: #f3f4f6; color: #4b5563; font-size: 0.78rem; font-weight: 600; padding: 5px 12px;">
-                  <i class="bi bi-hourglass-split" style="margin-right: 0.35rem; font-size: 0.8rem;"></i> {{ item.status }}
-                </span>
+                <strong class="d-block text-dark fs-6">Training & Placement Office (TPO)</strong>
+                <span class="extra-small text-muted font-monospace">to rahul.s@mgmcet.ac.in</span>
               </div>
             </div>
-
-            <!-- Metrics Row (2 Side-by-Side Boxes) -->
-            <div class="row g-3 mb-3">
-              
-              <!-- Left Box: Students Attended -->
-              <div class="col-6">
-                <div class="d-flex align-items-center gap-3"
-                  style="background: #f8fafc; border: 1px solid #f3f4f6; border-radius: 12px; padding: 0.85rem 1rem;">
-                  <div class="d-flex align-items-center justify-content-center flex-shrink-0"
-                    style="width: 42px; height: 42px; min-width: 42px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px;">
-                    <i class="bi bi-people" style="color: #4b5563; font-size: 1.15rem;"></i>
-                  </div>
-                  <div>
-                    <span class="d-block" style="color: #6b7280; font-size: 0.75rem; font-weight: 600; margin-bottom: 2px;">Students Attended</span>
-                    <strong style="color: #111827; font-size: 1.65rem; font-weight: 800; line-height: 1; font-family: inherit;">{{ item.attended }}</strong>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Right Box: Placed Selections / Offers -->
-              <div class="col-6">
-                <div class="d-flex align-items-center gap-3"
-                  style="background: #f8fafc; border: 1px solid #f3f4f6; border-radius: 12px; padding: 0.85rem 1rem;">
-                  <div class="d-flex align-items-center justify-content-center flex-shrink-0"
-                    style="width: 42px; height: 42px; min-width: 42px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px;">
-                    <i class="bi bi-trophy text-success" style="font-size: 1.15rem;"></i>
-                  </div>
-                  <div>
-                    <span class="d-block" style="color: #6b7280; font-size: 0.75rem; font-weight: 600; margin-bottom: 2px;">Selected / Placed</span>
-                    <strong style="color: #059669; font-size: 1.65rem; font-weight: 800; line-height: 1; font-family: inherit;">{{ item.offers }}</strong>
-                  </div>
-                </div>
-              </div>
-
+            <span class="extra-small text-muted font-monospace">12:00 PM (Just now)</span>
+          </div>
+          <div class="mb-3">
+            <h6 class="fw-bold text-dark font-monospace mb-2">{{ mailForm.subject }}</h6>
+            <div class="text-dark font-monospace extra-small" style="white-space: pre-line; line-height: 1.6;">
+              {{ sampleEmailPreview }}
             </div>
-
-            <!-- Bottom Action Row -->
-            <div class="d-flex align-items-center justify-content-between pt-1">
-              <button class="btn btn-sm rounded-pill"
-                style="background: #ffffff; border: 1px solid #d1d5db; color: #374151; font-size: 0.8rem; font-weight: 600; padding: 6px 16px;"
-                (click)="openEditDriveModal(item)">
-                Update Counts & Status
-              </button>
-
-              <button class="btn btn-sm btn-link text-decoration-none p-0 d-inline-flex align-items-center"
-                style="color: #4f46e5; font-size: 0.82rem; font-weight: 700;"
-                (click)="openSelectedCandidatesModal('Placed & Offered Candidates', item)">
-                <span>View Selected Candidates ({{ item.offers }})</span>
-                <i class="bi bi-chevron-right" style="font-size: 0.75rem; margin-left: 0.25rem;"></i>
-              </button>
+          </div>
+          <div class="pt-3 border-top">
+            <span class="extra-small text-muted font-monospace d-block mb-1.5"><i class="bi bi-paperclip me-1"></i>
+              Official Attachments (2 Files):</span>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <span
+                class="badge bg-light text-dark border px-2.5 py-1.5 extra-small font-monospace fw-semibold d-inline-flex align-items-center gap-1">
+                <i class="bi bi-file-earmark-pdf-fill text-danger"></i> ProveYu_Candidate_AdmitCard.pdf
+              </span>
+              <span
+                class="badge bg-light text-dark border px-2.5 py-1.5 extra-small font-monospace fw-semibold d-inline-flex align-items-center gap-1">
+                <i class="bi bi-file-earmark-text-fill text-primary"></i> {{ activeCompanyForMail?.companyName
+                }}_Drive_Notice.pdf
+              </span>
             </div>
-
           </div>
         </div>
       </div>
 
-      <!-- Corporate Drives Pagination Footer -->
-      <div class="p-3 border-top d-flex align-items-center justify-content-between extra-small text-muted bg-white rounded-bottom"
-        *ngIf="getFilteredDriveRecords().length > drivesPageSize">
-        <span>Showing {{ getPaginatedDriveRecords().length }} of {{ getFilteredDriveRecords().length }} drives</span>
-        <ul class="pagination pagination-sm mb-0">
-          <li class="page-item" [class.disabled]="drivesCurrentPage === 1">
-            <a class="page-link" href="#" (click)="$event.preventDefault(); setDrivesPage(drivesCurrentPage - 1)">Previous</a>
-          </li>
-          <li class="page-item" *ngFor="let p of [].constructor(drivesTotalPages); let i = index" [class.active]="drivesCurrentPage === (i + 1)">
-            <a class="page-link" href="#" (click)="$event.preventDefault(); setDrivesPage(i + 1)">{{ i + 1 }}</a>
-          </li>
-          <li class="page-item" [class.disabled]="drivesCurrentPage === drivesTotalPages">
-            <a class="page-link" href="#" (click)="$event.preventDefault(); setDrivesPage(drivesCurrentPage + 1)">Next</a>
-          </li>
-        </ul>
+      <!-- Gmail Bottom Action Bar -->
+      <div class="gmail-footer">
+        <div class="d-flex align-items-center gap-3">
+          <button type="button" class="gmail-send-btn" (click)="sendBulkMails()">
+            <i class="bi bi-send-fill me-1"></i> Send ({{ activeCompanyForMail ? getSelectedCount(activeCompanyForMail)
+            : 0 }})
+          </button>
+
+          <div class="gmail-footer-tools">
+            <i class="bi bi-paperclip footer-tool-icon" (click)="toggleAttachment('admitCard')"
+              title="Toggle Admit Card Attachment"></i>
+            <i class="bi bi-file-earmark-pdf footer-tool-icon" (click)="toggleAttachment('notice')"
+              title="Toggle Drive Notice Attachment"></i>
+            <i class="bi bi-link-45deg footer-tool-icon" (click)="insertMergeTag('https://mgmcet.ac.in/placements')"
+              title="Insert Link"></i>
+            <i class="bi bi-emoji-smile footer-tool-icon" (click)="insertMergeTag('🎓')" title="Insert Emoji"></i>
+            <i class="bi bi-shield-check text-success footer-tool-icon" title="TPO Signature Verification Enabled"></i>
+          </div>
+        </div>
+
+        <i class="bi bi-trash footer-tool-icon" (click)="closeMailModal()" title="Discard draft"></i>
       </div>
 
     </div>
   </div>
 
-  <!-- MODAL 1: ADD COMPANY REQUIREMENT (TAB 1) -->
-  <div class="modal-backdrop-custom" *ngIf="showAddModal" (click)="closeAddModal()">
-    <div class="modal-dialog-custom" (click)="$event.stopPropagation()">
-      <div class="modal-header-custom">
-        <div class="modal-header-content">
+  <!-- MODAL: LOG CORPORATE DRIVE -->
+  <div class="modal-backdrop-custom" *ngIf="showAddDriveModal">
+    <div class="modal-dialog-compact proveyu-form-modal" style="max-width: 580px;">
+      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="modal-header bg-dark text-white p-3.5 px-4 border-0">
           <div>
-            <h5 class="modal-title">+ Add Company Placement Requirement</h5>
-            <p class="modal-subtitle">Set eligibility criteria to run instant background auto-matching</p>
+            <h5 class="modal-title fw-bold text-white fs-6 mb-0.5">Log Corporate Placement Drive</h5>
+            <span class="extra-small text-light opacity-90">Record interview metrics and attendance</span>
           </div>
+          <button type="button" class="btn-close btn-close-white" (click)="closeAddDriveModal()"></button>
         </div>
-        <button type="button" class="btn-close-custom" (click)="closeAddModal()">
-          ✕
-        </button>
-      </div>
 
-      <div class="modal-body-custom custom-scroll">
-        <form (ngSubmit)="submitNewRequirement()">
-          <div class="row g-3 extra-small">
-            <div class="col-md-6">
-              <label class="form-label fw-bold text-secondary">Company Name *</label>
-              <input type="text" class="form-control form-control-sm rounded-3 border" required
-                [(ngModel)]="newForm.companyName" name="companyName" placeholder="e.g. TCS Digital, Accenture, Amdocs">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-bold text-secondary">Industry Category</label>
-              <select class="form-select form-select-sm rounded-3 border" [(ngModel)]="newForm.industry"
-                name="industry">
-                <option value="IT Services & Consulting">IT Services & Consulting</option>
-                <option value="Product SaaS & Cloud">Product SaaS & Cloud</option>
-                <option value="BFSI & Fintech">BFSI & Fintech</option>
-                <option value="E-Commerce & Retail">E-Commerce & Retail</option>
-              </select>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label fw-bold text-secondary">Package Offered (LPA) *</label>
-              <input type="number" step="0.5"
-                class="form-control form-control-sm rounded-3 border font-monospace fw-bold" required
-                [(ngModel)]="newForm.packageLpa" name="packageLpa" placeholder="6.0">
-            </div>
-            <div class="col-md-8">
-              <label class="form-label fw-bold text-secondary">Roles Offered</label>
-              <input type="text" class="form-control form-control-sm rounded-3 border" [(ngModel)]="newForm.roles"
-                name="roles" placeholder="Software Engineer / QA Specialist">
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label fw-bold text-secondary">Drive Date *</label>
-              <input type="date" class="form-control form-control-sm rounded-3 border" required
-                [(ngModel)]="newForm.driveDate" name="driveDate">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-bold text-secondary">Drive Mode</label>
-              <select class="form-select form-select-sm rounded-3 border" [(ngModel)]="newForm.driveMode"
-                name="driveMode">
-                <option value="On-Campus">On-Campus</option>
-                <option value="Virtual">Virtual</option>
-                <option value="Hybrid">Hybrid</option>
-              </select>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-bold text-secondary">Venue / Location</label>
-              <input type="text" class="form-control form-control-sm rounded-3 border" [(ngModel)]="newForm.venue"
-                name="venue" placeholder="Main Auditorium">
-            </div>
-
-            <!-- Eligibility Criteria Highlight Box -->
-            <div class="col-12">
-              <div class="p-3 bg-light border rounded-3">
-                <h6 class="fw-bold text-dark mb-2 text-uppercase font-monospace extra-small">
-                  Auto-Match Eligibility Filters
-                </h6>
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label class="form-label fw-bold text-secondary">Minimum CGPA *</label>
-                    <input type="number" step="0.1"
-                      class="form-control form-control-sm rounded-3 border font-monospace fw-bold" required
-                      [(ngModel)]="newForm.minCgpa" name="minCgpa">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label fw-bold text-secondary">Min ProveYu Score</label>
-                    <input type="number" class="form-control form-control-sm rounded-3 border font-monospace"
-                      [(ngModel)]="newForm.minProveYuScore" name="minProveYuScore">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label fw-bold text-secondary">Branch Filter</label>
-                    <select class="form-select form-select-sm rounded-3 border" [(ngModel)]="newForm.branchFilter"
-                      name="branchFilter">
-                      <option value="CS / IT Only">CS / IT Only</option>
-                      <option value="All Branches">All Branches</option>
-                    </select>
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label fw-bold text-secondary d-block">Eligible ProveYu Tiers *</label>
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="checkbox" id="t1" [(ngModel)]="newForm.tier1" name="tier1">
-                      <label class="form-check-label fw-bold text-dark" for="t1">Tier 1 (70+)</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="checkbox" id="t2" [(ngModel)]="newForm.tier2" name="tier2">
-                      <label class="form-check-label fw-bold text-dark" for="t2">Tier 2 (60-70)</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="checkbox" id="t3" [(ngModel)]="newForm.tier3" name="tier3">
-                      <label class="form-check-label fw-bold text-dark" for="t3">Tier 3 (&lt;60)</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="modal-footer-custom">
-            <button type="button" class="btn btn-outline-custom" (click)="closeAddModal()">Cancel</button>
-            <button type="submit" class="btn btn-primary-custom">
-              Save & Run Auto-Match
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL 2: LOG CORPORATE DRIVE & INTERVIEW (TAB 2) -->
-  <div class="modal-backdrop-custom" *ngIf="showAddDriveModal" (click)="closeAddDriveModal()">
-    <div class="modal-dialog-compact" (click)="$event.stopPropagation()">
-      <div class="modal-header-custom">
-        <div class="modal-header-content">
-          <div>
-            <h5 class="modal-title">+ Log Corporate Drive & Interview</h5>
-            <p class="modal-subtitle">Record drive details, student attendance, and preliminary offers</p>
-          </div>
-        </div>
-        <button type="button" class="btn-close-custom" (click)="closeAddDriveModal()">
-          ✕
-        </button>
-      </div>
-
-      <div class="modal-body-custom custom-scroll">
         <form (ngSubmit)="submitNewDrive()">
-          <div class="row g-3 extra-small">
-            <div class="col-md-6">
+          <div class="modal-body p-4 bg-light-subtle extra-small">
+            <div class="mb-3">
               <label class="form-label fw-bold text-secondary">Company Name *</label>
-              <input type="text" class="form-control form-control-sm rounded-3 border" required
-                [(ngModel)]="newDriveForm.company" name="company" placeholder="e.g. Infosys, TCS, Amdocs">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-bold text-secondary">Drive Status *</label>
-              <select class="form-select form-select-sm rounded-3 border" [(ngModel)]="newDriveForm.status"
-                name="status">
-                <option value="Scheduled">Scheduled</option>
-                <option value="Ongoing">Ongoing</option>
-                <option value="Completed">Completed</option>
-                <option value="Awaiting Schedule">Awaiting Schedule</option>
-              </select>
+              <input type="text" class="form-control extra-small fw-bold" required [(ngModel)]="newDriveForm.company"
+                name="company" placeholder="e.g. TCS Digital, Accenture">
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label fw-bold text-secondary">Drive Date *</label>
-              <input type="date" class="form-control form-control-sm rounded-3 border" required
-                [(ngModel)]="newDriveForm.date" name="date">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-bold text-secondary">Students Attended *</label>
-              <input type="number" class="form-control form-control-sm rounded-3 border font-monospace fw-bold" required
-                [(ngModel)]="newDriveForm.attended" name="attended">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-bold text-secondary">Selections / Offers</label>
-              <input type="number" class="form-control form-control-sm rounded-3 border font-monospace fw-bold"
-                [(ngModel)]="newDriveForm.offers" name="offers">
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label class="form-label fw-bold text-secondary">Industry</label>
+                <input type="text" class="form-control extra-small" [(ngModel)]="newDriveForm.industry" name="industry"
+                  placeholder="IT Services">
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-bold text-secondary">Offered CTC (LPA)</label>
+                <input type="text" class="form-control extra-small font-monospace fw-bold"
+                  [(ngModel)]="newDriveForm.ctcOffered" name="ctcOffered" placeholder="7.5 LPA">
+              </div>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label fw-bold text-secondary">Roles Offered</label>
-              <input type="text" class="form-control form-control-sm rounded-3 border" [(ngModel)]="newDriveForm.roles"
-                name="roles" placeholder="Software Engineer">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-bold text-secondary">Offered CTC Package</label>
-              <input type="text" class="form-control form-control-sm rounded-3 border font-monospace"
-                [(ngModel)]="newDriveForm.ctcOffered" name="ctcOffered" placeholder="7.5 LPA">
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label class="form-label fw-bold text-secondary">Drive Date</label>
+                <input type="date" class="form-control extra-small font-monospace" [(ngModel)]="newDriveForm.date"
+                  name="date">
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-bold text-secondary">Drive Status</label>
+                <select class="form-select extra-small fw-bold" [(ngModel)]="newDriveForm.status" name="status">
+                  <option value="Scheduled">Scheduled</option>
+                  <option value="Ongoing">Ongoing</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
             </div>
 
-            <div class="col-12">
-              <label class="form-label fw-bold text-secondary">Venue / Platform</label>
-              <input type="text" class="form-control form-control-sm rounded-3 border" [(ngModel)]="newDriveForm.venue"
-                name="venue" placeholder="Main Auditorium / Online Proctor Portal">
+            <div class="mb-3">
+              <label class="form-label fw-bold text-secondary">Venue / Room Location</label>
+              <input type="text" class="form-control extra-small" [(ngModel)]="newDriveForm.venue" name="venue"
+                placeholder="Main Auditorium">
             </div>
           </div>
 
-          <div class="modal-footer-custom">
-            <button type="button" class="btn btn-outline-custom" (click)="closeAddDriveModal()">Cancel</button>
-            <button type="submit" class="btn btn-primary-custom" style="background: #00875a; border-color: #00875a;">
-              Save Corporate Drive Entry
+          <div class="modal-footer bg-white p-3 border-top d-flex justify-content-between">
+            <button type="button" class="btn btn-cancel" (click)="closeAddDriveModal()">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-submit">
+              Save Drive Record
             </button>
           </div>
         </form>
@@ -701,269 +1185,65 @@
     </div>
   </div>
 
-  <!-- MODAL 3: EDIT DRIVE METRICS MODAL -->
-  <div class="modal-backdrop-custom" *ngIf="showEditDriveModal" (click)="closeEditDriveModal()">
-    <div class="modal-dialog-compact" (click)="$event.stopPropagation()">
-      <div class="modal-header-custom">
-        <div class="modal-header-content">
+  <!-- MODAL: EDIT CORPORATE DRIVE -->
+  <div class="modal-backdrop-custom" *ngIf="showEditDriveModal">
+    <div class="modal-dialog-compact proveyu-form-modal" style="max-width: 580px;">
+      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="modal-header bg-dark text-white p-3.5 px-4 border-0">
           <div>
-            <h5 class="modal-title">Update Drive Metrics for {{ editDriveForm.company }}</h5>
-            <p class="modal-subtitle">Modify candidate attendance, offered CTC package, and drive status</p>
+            <h5 class="modal-title fw-bold text-white fs-6 mb-0.5">Edit Drive Metrics</h5>
+            <span class="extra-small text-light opacity-90">{{ editDriveForm.company }}</span>
           </div>
+          <button type="button" class="btn-close btn-close-white" (click)="closeEditDriveModal()"></button>
         </div>
-        <button type="button" class="btn-close-custom" (click)="closeEditDriveModal()">
-          ✕
-        </button>
-      </div>
 
-      <div class="modal-body-custom custom-scroll">
         <form (ngSubmit)="submitEditDrive()">
-          <div class="row g-3 extra-small">
-            <div class="col-md-6">
+          <div class="modal-body p-4 bg-light-subtle extra-small">
+            <div class="mb-3">
               <label class="form-label fw-bold text-secondary">Company Name</label>
-              <input type="text" class="form-control form-control-sm rounded-3 border"
-                [(ngModel)]="editDriveForm.company" name="editCompany">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-bold text-secondary">Drive Status</label>
-              <select class="form-select form-select-sm rounded-3 border" [(ngModel)]="editDriveForm.status"
-                name="editStatus">
-                <option value="Completed">Completed</option>
-                <option value="Ongoing">Ongoing</option>
-                <option value="Scheduled">Scheduled</option>
-                <option value="Awaiting Schedule">Awaiting Schedule</option>
-              </select>
+              <input type="text" class="form-control extra-small fw-bold" [(ngModel)]="editDriveForm.company"
+                name="company">
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label fw-bold text-secondary">Students Attended</label>
-              <input type="number" class="form-control form-control-sm rounded-3 border font-monospace fw-bold"
-                [(ngModel)]="editDriveForm.attended" name="editAttended">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-bold text-secondary">Drive Date</label>
-              <input type="text" class="form-control form-control-sm rounded-3 border" [(ngModel)]="editDriveForm.date"
-                name="editDate">
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label fw-bold text-secondary">Roles Offered</label>
-              <input type="text" class="form-control form-control-sm rounded-3 border" [(ngModel)]="editDriveForm.roles"
-                name="editRoles">
-            </div>
-            <div class="col-md-6">
-              <label class="form-label fw-bold text-secondary">Offered Package (LPA)</label>
-              <input type="text" class="form-control form-control-sm rounded-3 border font-monospace"
-                [(ngModel)]="editDriveForm.ctcOffered" name="editCtc">
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label class="form-label fw-bold text-secondary">Offered CTC (LPA)</label>
+                <input type="text" class="form-control extra-small font-monospace fw-bold"
+                  [(ngModel)]="editDriveForm.ctcOffered" name="ctcOffered">
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-bold text-secondary">Drive Status</label>
+                <select class="form-select extra-small fw-bold" [(ngModel)]="editDriveForm.status" name="status">
+                  <option value="Scheduled">Scheduled</option>
+                  <option value="Ongoing">Ongoing</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
             </div>
 
-            <div class="col-12">
-              <label class="form-label fw-bold text-secondary">Venue / Location</label>
-              <input type="text" class="form-control form-control-sm rounded-3 border" [(ngModel)]="editDriveForm.venue"
-                name="editVenue">
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label class="form-label fw-bold text-secondary">Attended Candidates</label>
+                <input type="number" class="form-control extra-small font-monospace"
+                  [(ngModel)]="editDriveForm.attended" name="attended">
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-bold text-secondary">Offers Issued</label>
+                <input type="number" class="form-control extra-small font-monospace" [(ngModel)]="editDriveForm.offers"
+                  name="offers">
+              </div>
             </div>
           </div>
 
-          <div class="modal-footer-custom">
-            <button type="button" class="btn btn-outline-custom" (click)="closeEditDriveModal()">Cancel</button>
-            <button type="submit" class="btn btn-primary-custom">
-              Update Drive Data
+          <div class="modal-footer bg-white p-3 border-top d-flex justify-content-between">
+            <button type="button" class="btn btn-cancel" (click)="closeEditDriveModal()">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-submit">
+              Update Record
             </button>
           </div>
         </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL 4: VIEW & MANAGE SELECTED CANDIDATES DETAILS MODAL -->
-  <div class="modal-backdrop-custom" *ngIf="showSelectedCandidatesModal" (click)="closeSelectedCandidatesModal()">
-    <div class="modal-dialog-custom" (click)="$event.stopPropagation()">
-      <div class="modal-header-custom">
-        <div class="modal-header-content">
-          <div>
-            <h5 class="modal-title">{{ activeModalTitle }}</h5>
-            <p class="modal-subtitle">{{ activeModalSubtitle }}</p>
-          </div>
-        </div>
-        <button type="button" class="btn-close-custom" (click)="closeSelectedCandidatesModal()">
-          ✕
-        </button>
-      </div>
-
-      <div class="modal-body-custom custom-scroll p-4">
-        
-        <!-- Quick Place Candidate Bar inside Modal -->
-        <div class="p-3 bg-light border rounded-3 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-3" *ngIf="activeModalDrive">
-          <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-person-plus-fill text-primary fs-5"></i>
-            <div>
-              <span class="fw-bold text-dark d-block extra-small">Quick Mark Candidate Placed in {{ activeModalDrive.companyName }}</span>
-              <span class="text-muted extra-small">Select an eligible candidate from matched pool to record placement offer</span>
-            </div>
-          </div>
-
-          <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 500px;">
-            <select class="form-select form-select-sm rounded-pill border" [(ngModel)]="selectedStudentToPlaceId">
-              <option value="">-- Select Eligible Candidate to Place --</option>
-              <option *ngFor="let s of getEligibleUnplacedCandidatesForDrive(activeModalDrive)" [value]="s.id">
-                {{ s.name }} ({{ s.roll }}) • CGPA: {{ s.cgpa }} • {{ s.branch }}
-              </option>
-            </select>
-            <button class="btn btn-sm btn-primary-custom rounded-pill px-3 extra-small text-nowrap fw-bold"
-              [disabled]="!selectedStudentToPlaceId"
-              (click)="placeSelectedStudentFromModal()">
-              <i class="bi bi-check-circle me-1"></i> Place Candidate
-            </button>
-          </div>
-        </div>
-
-        <!-- Selected Candidates Table -->
-        <div class="table-responsive bg-white rounded-3 border shadow-2xs mb-3 custom-scroll table-custom-container">
-          <table class="table align-middle mb-0 extra-small">
-            <thead class="sticky-thead">
-              <tr>
-                <th class="ps-3">Roll Number</th>
-                <th>Student Name & Email</th>
-                <th>Branch</th>
-                <th>CGPA</th>
-                <th>ProveYu Tier</th>
-                <th>Passport Score</th>
-                <th>Status</th>
-                <th>Company Placed</th>
-                <th>Offered Package</th>
-                <th class="pe-3 text-end">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let s of getPaginatedModalCandidates()">
-                <td class="ps-3 font-monospace fw-bold text-dark">{{ s.roll }}</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2.5">
-                    <div
-                      class="avatar rounded-circle fw-bold d-flex align-items-center justify-content-center flex-shrink-0"
-                      style="width: 32px; height: 32px; font-size: 0.72rem;">
-                      {{ s.name.substring(0, 2).toUpperCase() }}
-                    </div>
-                    <div>
-                      <span class="fw-bold text-dark d-block mb-0.5">{{ s.name }}</span>
-                      <span class="text-muted extra-small">{{ s.email }}</span>
-                    </div>
-                  </div>
-                </td>
-                <td class="fw-semibold text-dark">{{ s.branch }}</td>
-                <td><strong class="font-monospace text-dark fs-6">{{ s.cgpa }}</strong></td>
-                <td>
-                  <span class="badge rounded-pill px-3 py-1 extra-small fw-bold"
-                    [ngClass]="s.tier === 'Tier 1' ? 'bg-success-subtle text-success border border-success-subtle' : s.tier === 'Tier 2' ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'">
-                    {{ s.tier }}
-                  </span>
-                </td>
-                <td>
-                  <span class="badge bg-light text-dark border px-2.5 py-1 extra-small font-monospace">
-                    {{ s.proveYuScore }} / 100
-                  </span>
-                </td>
-                <td>
-                  <span class="badge rounded-pill px-3 py-1 extra-small fw-bold bg-success-subtle text-success border border-success-subtle">
-                    Placed
-                  </span>
-                </td>
-                <td class="fw-bold text-dark">{{ s.companyPlaced || (activeModalDrive ? activeModalDrive.companyName : 'Placed') }}</td>
-                <td>
-                  <strong class="font-monospace fw-bold text-success fs-6">{{ s.ctcOffered || (activeModalDrive ? activeModalDrive.packageLpa + ' LPA' : '7.0 LPA') }}</strong>
-                </td>
-                <td class="pe-3 text-end" *ngIf="activeModalDrive">
-                  <button class="btn btn-sm btn-outline-danger rounded-pill px-2.5 py-1 extra-small fw-bold"
-                    (click)="unplaceStudent(s, activeModalDrive)" title="Revert candidate back to unplaced pool">
-                    <i class="bi bi-x-circle me-1"></i> Revert
-                  </button>
-                </td>
-              </tr>
-              <tr *ngIf="selectedCandidatesForModal.length === 0">
-                <td colspan="10" class="text-center py-4 text-muted">
-                  <i class="bi bi-info-circle me-1"></i> No selected / placed candidate records logged yet for this drive. Select an eligible candidate above to record placement.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Selected Modal Pagination Footer -->
-        <div class="p-3 border-top d-flex align-items-center justify-content-between extra-small text-muted bg-white rounded-bottom"
-          *ngIf="selectedCandidatesForModal.length > selectedModalPageSize">
-          <span>Showing {{ getPaginatedModalCandidates().length }} of {{ selectedCandidatesForModal.length }} candidates</span>
-          <ul class="pagination pagination-sm mb-0">
-            <li class="page-item" [class.disabled]="selectedModalCurrentPage === 1">
-              <a class="page-link" href="#" (click)="$event.preventDefault(); setModalCandidatesPage(selectedModalCurrentPage - 1)">Previous</a>
-            </li>
-            <li class="page-item" *ngFor="let p of [].constructor(modalCandidatesTotalPages); let i = index" [class.active]="selectedModalCurrentPage === (i + 1)">
-              <a class="page-link" href="#" (click)="$event.preventDefault(); setModalCandidatesPage(i + 1)">{{ i + 1 }}</a>
-            </li>
-            <li class="page-item" [class.disabled]="selectedModalCurrentPage === modalCandidatesTotalPages">
-              <a class="page-link" href="#" (click)="$event.preventDefault(); setModalCandidatesPage(selectedModalCurrentPage + 1)">Next</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="modal-footer-custom">
-        <button type="button" class="btn btn-outline-custom" (click)="closeSelectedCandidatesModal()">Close Window</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL 5: BULK MAIL COMPOSER MODAL -->
-  <div class="modal-backdrop-custom" *ngIf="showMailModal" (click)="closeMailModal()">
-    <div class="modal-dialog-custom" (click)="$event.stopPropagation()">
-      <div class="modal-header-custom">
-        <div class="modal-header-content">
-          <div>
-            <h5 class="modal-title">Compose Placement Drive Invitation Email</h5>
-            <p class="modal-subtitle">Sending personalized emails to <strong>{{ activeCompanyForMail ? getSelectedCount(activeCompanyForMail) : 0 }} selected candidates</strong></p>
-          </div>
-        </div>
-        <button type="button" class="btn-close-custom" (click)="closeMailModal()">
-          ✕
-        </button>
-      </div>
-
-      <div class="modal-body-custom custom-scroll">
-        <div class="mb-3 extra-small">
-          <label class="form-label fw-bold text-secondary">Email Subject Line *</label>
-          <input type="text" class="form-control form-control-sm rounded-3 border" [(ngModel)]="mailForm.subject">
-        </div>
-
-        <!-- Dynamic Merge Tags Bar -->
-        <div class="mb-2 extra-small">
-          <span class="fw-bold text-muted me-2">Insert Dynamic Merge Tags:</span>
-          <button type="button" class="btn btn-sm btn-light border rounded-pill px-2.5 py-0.5 extra-small me-1"
-            (click)="insertMergeTag('{Student Name}')">{{ '{Student Name}' }}</button>
-          <button type="button" class="btn btn-sm btn-light border rounded-pill px-2.5 py-0.5 extra-small me-1"
-            (click)="insertMergeTag('{Company Name}')">{{ '{Company Name}' }}</button>
-          <button type="button" class="btn btn-sm btn-light border rounded-pill px-2.5 py-0.5 extra-small me-1"
-            (click)="insertMergeTag('{Package}')">{{ '{Package}' }}</button>
-          <button type="button" class="btn btn-sm btn-light border rounded-pill px-2.5 py-0.5 extra-small me-1"
-            (click)="insertMergeTag('{Drive Date}')">{{ '{Drive Date}' }}</button>
-        </div>
-
-        <div class="mb-3 extra-small">
-          <label class="form-label fw-bold text-secondary">Email Message Body *</label>
-          <textarea class="form-control form-control-sm rounded-3 border custom-scroll font-monospace" rows="8"
-            [(ngModel)]="mailForm.body"></textarea>
-        </div>
-
-        <div class="alert alert-light border rounded-3 p-3 extra-small mb-3 text-muted">
-          <strong>Privacy Note:</strong> Each candidate receives an individual personalized email. Recipient list is
-          hidden via BCC.
-        </div>
-      </div>
-
-      <div class="modal-footer-custom">
-        <button type="button" class="btn btn-outline-custom" (click)="closeMailModal()">Cancel</button>
-        <button type="button" class="btn btn-primary-custom" style="background: #00875a; border-color: #00875a;"
-          (click)="sendBulkMails()">
-          Send Bulk Mails
-        </button>
       </div>
     </div>
   </div>

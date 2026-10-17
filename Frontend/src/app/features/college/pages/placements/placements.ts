@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 export interface Student {
   id: string;
@@ -33,7 +35,8 @@ export interface CompanyDrive {
   tierCutoffs: string[]; // e.g. ['Tier 1', 'Tier 2']
   branchFilter: string;
   batchFilter: string;
-  minProveYuScore: number;
+  degreeFilter?: string;
+  minProveYuScore?: number;
   status: 'Scheduled' | 'Ongoing' | 'Completed' | 'Awaiting Schedule';
   isExpanded: boolean;
   mailSent: boolean;
@@ -42,32 +45,148 @@ export interface CompanyDrive {
   attended: number;
   offers: number;
   placedStudentIds: string[];
+  // Rich Requirement Details from add-requirement form
+  hrContactName?: string;
+  hrContactEmail?: string;
+  hrContactPhone?: string;
+  employmentType?: string;
+  stipendMonthly?: string;
+  bondDurationMonths?: number;
+  driveCategory?: string;
+  registrationDeadline?: string;
+  selectedBranches?: string[];
+  selectionRounds?: string[];
+  placementEligibility?: string;
+  allowPlacedStudents?: boolean;
+  showDetailsDrawer?: boolean;
 }
 
 @Component({
   selector: 'app-college-placements',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './placements.html',
   styleUrl: './placements.scss',
 })
-export class Placements {
-  // Navigation Tab State (Removed Student Placement Status Roster tab as requested)
+export class Placements implements OnInit {
+
+  constructor(private notificationService: NotificationService) { }
+
+  ngOnInit() {
+    this.loadCompaniesFromStorage();
+  }
+
+  loadCompaniesFromStorage() {
+    try {
+      const stored = localStorage.getItem('proveyu_college_companies');
+      if (stored) {
+        const storedCompanies: CompanyDrive[] = JSON.parse(stored);
+        if (Array.isArray(storedCompanies) && storedCompanies.length > 0) {
+          const storedMap = new Map(storedCompanies.map(c => [c.id, c]));
+          // Merge updated data for existing default drives
+          this.companies = this.companies.map(c => storedMap.has(c.id) ? { ...c, ...storedMap.get(c.id) } : c);
+          // Prepend newly posted requirements that aren't in default list
+          const existingIds = new Set(this.companies.map(c => c.id));
+          const newOnes = storedCompanies.filter((c: any) => !existingIds.has(c.id));
+          this.companies = [...newOnes, ...this.companies];
+        }
+
+        // Ensure every company has at most ONE HR round and no duplicate rounds
+        this.companies.forEach(comp => {
+          if (comp.selectionRounds && comp.selectionRounds.length > 0) {
+            const unique: string[] = [];
+            let hrSeen = false;
+            for (const r of comp.selectionRounds) {
+              const norm = r.includes('HR') ? 'HR Round' : r;
+              if (norm === 'HR Round') {
+                if (!hrSeen) {
+                  unique.push(norm);
+                  hrSeen = true;
+                }
+              } else if (!unique.includes(norm)) {
+                unique.push(norm);
+              }
+            }
+            comp.selectionRounds = unique;
+          }
+        });
+      }
+    } catch (e) {
+      console.error('Error loading stored companies:', e);
+    }
+
+    try {
+      const storedRounds = localStorage.getItem('proveyu_student_round_status');
+      if (storedRounds) {
+        this.studentRoundStatusMap = JSON.parse(storedRounds);
+      }
+      const storedStudents = localStorage.getItem('proveyu_master_students');
+      if (storedStudents) {
+        const parsed = JSON.parse(storedStudents);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.masterStudentPool = parsed;
+        }
+      }
+    } catch (e) {
+      console.error('Error loading stored rounds/students:', e);
+    }
+
+    // Initialize mock round progression for c1 (TCS) if empty to provide immediate live pipeline
+    if (Object.keys(this.studentRoundStatusMap).length === 0 || !this.studentRoundStatusMap['c1']) {
+      this.studentRoundStatusMap['c1'] = {
+        '3': 'HR Round',
+        '4': 'Technical Interview Round 1',
+        '8': 'Coding Assessment',
+        '10': 'Online Aptitude Test',
+        '13': 'HR Round',
+        '15': 'Technical Interview Round 1',
+        '16': 'Coding Assessment',
+        '17': 'Online Aptitude Test',
+        '18': 'Online Aptitude Test',
+        '23': 'Technical Interview Round 1'
+      };
+    }
+
+    // Ensure no table row is expanded initially on page load
+    this.companies.forEach(c => c.isExpanded = false);
+  }
+
+  saveCompaniesToStorage() {
+    try {
+      localStorage.setItem('proveyu_college_companies', JSON.stringify(this.companies));
+    } catch (e) {
+      console.error('Error saving companies to storage:', e);
+    }
+  }
+
+  saveAllDataToStorage() {
+    this.saveCompaniesToStorage();
+    try {
+      localStorage.setItem('proveyu_student_round_status', JSON.stringify(this.studentRoundStatusMap));
+      localStorage.setItem('proveyu_master_students', JSON.stringify(this.masterStudentPool));
+    } catch (e) {
+      console.error('Error saving round status / students:', e);
+    }
+  }
+
+  // Navigation Tab State
   activeTab: 'requirements' | 'drives_tracker' = 'requirements';
 
   // Search & Filter State
   searchCompanyQuery: string = '';
   selectedModeFilter: string = 'All';
+  selectedStatusFilter: string = 'All';
+  placeModalSearchQuery: string = '';
 
   searchDriveQuery: string = '';
   selectedDriveStatusFilter: string = 'All';
 
   // Modal Display States
-  showAddModal: boolean = false;           // Modal 1: Add Company Requirement
-  showAddDriveModal: boolean = false;      // Modal 2: Log Corporate Drive & Interview
-  showEditDriveModal: boolean = false;     // Edit Corporate Drive Record
-  showMailModal: boolean = false;          // Bulk Mail Composer
-  showSelectedCandidatesModal: boolean = false; // View & Manage Selected Candidates
+  showAddModal: boolean = false;
+  showAddDriveModal: boolean = false;
+  showEditDriveModal: boolean = false;
+  showMailModal: boolean = false;
+  showSelectedCandidatesModal: boolean = false;
 
   toastMessage: string | null = null;
 
@@ -91,7 +210,10 @@ export class Placements {
   // Active Drive for Editing
   editingDrive: CompanyDrive | null = null;
 
-  // Master Student Pool (25 Rich Candidates with exact tier & CGPA matching)
+  // Candidate Round Tracking Map
+  studentRoundStatusMap: { [companyId: string]: { [studentId: string]: string } } = {};
+
+  // Master Student Pool
   masterStudentPool: Student[] = [
     { id: '1', roll: '2024-CSE-001', name: 'Rahul Sharma', email: 'rahul.s@mgmcet.ac.in', phone: '+91-9876543210', cgpa: 8.5, tier: 'Tier 1', proveYuScore: 82, branch: 'Computer Science', batch: '2024', placementStatus: 'Placed', companyPlaced: 'TCS Digital Drive', ctcOffered: '7.5 LPA', offerDate: 'Oct 5, 2026' },
     { id: '2', roll: '2024-IT-002', name: 'Priya Desai', email: 'priya.d@mgmcet.ac.in', phone: '+91-9876543211', cgpa: 8.8, tier: 'Tier 1', proveYuScore: 78, branch: 'Information Tech', batch: '2024', placementStatus: 'Placed', companyPlaced: 'Wipro Turbo Hiring', ctcOffered: '6.5 LPA', offerDate: 'Oct 8, 2026' },
@@ -120,7 +242,7 @@ export class Placements {
     { id: '25', roll: '2024-EXTC-030', name: 'Gaurav Sen', email: 'gaurav.s@mgmcet.ac.in', phone: '+91-9876543235', cgpa: 7.9, tier: 'Tier 2', proveYuScore: 65, branch: 'Electronics', batch: '2024', placementStatus: 'Unplaced' }
   ];
 
-  // Master Company Drives List (Synchronized across both Requirement Drives and Corporate Drives & Interview Tracker)
+  // Master Company Drives List
   companies: CompanyDrive[] = [
     {
       id: 'c1',
@@ -130,6 +252,7 @@ export class Placements {
       packageLpa: 7.5,
       roles: 'Digital Software Engineer & Cloud Developer',
       driveDate: '2026-10-15',
+      registrationDeadline: '2026-10-10',
       driveMode: 'On-Campus',
       venue: 'Main Auditorium & Computer Lab A',
       minCgpa: 7.8,
@@ -138,13 +261,21 @@ export class Placements {
       batchFilter: '2024 Batch',
       minProveYuScore: 60,
       status: 'Completed',
-      isExpanded: true,
+      isExpanded: false,
       mailSent: true,
       mailSentDate: 'Sep 27, 2026',
       mailSentCount: 15,
       attended: 30,
       offers: 7,
-      placedStudentIds: ['1', '5', '6', '7', '9', '11', '12']
+      placedStudentIds: ['1', '5', '6', '7', '9', '11', '12'],
+      hrContactName: 'Shruti Varma (Campus Lead)',
+      hrContactEmail: 'campus.hiring@tcs.com',
+      hrContactPhone: '+91-9876501234',
+      employmentType: 'Full-Time Direct Placement',
+      stipendMonthly: '₹25,000 / month',
+      bondDurationMonths: 0,
+      driveCategory: 'Dream Drive (5-10 LPA)',
+      selectionRounds: ['Online Aptitude Test', 'Coding Assessment', 'Technical Interview Round 1', 'HR Round']
     },
     {
       id: 'c2',
@@ -154,6 +285,7 @@ export class Placements {
       packageLpa: 6.5,
       roles: 'Project Engineer & QA Specialist',
       driveDate: '2026-10-22',
+      registrationDeadline: '2026-10-18',
       driveMode: 'Virtual',
       venue: 'Online Proctor Portal',
       minCgpa: 8.0,
@@ -168,7 +300,13 @@ export class Placements {
       mailSentCount: 18,
       attended: 25,
       offers: 2,
-      placedStudentIds: ['2', '14']
+      placedStudentIds: ['2', '14'],
+      hrContactName: 'Anil Kumar (HR Lead)',
+      hrContactEmail: 'campus@wipro.com',
+      hrContactPhone: '+91-9876505678',
+      employmentType: 'Full-Time Direct Placement',
+      driveCategory: 'Dream Drive (5-10 LPA)',
+      selectionRounds: ['Online Aptitude Test', 'Coding Assessment', 'Technical Interview Round 1', 'HR Round']
     },
     {
       id: 'c3',
@@ -178,6 +316,7 @@ export class Placements {
       packageLpa: 8.2,
       roles: 'Software Developer (C++ / Java)',
       driveDate: '2026-11-05',
+      registrationDeadline: '2026-11-01',
       driveMode: 'Hybrid',
       venue: 'Computer Lab B & Virtual Round',
       minCgpa: 8.5,
@@ -192,7 +331,14 @@ export class Placements {
       mailSentCount: 10,
       attended: 22,
       offers: 1,
-      placedStudentIds: ['21']
+      placedStudentIds: ['21'],
+      hrContactName: 'Kavita Patel (Talent Acquisition)',
+      hrContactEmail: 'careers@amdocs.com',
+      hrContactPhone: '+91-9876509988',
+      employmentType: 'Internship + Full-Time PPO',
+      stipendMonthly: '₹35,000 / month',
+      driveCategory: 'Dream Drive (5-10 LPA)',
+      selectionRounds: ['Online Aptitude Test', 'Coding Assessment', 'Technical Interview Round 1', 'HR Round']
     },
     {
       id: 'c4',
@@ -202,6 +348,7 @@ export class Placements {
       packageLpa: 5.5,
       roles: 'Associate Software Engineer',
       driveDate: '2026-11-12',
+      registrationDeadline: '2026-11-08',
       driveMode: 'On-Campus',
       venue: 'Main Auditorium',
       minCgpa: 7.5,
@@ -214,7 +361,13 @@ export class Placements {
       mailSent: false,
       attended: 28,
       offers: 0,
-      placedStudentIds: []
+      placedStudentIds: [],
+      hrContactName: 'Rohan Mehta (Campus Manager)',
+      hrContactEmail: 'india.hiring@accenture.com',
+      hrContactPhone: '+91-9876511223',
+      employmentType: 'Full-Time Direct Placement',
+      driveCategory: 'Dream Drive (5-10 LPA)',
+      selectionRounds: ['Online Aptitude Test', 'Coding Assessment', 'Technical Interview Round 1', 'HR Round']
     },
     {
       id: 'c5',
@@ -224,6 +377,7 @@ export class Placements {
       packageLpa: 6.8,
       roles: 'Full Stack & AI Engineer',
       driveDate: '2026-11-18',
+      registrationDeadline: '2026-11-14',
       driveMode: 'Virtual',
       venue: 'Online Assessment Portal',
       minCgpa: 8.0,
@@ -236,7 +390,9 @@ export class Placements {
       mailSent: false,
       attended: 20,
       offers: 0,
-      placedStudentIds: []
+      placedStudentIds: [],
+      driveCategory: 'Dream Drive (5-10 LPA)',
+      selectionRounds: ['Online Aptitude Test', 'Coding Assessment', 'Technical Interview Round 1', 'HR Round']
     },
     {
       id: 'c6',
@@ -246,6 +402,7 @@ export class Placements {
       packageLpa: 9.5,
       roles: 'Specialist Programmer',
       driveDate: '2026-11-25',
+      registrationDeadline: '2026-11-20',
       driveMode: 'On-Campus',
       venue: 'Main Computer Lab 1',
       minCgpa: 8.5,
@@ -258,7 +415,9 @@ export class Placements {
       mailSent: false,
       attended: 18,
       offers: 0,
-      placedStudentIds: []
+      placedStudentIds: [],
+      driveCategory: 'Super Dream (> 10 LPA)',
+      selectionRounds: ['Online Aptitude Test', 'Coding Assessment', 'Technical Interview Round 1', 'HR Round']
     }
   ];
 
@@ -269,7 +428,7 @@ export class Placements {
     'c3': { '3': true, '8': true, '13': true }
   };
 
-  // Modal 1 Form Model: Add Company Requirement
+  // Modal Form Models
   newForm = {
     companyName: '',
     industry: 'IT Services & Consulting',
@@ -287,7 +446,6 @@ export class Placements {
     minProveYuScore: 70
   };
 
-  // Modal 2 Form Model: Log Corporate Drive & Interview
   newDriveForm = {
     company: '',
     industry: 'IT Services & Consulting',
@@ -303,7 +461,6 @@ export class Placements {
     driveMode: 'On-Campus' as 'On-Campus' | 'Virtual' | 'Hybrid'
   };
 
-  // Edit Drive Form Model
   editDriveForm = {
     id: '',
     company: '',
@@ -318,12 +475,39 @@ export class Placements {
     packageLpa: 7.0
   };
 
-  // Mail Composer Model
   mailForm = {
     subject: '',
-    body: ''
+    body: '',
+    includeAdmitCard: true,
+    includeDriveNotice: true
   };
+  selectedMailTemplate: string = 'invite';
+  activeMailTab: 'compose' | 'preview' = 'compose';
+  isMailFullScreen: boolean = false;
   activeCompanyForMail: CompanyDrive | null = null;
+
+  toggleMailFullScreen() {
+    this.isMailFullScreen = !this.isMailFullScreen;
+  }
+
+  toggleAttachment(type: 'admitCard' | 'notice') {
+    if (type === 'admitCard') {
+      this.mailForm.includeAdmitCard = !this.mailForm.includeAdmitCard;
+      this.showToast(this.mailForm.includeAdmitCard ? 'Attached ProveYu Candidate Admit Card' : 'Removed Admit Card Attachment');
+    } else {
+      this.mailForm.includeDriveNotice = !this.mailForm.includeDriveNotice;
+      this.showToast(this.mailForm.includeDriveNotice ? 'Attached Company Drive Notice PDF' : 'Removed Drive Notice Attachment');
+    }
+  }
+
+  get sampleEmailPreview(): string {
+    if (!this.mailForm.body) return '';
+    let preview = this.mailForm.body;
+    preview = preview.replace(/{Student Name}/g, 'Rahul Sharma');
+    preview = preview.replace(/{Roll Number}/g, '2024-CSE-001');
+    preview = preview.replace(/{Branch}/g, 'Computer Science');
+    return preview;
+  }
 
   // ----------------------------------------------------
   // COMPUTED DYNAMIC METRICS FOR TOP KPI CARDS
@@ -364,11 +548,31 @@ export class Placements {
   // ----------------------------------------------------
   getMatchedStudents(company: CompanyDrive): Student[] {
     return this.masterStudentPool.filter(student => {
-      if (student.placementStatus !== 'Unplaced') return false;
+      if (company.placementEligibility === 'Unplaced Only' || !company.allowPlacedStudents) {
+        if (student.placementStatus !== 'Unplaced') return false;
+      }
       if (student.cgpa < company.minCgpa) return false;
-      if (!company.tierCutoffs.includes(student.tier)) return false;
+      if (company.tierCutoffs && company.tierCutoffs.length > 0 && !company.tierCutoffs.includes(student.tier)) return false;
       if (company.minProveYuScore && student.proveYuScore < company.minProveYuScore) return false;
-      if (company.branchFilter && company.branchFilter !== 'All Branches') {
+
+      if (company.selectedBranches && company.selectedBranches.length > 0) {
+        const isAllSelected = company.selectedBranches.includes('All Students') || company.selectedBranches.includes('All Branches');
+        if (!isAllSelected) {
+          const studentBranchLower = student.branch.toLowerCase();
+          const matchFound = company.selectedBranches.some(b => {
+            const bLower = b.toLowerCase();
+            if (bLower.includes('cs') || bLower.includes('computer')) return studentBranchLower.includes('computer');
+            if (bLower.includes('it') || bLower.includes('information')) return studentBranchLower.includes('information') || studentBranchLower.includes('tech');
+            if (bLower.includes('extc') || bLower.includes('electronics')) return studentBranchLower.includes('electronics') || studentBranchLower.includes('extc');
+            if (bLower.includes('ai') || bLower.includes('data')) return studentBranchLower.includes('ai') || studentBranchLower.includes('data');
+            if (bLower.includes('mechanical')) return studentBranchLower.includes('mechanical');
+            if (bLower.includes('civil')) return studentBranchLower.includes('civil');
+            if (bLower.includes('electrical')) return studentBranchLower.includes('electrical');
+            return studentBranchLower.includes(bLower);
+          });
+          if (!matchFound) return false;
+        }
+      } else if (company.branchFilter && company.branchFilter !== 'All Branches') {
         if (company.branchFilter === 'CS / IT Only') {
           const b = student.branch.toLowerCase();
           if (!b.includes('computer') && !b.includes('tech') && !b.includes('information')) return false;
@@ -384,7 +588,8 @@ export class Placements {
         c.roles.toLowerCase().includes(this.searchCompanyQuery.toLowerCase()) ||
         c.industry.toLowerCase().includes(this.searchCompanyQuery.toLowerCase());
       const matchesMode = this.selectedModeFilter === 'All' || c.driveMode === this.selectedModeFilter;
-      return matchesSearch && matchesMode;
+      const matchesStatus = this.selectedStatusFilter === 'All' || c.status === this.selectedStatusFilter;
+      return matchesSearch && matchesMode && matchesStatus;
     });
   }
 
@@ -398,15 +603,480 @@ export class Placements {
     });
   }
 
+  get hasExpandedCompany(): boolean {
+    return this.companies.some(c => c.isExpanded);
+  }
+
   toggleExpand(company: CompanyDrive) {
-    company.isExpanded = !company.isExpanded;
+    const currentState = company.isExpanded;
+    // Collapse all companies to ensure only 1 drive can be expanded at a time
+    this.companies.forEach(c => c.isExpanded = false);
+
+    company.isExpanded = !currentState;
     if (company.isExpanded && !this.selectedCandidatesMap[company.id]) {
       this.selectAllForCompany(company, true);
     }
   }
 
+  toggleDriveDetails(company: CompanyDrive) {
+    company.showDetailsDrawer = !company.showDetailsDrawer;
+  }
+
   // ----------------------------------------------------
-  // PAGINATION HELPER METHODS (10 ROWS PER PAGE EXPLICIT)
+  // SELECTION ROUNDS PIPELINE METHODS
+  // ----------------------------------------------------
+  readonly DEFAULT_SELECTION_ROUNDS: string[] = [
+    'Online Aptitude Test',
+    'Coding Assessment',
+    'Technical Interview Round 1',
+    'HR Round'
+  ];
+
+  activeModalRoundFilter: string = 'All';
+  modalSelectedCandidateIds: string[] = [];
+
+  getSelectionRounds(company: CompanyDrive): string[] {
+    if (company && company.selectionRounds && company.selectionRounds.length > 0) {
+      const unique: string[] = [];
+      let hrSeen = false;
+      for (const r of company.selectionRounds) {
+        const norm = r.includes('HR') ? 'HR Round' : r;
+        if (norm === 'HR Round') {
+          if (!hrSeen) {
+            unique.push(norm);
+            hrSeen = true;
+          }
+        } else if (!unique.includes(norm)) {
+          unique.push(norm);
+        }
+      }
+      return unique;
+    }
+    return [...this.DEFAULT_SELECTION_ROUNDS];
+  }
+
+  getRoundCardMeta(round: string, idx: number = 0): { icon: string; shortTitle: string; subtitle: string } {
+    const rLower = (round || '').toLowerCase();
+    const prefix = `${idx + 1}. `;
+    if (rLower.includes('aptitude')) {
+      return {
+        icon: 'bi-pencil-square',
+        shortTitle: prefix + 'Aptitude Test',
+        subtitle: 'Online screening'
+      };
+    }
+    if (rLower.includes('coding')) {
+      return {
+        icon: 'bi-code-slash',
+        shortTitle: prefix + 'Coding Test',
+        subtitle: 'Algorithm & logic'
+      };
+    }
+    if (rLower.includes('gd') || rLower.includes('discussion')) {
+      return {
+        icon: 'bi-chat-dots',
+        shortTitle: prefix + 'Group Discussion',
+        subtitle: 'Communication & GD'
+      };
+    }
+    if (rLower.includes('tech') && (rLower.includes('2') || rLower.includes('two'))) {
+      return {
+        icon: 'bi-laptop',
+        shortTitle: prefix + 'Technical R2',
+        subtitle: 'Deep technical round'
+      };
+    }
+    if (rLower.includes('technical') || rLower.includes('tech')) {
+      return {
+        icon: 'bi-laptop',
+        shortTitle: prefix + 'Technical R1',
+        subtitle: 'Technical evaluation'
+      };
+    }
+    if (rLower.includes('hr')) {
+      return {
+        icon: 'bi-person-badge',
+        shortTitle: prefix + 'HR Round',
+        subtitle: 'Culture fit & terms'
+      };
+    }
+    return {
+      icon: 'bi-check2-circle',
+      shortTitle: prefix + round,
+      subtitle: 'Evaluation stage'
+    };
+  }
+
+  getRoundShortLabel(round: string): string {
+    const rLower = (round || '').toLowerCase();
+    if (rLower.includes('aptitude')) return 'Aptitude';
+    if (rLower.includes('coding')) return 'Coding';
+    if (rLower.includes('gd') || rLower.includes('discussion')) return 'GD';
+    if (rLower.includes('tech') && (rLower.includes('2') || rLower.includes('two'))) return 'Tech R2';
+    if (rLower.includes('technical') || rLower.includes('tech')) return 'Tech R1';
+    if (rLower.includes('hr')) return 'HR Round';
+    return round.length > 12 ? round.substring(0, 10) + '..' : round;
+  }
+
+  failedLogoIds: Set<string> = new Set<string>();
+
+  onDriveLogoError(id: string) {
+    if (id) {
+      this.failedLogoIds.add(id);
+    }
+  }
+
+  hasValidCustomLogo(drive?: CompanyDrive | null): boolean {
+    if (!drive || !drive.logo) return false;
+    if (drive.logo.includes('clearbit.com')) return false;
+    if (this.failedLogoIds.has(drive.id)) return false;
+    return true;
+  }
+
+  getCompanyInitials(name?: string): string {
+    if (!name) return 'CO';
+    const trimmed = name.trim();
+    if (!trimmed) return 'CO';
+    return trimmed.substring(0, 2).toUpperCase();
+  }
+
+  onImageError(event: any) {
+    if (event && event.target) {
+      event.target.style.display = 'none';
+    }
+  }
+
+  quickOfferCandidate(student: Student, drive: CompanyDrive) {
+    this.markCandidatePlaced(student, drive);
+  }
+
+  changeDriveStatus(company: CompanyDrive, newStatus: 'Scheduled' | 'Ongoing' | 'Completed' | 'Awaiting Schedule') {
+    company.status = newStatus;
+    this.saveAllDataToStorage();
+    this.showToast(`Updated drive status for "${company.companyName}" to ${newStatus}!`);
+  }
+
+  getDriveCandidates(company: CompanyDrive): Student[] {
+    return this.masterStudentPool.filter(student => {
+      // If student is placed with this company, always include in pipeline
+      if (company.placedStudentIds && company.placedStudentIds.includes(student.id)) {
+        return true;
+      }
+      if (student.companyPlaced && student.companyPlaced.toLowerCase() === company.companyName.toLowerCase()) {
+        return true;
+      }
+      // If student is placed with another company and drive doesn't allow placed students
+      if (student.placementStatus === 'Placed' && !company.allowPlacedStudents) {
+        return false;
+      }
+      // Eligibility criteria
+      if (student.cgpa < company.minCgpa) return false;
+      if (company.tierCutoffs && company.tierCutoffs.length > 0 && !company.tierCutoffs.includes(student.tier)) return false;
+      if (company.minProveYuScore && student.proveYuScore < company.minProveYuScore) return false;
+
+      if (company.selectedBranches && company.selectedBranches.length > 0) {
+        const isAllSelected = company.selectedBranches.includes('All Students') || company.selectedBranches.includes('All Branches');
+        if (!isAllSelected) {
+          const studentBranchLower = student.branch.toLowerCase();
+          const matchFound = company.selectedBranches.some(b => {
+            const bLower = b.toLowerCase();
+            if (bLower.includes('cs') || bLower.includes('computer')) return studentBranchLower.includes('computer');
+            if (bLower.includes('it') || bLower.includes('information')) return studentBranchLower.includes('information') || studentBranchLower.includes('tech');
+            if (bLower.includes('extc') || bLower.includes('electronics')) return studentBranchLower.includes('electronics') || studentBranchLower.includes('extc');
+            if (bLower.includes('ai') || bLower.includes('data')) return studentBranchLower.includes('ai') || studentBranchLower.includes('data');
+            if (bLower.includes('mechanical')) return studentBranchLower.includes('mechanical');
+            if (bLower.includes('civil')) return studentBranchLower.includes('civil');
+            if (bLower.includes('electrical')) return studentBranchLower.includes('electrical');
+            return studentBranchLower.includes(bLower);
+          });
+          if (!matchFound) return false;
+        }
+      } else if (company.branchFilter && company.branchFilter !== 'All Branches') {
+        if (company.branchFilter === 'CS / IT Only') {
+          const b = student.branch.toLowerCase();
+          if (!b.includes('computer') && !b.includes('tech') && !b.includes('information')) return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  getCandidateRound(companyId: string, student: Student): string {
+    if (this.studentRoundStatusMap[companyId] && this.studentRoundStatusMap[companyId][student.id] === 'Rejected') {
+      return 'Rejected';
+    }
+    const company = this.companies.find(c => c.id === companyId) || this.activeModalDrive;
+    if (company && (company.placedStudentIds?.includes(student.id) || (student.placementStatus === 'Placed' && student.companyPlaced?.toLowerCase() === company.companyName.toLowerCase()))) {
+      return 'Placed';
+    }
+    if (this.studentRoundStatusMap[companyId] && this.studentRoundStatusMap[companyId][student.id]) {
+      return this.studentRoundStatusMap[companyId][student.id];
+    }
+    const rounds = company ? this.getSelectionRounds(company) : this.DEFAULT_SELECTION_ROUNDS;
+    return rounds[0] || 'Online Aptitude Test';
+  }
+
+  getCandidateRoundIndex(company: CompanyDrive, student: Student): number {
+    const rounds = this.getSelectionRounds(company);
+    const round = this.getCandidateRound(company.id, student);
+    if (round === 'Placed') return rounds.length;
+    if (round === 'Rejected') return -1;
+    const idx = rounds.indexOf(round);
+    return idx >= 0 ? idx : 0;
+  }
+
+  setCandidateRound(companyId: string, studentId: string, roundName: string) {
+    if (!this.studentRoundStatusMap[companyId]) {
+      this.studentRoundStatusMap[companyId] = {};
+    }
+    this.studentRoundStatusMap[companyId][studentId] = roundName;
+  }
+
+  promoteCandidateRound(student: Student, company: CompanyDrive) {
+    const rounds = this.getSelectionRounds(company);
+    const currentRound = this.getCandidateRound(company.id, student);
+
+    if (currentRound === 'Placed') {
+      this.showToast(`${student.name} is already Placed & Offered at ${company.companyName}.`);
+      return;
+    }
+    if (currentRound === 'Rejected') {
+      this.showToast(`${student.name} is currently Rejected. Use Reconsider to restore.`);
+      return;
+    }
+
+    const currentIndex = rounds.indexOf(currentRound);
+    if (currentIndex === -1) {
+      this.setCandidateRound(company.id, student.id, rounds[0]);
+      this.showToast(`Assigned ${student.name} to Round 1: ${rounds[0]}.`);
+    } else if (currentIndex < rounds.length - 1) {
+      const nextRound = rounds[currentIndex + 1];
+      this.setCandidateRound(company.id, student.id, nextRound);
+      this.showToast(`Advanced ${student.name} to Round ${currentIndex + 2}: ${nextRound}!`);
+    } else {
+      // Reached HR Round! Promoting from here marks candidate as placed
+      this.markStudentPlaced(student, company);
+      this.setCandidateRound(company.id, student.id, 'Placed');
+    }
+    this.saveAllDataToStorage();
+  }
+
+  demoteCandidateRound(student: Student, company: CompanyDrive) {
+    const rounds = this.getSelectionRounds(company);
+    const currentRound = this.getCandidateRound(company.id, student);
+
+    if (currentRound === 'Placed') {
+      this.unplaceStudent(student, company);
+      const lastRound = rounds[rounds.length - 1];
+      this.setCandidateRound(company.id, student.id, lastRound);
+      this.showToast(`Reverted ${student.name} from Placed back to Round ${rounds.length}: ${lastRound}.`);
+      this.saveAllDataToStorage();
+      return;
+    }
+    if (currentRound === 'Rejected') {
+      this.reconsiderCandidate(student, company);
+      return;
+    }
+
+    const currentIndex = rounds.indexOf(currentRound);
+    if (currentIndex > 0) {
+      const prevRound = rounds[currentIndex - 1];
+      this.setCandidateRound(company.id, student.id, prevRound);
+      this.showToast(`Moved ${student.name} back to Round ${currentIndex}: ${prevRound}.`);
+      this.saveAllDataToStorage();
+    } else {
+      this.showToast(`${student.name} is already at the first round (${rounds[0]}).`);
+    }
+  }
+
+  markCandidatePlaced(student: Student, company: CompanyDrive) {
+    this.markStudentPlaced(student, company);
+    this.setCandidateRound(company.id, student.id, 'Placed');
+    this.saveAllDataToStorage();
+  }
+
+  rejectCandidate(student: Student, company: CompanyDrive) {
+    if (this.getCandidateRound(company.id, student) === 'Placed') {
+      this.unplaceStudent(student, company);
+    }
+    this.setCandidateRound(company.id, student.id, 'Rejected');
+    this.saveAllDataToStorage();
+    this.showToast(`Marked ${student.name} as Rejected for ${company.companyName}.`);
+  }
+
+  reconsiderCandidate(student: Student, company: CompanyDrive) {
+    const rounds = this.getSelectionRounds(company);
+    this.setCandidateRound(company.id, student.id, rounds[0]);
+    this.saveAllDataToStorage();
+    this.showToast(`Restored ${student.name} back to Round 1: ${rounds[0]}.`);
+  }
+
+  getStudentRoundStatus(companyId: string, studentId: string): string {
+    const student = this.masterStudentPool.find(s => s.id === studentId);
+    if (student) {
+      return this.getCandidateRound(companyId, student);
+    }
+    return this.studentRoundStatusMap[companyId]?.[studentId] || 'Online Aptitude Test';
+  }
+
+  advanceStudentRound(student: Student, company: CompanyDrive) {
+    this.promoteCandidateRound(student, company);
+  }
+
+  // Modal Candidate Multi-Select
+  isModalCandidateSelected(id: string): boolean {
+    return this.modalSelectedCandidateIds.includes(id);
+  }
+
+  toggleModalCandidateSelection(id: string) {
+    if (this.isModalCandidateSelected(id)) {
+      this.modalSelectedCandidateIds = this.modalSelectedCandidateIds.filter(x => x !== id);
+    } else {
+      this.modalSelectedCandidateIds.push(id);
+    }
+  }
+
+  toggleSelectAllModalCandidates() {
+    const currentList = this.getFilteredModalPipelineCandidates();
+    const allSelected = currentList.length > 0 && currentList.every(c => this.isModalCandidateSelected(c.id));
+    if (allSelected) {
+      const idsToRemove = new Set(currentList.map(c => c.id));
+      this.modalSelectedCandidateIds = this.modalSelectedCandidateIds.filter(id => !idsToRemove.has(id));
+    } else {
+      currentList.forEach(c => {
+        if (!this.isModalCandidateSelected(c.id)) {
+          this.modalSelectedCandidateIds.push(c.id);
+        }
+      });
+    }
+  }
+
+  isAllModalCandidatesSelected(): boolean {
+    const currentList = this.getFilteredModalPipelineCandidates();
+    return currentList.length > 0 && currentList.every(c => this.isModalCandidateSelected(c.id));
+  }
+
+  bulkAdvanceSelectedCandidates() {
+    if (!this.activeModalDrive || this.modalSelectedCandidateIds.length === 0) return;
+    const drive = this.activeModalDrive;
+    let advancedCount = 0;
+    this.modalSelectedCandidateIds.forEach(id => {
+      const student = this.masterStudentPool.find(s => s.id === id);
+      if (student) {
+        this.promoteCandidateRound(student, drive);
+        advancedCount++;
+      }
+    });
+    this.modalSelectedCandidateIds = [];
+    this.showToast(`Advanced ${advancedCount} candidate(s) to their next selection round!`);
+  }
+
+  bulkDemoteSelectedCandidates() {
+    if (!this.activeModalDrive || this.modalSelectedCandidateIds.length === 0) return;
+    const drive = this.activeModalDrive;
+    let demotedCount = 0;
+    this.modalSelectedCandidateIds.forEach(id => {
+      const student = this.masterStudentPool.find(s => s.id === id);
+      if (student) {
+        this.demoteCandidateRound(student, drive);
+        demotedCount++;
+      }
+    });
+    this.modalSelectedCandidateIds = [];
+    this.showToast(`Moved ${demotedCount} candidate(s) back to their previous round.`);
+  }
+
+  bulkMarkSelectedCandidatesPlaced() {
+    if (!this.activeModalDrive || this.modalSelectedCandidateIds.length === 0) return;
+    const drive = this.activeModalDrive;
+    let placedCount = 0;
+    this.modalSelectedCandidateIds.forEach(id => {
+      const student = this.masterStudentPool.find(s => s.id === id);
+      if (student) {
+        this.markCandidatePlaced(student, drive);
+        placedCount++;
+      }
+    });
+    this.modalSelectedCandidateIds = [];
+    this.showToast(`🎉 Successfully marked ${placedCount} candidate(s) as Placed & Issued Offers!`);
+  }
+
+  bulkRejectSelectedCandidates() {
+    if (!this.activeModalDrive || this.modalSelectedCandidateIds.length === 0) return;
+    const drive = this.activeModalDrive;
+    let rejectedCount = 0;
+    this.modalSelectedCandidateIds.forEach(id => {
+      const student = this.masterStudentPool.find(s => s.id === id);
+      if (student) {
+        this.rejectCandidate(student, drive);
+        rejectedCount++;
+      }
+    });
+    this.modalSelectedCandidateIds = [];
+    this.showToast(`Marked ${rejectedCount} candidate(s) as Rejected.`);
+  }
+
+  getRoundCandidatesCount(company: CompanyDrive, roundName: string): number {
+    const pool = this.getDriveCandidates(company);
+    if (roundName === 'All') return pool.length;
+    if (roundName === 'Placed') {
+      return pool.filter(s => this.getCandidateRound(company.id, s) === 'Placed').length;
+    }
+    if (roundName === 'Rejected') {
+      return pool.filter(s => this.getCandidateRound(company.id, s) === 'Rejected').length;
+    }
+    return pool.filter(s => this.getCandidateRound(company.id, s) === roundName).length;
+  }
+
+  setActiveModalRoundFilter(round: string) {
+    this.activeModalRoundFilter = round;
+    this.selectedModalCurrentPage = 1;
+  }
+
+  getFilteredModalPipelineCandidates(): Student[] {
+    if (!this.activeModalDrive) return [];
+    let list = this.getDriveCandidates(this.activeModalDrive);
+
+    if (this.activeModalRoundFilter !== 'All') {
+      if (this.activeModalRoundFilter === 'Placed') {
+        list = list.filter(s => this.getCandidateRound(this.activeModalDrive!.id, s) === 'Placed');
+      } else if (this.activeModalRoundFilter === 'Rejected') {
+        list = list.filter(s => this.getCandidateRound(this.activeModalDrive!.id, s) === 'Rejected');
+      } else {
+        list = list.filter(s => this.getCandidateRound(this.activeModalDrive!.id, s) === this.activeModalRoundFilter);
+      }
+    }
+
+    if (this.placeModalSearchQuery && this.placeModalSearchQuery.trim()) {
+      const q = this.placeModalSearchQuery.toLowerCase().trim();
+      list = list.filter(s =>
+        s.name.toLowerCase().includes(q) ||
+        s.roll.toLowerCase().includes(q) ||
+        s.branch.toLowerCase().includes(q)
+      );
+    }
+
+    return list;
+  }
+
+  getPaginatedModalPipelineCandidates(): Student[] {
+    const list = this.getFilteredModalPipelineCandidates();
+    const startIndex = (this.selectedModalCurrentPage - 1) * this.selectedModalPageSize;
+    return list.slice(startIndex, startIndex + this.selectedModalPageSize);
+  }
+
+  get modalPipelineTotalPages(): number {
+    return Math.ceil(this.getFilteredModalPipelineCandidates().length / this.selectedModalPageSize) || 1;
+  }
+
+  setModalPipelinePage(page: number) {
+    if (page >= 1 && page <= this.modalPipelineTotalPages) {
+      this.selectedModalCurrentPage = page;
+    }
+  }
+
+  // ----------------------------------------------------
+  // PAGINATION HELPER METHODS
   // ----------------------------------------------------
   getCompanyPage(companyId: string): number {
     return this.companyCurrentPage[companyId] || 1;
@@ -428,7 +1098,6 @@ export class Placements {
     return Math.ceil(count / this.companyPageSize) || 1;
   }
 
-  // Drives Pagination (10 rows per page)
   getPaginatedDriveRecords(): CompanyDrive[] {
     const filtered = this.getFilteredDriveRecords();
     const startIndex = (this.drivesCurrentPage - 1) * this.drivesPageSize;
@@ -446,14 +1115,26 @@ export class Placements {
     }
   }
 
-  // Modal Candidates Pagination (10 rows per page)
+  getFilteredModalCandidates(): Student[] {
+    if (!this.placeModalSearchQuery) {
+      return this.selectedCandidatesForModal;
+    }
+    const q = this.placeModalSearchQuery.toLowerCase();
+    return this.selectedCandidatesForModal.filter(s =>
+      s.name.toLowerCase().includes(q) ||
+      s.roll.toLowerCase().includes(q) ||
+      s.branch.toLowerCase().includes(q)
+    );
+  }
+
   getPaginatedModalCandidates(): Student[] {
+    const filtered = this.getFilteredModalCandidates();
     const startIndex = (this.selectedModalCurrentPage - 1) * this.selectedModalPageSize;
-    return this.selectedCandidatesForModal.slice(startIndex, startIndex + this.selectedModalPageSize);
+    return filtered.slice(startIndex, startIndex + this.selectedModalPageSize);
   }
 
   get modalCandidatesTotalPages(): number {
-    return Math.ceil(this.selectedCandidatesForModal.length / this.selectedModalPageSize) || 1;
+    return Math.ceil(this.getFilteredModalCandidates().length / this.selectedModalPageSize) || 1;
   }
 
   setModalCandidatesPage(page: number) {
@@ -506,7 +1187,6 @@ export class Placements {
   // ----------------------------------------------------
   // PLACEMENT PROCESS & DATA CONSISTENCY LOGIC
   // ----------------------------------------------------
-  // Get placed students for a specific company drive
   getPlacedStudentsForDrive(company: CompanyDrive): Student[] {
     return this.masterStudentPool.filter(s =>
       s.placementStatus === 'Placed' &&
@@ -514,12 +1194,10 @@ export class Placements {
     );
   }
 
-  // Get eligible unplaced candidates that can be placed in modal
   getEligibleUnplacedCandidatesForDrive(company: CompanyDrive): Student[] {
     return this.getMatchedStudents(company);
   }
 
-  // Mark student as PLACED directly from matched roster or modal
   markStudentPlaced(student: Student, company: CompanyDrive) {
     student.placementStatus = 'Placed';
     student.companyPlaced = company.companyName;
@@ -531,15 +1209,14 @@ export class Placements {
     }
     company.offers = company.placedStudentIds.length;
 
-    // Refresh modal list if open
     if (this.showSelectedCandidatesModal && this.activeModalDrive?.id === company.id) {
       this.selectedCandidatesForModal = this.getPlacedStudentsForDrive(company);
     }
 
+    this.saveAllDataToStorage();
     this.showToast(`🎉 ${student.name} marked as PLACED at ${company.companyName} (${company.packageLpa} LPA)!`);
   }
 
-  // Revoke/revert student placement status back to Unplaced
   unplaceStudent(student: Student, company: CompanyDrive) {
     student.placementStatus = 'Unplaced';
     student.companyPlaced = undefined;
@@ -549,27 +1226,75 @@ export class Placements {
     company.placedStudentIds = company.placedStudentIds.filter(id => id !== student.id);
     company.offers = company.placedStudentIds.length;
 
-    // Refresh modal list if open
     if (this.showSelectedCandidatesModal && this.activeModalDrive?.id === company.id) {
       this.selectedCandidatesForModal = this.getPlacedStudentsForDrive(company);
     }
 
+    this.saveAllDataToStorage();
     this.showToast(`Reverted placement status for ${student.name}. Candidate is now available in unplaced pool.`);
   }
 
-  // Quick place selected candidate from modal dropdown
-  placeSelectedStudentFromModal() {
-    if (!this.selectedStudentToPlaceId || !this.activeModalDrive) return;
-    const student = this.masterStudentPool.find(s => s.id === this.selectedStudentToPlaceId);
-    if (student) {
-      this.markStudentPlaced(student, this.activeModalDrive);
-      this.selectedStudentToPlaceId = '';
+  selectedStudentToPlaceIds: string[] = [];
+  quickPlaceSearchQuery: string = '';
+  isQuickPlaceDropdownOpen: boolean = false;
+
+  toggleQuickPlaceDropdown() {
+    this.isQuickPlaceDropdownOpen = !this.isQuickPlaceDropdownOpen;
+  }
+
+  getFilteredUnplacedCandidatesForDrive(company: CompanyDrive): Student[] {
+    const pool = this.getEligibleUnplacedCandidatesForDrive(company);
+    if (!this.quickPlaceSearchQuery) return pool;
+    const q = this.quickPlaceSearchQuery.toLowerCase().trim();
+    return pool.filter(s =>
+      s.name.toLowerCase().includes(q) ||
+      s.roll.toLowerCase().includes(q) ||
+      s.branch.toLowerCase().includes(q)
+    );
+  }
+
+  isStudentSelectedForPlacement(id: string): boolean {
+    return this.selectedStudentToPlaceIds.includes(id);
+  }
+
+  toggleStudentForPlacement(id: string) {
+    if (this.isStudentSelectedForPlacement(id)) {
+      this.selectedStudentToPlaceIds = this.selectedStudentToPlaceIds.filter(x => x !== id);
+    } else {
+      this.selectedStudentToPlaceIds.push(id);
     }
   }
 
-  // ----------------------------------------------------
-  // MODAL 1: ADD COMPANY REQUIREMENT (TAB 1)
-  // ----------------------------------------------------
+  toggleSelectAllUnplacedForPlacement(company: CompanyDrive) {
+    const candidates = this.getFilteredUnplacedCandidatesForDrive(company);
+    const allSelected = candidates.length > 0 && candidates.every(c => this.isStudentSelectedForPlacement(c.id));
+    if (allSelected) {
+      const candidateIds = candidates.map(c => c.id);
+      this.selectedStudentToPlaceIds = this.selectedStudentToPlaceIds.filter(id => !candidateIds.includes(id));
+    } else {
+      candidates.forEach(c => {
+        if (!this.isStudentSelectedForPlacement(c.id)) {
+          this.selectedStudentToPlaceIds.push(c.id);
+        }
+      });
+    }
+  }
+
+  placeSelectedStudentsFromModal() {
+    if (this.selectedStudentToPlaceIds.length === 0 || !this.activeModalDrive) return;
+    const count = this.selectedStudentToPlaceIds.length;
+    this.selectedStudentToPlaceIds.forEach(id => {
+      const student = this.masterStudentPool.find(s => s.id === id);
+      if (student && this.activeModalDrive) {
+        this.markStudentPlaced(student, this.activeModalDrive);
+      }
+    });
+    this.selectedStudentToPlaceIds = [];
+    this.isQuickPlaceDropdownOpen = false;
+    this.quickPlaceSearchQuery = '';
+    this.showToast(`🎉 Successfully marked ${count} candidate(s) as Placed & Issued Offers!`);
+  }
+
   openAddModal() {
     this.showAddModal = true;
   }
@@ -609,6 +1334,7 @@ export class Placements {
       placedStudentIds: []
     };
 
+    this.companies.forEach(c => c.isExpanded = false);
     this.companies.unshift(newCompany);
     this.selectAllForCompany(newCompany, true);
     this.closeAddModal();
@@ -617,9 +1343,6 @@ export class Placements {
     this.showToast(`Drive "${newCompany.companyName}" added! Auto-matched ${matchedCount} eligible candidates.`);
   }
 
-  // ----------------------------------------------------
-  // MODAL 2: LOG CORPORATE DRIVE & INTERVIEW (TAB 2)
-  // ----------------------------------------------------
   openAddDriveModal() {
     this.showAddDriveModal = true;
   }
@@ -661,13 +1384,11 @@ export class Placements {
     };
 
     this.companies.unshift(newDrive);
+    this.saveCompaniesToStorage();
     this.closeAddDriveModal();
     this.showToast(`Logged corporate drive for "${newDrive.companyName}" successfully!`);
   }
 
-  // ----------------------------------------------------
-  // EDIT CORPORATE DRIVE RECORD MODAL
-  // ----------------------------------------------------
   openEditDriveModal(drive: CompanyDrive) {
     this.editingDrive = drive;
     this.editDriveForm = {
@@ -709,31 +1430,59 @@ export class Placements {
       }
     }
 
+    this.saveCompaniesToStorage();
     this.closeEditDriveModal();
     this.showToast(`Updated drive metrics for "${this.editDriveForm.company}" successfully!`);
   }
 
-  // ----------------------------------------------------
-  // VIEW & MANAGE SELECTED CANDIDATES DETAILS MODAL
-  // ----------------------------------------------------
   openSelectedCandidatesModal(title: string, company: CompanyDrive) {
+    if (company && company.selectionRounds && company.selectionRounds.length > 0) {
+      const unique: string[] = [];
+      let hrSeen = false;
+      for (const r of company.selectionRounds) {
+        const norm = r.includes('HR') ? 'HR Round' : r;
+        if (norm === 'HR Round') {
+          if (!hrSeen) {
+            unique.push(norm);
+            hrSeen = true;
+          }
+        } else if (!unique.includes(norm)) {
+          unique.push(norm);
+        }
+      }
+      company.selectionRounds = unique;
+    }
     this.activeModalDrive = company;
-    this.activeModalTitle = title;
-    this.activeModalSubtitle = `Candidates placed / offered by ${company.companyName} (${company.packageLpa} LPA)`;
+    this.activeModalTitle = title || 'Candidate Selection & Placement Pipeline';
+    this.activeModalSubtitle = `Selection rounds & offer management for ${company.companyName} (${company.packageLpa} LPA)`;
     this.selectedCandidatesForModal = this.getPlacedStudentsForDrive(company);
+    this.activeModalRoundFilter = 'All';
     this.selectedModalCurrentPage = 1;
     this.selectedStudentToPlaceId = '';
+    this.selectedStudentToPlaceIds = [];
+    this.modalSelectedCandidateIds = [];
+    this.quickPlaceSearchQuery = '';
+    this.isQuickPlaceDropdownOpen = false;
+    this.placeModalSearchQuery = '';
     this.showSelectedCandidatesModal = true;
+  }
+
+  isModalFullscreen = false;
+
+  toggleModalFullscreen() {
+    this.isModalFullscreen = !this.isModalFullscreen;
   }
 
   closeSelectedCandidatesModal() {
     this.showSelectedCandidatesModal = false;
+    this.isModalFullscreen = false;
     this.activeModalDrive = null;
+    this.selectedStudentToPlaceIds = [];
+    this.modalSelectedCandidateIds = [];
+    this.quickPlaceSearchQuery = '';
+    this.isQuickPlaceDropdownOpen = false;
   }
 
-  // ----------------------------------------------------
-  // CSV EXPORT ACTION
-  // ----------------------------------------------------
   exportSelectedCsv(company: CompanyDrive) {
     const matched = this.getMatchedStudents(company);
     const selected = matched.filter(s => this.isStudentSelected(company.id, s.id));
@@ -760,9 +1509,6 @@ export class Placements {
     this.showToast(`Exported CSV for ${selected.length} candidates!`);
   }
 
-  // ----------------------------------------------------
-  // MAIL COMPOSER LOGIC
-  // ----------------------------------------------------
   openMailModal(company: CompanyDrive) {
     const selectedCount = this.getSelectedCount(company);
     if (selectedCount === 0) {
@@ -771,8 +1517,10 @@ export class Placements {
     }
 
     this.activeCompanyForMail = company;
+    this.selectedMailTemplate = 'invite';
+    this.activeMailTab = 'compose';
     this.mailForm.subject = `[Campus Drive Alert] ${company.companyName} Recruitment Drive - ${company.packageLpa} LPA`;
-    this.mailForm.body = `Dear {Student Name},\n\nCongratulations! You have been auto-matched and shortlisted for the upcoming placement drive with ${company.companyName}.\n\n📌 Drive Details:\n• Offered Package: ${company.packageLpa} LPA\n• Roles Offered: ${company.roles}\n• Drive Date & Time: ${company.driveDate}\n• Mode & Venue: ${company.driveMode} (${company.venue})\n\n✅ Eligibility Criteria Met:\n• Minimum CGPA: ${company.minCgpa}+\n• Eligible ProveYu Tiers: ${company.tierCutoffs.join(', ')}\n• Minimum ProveYu Score: ${company.minProveYuScore}+\n\nPlease report to the designated venue on time with your updated Resume and ProveYu Admit Card.\n\nBest Regards,\nTraining & Placement Office (TPO)\nMGM CET, Kamothe`;
+    this.mailForm.body = `Dear {Student Name},\n\nCongratulations! You have been auto-matched and shortlisted for the upcoming placement drive with ${company.companyName}.\n\nDrive Details:\n- Offered Package: ${company.packageLpa} LPA\n- Roles Offered: ${company.roles}\n- Drive Date & Time: ${company.driveDate}\n- Mode & Venue: ${company.driveMode} (${company.venue})\n\nEligibility Criteria Met:\n- Minimum CGPA: ${company.minCgpa}+\n- Eligible ProveYu Tiers: ${company.tierCutoffs.join(', ')}\n\nPlease report to the designated venue on time with your updated Resume and ProveYu Admit Card.\n\nBest Regards,\nTraining & Placement Office (TPO)\nMGM CET, Kamothe`;
     this.showMailModal = true;
   }
 
@@ -783,6 +1531,23 @@ export class Placements {
 
   insertMergeTag(tag: string) {
     this.mailForm.body += ` ${tag}`;
+  }
+
+  onMailTemplateChange(templateKey: string) {
+    this.selectedMailTemplate = templateKey;
+    if (!this.activeCompanyForMail) return;
+    const company = this.activeCompanyForMail;
+
+    if (templateKey === 'invite') {
+      this.mailForm.subject = `[Campus Drive Alert] ${company.companyName} Recruitment Drive - ${company.packageLpa} LPA`;
+      this.mailForm.body = `Dear {Student Name},\n\nCongratulations! You have been auto-matched and shortlisted for the upcoming placement drive with ${company.companyName}.\n\nDrive Details:\n- Offered Package: ${company.packageLpa} LPA\n- Roles Offered: ${company.roles}\n- Drive Date & Time: ${company.driveDate}\n- Mode & Venue: ${company.driveMode} (${company.venue})\n\nEligibility Criteria Met:\n- Minimum CGPA: ${company.minCgpa}+\n- Eligible ProveYu Tiers: ${company.tierCutoffs.join(', ')}\n\nPlease report to the designated venue on time with your updated Resume and ProveYu Admit Card.\n\nBest Regards,\nTraining & Placement Office (TPO)\nMGM CET, Kamothe`;
+    } else if (templateKey === 'round') {
+      this.mailForm.subject = `[Selection Process Update] ${company.companyName} Next Round Schedule`;
+      this.mailForm.body = `Dear {Student Name},\n\nWe are pleased to inform you that you have cleared the initial evaluations for ${company.companyName}.\n\nNext Round Details:\n- Target Designation: ${company.roles}\n- Package CTC: ${company.packageLpa} LPA\n- Schedule Date: ${company.driveDate}\n- Venue / Link: ${company.venue}\n\nPlease be prepared for the upcoming interview round.\n\nBest Regards,\nPlacement Cell`;
+    } else if (templateKey === 'offer') {
+      this.mailForm.subject = `[Congratulations!] Official Placement Offer Letter from ${company.companyName}`;
+      this.mailForm.body = `Dear {Student Name},\n\nHeartiest Congratulations! On behalf of ${company.companyName} and MGM CET, we are thrilled to announce that you have been selected for the position of ${company.roles}.\n\nOffer Highlights:\n- Fixed CTC Package: ${company.packageLpa} LPA\n- Joining Date: To be communicated\n\nPlease find your formal offer details in your ProveYu Candidate Portal.\n\nWarm Regards,\nHead of TPO`;
+    }
   }
 
   sendBulkMails() {
@@ -798,15 +1563,16 @@ export class Placements {
       company.status = 'Ongoing';
     }
 
+    this.saveCompaniesToStorage();
     this.closeMailModal();
     this.showToast(`🚀 Invitation emails sent successfully to ${count} candidates for ${company.companyName}!`);
   }
 
   showToast(msg: string) {
-    this.toastMessage = msg;
-    setTimeout(() => {
-      this.toastMessage = null;
-    }, 3500);
+    if (this.showSelectedCandidatesModal) {
+      return;
+    }
+    this.notificationService.showSuccess(msg);
   }
 }
 

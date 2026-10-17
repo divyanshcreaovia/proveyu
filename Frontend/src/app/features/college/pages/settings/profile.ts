@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 export interface DepartmentHead {
   name: string;
@@ -13,11 +13,12 @@ export interface DepartmentHead {
 @Component({
   selector: 'app-college-profile',
   standalone: true,
-  imports: [RouterLink, CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
 })
 export class CollegeProfile {
+  constructor(private notificationService: NotificationService) {}
   activeTab: 'institution' | 'tpo' | 'departments' | 'accreditation' | 'branding' = 'institution';
   isSaved = false;
   toastMessage: string | null = null;
@@ -93,10 +94,7 @@ export class CollegeProfile {
   }
 
   showToast(msg: string) {
-    this.toastMessage = msg;
-    setTimeout(() => {
-      this.toastMessage = null;
-    }, 3500);
+    this.notificationService.showSuccess(msg);
   }
 
   saveChanges() {

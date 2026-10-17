@@ -536,57 +536,57 @@ export class Dashboard implements OnInit {
     completionRate: string;
     tiers: ReadinessItem[];
   }> = {
-    'Overall': {
-      totalEvaluated: '1,303',
-      avgScore: '68.4',
-      completionRate: '94.2',
-      tiers: [
-        { label: 'Tier 1 (High Score ≥ 70%)', count: 450, percentage: 34.5, color: '#10B981' },
-        { label: 'Tier 2 (Moderate 50-69%)', count: 593, percentage: 45.5, color: '#3B82F6' },
-        { label: 'Tier 3 (Remedial < 50%)', count: 260, percentage: 20.0, color: '#F97316' },
-      ],
-    },
-    'Test 1': {
-      totalEvaluated: '350',
-      avgScore: '72.0',
-      completionRate: '96.0',
-      tiers: [
-        { label: 'Tier 1 (High Score ≥ 70%)', count: 140, percentage: 40.0, color: '#10B981' },
-        { label: 'Tier 2 (Moderate 50-69%)', count: 152, percentage: 43.4, color: '#3B82F6' },
-        { label: 'Tier 3 (Remedial < 50%)', count: 58, percentage: 16.6, color: '#F97316' },
-      ],
-    },
-    'Test 2': {
-      totalEvaluated: '298',
-      avgScore: '65.0',
-      completionRate: '92.5',
-      tiers: [
-        { label: 'Tier 1 (High Score ≥ 70%)', count: 89, percentage: 29.9, color: '#10B981' },
-        { label: 'Tier 2 (Moderate 50-69%)', count: 132, percentage: 44.3, color: '#3B82F6' },
-        { label: 'Tier 3 (Remedial < 50%)', count: 77, percentage: 25.8, color: '#F97316' },
-      ],
-    },
-    'Test 3': {
-      totalEvaluated: '315',
-      avgScore: '68.0',
-      completionRate: '94.0',
-      tiers: [
-        { label: 'Tier 1 (High Score ≥ 70%)', count: 104, percentage: 33.0, color: '#10B981' },
-        { label: 'Tier 2 (Moderate 50-69%)', count: 148, percentage: 47.0, color: '#3B82F6' },
-        { label: 'Tier 3 (Remedial < 50%)', count: 63, percentage: 20.0, color: '#F97316' },
-      ],
-    },
-    'Test 4': {
-      totalEvaluated: '340',
-      avgScore: '76.0',
-      completionRate: '95.5',
-      tiers: [
-        { label: 'Tier 1 (High Score ≥ 70%)', count: 156, percentage: 45.9, color: '#10B981' },
-        { label: 'Tier 2 (Moderate 50-69%)', count: 141, percentage: 41.5, color: '#3B82F6' },
-        { label: 'Tier 3 (Remedial < 50%)', count: 43, percentage: 12.6, color: '#F97316' },
-      ],
-    },
-  };
+      'Overall': {
+        totalEvaluated: '1,303',
+        avgScore: '68.4',
+        completionRate: '94.2',
+        tiers: [
+          { label: 'Tier 1 (High Score ≥ 70%)', count: 450, percentage: 34.5, color: '#10B981' },
+          { label: 'Tier 2 (Moderate 50-69%)', count: 593, percentage: 45.5, color: '#3B82F6' },
+          { label: 'Tier 3 (Remedial < 50%)', count: 260, percentage: 20.0, color: '#F97316' },
+        ],
+      },
+      'Test 1': {
+        totalEvaluated: '350',
+        avgScore: '72.0',
+        completionRate: '96.0',
+        tiers: [
+          { label: 'Tier 1 (High Score ≥ 70%)', count: 140, percentage: 40.0, color: '#10B981' },
+          { label: 'Tier 2 (Moderate 50-69%)', count: 152, percentage: 43.4, color: '#3B82F6' },
+          { label: 'Tier 3 (Remedial < 50%)', count: 58, percentage: 16.6, color: '#F97316' },
+        ],
+      },
+      'Test 2': {
+        totalEvaluated: '298',
+        avgScore: '65.0',
+        completionRate: '92.5',
+        tiers: [
+          { label: 'Tier 1 (High Score ≥ 70%)', count: 89, percentage: 29.9, color: '#10B981' },
+          { label: 'Tier 2 (Moderate 50-69%)', count: 132, percentage: 44.3, color: '#3B82F6' },
+          { label: 'Tier 3 (Remedial < 50%)', count: 77, percentage: 25.8, color: '#F97316' },
+        ],
+      },
+      'Test 3': {
+        totalEvaluated: '315',
+        avgScore: '68.0',
+        completionRate: '94.0',
+        tiers: [
+          { label: 'Tier 1 (High Score ≥ 70%)', count: 104, percentage: 33.0, color: '#10B981' },
+          { label: 'Tier 2 (Moderate 50-69%)', count: 148, percentage: 47.0, color: '#3B82F6' },
+          { label: 'Tier 3 (Remedial < 50%)', count: 63, percentage: 20.0, color: '#F97316' },
+        ],
+      },
+      'Test 4': {
+        totalEvaluated: '340',
+        avgScore: '76.0',
+        completionRate: '95.5',
+        tiers: [
+          { label: 'Tier 1 (High Score ≥ 70%)', count: 156, percentage: 45.9, color: '#10B981' },
+          { label: 'Tier 2 (Moderate 50-69%)', count: 141, percentage: 41.5, color: '#3B82F6' },
+          { label: 'Tier 3 (Remedial < 50%)', count: 43, percentage: 12.6, color: '#F97316' },
+        ],
+      },
+    };
 
   get currentReadinessStats() {
     return this.readinessDataMap[this.selectedAssessmentFilter] || this.readinessDataMap['Overall'];

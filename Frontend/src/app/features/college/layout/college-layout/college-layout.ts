@@ -35,7 +35,7 @@ export class CollegeLayout implements OnInit {
     '/college/support': 'Help Center & Support',
   };
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   ngOnInit() {
     this.updateTitle(this.router.url);

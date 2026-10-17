@@ -1,15 +1,22 @@
 <div class="students-page container-fluid p-0">
-  
+
   <!-- Welcome Banner Card (Executive Theme) -->
   <div class="welcome-banner-card mb-4">
     <div class="banner-content">
       <div class="banner-text">
         <h2 class="welcome-title">Student Passport Roster</h2>
         <p class="welcome-subtitle">
-          Directory of verified candidate profiles across batches, performance tiers, skill diagnostics, and real-time corporate placement velocity.
+          Directory of verified candidate profiles across batches, performance tiers, skill diagnostics, and real-time
+          corporate placement velocity.
         </p>
       </div>
       <div class="banner-actions">
+        <button type="button" class="btn btn-outline-custom" (click)="downloadImportTemplate(true)" title="Download sample Excel / CSV template with all Add Student fields">
+          Sample Excel
+        </button>
+        <button type="button" class="btn btn-outline-custom" (click)="openBulkPlacementModal()">
+          <i class="bi bi-briefcase-fill me-1"></i> Bulk Mark Placed
+        </button>
         <a routerLink="/college/students/import" class="btn btn-outline-custom">
           <i class="bi bi-file-earmark-arrow-up me-1"></i> Bulk Import CSV
         </a>
@@ -20,164 +27,1085 @@
     </div>
   </div>
 
-  <!-- KPI Stats Bar -->
-  <div class="kpi-stats-grid mb-4">
-    <div class="kpi-card">
-      <div class="kpi-top">
-        <span class="kpi-tag">TOTAL ENROLLED</span>
-        <span class="kpi-badge">ACTIVE</span>
-      </div>
-      <div class="kpi-value-row">
-        <div class="kpi-value text-navy">350</div>
-      </div>
-      <div class="kpi-subtext">Across 4 Engineering Depts</div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-top">
-        <span class="kpi-tag">TIER 1 CANDIDATES</span>
-        <span class="kpi-badge">HIGH READY</span>
-      </div>
-      <div class="kpi-value-row">
-        <div class="kpi-value text-success">118</div>
-      </div>
-      <div class="kpi-subtext">Score Threshold &gt;= 70 Marks</div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-top">
-        <span class="kpi-tag">OFFERS SECURED</span>
-        <span class="kpi-badge">68% RATE</span>
-      </div>
-      <div class="kpi-value-row">
-        <div class="kpi-value text-navy">238</div>
-      </div>
-      <div class="kpi-subtext">Verified Corporate Selects</div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-top">
-        <span class="kpi-tag">REMEDIAL FLAGGED</span>
-        <span class="kpi-badge text-danger bg-danger-subtle">ACTION REQD</span>
-      </div>
-      <div class="kpi-value-row">
-        <div class="kpi-value text-danger">32</div>
-      </div>
-      <div class="kpi-subtext">Section Threshold &lt; 18 Marks</div>
-    </div>
-  </div>
-
   <!-- Filter & Search Toolbar Card -->
-  <div class="filter-toolbar-card mb-4">
-    <div class="row g-3 align-items-center">
-      <div class="col-md-4">
+  <div class="filter-toolbar-card mb-4 position-relative">
+    <div class="row g-3 align-items-center justify-content-between">
+      <!-- Search Input Box -->
+      <div class="col-lg-4 col-md-5">
         <div class="search-input-box">
           <i class="bi bi-search search-icon"></i>
-          <input type="text" class="form-control" placeholder="Search by Roll No / Name / Email..." [(ngModel)]="searchQuery">
+          <input type="text" class="form-control" placeholder="Search by Roll No / Name / Email..."
+            [(ngModel)]="searchQuery" (ngModelChange)="onFilterChange()">
+          <button *ngIf="searchQuery" (click)="searchQuery = ''; onFilterChange()" class="btn-clear-search" type="button" title="Clear search">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
         </div>
       </div>
-      <div class="col-md-8">
+
+      <!-- Actions Group: Filter Button, Reset, Export Roster -->
+      <div class="col-lg-8 col-md-7">
         <div class="d-flex flex-wrap align-items-center justify-content-md-end gap-2">
-          <select class="form-select filter-select" [(ngModel)]="selectedBatch">
-            <option value="All">Batch: All Batches</option>
-            <option value="2024">Batch: 2024</option>
-            <option value="2023">Batch: 2023</option>
-          </select>
 
-          <select class="form-select filter-select" [(ngModel)]="selectedTier">
-            <option value="All">Tier: All Tiers</option>
-            <option value="Tier 1">Tier 1 (70+)</option>
-            <option value="Tier 2">Tier 2 (60-70)</option>
-            <option value="Tier 3">Tier 3 (&lt;60)</option>
-          </select>
+          <!-- Filter Popover Trigger Button & Menu -->
+          <div class="filter-dropdown-wrapper position-relative">
+            <button type="button" class="btn btn-filter" [class.has-active-filters]="activeFilterCount > 0"
+              (click)="toggleFilterDropdown()" [attr.aria-expanded]="isFilterOpen">
+              <i class="bi" [ngClass]="activeFilterCount > 0 ? 'bi-funnel-fill text-primary' : 'bi-funnel'"></i>
+              <span class="filter-btn-text">Filters</span>
+              <span class="filter-count-badge" *ngIf="activeFilterCount > 0">{{ activeFilterCount }}</span>
+              <i class="bi bi-chevron-down chevron-icon ms-1" [class.rotate]="isFilterOpen"></i>
+            </button>
 
-          <select class="form-select filter-select" [(ngModel)]="selectedStatus">
-            <option value="All">Status: All Statuses</option>
-            <option value="Placed">Placed</option>
-            <option value="Pending">Pending Offers</option>
-            <option value="No Match">No Match</option>
-          </select>
+            <!-- Backdrop for click outside -->
+            <div class="filter-dropdown-backdrop" *ngIf="isFilterOpen" (click)="closeFilterDropdown()"></div>
 
-          <button class="btn btn-export">
+            <!-- Filter Popover Panel (Wider, Placement Management Suite) -->
+            <div class="filter-dropdown-panel" *ngIf="isFilterOpen" (click)="$event.stopPropagation()">
+              <!-- Panel Header -->
+              <div class="filter-panel-header">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="filter-panel-icon">
+                    <i class="bi bi-sliders"></i>
+                  </div>
+                  <div>
+                    <h6 class="filter-panel-title mb-0">Placement &amp; Student Filters</h6>
+                    <span class="filter-panel-subtitle">Configure eligibility cutoffs, diagnostics, &amp; placement status</span>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge bg-light text-muted border extra-small" *ngIf="tempFilterCount > 0">
+                    {{ tempFilterCount }} criteria selected
+                  </span>
+                  <button type="button" class="btn-close-panel" (click)="closeFilterDropdown()" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Panel Body: Form Selects & Direct Input Type Boxes -->
+              <div class="filter-panel-body">
+                <div class="row g-3">
+                  <!-- Row 1: Dropdown Filters -->
+                  <div class="col-md-4 col-sm-6">
+                    <label class="filter-field-label">
+                      <i class="bi bi-mortarboard me-1 text-muted"></i> Branch / Dept
+                    </label>
+                    <select class="form-select filter-panel-control" [(ngModel)]="tempFilters.branch">
+                      <option value="All">All Branches</option>
+                      <option *ngFor="let b of availableBranches" [value]="b">{{ b }}</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <label class="filter-field-label">
+                      <i class="bi bi-award me-1 text-muted"></i> ProveYu Tier
+                    </label>
+                    <select class="form-select filter-panel-control" [(ngModel)]="tempFilters.tier">
+                      <option value="All">All Tiers</option>
+                      <option value="Tier 1">Tier 1 (&ge;70 Score)</option>
+                      <option value="Tier 2">Tier 2 (60-70 Score)</option>
+                      <option value="Tier 3">Tier 3 (&lt;60 Score)</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <label class="filter-field-label">
+                      <i class="bi bi-briefcase me-1 text-muted"></i> Placement Status
+                    </label>
+                    <select class="form-select filter-panel-control" [(ngModel)]="tempFilters.status">
+                      <option value="All">All Statuses</option>
+                      <option value="Placed">Placed Candidates</option>
+                      <option value="Unplaced">Unplaced (Open for Drives)</option>
+                    </select>
+                  </div>
+
+                  <!-- Row 2: Academic Criteria Type Boxes -->
+                  <div class="col-md-4 col-sm-6">
+                    <label class="filter-field-label">
+                      <i class="bi bi-graph-up me-1 text-muted"></i> Min CGPA Cutoff
+                    </label>
+                    <input type="number" class="form-control filter-panel-control" [(ngModel)]="tempFilters.minCgpa"
+                      min="0" max="10" step="0.1" placeholder="Min CGPA (e.g. 7.5)">
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <label class="filter-field-label">
+                      <i class="bi bi-shield-check me-1 text-muted"></i> Max Active Backlogs
+                    </label>
+                    <input type="number" class="form-control filter-panel-control" [(ngModel)]="tempFilters.maxBacklogs"
+                      min="0" max="10" step="1" placeholder="Max Backlogs (e.g. 0)">
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <label class="filter-field-label">
+                      <i class="bi bi-hourglass-split me-1 text-muted"></i> Max Education Gap (Yrs)
+                    </label>
+                    <input type="number" class="form-control filter-panel-control" [(ngModel)]="tempFilters.maxGapYears"
+                      min="0" max="5" step="1" placeholder="Max Gap (e.g. 0 or 1)">
+                  </div>
+
+                  <!-- Row 3: 10th & 12th Board Marks Cutoff Type Boxes -->
+                  <div class="col-md-6 col-sm-6">
+                    <label class="filter-field-label">
+                      <i class="bi bi-percent me-1 text-muted"></i> Min 10th Marks (%)
+                    </label>
+                    <input type="number" class="form-control filter-panel-control" [(ngModel)]="tempFilters.minTenth"
+                      min="0" max="100" step="1" placeholder="Min 10th % (e.g. 60)">
+                  </div>
+
+                  <div class="col-md-6 col-sm-6">
+                    <label class="filter-field-label">
+                      <i class="bi bi-percent me-1 text-muted"></i> Min 12th Marks (%)
+                    </label>
+                    <input type="number" class="form-control filter-panel-control" [(ngModel)]="tempFilters.minTwelfth"
+                      min="0" max="100" step="1" placeholder="Min 12th % (e.g. 60)">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Panel Footer with Reset and Apply -->
+              <div class="filter-panel-footer">
+                <button type="button" class="btn btn-link filter-reset-link" (click)="resetTempFilters()"
+                  [disabled]="tempFilterCount === 0">
+                  <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                </button>
+                <div class="d-flex align-items-center gap-2">
+                  <button type="button" class="btn btn-panel-cancel" (click)="closeFilterDropdown()">
+                    Cancel
+                  </button>
+                  <button type="button" class="btn btn-panel-apply" (click)="applyFilters()">
+                    <i class="bi bi-check-lg me-1"></i> Apply Filters ({{ previewMatchCount }})
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Overview Analytics Modal Button (Right beside Filters) -->
+          <button type="button" class="btn btn-overview" (click)="openOverviewModal()"
+            title="View Student Roster Analytics & Placement Velocity Overview">
+            <i class="bi bi-bar-chart-line-fill text-primary"></i>
+            <span class="overview-btn-text">Overview</span>
+          </button>
+
+          <!-- Reset Filter Button (Shown when filters active in toolbar) -->
+          <button *ngIf="hasActiveFilters" (click)="resetFilters()"
+            class="btn btn-outline-secondary btn-sm rounded-pill px-2.5 py-1 text-nowrap" title="Reset all filters">
+            <i class="bi bi-x-circle me-1"></i> Reset
+          </button>
+
+          <!-- Bulk Mark Placed Button (Superset & Off-Campus Drives) -->
+          <button type="button" class="btn btn-bulk-place" (click)="openBulkPlacementModal()"
+            title="Bulk update placement status for candidates hired via Superset or off-campus drives">
+            <i class="bi bi-briefcase-fill me-1"></i> Bulk Mark Placed
+          </button>
+
+          <!-- Export Roster Button -->
+          <button class="btn btn-export" (click)="exportRoster()">
             <i class="bi bi-download me-1"></i> Export Roster
           </button>
         </div>
       </div>
     </div>
+
+    <!-- Active Filter Chips Bar (Properly spaced container preventing line collision) -->
+    <div *ngIf="activeFilterCount > 0" class="active-filters-container">
+      <div class="active-filters-bar">
+        <div class="active-chips-label">
+          <i class="bi bi-funnel-fill text-primary me-1"></i>
+          <span>ACTIVE FILTERS:</span>
+        </div>
+
+        <span class="filter-chip" *ngIf="selectedBranch !== 'All'">
+          Branch: <strong>{{ selectedBranch }}</strong>
+          <button type="button" class="chip-close-btn" (click)="removeFilter('branch')" title="Remove branch filter">
+            <i class="bi bi-x"></i>
+          </button>
+        </span>
+
+        <span class="filter-chip" *ngIf="selectedTier !== 'All'">
+          Tier: <strong>{{ selectedTier }}</strong>
+          <button type="button" class="chip-close-btn" (click)="removeFilter('tier')" title="Remove tier filter">
+            <i class="bi bi-x"></i>
+          </button>
+        </span>
+
+        <span class="filter-chip" *ngIf="selectedStatus !== 'All'">
+          Status: <strong>{{ selectedStatus }}</strong>
+          <button type="button" class="chip-close-btn" (click)="removeFilter('status')" title="Remove status filter">
+            <i class="bi bi-x"></i>
+          </button>
+        </span>
+
+        <span class="filter-chip" *ngIf="selectedMinCgpa !== null && selectedMinCgpa !== undefined && (selectedMinCgpa + '') !== ''">
+          CGPA &ge; <strong>{{ selectedMinCgpa }}</strong>
+          <button type="button" class="chip-close-btn" (click)="removeFilter('cgpa')" title="Remove CGPA cutoff">
+            <i class="bi bi-x"></i>
+          </button>
+        </span>
+
+        <span class="filter-chip" *ngIf="selectedMaxBacklogs !== null && selectedMaxBacklogs !== undefined && (selectedMaxBacklogs + '') !== ''">
+          Max Backlogs: <strong>{{ selectedMaxBacklogs }}</strong>
+          <button type="button" class="chip-close-btn" (click)="removeFilter('backlogs')" title="Remove backlogs filter">
+            <i class="bi bi-x"></i>
+          </button>
+        </span>
+
+        <span class="filter-chip" *ngIf="selectedMaxGapYears !== null && selectedMaxGapYears !== undefined && (selectedMaxGapYears + '') !== ''">
+          Max Gap: <strong>{{ selectedMaxGapYears }} Yr{{ selectedMaxGapYears === 1 ? '' : 's' }}</strong>
+          <button type="button" class="chip-close-btn" (click)="removeFilter('gapYears')" title="Remove gap filter">
+            <i class="bi bi-x"></i>
+          </button>
+        </span>
+
+        <span class="filter-chip" *ngIf="selectedMinTenth !== null && selectedMinTenth !== undefined && (selectedMinTenth + '') !== ''">
+          10th &ge; <strong>{{ selectedMinTenth }}%</strong>
+          <button type="button" class="chip-close-btn" (click)="removeFilter('tenth')" title="Remove 10th cutoff">
+            <i class="bi bi-x"></i>
+          </button>
+        </span>
+
+        <span class="filter-chip" *ngIf="selectedMinTwelfth !== null && selectedMinTwelfth !== undefined && (selectedMinTwelfth + '') !== ''">
+          12th &ge; <strong>{{ selectedMinTwelfth }}%</strong>
+          <button type="button" class="chip-close-btn" (click)="removeFilter('twelfth')" title="Remove 12th cutoff">
+            <i class="bi bi-x"></i>
+          </button>
+        </span>
+
+        <button type="button" class="btn btn-link btn-clear-all-chips ms-auto" (click)="resetFilters()">
+          Clear All
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Student Roster Table Card -->
-  <div class="dashboard-card p-0 overflow-hidden">
+  <div class="dashboard-card p-0 overflow-hidden mb-4">
     <div class="table-responsive">
       <table class="table table-hover align-middle mb-0">
         <thead>
           <tr>
-            <th class="ps-4">Roll Number</th>
-            <th>Student Name & Contact</th>
-            <th>Batch & Branch</th>
-            <th>ProveYu Tier</th>
-            <th>Latest Test Score</th>
-            <th>Placement Status</th>
-            <th class="pe-4 text-end">Actions</th>
+            <th class="ps-3 pe-2" style="width: 44px;">
+              <input type="checkbox" class="form-check-input" [checked]="isAllPageSelected()" (change)="toggleSelectAllPage()" title="Select all on this page">
+            </th>
+            <th>ROLL NUMBER</th>
+            <th>STUDENT NAME & CONTACT</th>
+            <th>ACADEMICS (CGPA & %)</th>
+            <th>BATCH & BRANCH</th>
+            <th>PROVEYU TIER</th>
+            <th>LATEST TEST SCORE</th>
+            <th>PLACEMENT STATUS</th>
+            <th class="pe-4 text-end">ACTIONS</th>
           </tr>
         </thead>
         <tbody class="small">
-          <tr *ngFor="let s of filteredStudents">
-            <td class="ps-4 font-monospace fw-bold text-dark">{{ s.roll }}</td>
+          <tr *ngFor="let s of paginatedStudents" [class.table-active]="isStudentSelected(s.id)">
+            <!-- Multi-Select Checkbox -->
+            <td class="ps-3 pe-2">
+              <input type="checkbox" class="form-check-input" [checked]="isStudentSelected(s.id)" (change)="toggleStudentSelection(s.id)">
+            </td>
+
+            <!-- Roll Number -->
             <td>
-              <div class="d-flex align-items-center gap-2.5">
-                <div class="avatar rounded-circle fw-bold d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; font-size: 0.8rem;">
-                  {{ s.name.substring(0, 2).toUpperCase() }}
-                </div>
-                <div>
-                  <a [routerLink]="['/college/students', s.id]" class="fw-bold text-dark text-decoration-none hover-primary d-block">{{ s.name }}</a>
-                  <span class="text-muted extra-small" style="font-size: 0.75rem;">{{ s.email }} • {{ s.phone }}</span>
-                </div>
+              <div class="font-monospace fw-bold text-dark">{{ s.roll }}</div>
+              <span class="badge bg-light text-muted border extra-small mt-0.5">{{ s.degree }}</span>
+            </td>
+
+            <!-- Student Name & Contact -->
+            <td>
+              <div>
+                <a href="javascript:void(0)" (click)="openDossier(s)"
+                  class="fw-bold text-dark text-decoration-none hover-primary d-block">{{ s.name }}</a>
+                <span class="text-muted extra-small" style="font-size: 0.75rem;">{{ s.email }} • {{ s.phone }}</span>
               </div>
             </td>
+
+            <!-- Academics (CGPA, 10th %, 12th %, Backlogs) -->
             <td>
-              <span class="fw-semibold text-dark">{{ s.branch }}</span>
-              <span class="d-block text-muted extra-small">Batch {{ s.batch }}</span>
+              <div class="cgpa-container">
+                <span class="cgpa-val font-monospace">{{ s.cgpa }}</span>
+                <span class="cgpa-label">CGPA</span>
+              </div>
+              <div class="text-muted extra-small" style="font-size: 0.72rem;">
+                10th: {{ s.tenthPercentage }}% • 12th: {{ s.twelfthPercentage }}%
+              </div>
+              <div class="mt-0.5">
+                <span class="badge rounded-pill extra-small"
+                  [ngClass]="s.backlogs === 0 ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning border border-warning-subtle'"
+                  style="font-size: 0.68rem; padding: 1px 6px;">
+                  {{ s.backlogs === 0 ? '0 Backlogs' : s.backlogs + ' Backlog' }}
+                </span>
+              </div>
             </td>
+
+            <!-- Batch & Branch -->
+            <td>
+              <span class="fw-semibold text-dark d-block">{{ s.branch }}</span>
+              <span class="text-muted extra-small">Batch {{ s.batch }} • {{ s.gapYears === 0 ? '0 Yr Gap' : s.gapYears +
+                ' Yr Gap' }}</span>
+            </td>
+
+            <!-- ProveYu Tier -->
             <td>
               <span class="badge rounded-pill px-3 py-1 extra-small fw-bold {{ s.tierBadge }}">{{ s.tier }}</span>
             </td>
+
+            <!-- Latest Test Score -->
             <td>
-              <span class="fw-bold text-dark font-monospace fs-6">{{ s.score }}</span>
+              <div class="fw-bold text-dark font-monospace fs-6">{{ s.score }}</div>
+              <div class="text-muted extra-small" style="font-size: 0.7rem;">
+                Code: {{ s.codingScore }} • Apt: {{ s.aptitudeScore }}
+              </div>
             </td>
+
+            <!-- Placement Status -->
             <td>
-              <span class="badge rounded-pill px-3 py-1 extra-small fw-bold" 
-                    [ngClass]="s.status === 'Placed' ? 'bg-success-subtle text-success border border-success-subtle' : s.status === 'Pending' ? 'bg-warning-subtle text-warning border border-warning-subtle' : 'bg-secondary-subtle text-dark border border-secondary-subtle'">
+              <span class="badge rounded-pill px-3 py-1 extra-small fw-bold"
+                [ngClass]="s.status === 'Placed' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-secondary-subtle text-dark border border-secondary-subtle'">
                 {{ s.status }}
               </span>
             </td>
+
+            <!-- Actions -->
             <td class="pe-4 text-end">
-              <div class="d-flex align-items-center justify-content-end gap-1">
-                <a [routerLink]="['/college/students', s.id]" class="btn btn-action-circle" title="View Profile">
+              <div class="d-flex align-items-center justify-content-end gap-1.5">
+                <button type="button" (click)="openDossier(s)" class="btn btn-action-circle"
+                  title="View Full Academic & Placement Dossier">
                   <i class="bi bi-eye-fill"></i>
-                </a>
-                <a [routerLink]="['/college/students', s.id, 'edit']" class="btn btn-action-circle" title="Edit Student">
+                </button>
+                <a [routerLink]="['/college/students', s.id, 'edit']" class="btn btn-action-circle"
+                  title="Edit Student Record">
                   <i class="bi bi-pencil-fill"></i>
                 </a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Empty State -->
+          <tr *ngIf="filteredStudents.length === 0">
+            <td colspan="9" class="text-center py-5">
+              <div class="text-muted">
+                <i class="bi bi-person-x fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                <div class="fw-bold fs-6">No matching candidate profiles found</div>
+                <div class="extra-small mt-1">Try adjusting your batch, branch, tier, or CGPA filter criteria</div>
+                <button (click)="resetFilters()" class="btn btn-sm btn-outline-dark rounded-pill mt-3 px-3">
+                  Reset All Filters
+                </button>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    
+
     <!-- Table Footer / Pagination -->
-    <div class="p-3 border-top d-flex align-items-center justify-content-between extra-small text-muted bg-white">
-      <span>Showing {{ filteredStudents.length }} of 350 active candidates</span>
+    <div
+      class="p-3 border-top d-flex align-items-center justify-content-between extra-small text-muted bg-white flex-wrap gap-2">
+      <div>
+        Showing {{ paginatedStudents.length }} of {{ filteredStudents.length }} active candidates
+        <span *ngIf="filteredStudents.length !== studentsList.length" class="badge bg-light text-dark border ms-1">
+          (Filtered from {{ studentsList.length }} total pool)
+        </span>
+      </div>
       <ul class="pagination pagination-sm mb-0">
-        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+        </li>
+        <li *ngFor="let page of pageNumbers" class="page-item" [class.active]="currentPage === page">
+          <button class="page-link" (click)="setPage(page)">{{ page }}</button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+        </li>
       </ul>
     </div>
   </div>
 
-</div>
+  <!-- CANDIDATE ACADEMIC & CORPORATE PLACEMENT DOSSIER MODAL -->
+  <div class="dossier-modal-backdrop" *ngIf="showDossierModal && selectedStudent">
+    <div class="dossier-modal-dialog">
+      <div class="dossier-modal-content">
 
+        <!-- Modal Header -->
+        <div class="dossier-modal-header">
+          <div class="d-flex align-items-center gap-3">
+            <div class="modal-avatar">
+              {{ selectedStudent.name.substring(0, 2).toUpperCase() }}
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h4 class="modal-title-text">{{ selectedStudent.name }}</h4>
+                <span class="badge rounded-pill px-3 py-1 extra-small fw-bold {{ selectedStudent.tierBadge }}">
+                  {{ selectedStudent.tier }}
+                </span>
+                <span class="badge rounded-pill px-2.5 py-1 extra-small fw-bold"
+                  [ngClass]="selectedStudent.status === 'Placed' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-secondary-subtle text-dark border border-secondary-subtle'">
+                  {{ selectedStudent.status }}
+                </span>
+              </div>
+              <div class="modal-meta-line">
+                <span class="meta-roll">{{ selectedStudent.roll }}</span> •
+                <span>{{ selectedStudent.branch }} (Batch {{ selectedStudent.batch }})</span> •
+                <span>{{ selectedStudent.email }}</span> •
+                <span>{{ selectedStudent.phone }}</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="closeDossier()" title="Close Dossier">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body: 3 Structured Sections from add-requirement -->
+        <div class="dossier-modal-body">
+          <div class="row g-3">
+
+            <!-- SECTION 1: ACADEMIC CUTOFF ELIGIBILITY -->
+            <div class="col-md-6">
+              <div class="dossier-section-card h-100">
+                <div class="section-card-header">
+                  <div class="section-title-wrap">
+                    <span class="section-num-badge">01</span>
+                    <h6 class="section-card-title">Academic Eligibility Cutoffs</h6>
+                  </div>
+                  <span class="badge bg-light text-success border border-success-subtle extra-small fw-semibold">
+                    <i class="bi bi-check-circle-fill me-1"></i>Verified Record
+                  </span>
+                </div>
+
+                <div class="row g-3 gy-3">
+                  <div class="col-6">
+                    <div class="metric-box">
+                      <span class="metric-label">Graduation CGPA</span>
+                      <span class="metric-val font-monospace">{{ selectedStudent.cgpa }} / 10.0</span>
+                      <span class="metric-sub text-success">Meets &ge; 7.5 Cutoff</span>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="metric-box">
+                      <span class="metric-label">Active Backlogs</span>
+                      <span class="metric-val"
+                        [ngClass]="selectedStudent.backlogs === 0 ? 'text-success' : 'text-warning'">
+                        {{ selectedStudent.backlogs }} Backlogs
+                      </span>
+                      <span class="metric-sub">{{ selectedStudent.backlogs === 0 ? 'Clean Record' : 'Allowed in Select
+                        Drives' }}</span>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="metric-box">
+                      <span class="metric-label">10th Board Score</span>
+                      <span class="metric-val font-monospace">{{ selectedStudent.tenthPercentage }}%</span>
+                      <span class="metric-sub">Min 60% Requirement</span>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="metric-box">
+                      <span class="metric-label">12th / Diploma Score</span>
+                      <span class="metric-val font-monospace">{{ selectedStudent.twelfthPercentage }}%</span>
+                      <span class="metric-sub">Min 60% Requirement</span>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="metric-box">
+                      <span class="metric-label">Education Gap Years</span>
+                      <span class="metric-val font-monospace">{{ selectedStudent.gapYears }} Years</span>
+                      <span class="metric-sub">Max 1 Year Allowed</span>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="metric-box">
+                      <span class="metric-label">Degree & Department</span>
+                      <span class="metric-val">{{ selectedStudent.degree }}</span>
+                      <span class="metric-sub text-truncate" [title]="selectedStudent.branch">{{ selectedStudent.branch
+                        }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 2: PROVEYU SKILL DIAGNOSTIC -->
+            <div class="col-md-6">
+              <div class="dossier-section-card h-100">
+                <div class="section-card-header">
+                  <div class="section-title-wrap">
+                    <span class="section-num-badge">02</span>
+                    <h6 class="section-card-title">ProveYu Skill Diagnostic</h6>
+                  </div>
+                  <span class="badge rounded-pill px-2.5 py-0.5 extra-small fw-bold {{ selectedStudent.tierBadge }}">
+                    {{ selectedStudent.tier }}
+                  </span>
+                </div>
+
+                <div class="score-banner-box">
+                  <div>
+                    <span class="banner-label">PROVEYU OVERALL SCORE</span>
+                    <span class="banner-score">{{ selectedStudent.score }}</span>
+                  </div>
+                  <div>
+                    <span class="percentile-badge">
+                      {{ selectedStudent.tier === 'Tier 1' ? 'Top 10% Percentile' : selectedStudent.tier === 'Tier 2' ?
+                      'Top 35% Percentile' : 'Needs Upskilling' }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="diagnostic-breakdown">
+                  <div class="diagnostic-item">
+                    <div class="diag-label-row">
+                      <span class="diag-name">Coding Assessment:</span>
+                      <span class="diag-score">{{ selectedStudent.codingScore }} / 30</span>
+                    </div>
+                    <div class="progress">
+                      <div class="progress-bar bar-coding" [style.width.%]="(selectedStudent.codingScore / 30) * 100">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="diagnostic-item">
+                    <div class="diag-label-row">
+                      <span class="diag-name">Aptitude & Logical Reasoning:</span>
+                      <span class="diag-score">{{ selectedStudent.aptitudeScore }} / 30</span>
+                    </div>
+                    <div class="progress">
+                      <div class="progress-bar bar-aptitude"
+                        [style.width.%]="(selectedStudent.aptitudeScore / 30) * 100"></div>
+                    </div>
+                  </div>
+
+                  <div class="diagnostic-item">
+                    <div class="diag-label-row">
+                      <span class="diag-name">Communication & Verbal Skills:</span>
+                      <span class="diag-score">{{ selectedStudent.commScore }} / 30</span>
+                    </div>
+                    <div class="progress">
+                      <div class="progress-bar bar-comm" [style.width.%]="(selectedStudent.commScore / 30) * 100"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 3: CORPORATE PLACEMENT & DRIVE RECORD -->
+            <div class="col-12">
+              <div class="dossier-section-card">
+                <div class="section-card-header">
+                  <div class="section-title-wrap">
+                    <span class="section-num-badge">03</span>
+                    <h6 class="section-card-title">Corporate Placement Status & Opportunity Record</h6>
+                  </div>
+                  <span class="badge bg-light text-muted border extra-small">TPO Campus Hub</span>
+                </div>
+
+                <div class="row g-3">
+                  <!-- Hiring Company -->
+                  <div class="col-md-3 col-sm-6">
+                    <div class="metric-box">
+                      <span class="metric-label">Hiring Company</span>
+                      <span class="metric-val text-dark" *ngIf="selectedStudent.status === 'Placed'">{{
+                        selectedStudent.company }}</span>
+                      <span class="metric-val text-muted" *ngIf="selectedStudent.status === 'Unplaced'">Not Placed
+                        Yet</span>
+                      <span class="metric-sub">{{ selectedStudent.status === 'Unplaced' ? 'Open for Opportunities' :
+                        selectedStudent.role }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Offered CTC -->
+                  <div class="col-md-3 col-sm-6">
+                    <div class="metric-box">
+                      <span class="metric-label">Offered CTC Package</span>
+                      <span class="metric-val font-monospace"
+                        [ngClass]="selectedStudent.status === 'Placed' ? 'text-success' : 'text-muted'">
+                        {{ selectedStudent.status === 'Placed' ? selectedStudent.ctc : 'Awaiting Offer' }}
+                      </span>
+                      <span class="metric-sub">{{ selectedStudent.packageCategory === '-' ? 'Campus Placement Pool' :
+                        selectedStudent.packageCategory }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Service Agreement / Bond -->
+                  <div class="col-md-3 col-sm-6">
+                    <div class="metric-box">
+                      <span class="metric-label">Service Agreement / Bond</span>
+                      <span class="metric-val text-dark">{{ selectedStudent.bondDuration }}</span>
+                      <span class="metric-sub">Standard TPO Norms</span>
+                    </div>
+                  </div>
+
+                  <!-- Corporate Drives Match -->
+                  <div class="col-md-3 col-sm-6">
+                    <div class="metric-box">
+                      <span class="metric-label">Corporate Drives Match</span>
+                      <span class="metric-val text-primary">{{ selectedStudent.eligibleDrivesCount }} Drives</span>
+                      <span class="metric-sub">Eligible by CGPA & Tier</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="dossier-modal-footer">
+          <div class="footer-sync-notice">
+            <i class="bi bi-shield-check text-success me-1.5"></i> Data synchronized with Campus Placement Hub
+          </div>
+          <div class="footer-actions">
+            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" (click)="closeDossier()">
+              Close
+            </button>
+            <button *ngIf="selectedStudent.status !== 'Placed'" type="button"
+              class="btn btn-dark btn-sm rounded-pill px-3 fw-semibold" (click)="markStudentPlaced(selectedStudent)">
+              <i class="bi bi-check2-circle me-1"></i> Mark Placed
+            </button>
+            <a [routerLink]="['/college/students', selectedStudent.id, 'edit']" (click)="closeDossier()"
+              class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold">
+              <i class="bi bi-pencil me-1"></i> Edit Record &amp; CGPA
+            </a>
+            <a [routerLink]="['/college/students', selectedStudent.id]" (click)="closeDossier()"
+              class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-semibold">
+              <i class="bi bi-box-arrow-up-right me-1"></i> Full Passport View
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING MULTI-ROW SELECTION ACTION BAR -->
+  <div class="floating-selection-bar" *ngIf="selectedCount > 0">
+    <div class="selection-info d-flex align-items-center">
+      <span class="badge bg-primary text-white rounded-pill px-3 py-1 me-2 fw-bold font-monospace">
+        {{ selectedCount }} Selected
+      </span>
+      <span class="fw-semibold text-dark extra-small">Candidates selected from roster</span>
+    </div>
+    <div class="selection-actions d-flex align-items-center gap-2">
+      <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 extra-small" (click)="clearSelection()">
+        Clear Selection
+      </button>
+      <button type="button" class="btn btn-sm btn-success rounded-pill px-3.5 extra-small fw-bold shadow-sm"
+        (click)="openBulkPlacementModalForSelected()">
+        <i class="bi bi-briefcase-fill me-1"></i> Mark Placed (Bulk)
+      </button>
+    </div>
+  </div>
+
+  <!-- BULK PLACEMENT UPDATE MODAL (EXCEL / CSV UPLOAD) -->
+  <div class="bulk-modal-backdrop" *ngIf="showBulkPlacementModal">
+    <div class="bulk-modal-dialog">
+      <div class="bulk-modal-content">
+
+        <!-- Modal Header -->
+        <div class="bulk-modal-header">
+          <div class="modal-header-left">
+            <div class="modal-avatar-icon">
+              <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h4 class="modal-title-text">Bulk Placement Upload</h4>
+                <span class="badge bg-primary text-white rounded-pill px-2.5 py-1 extra-small fw-bold">
+                  Excel / CSV Sync
+                </span>
+              </div>
+              <p class="modal-meta-line mb-0">
+                Upload recruitment drive selections or Superset exports to update placed candidate records in bulk.
+              </p>
+            </div>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="closeBulkPlacementModal()" title="Close Modal">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="bulk-modal-body">
+
+          <!-- SECTION 1: RECRUITMENT & OFFER DETAILS -->
+          <div class="bulk-card-container">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom">
+              <span class="bulk-card-title mb-0">
+                <i class="bi bi-building"></i> 1. Recruitment &amp; Offer Details
+              </span>
+              <div class="preset-chips-wrap">
+                <span class="extra-small text-muted me-1">Quick Presets:</span>
+                <button type="button" *ngFor="let p of bulkCompanyPresets"
+                  class="preset-chip-btn"
+                  [class.is-active]="bulkPlacementData.company === p.name"
+                  (click)="selectCompanyPreset(p)">
+                  {{ p.name }} ({{ p.ctc }})
+                </button>
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label extra-small fw-bold text-secondary mb-1">Hiring Company *</label>
+                <input type="text" class="form-control form-control-sm rounded-3 border fw-semibold"
+                  [(ngModel)]="bulkPlacementData.company" placeholder="e.g. TCS / Infosys / Wipro">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label extra-small fw-bold text-secondary mb-1">Designation / Role *</label>
+                <input type="text" class="form-control form-control-sm rounded-3 border"
+                  [(ngModel)]="bulkPlacementData.role" placeholder="e.g. System Engineer">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label extra-small fw-bold text-secondary mb-1">Annual CTC / Package *</label>
+                <input type="text" class="form-control form-control-sm rounded-3 border font-monospace fw-bold"
+                  [(ngModel)]="bulkPlacementData.ctc" placeholder="e.g. ₹4.5L">
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 2: EXCEL / CSV UPLOAD & FORMAT GUIDELINE -->
+          <div class="bulk-card-container">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom flex-wrap gap-2">
+              <span class="bulk-card-title mb-0">
+                <i class="bi bi-cloud-arrow-up-fill"></i> 2. Upload Placement List (Excel / CSV)
+              </span>
+              <span class="badge bg-light text-muted border extra-small font-monospace">
+                Format: Roll &bull; Name &bull; Branch &bull; Status
+              </span>
+            </div>
+
+            <!-- Format Guide Card explicitly showcasing the user's required structure -->
+            <div class="format-guide-card mb-3">
+              <div class="format-guide-header">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-info-circle-fill text-primary"></i>
+                  <span class="format-label">Required Upload File Columns</span>
+                </div>
+                <button type="button" class="btn-download-template" (click)="downloadSampleTemplate()">
+                  <i class="bi bi-download"></i> Download Sample CSV Template
+                </button>
+              </div>
+
+              <div class="format-sample-grid">
+                <div class="format-col">
+                  <span class="col-header-label">Roll Number</span>
+                  <span class="col-sample-value font-mono">2024-CSE-003</span>
+                </div>
+                <div class="format-col">
+                  <span class="col-header-label">Student Name</span>
+                  <span class="col-sample-value">Arun Patel</span>
+                </div>
+                <div class="format-col">
+                  <span class="col-header-label">Branch / Dept</span>
+                  <span class="col-sample-value">Computer Science &amp; Engineering</span>
+                </div>
+                <div class="format-col">
+                  <span class="col-header-label">Status</span>
+                  <span class="col-sample-value badge-placed">
+                    <i class="bi bi-check-circle-fill"></i> Placed
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Upload Dropzone (When no file uploaded) -->
+            <div class="bulk-dropzone" *ngIf="bulkUploadedRows.length === 0"
+              [class.is-dragover]="isDragOver"
+              (dragover)="$event.preventDefault(); isDragOver = true"
+              (dragleave)="isDragOver = false"
+              (drop)="onFileDrop($event)">
+              <div class="dropzone-icon-circle">
+                <i class="bi bi-cloud-arrow-up"></i>
+              </div>
+              <h5 class="dropzone-title">Drag &amp; Drop Excel or CSV File Here</h5>
+              <p class="dropzone-subtitle">Supported formats: .xlsx, .xls, .csv (Max 10MB file size)</p>
+
+              <div class="dropzone-actions">
+                <label class="btn btn-primary btn-sm rounded-pill px-4 py-2 fw-bold extra-small shadow-sm cursor-pointer m-0">
+                  <i class="bi bi-folder2-open me-1.5"></i> Browse Excel / CSV File
+                  <input type="file" class="d-none" accept=".csv, .xlsx, .xls, text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    (change)="onExcelFileUpload($event)">
+                </label>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3.5 py-2 fw-semibold extra-small"
+                  (click)="loadSampleExcelData()">
+                  <i class="bi bi-magic me-1"></i> Demo Upload (Arun Patel)
+                </button>
+              </div>
+            </div>
+
+            <!-- Uploaded Rows Live Preview Table (When rows loaded) -->
+            <div class="uploaded-preview-wrap" *ngIf="bulkUploadedRows.length > 0">
+              <div class="preview-top-strip">
+                <div class="file-name-tag">
+                  <i class="bi bi-file-earmark-spreadsheet-fill text-success fs-5"></i>
+                  <span>{{ bulkUploadedFileName || 'Shortlist Data' }}</span>
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle extra-small fw-bold">
+                    {{ bulkUploadedRows.length }} Records Found
+                  </span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 extra-small fw-semibold"
+                    (click)="downloadSampleTemplate()">
+                    <i class="bi bi-download me-1"></i> Sample Template
+                  </button>
+                  <button type="button" class="btn-clear-upload" (click)="clearUploadedFile()">
+                    <i class="bi bi-trash3"></i> Change File
+                  </button>
+                </div>
+              </div>
+
+              <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                <table class="table preview-table mb-0">
+                  <thead>
+                    <tr>
+                      <th>Roll Number</th>
+                      <th>Candidate Name</th>
+                      <th>Branch / Dept</th>
+                      <th>Placement Status</th>
+                      <th>Roster Match</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let row of bulkUploadedRows">
+                      <td class="font-monospace fw-bold text-primary">{{ row.roll }}</td>
+                      <td class="fw-semibold text-dark">{{ row.name }}</td>
+                      <td class="text-secondary">{{ row.branch }}</td>
+                      <td>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 extra-small fw-bold">
+                          <i class="bi bi-check2-circle me-1"></i> {{ row.status }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge bg-light text-success border extra-small fw-semibold" *ngIf="row.matchedStudent">
+                          <i class="bi bi-check-circle-fill me-1 text-success"></i> Matched
+                        </span>
+                        <span class="badge bg-light text-muted border extra-small" *ngIf="!row.matchedStudent">
+                          External
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bulk-modal-footer">
+          <div class="footer-left-info">
+            <i class="bi bi-info-circle-fill text-primary"></i>
+            <span>
+              Targeted for update: 
+              <strong>{{ bulkUploadedRows.length }} Candidate{{ bulkUploadedRows.length === 1 ? '' : 's' }}</strong>
+              <span *ngIf="bulkUploadedRows.length > 0" class="text-muted ms-1">
+                &rarr; {{ bulkPlacementData.company }} ({{ bulkPlacementData.ctc }})
+              </span>
+            </span>
+          </div>
+
+          <div class="footer-actions">
+            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3.5 py-1.5 fw-semibold"
+              (click)="closeBulkPlacementModal()">
+              Cancel
+            </button>
+            <button type="button" class="btn btn-primary btn-sm rounded-pill px-4 py-1.5 fw-bold shadow-sm"
+              [disabled]="bulkUploadedRows.length === 0"
+              (click)="applyBulkPlacement()">
+              <i class="bi bi-check-lg me-1"></i> Confirm &amp; Mark Placed
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDENT DATA OVERVIEW & PLACEMENT ANALYTICS MODAL (DASHBOARD) -->
+  <div class="overview-modal-backdrop" *ngIf="showOverviewModal">
+    <div class="overview-modal-dialog">
+      <div class="overview-modal-content">
+
+        <!-- Modal Header -->
+        <div class="overview-modal-header">
+          <div class="modal-header-left">
+            <div class="overview-avatar-icon">
+              <i class="bi bi-bar-chart-fill"></i>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h4 class="overview-title-text">Student Roster &amp; Placement Analytics</h4>
+                <span class="badge bg-primary text-white rounded-pill px-2.5 py-1 extra-small fw-bold">
+                  Cohort Intelligence
+                </span>
+              </div>
+              <p class="overview-meta-line mb-0">
+                Live cohort performance breakdown, diagnostic tier readiness, and hiring metrics.
+              </p>
+            </div>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="closeOverviewModal()" title="Close Modal">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body (Focused on Top 4 KPIs + 3 Clickable Tiers) -->
+        <div class="overview-modal-body">
+
+          <!-- 1. Top Executive KPI Cards Grid (Clickable) -->
+          <div class="overview-kpi-grid">
+            <div class="overview-kpi-card is-clickable" (click)="filterFromOverview('all')"
+              title="Click to view all enrolled candidates">
+              <div class="kpi-card-top">
+                <span class="kpi-label">TOTAL ENROLLED</span>
+                <span class="kpi-tag-pill tag-primary">ACTIVE ROSTER</span>
+              </div>
+              <div class="kpi-number-row">
+                <span class="kpi-big-num">350</span>
+                <span class="kpi-num-unit">Students</span>
+              </div>
+              <div class="kpi-bottom-row">
+                <span class="kpi-sub-detail">Across All 6 Engineering Depts</span>
+                <span class="card-click-pill"><i class="bi bi-funnel"></i> Show All</span>
+              </div>
+            </div>
+
+            <div class="overview-kpi-card is-clickable" (click)="filterFromOverview('placed')"
+              title="Click to filter roster by Placed students">
+              <div class="kpi-card-top">
+                <span class="kpi-label">OFFERS SECURED</span>
+                <span class="kpi-tag-pill tag-success">{{ placementRate }}% RATE</span>
+              </div>
+              <div class="kpi-number-row">
+                <span class="kpi-big-num text-emerald">{{ placedOffersCount }}</span>
+                <span class="kpi-num-unit">Placed</span>
+              </div>
+              <div class="kpi-bottom-row">
+                <span class="kpi-sub-detail">Verified Corporate Selects</span>
+                <span class="card-click-pill"><i class="bi bi-funnel"></i> Filter</span>
+              </div>
+            </div>
+
+            <div class="overview-kpi-card is-clickable" (click)="filterFromOverview('unplaced')"
+              title="Click to filter roster by Unplaced students">
+              <div class="kpi-card-top">
+                <span class="kpi-label">UNPLACED CANDIDATES</span>
+                <span class="kpi-tag-pill tag-warning">{{ 100 - placementRate }}% SEEKING</span>
+              </div>
+              <div class="kpi-number-row">
+                <span class="kpi-big-num text-amber">{{ unplacedCount }}</span>
+                <span class="kpi-num-unit">Active</span>
+              </div>
+              <div class="kpi-bottom-row">
+                <span class="kpi-sub-detail">Eligible for Upcoming Recruitment</span>
+                <span class="card-click-pill"><i class="bi bi-funnel"></i> Filter</span>
+              </div>
+            </div>
+
+            <div class="overview-kpi-card">
+              <div class="kpi-card-top">
+                <span class="kpi-label">AVERAGE PACKAGE</span>
+                <span class="kpi-tag-pill tag-purple">CTC BENCHMARK</span>
+              </div>
+              <div class="kpi-number-row">
+                <span class="kpi-big-num text-indigo">₹6.4</span>
+                <span class="kpi-num-unit">LPA</span>
+              </div>
+              <div class="kpi-bottom-row">
+                <span class="kpi-sub-detail">Highest: ₹24.0 LPA &bull; Median: ₹5.8 LPA</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Candidate Performance Tier Readiness (Clickable Filter Cards) -->
+          <div class="overview-panel-card">
+            <div class="panel-header">
+              <span class="panel-title">
+                <i class="bi bi-diagram-3-fill"></i> Performance Tier Readiness &amp; Diagnostic Distribution
+              </span>
+              <span class="panel-badge">Click any tier card to filter candidates</span>
+            </div>
+
+            <div class="tier-cards-row">
+              <!-- Tier 1 Card -->
+              <div class="tier-card-col tier-1-card" (click)="filterFromOverview('tier1')"
+                title="Click to filter roster by Tier 1 Candidates">
+                <div class="tier-card-top">
+                  <span class="tier-badge-pill tier-1">Tier 1</span>
+                  <span class="tier-pct-badge">33.7% of Cohort</span>
+                </div>
+                <div class="tier-count-num">118 <span class="tier-count-label">Candidates</span></div>
+                <div class="tier-name-label">Day-1 Corporate Cutoff Ready</div>
+                <div class="tier-sub-info">Diagnostic Score &ge; 70 &bull; Super Dream &amp; Product Engineering Focus</div>
+                <div class="tier-mini-bar">
+                  <div class="bar-fill tier-1-fill" style="width: 33.7%;"></div>
+                </div>
+                <div class="tier-cta-strip">
+                  <span>Apply Tier 1 Filter</span>
+                  <i class="bi bi-arrow-right cta-arrow"></i>
+                </div>
+              </div>
+
+              <!-- Tier 2 Card -->
+              <div class="tier-card-col tier-2-card" (click)="filterFromOverview('tier2')"
+                title="Click to filter roster by Tier 2 Candidates">
+                <div class="tier-card-top">
+                  <span class="tier-badge-pill tier-2">Tier 2</span>
+                  <span class="tier-pct-badge">44.6% of Cohort</span>
+                </div>
+                <div class="tier-count-num">156 <span class="tier-count-label">Candidates</span></div>
+                <div class="tier-name-label">Core Engineering &amp; IT Skilled</div>
+                <div class="tier-sub-info">Diagnostic Score 50-69 &bull; Mass Recruiters &amp; Core Industry Tech Drives</div>
+                <div class="tier-mini-bar">
+                  <div class="bar-fill tier-2-fill" style="width: 44.6%;"></div>
+                </div>
+                <div class="tier-cta-strip">
+                  <span>Apply Tier 2 Filter</span>
+                  <i class="bi bi-arrow-right cta-arrow"></i>
+                </div>
+              </div>
+
+              <!-- Tier 3 Card -->
+              <div class="tier-card-col tier-3-card" (click)="filterFromOverview('tier3')"
+                title="Click to filter roster by Tier 3 Candidates">
+                <div class="tier-card-top">
+                  <span class="tier-badge-pill tier-3">Tier 3</span>
+                  <span class="tier-pct-badge">21.7% of Cohort</span>
+                </div>
+                <div class="tier-count-num">76 <span class="tier-count-label">Candidates</span></div>
+                <div class="tier-name-label">Foundational &amp; Active Coaching</div>
+                <div class="tier-sub-info">Diagnostic Score &lt; 50 &bull; Mentorship, Skill Bootcamps &amp; Remedial Training</div>
+                <div class="tier-mini-bar">
+                  <div class="bar-fill tier-3-fill" style="width: 21.7%;"></div>
+                </div>
+                <div class="tier-cta-strip">
+                  <span>Apply Tier 3 Filter</span>
+                  <i class="bi bi-arrow-right cta-arrow"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="overview-modal-footer">
+          <div class="footer-left-hint">
+            <i class="bi bi-cursor-fill"></i>
+            <span>Interactive analytics: Click any Tier or Status card above to instantly filter the student roster.</span>
+          </div>
+
+          <button type="button" class="btn-close-overview" (click)="closeOverviewModal()">
+            Close Analytics
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

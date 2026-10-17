@@ -1,0 +1,620 @@
+<div class="add-requirement-page">
+
+  <!-- Welcome Banner Card -->
+  <div class="welcome-banner-card mb-4">
+    <div class="banner-content">
+      <div class="banner-text">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <a routerLink="/college/placements" class="btn-back-circle text-decoration-none me-1" title="Back to Placements">
+            <i class="bi bi-arrow-left"></i>
+          </a>
+          <h3 class="welcome-title m-0">Post Company Placement Requirement</h3>
+          <span class="badge section-tag-badge font-monospace ms-2">
+            TPO PLACEMENT PORTAL
+          </span>
+        </div>
+        <p class="welcome-subtitle">
+          Configure company parameters, CTC package, academic eligibility cutoffs, branch filters, and selection rounds for automatic candidate matching.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Success Notification Banner -->
+  <div class="alert alert-dark bg-dark text-white border-0 rounded-4 shadow-lg p-3.5 mb-4 d-flex align-items-center gap-3" *ngIf="isSubmitted">
+    <div class="step-num-badge bg-success text-white rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+      ✓
+    </div>
+    <div>
+      <strong class="fs-6 d-block text-white">Placement Requirement Published Successfully!</strong>
+      <span class="extra-small text-light opacity-90">Auto-matched {{ dynamicMatchedCount }} eligible candidates. Redirecting to Campus Placement Hub...</span>
+    </div>
+  </div>
+
+  <form (ngSubmit)="submitRequirement()">
+    <div class="row g-4">
+      
+      <!-- LEFT COLUMN: MAIN FORM SECTIONS (8 COLS) -->
+      <div class="col-lg-8">
+        
+        <!-- SECTION 1: COMPANY OVERVIEW & RECRUITER POC -->
+        <div class="form-section-card mb-4">
+          <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="step-num-box">01</div>
+              <div>
+                <h5 class="fw-bold text-dark m-0 section-heading-title">Company Overview & Recruiter Contact</h5>
+                <span class="text-muted extra-small">Company profile, industry classification, and HR contact information</span>
+              </div>
+            </div>
+            <span class="badge section-tag-badge">SECTION A</span>
+          </div>
+
+          <div class="row g-4 extra-small">
+            <!-- Company Name -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold text-secondary">Company Name <span class="text-danger">*</span></label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-building text-muted"></i></span>
+                <input type="text" class="form-control fw-semibold text-dark" required
+                  [(ngModel)]="newForm.companyName" name="companyName" placeholder="e.g. TCS Digital, Accenture, Amdocs">
+              </div>
+            </div>
+
+            <!-- Company Website / Domain -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold text-secondary">Company Website / Domain</label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-link-45deg text-muted"></i></span>
+                <span class="input-group-text bg-light text-muted border-start-0 font-monospace">https://</span>
+                <input type="text" class="form-control font-monospace"
+                  [(ngModel)]="newForm.companyWebsite" name="companyWebsite" placeholder="tcs.com">
+              </div>
+            </div>
+
+            <!-- Industry Category -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold text-secondary">Industry Category <span class="text-danger">*</span></label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-briefcase text-muted"></i></span>
+                <select class="form-select fw-semibold" [(ngModel)]="newForm.industry" name="industry">
+                  <option value="IT Services & Consulting">IT Services & Consulting</option>
+                  <option value="Product SaaS & Cloud">Product SaaS & Cloud</option>
+                  <option value="BFSI & Fintech">BFSI & Fintech</option>
+                  <option value="Core Engineering & Automotive">Core Engineering & Automotive</option>
+                  <option value="E-Commerce & Retail">E-Commerce & Retail</option>
+                  <option value="Consulting & Analytics">Consulting & Analytics</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Job Posting Location(s) -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold text-secondary">Job Posting Location(s)</label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-geo-alt text-muted"></i></span>
+                <input type="text" class="form-control"
+                  [(ngModel)]="newForm.jobLocation" name="jobLocation" placeholder="Pune / Mumbai / Hybrid">
+              </div>
+            </div>
+
+            <!-- HR Contact Name -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">HR Contact Name</label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-person text-muted"></i></span>
+                <input type="text" class="form-control"
+                  [(ngModel)]="newForm.hrContactName" name="hrContactName" placeholder="Shruti Varma (Campus Lead)">
+              </div>
+            </div>
+
+            <!-- HR Official Email -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">HR Official Email</label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-envelope text-muted"></i></span>
+                <input type="email" class="form-control font-monospace"
+                  [(ngModel)]="newForm.hrContactEmail" name="hrContactEmail" placeholder="campus.hiring@company.com">
+              </div>
+            </div>
+
+            <!-- HR Phone / WhatsApp -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">HR Phone / WhatsApp</label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-telephone text-muted"></i></span>
+                <input type="text" class="form-control font-monospace"
+                  [(ngModel)]="newForm.hrContactPhone" name="hrContactPhone" placeholder="+91-9876501234">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: JOB PROFILE & COMPENSATION PACKAGES -->
+        <div class="form-section-card mb-4">
+          <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="step-num-box">02</div>
+              <div>
+                <h5 class="fw-bold text-dark m-0 section-heading-title">Job Profile & Compensation Details</h5>
+                <span class="text-muted extra-small">Designation offered, CTC package, monthly stipend, and bond terms</span>
+              </div>
+            </div>
+            <span class="badge section-tag-badge">SECTION B</span>
+          </div>
+
+          <div class="row g-4 extra-small">
+            <!-- Job Designation -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold text-secondary">Job Designation / Profile Title <span class="text-danger">*</span></label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-briefcase text-muted"></i></span>
+                <input type="text" class="form-control fw-bold text-dark" required
+                  [(ngModel)]="newForm.roles" name="roles" placeholder="Software Development Engineer">
+              </div>
+            </div>
+
+            <!-- Employment Type -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold text-secondary">Employment Type</label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-people text-muted"></i></span>
+                <select class="form-select fw-semibold" [(ngModel)]="newForm.employmentType" name="employmentType">
+                  <option value="Full-Time Direct">Full-Time Direct Placement</option>
+                  <option value="Internship + Full-Time">Internship (8th Sem) + Full-Time PPO</option>
+                  <option value="Trainee">Graduate Trainee</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Fixed Package Offered -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">Fixed Package Offered (CTC in LPA) <span class="text-danger">*</span></label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text fw-bold text-muted">₹</span>
+                <input type="number" step="0.5" class="form-control font-monospace fw-bold text-dark fs-6" required
+                  [(ngModel)]="newForm.packageLpa" name="packageLpa" placeholder="7.5">
+                <span class="input-group-text bg-light text-muted fw-semibold">LPA</span>
+              </div>
+            </div>
+
+            <!-- Internship Monthly Stipend -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">Internship Monthly Stipend</label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-wallet2 text-muted"></i></span>
+                <input type="text" class="form-control font-monospace"
+                  [(ngModel)]="newForm.stipendMonthly" name="stipendMonthly" placeholder="₹25,000 / month">
+              </div>
+            </div>
+
+            <!-- Bond Duration -->
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">Service Agreement / Bond Duration</label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-file-earmark-text text-muted"></i></span>
+                <select class="form-select font-monospace" [(ngModel)]="newForm.bondDurationMonths" name="bondDurationMonths">
+                  <option [ngValue]="0">No Bond / Service Agreement</option>
+                  <option [ngValue]="12">12 Months (1 Year)</option>
+                  <option [ngValue]="18">18 Months (1.5 Years)</option>
+                  <option [ngValue]="24">24 Months (2 Years)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Drive Category Tag -->
+            <div class="col-12 mt-2">
+              <label class="form-label fw-semibold text-secondary d-flex align-items-center gap-1 mb-2.5">
+                Drive Category Tag (College Criteria) <i class="bi bi-info-circle text-muted" style="font-size: 0.75rem;"></i>
+              </label>
+              <div class="pill-container-flex">
+                <button type="button" class="btn category-pill-btn"
+                  [ngClass]="newForm.driveCategory === 'Mass Recruiter (< 5 LPA)' ? 'active' : ''"
+                  (click)="newForm.driveCategory = 'Mass Recruiter (< 5 LPA)'">
+                  <span class="check-icon" *ngIf="newForm.driveCategory === 'Mass Recruiter (< 5 LPA)'">✓</span>
+                  Mass Recruiter (&lt; 5 LPA)
+                </button>
+                <button type="button" class="btn category-pill-btn"
+                  [ngClass]="newForm.driveCategory === 'Dream Drive (5-10 LPA)' ? 'active' : ''"
+                  (click)="newForm.driveCategory = 'Dream Drive (5-10 LPA)'">
+                  <span class="check-icon" *ngIf="newForm.driveCategory === 'Dream Drive (5-10 LPA)'">✓</span>
+                  Dream Drive (5-10 LPA)
+                </button>
+                <button type="button" class="btn category-pill-btn"
+                  [ngClass]="newForm.driveCategory === 'Super Dream (> 10 LPA)' ? 'active' : ''"
+                  (click)="newForm.driveCategory = 'Super Dream (> 10 LPA)'">
+                  <span class="check-icon" *ngIf="newForm.driveCategory === 'Super Dream (> 10 LPA)'">✓</span>
+                  Super Dream (&gt; 10 LPA)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: ACADEMIC ELIGIBILITY CUTOFFS -->
+        <div class="form-section-card mb-4">
+          <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="step-num-box">03</div>
+              <div>
+                <h5 class="fw-bold text-dark m-0 section-heading-title">Academic Eligibility Cutoffs & Scores</h5>
+                <span class="text-muted extra-small">Strict TPO parameters: CGPA, 10th %, 12th %, backlogs, gap years & ProveYu score</span>
+              </div>
+            </div>
+            <span class="badge section-tag-badge">SECTION C</span>
+          </div>
+
+          <div class="row g-4 extra-small">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">Minimum CGPA <span class="text-danger">*</span></label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text fw-bold text-muted">≥</span>
+                <input type="number" step="0.1" min="0" max="10"
+                  class="form-control font-monospace fw-bold text-dark fs-6" required
+                  [(ngModel)]="newForm.minCgpa" name="minCgpa" placeholder="7.5">
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">Max Active Backlogs Allowed <span class="text-danger">*</span></label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-file-earmark-text text-muted"></i></span>
+                <select class="form-select font-monospace fw-semibold" [(ngModel)]="newForm.maxBacklogs" name="maxBacklogs">
+                  <option [ngValue]="0">0 (No Active Backlogs)</option>
+                  <option [ngValue]="1">Max 1 Backlog Allowed</option>
+                  <option [ngValue]="2">Max 2 Backlogs Allowed</option>
+                  <option [ngValue]="3">Max 3 Backlogs Allowed</option>
+                  <option [ngValue]="99">No Limit / Any Backlogs</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">Max Gap Years Allowed <span class="text-danger">*</span></label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-calendar3 text-muted"></i></span>
+                <select class="form-select font-monospace fw-semibold" [(ngModel)]="newForm.maxGapYears" name="maxGapYears">
+                  <option [ngValue]="0">0 Years (No Gap)</option>
+                  <option [ngValue]="1">Max 1 Year Gap</option>
+                  <option [ngValue]="2">Max 2 Years Gap</option>
+                  <option [ngValue]="99">No Limit / Any Gap</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">10th Min Eligible (%) <span class="text-danger">*</span></label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-award text-muted"></i></span>
+                <input type="number" step="1" min="0" max="100"
+                  class="form-control font-monospace fw-bold" required
+                  [(ngModel)]="newForm.min10thPercentage" name="min10thPercentage" placeholder="60">
+                <span class="input-group-text bg-light text-muted fw-semibold">%</span>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">12th / Diploma Min Eligible (%) <span class="text-danger">*</span></label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-award text-muted"></i></span>
+                <input type="number" step="1" min="0" max="100"
+                  class="form-control font-monospace fw-bold" required
+                  [(ngModel)]="newForm.min12thPercentage" name="min12thPercentage" placeholder="60">
+                <span class="input-group-text bg-light text-muted fw-semibold">%</span>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold text-secondary">Target Graduation Batch</label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-mortarboard text-muted"></i></span>
+                <select class="form-select font-monospace fw-semibold" [(ngModel)]="newForm.batchFilter" name="batchFilter">
+                  <option value="2024 Batch">2024 Batch (Current Passouts)</option>
+                  <option value="2025 Batch">2025 Batch</option>
+                  <option value="2026 Batch">2026 Batch</option>
+                  <option value="All Batches">All Batches</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold text-secondary">Target Degree Type</label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-journal-bookmark text-muted"></i></span>
+                <select class="form-select font-monospace fw-semibold" [(ngModel)]="newForm.degreeFilter" name="degreeFilter">
+                  <option value="B.Tech / B.E. Only">B.Tech / B.E. Only</option>
+                  <option value="B.Tech + M.Tech">B.Tech + M.Tech</option>
+                  <option value="All Degrees (B.Tech, MCA, B.Sc)">All Degrees (B.Tech, MCA, B.Sc)</option>
+                </select>
+              </div>
+            </div>
+
+
+
+            <!-- Candidate Placement Status Eligibility (Unplaced Only / Placed / All) -->
+            <div class="col-12 mt-2">
+              <label class="form-label fw-semibold text-secondary d-block mb-2.5">
+                Candidate Placement Status Eligibility (Which Candidates Can Apply?) <span class="text-danger">*</span>
+              </label>
+              <div class="pill-container-flex">
+                <button type="button" class="btn category-pill-btn"
+                  [ngClass]="newForm.placementEligibility === 'Unplaced Only' ? 'active' : ''"
+                  (click)="newForm.placementEligibility = 'Unplaced Only'; newForm.allowPlacedStudents = false">
+                  <span class="check-icon" *ngIf="newForm.placementEligibility === 'Unplaced Only'">✓</span>
+                  Unplaced Candidates Only
+                </button>
+                <button type="button" class="btn category-pill-btn"
+                  [ngClass]="newForm.placementEligibility === 'Allow Placed (Upgrade Offer)' ? 'active' : ''"
+                  (click)="newForm.placementEligibility = 'Allow Placed (Upgrade Offer)'; newForm.allowPlacedStudents = true">
+                  <span class="check-icon" *ngIf="newForm.placementEligibility === 'Allow Placed (Upgrade Offer)'">✓</span>
+                  Allow Placed (Dream Offer Upgrade)
+                </button>
+                <button type="button" class="btn category-pill-btn"
+                  [ngClass]="newForm.placementEligibility === 'All Candidates' ? 'active' : ''"
+                  (click)="newForm.placementEligibility = 'All Candidates'; newForm.allowPlacedStudents = true">
+                  <span class="check-icon" *ngIf="newForm.placementEligibility === 'All Candidates'">✓</span>
+                  Open to All Candidates
+                </button>
+              </div>
+            </div>
+
+            <div class="col-12 mt-2">
+              <label class="form-label fw-semibold text-secondary d-block mb-2.5">Eligible ProveYu Skill Tiers <span class="text-danger">*</span></label>
+              <div class="pill-container-flex">
+                <button type="button" class="btn category-pill-btn"
+                  [ngClass]="newForm.tier1 ? 'active' : ''"
+                  (click)="newForm.tier1 = !newForm.tier1">
+                  <span class="check-icon" *ngIf="newForm.tier1">✓</span>
+                  Tier 1 (70+ Top Score)
+                </button>
+                <button type="button" class="btn category-pill-btn"
+                  [ngClass]="newForm.tier2 ? 'active' : ''"
+                  (click)="newForm.tier2 = !newForm.tier2">
+                  <span class="check-icon" *ngIf="newForm.tier2">✓</span>
+                  Tier 2 (60-70 Mid Score)
+                </button>
+                <button type="button" class="btn category-pill-btn"
+                  [ngClass]="newForm.tier3 ? 'active' : ''"
+                  (click)="newForm.tier3 = !newForm.tier3">
+                  <span class="check-icon" *ngIf="newForm.tier3">✓</span>
+                  Tier 3 (&lt;60 Score)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 4: BRANCH MULTI-SELECT DROPDOWN -->
+        <div class="form-section-card mb-4">
+          <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="step-num-box">04</div>
+              <div>
+                <h5 class="fw-bold text-dark m-0 section-heading-title">Eligible Branch Selection</h5>
+                <span class="text-muted extra-small">Select all academic branches eligible to apply for this drive</span>
+              </div>
+            </div>
+            <span class="badge section-tag-badge">SECTION D</span>
+          </div>
+
+          <div class="branch-shortcuts-header d-flex align-items-center justify-content-between mb-3.5 flex-wrap gap-2 pb-3 border-bottom">
+            <label class="form-label fw-semibold text-secondary m-0 fs-7">Branch Selection Shortcuts</label>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <button type="button" class="btn btn-sm shortcut-pill-btn" (click)="selectAllBranches()">
+                Select All
+              </button>
+              <button type="button" class="btn btn-sm shortcut-pill-btn" (click)="selectCsItOnly()">
+                CS & IT Only
+              </button>
+              <button type="button" class="btn btn-sm shortcut-pill-btn" (click)="selectCoreBranches()">
+                Core Engineering
+              </button>
+              <button type="button" class="btn btn-sm shortcut-pill-btn danger-pill" (click)="clearBranchSelection()">
+                Clear All
+              </button>
+            </div>
+          </div>
+
+          <!-- Custom Multi-Select Dropdown Trigger -->
+          <div class="position-relative mb-4 mt-2">
+            <div class="input-group input-group-custom cursor-pointer" (click)="toggleBranchDropdown()">
+              <span class="input-group-text"><i class="bi bi-diagram-3 text-muted"></i></span>
+              <button type="button" class="form-control text-start bg-transparent border-0 d-flex align-items-center justify-content-between cursor-pointer px-3">
+                <span class="text-truncate fw-semibold font-monospace text-dark fs-6">
+                  {{ newForm.branchFilter }}
+                </span>
+                <i class="bi ms-2 fs-6 text-muted" [ngClass]="branchDropdownOpen ? 'bi-chevron-up text-dark' : 'bi-chevron-down'"></i>
+              </button>
+            </div>
+
+            <!-- Floating Dropdown Menu List -->
+            <div *ngIf="branchDropdownOpen" class="branch-dropdown-menu position-absolute w-100 bg-white border rounded-3 shadow-lg p-3 z-3">
+              <div class="dropdown-list-scroll">
+                <div *ngFor="let b of availableBranches"
+                  class="dropdown-branch-item cursor-pointer d-flex align-items-center py-2 px-3 rounded-2 mb-1"
+                  (click)="toggleBranchSelection(b); $event.stopPropagation()">
+                  <input class="form-check-input cursor-pointer m-0 me-3 flex-shrink-0" type="checkbox"
+                    [id]="'page_branch_' + b"
+                    [checked]="isBranchSelected(b)"
+                    (change)="toggleBranchSelection(b)">
+                  <label class="form-check-label extra-small fw-semibold text-dark cursor-pointer flex-grow-1 m-0" [for]="'page_branch_' + b">
+                    {{ b }}
+                  </label>
+                </div>
+              </div>
+              <div class="border-top pt-2.5 mt-2 d-flex justify-content-end">
+                <button type="button" class="btn btn-sm btn-dark rounded-pill py-1.5 px-4 extra-small fw-bold shadow-sm" (click)="toggleBranchDropdown()">
+                  Done
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Branch Badges Grid -->
+          <div class="mt-3">
+            <label class="form-label fw-semibold text-secondary d-block mb-2.5">Active Selected Branches ({{ newForm.selectedBranches.length }})</label>
+            <div class="pill-container-flex">
+              <span *ngFor="let branchTag of newForm.selectedBranches" class="badge active-branch-badge d-inline-flex align-items-center gap-2 py-2 px-3 shadow-sm">
+                <span class="fw-semibold">{{ branchTag }}</span>
+                <span class="remove-btn text-muted cursor-pointer fw-bold ms-1" (click)="toggleBranchSelection(branchTag)">×</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 5: DRIVE SCHEDULE & SELECTION ROUNDS -->
+        <div class="form-section-card mb-4">
+          <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="step-num-box">05</div>
+              <div>
+                <h5 class="fw-bold text-dark m-0 section-heading-title">Schedule, Venue & Selection Rounds</h5>
+                <span class="text-muted extra-small">Conduct dates, registration deadline, venue location & assessment rounds</span>
+              </div>
+            </div>
+            <span class="badge section-tag-badge">SECTION E</span>
+          </div>
+
+          <div class="row g-4 extra-small">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">Drive Conduct Date <span class="text-danger">*</span></label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-calendar-event text-muted"></i></span>
+                <input type="date" class="form-control font-monospace fw-semibold text-dark" required
+                  [(ngModel)]="newForm.driveDate" name="driveDate">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">Registration Deadline <span class="text-danger">*</span></label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-hourglass-split text-muted"></i></span>
+                <input type="date" class="form-control font-monospace fw-semibold text-dark" required
+                  [(ngModel)]="newForm.registrationDeadline" name="registrationDeadline">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold text-secondary">Drive Conduct Mode</label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-display text-muted"></i></span>
+                <select class="form-select fw-semibold" [(ngModel)]="newForm.driveMode" name="driveMode">
+                  <option value="On-Campus">On-Campus Drive</option>
+                  <option value="Virtual">Virtual / Remote Online Drive</option>
+                  <option value="Hybrid">Hybrid (Virtual + On-Campus)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-semibold text-secondary">Drive Venue / Room Location</label>
+              <div class="input-group input-group-custom">
+                <span class="input-group-text"><i class="bi bi-geo-alt text-muted"></i></span>
+                <input type="text" class="form-control" [(ngModel)]="newForm.venue"
+                  name="venue" placeholder="Main Seminar Hall A & Computer Lab 3">
+              </div>
+            </div>
+
+            <!-- Selection Process Rounds Involved -->
+            <div class="col-12 mt-2">
+              <label class="form-label fw-semibold text-secondary d-block mb-2.5">Selection Process Rounds Involved</label>
+              <div class="pill-container-flex">
+                <button type="button" *ngFor="let r of availableRounds"
+                  class="btn category-pill-btn"
+                  [ngClass]="isRoundSelected(r) ? 'active' : ''"
+                  (click)="toggleRoundSelection(r)">
+                  <span class="check-icon" *ngIf="isRoundSelected(r)">✓</span>
+                  {{ r }}
+                </button>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: STICKY SUMMARY & LIVE AUTO-MATCH ENGINE (4 COLS) -->
+      <div class="col-lg-4">
+        
+        <!-- CARD A: REAL-TIME LIVE MATCH ENGINE -->
+        <div class="form-section-card mb-4 sticky-top" style="top: 20px; z-index: 10;">
+          <div class="d-flex align-items-center justify-content-between mb-3.5 border-bottom pb-3">
+            <h6 class="fw-bold text-dark m-0 fs-6">
+              Real-Time Candidate Match
+            </h6>
+            <span class="live-engine-pill">
+              <span class="green-dot"></span> Live Engine
+            </span>
+          </div>
+
+          <!-- Dark Candidate Display Box (Exact Match to Image 2) -->
+          <div class="eligible-candidates-card mb-4">
+            <div class="icon-circle">
+              <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="candidates-info">
+              <div class="label-text">ELIGIBLE CANDIDATES</div>
+              <div class="candidate-count">{{ dynamicMatchedCount }}</div>
+              <div class="sub-text">{{ placementEligibilitySubtext }}</div>
+            </div>
+          </div>
+
+          <!-- Summary Parameters List (Exact Match to Image 2 & 3) -->
+          <div class="extra-small">
+            <div class="summary-param-heading">SUMMARY PARAMETERS</div>
+            
+            <div class="summary-param-row">
+              <span class="param-label">
+                <i class="bi bi-mortarboard text-secondary fs-6"></i> Min CGPA
+              </span>
+              <strong class="font-monospace text-dark fs-6">≥ {{ newForm.minCgpa }}</strong>
+            </div>
+
+            <div class="summary-param-row">
+              <span class="param-label">
+                <i class="bi bi-file-earmark-text text-secondary fs-6"></i> Max Backlogs
+              </span>
+              <strong class="font-monospace text-dark fs-6">{{ newForm.maxBacklogs === 99 ? 'No Limit' : newForm.maxBacklogs }}</strong>
+            </div>
+
+            <div class="summary-param-row">
+              <span class="param-label">
+                <i class="bi bi-calendar3 text-secondary fs-6"></i> Max Gap Years
+              </span>
+              <strong class="font-monospace text-dark fs-6">{{ newForm.maxGapYears === 99 ? 'No Limit' : newForm.maxGapYears + ' Yr' }}</strong>
+            </div>
+
+            <div class="summary-param-row">
+              <span class="param-label">
+                <i class="bi bi-bar-chart-line text-secondary fs-6"></i> 10th / 12th Cutoff
+              </span>
+              <strong class="font-monospace text-dark fs-6">≥ {{ newForm.min10thPercentage }}% / {{ newForm.min12thPercentage }}%</strong>
+            </div>
+
+            <div class="summary-param-row border-0 pb-0">
+              <span class="param-label">
+                <i class="bi bi-diagram-3 text-secondary fs-6"></i> Selected Branches
+              </span>
+              <strong class="font-monospace text-dark fs-6">{{ newForm.selectedBranches.length }} Active</strong>
+            </div>
+          </div>
+
+          <!-- Action Buttons in Side Panel (Exact Match to Image 2) -->
+          <div class="side-actions-container">
+            <button type="submit" class="btn btn-side-primary text-center justify-content-center">
+              <i class="bi bi-send-fill me-2"></i> Save & Publish Drive
+            </button>
+            <a routerLink="/college/placements" class="btn btn-side-secondary text-center justify-content-center">
+              <i class="bi bi-arrow-left me-2"></i> Cancel & Return
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </form>
+
+</div>

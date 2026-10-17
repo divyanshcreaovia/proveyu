@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NotificationService } from '../../../../shared/services/notification.service';
 
 export interface TestSection {
   name: string;              // 'Coding' | 'Aptitude' | 'Communication'
@@ -54,6 +55,7 @@ export interface TestResult {
   styleUrl: './tests.scss',
 })
 export class Tests {
+  constructor(private notificationService: NotificationService) {}
   // Screen View State: 'list' (Overview) | 'detail' (Drill-Down)
   currentView: 'list' | 'detail' = 'list';
   activeTest: Test | null = null;
@@ -531,9 +533,6 @@ export class Tests {
   }
 
   showToast(msg: string) {
-    this.toastMessage = msg;
-    setTimeout(() => {
-      this.toastMessage = null;
-    }, 3500);
+    this.notificationService.showSuccess(msg);
   }
 }

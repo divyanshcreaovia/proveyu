@@ -1,125 +1,297 @@
 <div class="student-import-page container-fluid p-0">
-  
-  <div class="d-flex align-items-center justify-content-between mb-4">
-    <div class="d-flex align-items-center gap-3">
-      <a routerLink="/college/students" class="btn btn-sm btn-light rounded-circle p-2 border me-1" title="Back to Students">
-        <i class="bi bi-arrow-left fs-5"></i>
-      </a>
-      <div>
-        <h4 class="fw-bold text-dark mb-1">Bulk CSV Student Import</h4>
-        <p class="text-muted extra-small mb-0">Upload your batch student list CSV to populate campus roster automatically.</p>
-      </div>
-    </div>
 
-    <button class="btn btn-outline-primary rounded-pill px-3 py-1.5 fw-bold extra-small">
-      <i class="bi bi-download me-1"></i> Download CSV Template
-    </button>
-  </div>
-
-  <div class="alert alert-success border-0 rounded-4 shadow-xs p-3 mb-4" *ngIf="isImported">
-    <i class="bi bi-check-circle-fill me-2 fs-5"></i>
-    <strong>Success!</strong> 340 valid student rows imported successfully into MGM CET roster. Redirecting...
-  </div>
-
-  <!-- Upload Drag & Drop Zone -->
-  <div class="card border-2 border-dashed rounded-4 p-5 mb-4 text-center bg-white" *ngIf="!isFileUploaded">
-    <div class="py-4">
-      <i class="bi bi-cloud-arrow-up text-primary display-4 d-block mb-3"></i>
-      <h5 class="fw-bold text-dark mb-1">Drag & Drop CSV File Here</h5>
-      <p class="text-muted small mb-3">Supported file formats: CSV, XLSX (Max 10MB file size)</p>
-
-      <div class="d-flex align-items-center justify-content-center gap-2">
-        <label class="btn btn-primary rounded-pill px-4 py-2 fw-bold extra-small shadow-sm cursor-pointer m-0">
-          <i class="bi bi-folder2-open me-1"></i> Browse Computer
-          <input type="file" class="d-none" accept=".csv" (change)="onFileSelected($event)">
-        </label>
-        <button class="btn btn-light border rounded-pill px-3 py-2 fw-bold extra-small" (click)="triggerSimulatedUpload()">
-          Demo Sample Upload
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Preview & Validation Screen -->
-  <div *ngIf="isFileUploaded && !isImported">
-    <div class="card border-0 shadow-2xs rounded-4 p-4 mb-4 bg-white">
-      <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-3">
+  <!-- Welcome Header Banner -->
+  <div class="welcome-banner-card mb-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <a routerLink="/college/students" class="btn btn-action-circle" title="Back to Students Roster">
+          <i class="bi bi-arrow-left"></i>
+        </a>
         <div>
-          <h6 class="fw-bold text-dark mb-0"><i class="bi bi-file-earmark-spreadsheet text-success me-1"></i> {{ fileName }}</h6>
-          <span class="text-muted extra-small">Previewing first 5 rows of 350 student entries</span>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <h4 class="welcome-title mb-0">Bulk Student Data Import</h4>
+            <span class="badge bg-primary text-white rounded-pill px-3 py-1 extra-small fw-bold">
+              Full Profile Upload
+            </span>
+            <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 extra-small font-monospace">
+              Sem 1–8 CGPA &bull; Aadhaar &bull; PAN
+            </span>
+          </div>
+          <p class="welcome-subtitle mb-0 mt-1">
+            Upload student records matching Add Student fields: personal details, identity numbers, academic cutoffs, and Semester 1 to 8 CGPA scores.
+          </p>
         </div>
-        <button class="btn btn-sm btn-light border text-danger rounded-pill px-3 py-1 extra-small fw-bold" (click)="resetImport()">
-          <i class="bi bi-trash me-1"></i> Remove File
+      </div>
+
+      <!-- Action Downloads -->
+      <div class="banner-download-actions d-flex align-items-center gap-2.5 flex-wrap">
+        <button type="button" class="btn btn-primary-custom" (click)="downloadTemplate(true)"
+          title="Download Excel/CSV template pre-filled with demo students">
+          Download Sample Excel / CSV
+        </button>
+        <button type="button" class="btn btn-outline-custom" (click)="downloadTemplate(false)"
+          title="Download blank template with header columns only">
+          Blank Template
         </button>
       </div>
+    </div>
+  </div>
 
-      <!-- Validation Stats Cards -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-4">
-          <div class="p-3 rounded-3 bg-success-subtle text-success border border-success-subtle d-flex align-items-center justify-content-between">
-            <div><span class="extra-small text-uppercase font-monospace d-block">Valid Rows</span><h4 class="fw-bold mb-0">340 Rows</h4></div>
-            <i class="bi bi-check-circle-fill fs-3"></i>
+  <!-- Success Notification Alert -->
+  <div class="alert alert-success border-0 rounded-4 shadow-xs p-3.5 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2" *ngIf="isImported">
+    <div class="d-flex align-items-center gap-3">
+      <div class="success-icon-wrap">
+        <i class="bi bi-check2-circle fs-3 text-success"></i>
+      </div>
+      <div>
+        <h6 class="fw-bold text-success mb-0.5">Bulk Import Successfully Completed!</h6>
+        <p class="text-secondary extra-small mb-0">
+          All {{ totalRowsCount }} student profiles with Semester 1 to 8 CGPA records and identity details have been added to MGM CET campus roster. Redirecting...
+        </p>
+      </div>
+    </div>
+    <span class="spinner-border spinner-border-sm text-success" role="status"></span>
+  </div>
+
+  <!-- UPLOAD DRAG & DROP ZONE (If No File Loaded) -->
+  <div class="card border-2 border-dashed rounded-4 p-5 mb-4 text-center bg-white upload-dropzone-card" *ngIf="!isFileUploaded">
+    <div class="py-3">
+      <div class="upload-icon-circle mx-auto mb-3">
+        <i class="bi bi-cloud-arrow-up display-5 text-primary"></i>
+      </div>
+      <h5 class="fw-bold text-dark mb-1">Upload Student Roster CSV or Excel File</h5>
+      <p class="text-muted small mb-3 max-w-600 mx-auto">
+        Supports standard <code>.csv</code> and <code>.xlsx</code> formats up to 15MB. You can download the pre-filled sample template below to verify formatting.
+      </p>
+
+      <div class="upload-action-buttons">
+        <label class="btn btn-primary rounded-pill px-4 py-2.5 fw-bold extra-small shadow-sm cursor-pointer m-0">
+          Browse File from Computer
+          <input type="file" class="d-none" accept=".csv, .xlsx, .xls" (change)="onFileSelected($event)">
+        </label>
+        
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4 py-2.5 fw-bold extra-small"
+          (click)="triggerSimulatedUpload()" title="Load rich demo dataset with Add Student fields">
+          Load Demo Sample Dataset
+        </button>
+
+        <button type="button" class="btn btn-light border rounded-pill px-4 py-2.5 fw-bold extra-small"
+          (click)="downloadTemplate(true)" title="Download sample template">
+          Download Template
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVIEW SCREEN (When File / Demo is Loaded) -->
+  <div *ngIf="isFileUploaded && !isImported">
+    <div class="card border-0 shadow-2xs rounded-4 p-4 mb-4 bg-white preview-main-card">
+      
+      <!-- Top File Header Row -->
+      <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 border-bottom pb-3 gap-2">
+        <div class="d-flex align-items-center gap-3">
+          <div class="file-icon-box">
+            <i class="bi bi-file-earmark-spreadsheet-fill fs-3 text-success"></i>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <h6 class="fw-bold text-dark mb-0 font-monospace">{{ fileName }}</h6>
+              <span class="badge bg-light text-muted border extra-small">{{ fileSize }}</span>
+              <span class="badge bg-success-subtle text-success border border-success-subtle extra-small fw-bold">
+                {{ totalRowsCount }} Students Detected
+              </span>
+            </div>
+            <span class="text-muted extra-small">
+              Previewing records across Personal Information, Academic Cutoffs, and Semesters 1 to 8 CGPA.
+            </span>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="p-3 rounded-3 bg-warning-subtle text-warning border border-warning-subtle d-flex align-items-center justify-content-between">
-            <div><span class="extra-small text-uppercase font-monospace d-block">Validation Warnings</span><h4 class="fw-bold mb-0">10 Rows</h4></div>
-            <i class="bi bi-exclamation-triangle-fill fs-3"></i>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="p-3 rounded-3 bg-danger-subtle text-danger border border-danger-subtle d-flex align-items-center justify-content-between">
-            <div><span class="extra-small text-uppercase font-monospace d-block">Critical Errors</span><h4 class="fw-bold mb-0">0 Rows</h4></div>
-            <i class="bi bi-x-circle-fill fs-3"></i>
-          </div>
+
+        <div class="file-action-buttons d-flex align-items-center gap-2 flex-wrap">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-1.5 extra-small fw-bold"
+            (click)="downloadTemplate(true)" title="Download CSV backup of this dataset">
+            Export Data
+          </button>
+          <button type="button" class="btn btn-light border text-danger rounded-pill px-3 py-1.5 extra-small fw-bold"
+            (click)="resetImport()" title="Remove file and upload another">
+            Change File
+          </button>
         </div>
       </div>
 
-      <!-- Preview Table -->
-      <div class="table-responsive mb-4">
+      <!-- Preview Table Controls Toolbar -->
+      <div class="table-controls-bar d-flex flex-wrap align-items-center justify-content-between gap-2.5 mb-3">
+        <!-- View Tabs -->
+        <div class="view-tabs-group d-flex align-items-center gap-2 flex-wrap">
+          <button type="button" class="btn btn-view-tab" [class.active]="activeTab === 'all'" (click)="activeTab = 'all'">
+            All Fields
+          </button>
+          <button type="button" class="btn btn-view-tab" [class.active]="activeTab === 'personal'" (click)="activeTab = 'personal'">
+            Personal &amp; Identity
+          </button>
+          <button type="button" class="btn btn-view-tab" [class.active]="activeTab === 'academic'" (click)="activeTab = 'academic'">
+            Academics &amp; Cutoffs
+          </button>
+          <button type="button" class="btn btn-view-tab" [class.active]="activeTab === 'semesters'" (click)="activeTab = 'semesters'">
+            Sem 1–8 CGPA Scores
+          </button>
+          <button type="button" class="btn btn-view-tab" [class.active]="activeTab === 'placement'" (click)="activeTab = 'placement'">
+            Social &amp; Status
+          </button>
+        </div>
+
+        <!-- Search Input Filter -->
+        <div class="table-search-box">
+          <i class="bi bi-search"></i>
+          <input type="text" class="form-control form-control-sm" placeholder="Filter preview rows..."
+            [(ngModel)]="tableSearchQuery">
+          <button *ngIf="tableSearchQuery" (click)="tableSearchQuery = ''" class="btn-clear" type="button">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Clean Horizontal Scroll Table (No Overlapping Sticky Columns) -->
+      <div class="table-responsive preview-table-container rounded-3 border mb-4">
         <table class="table table-hover align-middle mb-0 extra-small">
-          <thead class="bg-light-subtle font-monospace text-uppercase text-muted">
+          <thead class="bg-light text-dark text-uppercase font-monospace border-bottom">
             <tr>
-              <th>Roll Number</th>
-              <th>Student Name</th>
-              <th>Email Address</th>
-              <th>Batch</th>
-              <th>Branch</th>
-              <th>Validation Status</th>
+              <th class="th-roll">Roll Number</th>
+              <th class="th-name">Student Name</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'personal'">Email</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'personal'">Phone</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'personal'">DOB</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'personal'">Gender</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'personal'">Aadhaar Number</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'personal'">PAN Card</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'personal'">Address</th>
+
+              <th *ngIf="activeTab === 'all' || activeTab === 'academic'">Batch</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'academic'">Branch</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'academic'">Degree</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'academic'">10th %</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'academic'">12th %</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'academic'">Backlogs</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'academic'">Gap Yrs</th>
+
+              <th *ngIf="activeTab === 'all' || activeTab === 'semesters'">Sem 1</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'semesters'">Sem 2</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'semesters'">Sem 3</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'semesters'">Sem 4</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'semesters'">Sem 5</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'semesters'">Sem 6</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'semesters'">Sem 7</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'semesters'">Sem 8</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'semesters'" class="highlight-th">Aggregate CGPA</th>
+
+              <th *ngIf="activeTab === 'all' || activeTab === 'placement'">Status</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'placement'">LinkedIn</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'placement'">GitHub</th>
+              <th *ngIf="activeTab === 'all' || activeTab === 'placement'">Portfolio</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let row of previewRows">
-              <td class="font-monospace fw-bold">{{ row.roll }}</td>
-              <td>{{ row.name }}</td>
-              <td>{{ row.email }}</td>
-              <td>{{ row.batch }}</td>
-              <td>{{ row.branch }}</td>
-              <td>
-                <span class="badge rounded-pill px-2.5 py-1 extra-small fw-bold" [ngClass]="row.valid ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'">
+            <tr *ngFor="let row of filteredPreviewRows">
+              <td class="font-monospace fw-bold text-dark whitespace-nowrap td-roll">
+                {{ row.rollNumber }}
+              </td>
+              <td class="fw-bold text-dark whitespace-nowrap td-name">
+                {{ row.firstName }} {{ row.lastName }}
+              </td>
+
+              <!-- Section 1: Personal -->
+              <td *ngIf="activeTab === 'all' || activeTab === 'personal'" class="whitespace-nowrap">{{ row.email }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'personal'" class="font-monospace text-muted whitespace-nowrap">{{ row.phone }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'personal'" class="font-monospace text-muted whitespace-nowrap">{{ row.dob }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'personal'">{{ row.gender }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'personal'" class="font-monospace text-secondary whitespace-nowrap">
+                <span class="id-pill" [title]="row.aadharNumber">{{ row.aadharNumber }}</span>
+              </td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'personal'" class="font-monospace text-secondary whitespace-nowrap">
+                <span class="id-pill pan-pill" [title]="row.panNumber">{{ row.panNumber }}</span>
+              </td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'personal'" class="text-truncate max-w-220" [title]="row.address">
+                {{ row.address }}
+              </td>
+
+              <!-- Section 2: Academic -->
+              <td *ngIf="activeTab === 'all' || activeTab === 'academic'">
+                <span class="badge bg-light text-dark border">{{ row.batchYear }}</span>
+              </td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'academic'" class="whitespace-nowrap">{{ row.branch }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'academic'" class="whitespace-nowrap">{{ row.degree }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'academic'" class="font-monospace fw-bold">{{ row.tenthPercentage }}%</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'academic'" class="font-monospace fw-bold">{{ row.twelfthPercentage }}%</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'academic'">
+                <span class="badge" [ngClass]="row.activeBacklogs === 0 ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'">
+                  {{ row.activeBacklogs }} Backlogs
+                </span>
+              </td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'academic'" class="font-monospace">{{ row.gapYears }} Yr</td>
+
+              <!-- Section 3: Semesters 1-8 -->
+              <td *ngIf="activeTab === 'all' || activeTab === 'semesters'" class="font-monospace text-muted">{{ row.sem1 }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'semesters'" class="font-monospace text-muted">{{ row.sem2 }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'semesters'" class="font-monospace text-muted">{{ row.sem3 }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'semesters'" class="font-monospace text-muted">{{ row.sem4 }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'semesters'" class="font-monospace text-muted">{{ row.sem5 }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'semesters'" class="font-monospace text-muted">{{ row.sem6 }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'semesters'" class="font-monospace text-muted">{{ row.sem7 }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'semesters'" class="font-monospace text-muted">{{ row.sem8 }}</td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'semesters'" class="highlight-td">
+                <span class="aggregate-pill font-monospace fw-bold">{{ row.aggregateCgpa }}</span>
+              </td>
+
+              <!-- Section 4: Status & Links -->
+              <td *ngIf="activeTab === 'all' || activeTab === 'placement'">
+                <span class="badge rounded-pill px-2.5 py-1 extra-small fw-bold"
+                  [ngClass]="row.status === 'Placed' ? 'bg-success text-white' : 'bg-warning-subtle text-warning'">
                   {{ row.status }}
                 </span>
+              </td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'placement'">
+                <a *ngIf="row.linkedin" [href]="row.linkedin" target="_blank" class="text-primary text-decoration-none" title="LinkedIn">
+                  <i class="bi bi-linkedin fs-6"></i>
+                </a>
+                <span *ngIf="!row.linkedin" class="text-muted">—</span>
+              </td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'placement'">
+                <a *ngIf="row.github" [href]="row.github" target="_blank" class="text-dark text-decoration-none" title="GitHub">
+                  <i class="bi bi-github fs-6"></i>
+                </a>
+                <span *ngIf="!row.github" class="text-muted">—</span>
+              </td>
+              <td *ngIf="activeTab === 'all' || activeTab === 'placement'">
+                <a *ngIf="row.portfolio" [href]="row.portfolio" target="_blank" class="text-primary text-decoration-none" title="Portfolio">
+                  <i class="bi bi-globe fs-6"></i>
+                </a>
+                <span *ngIf="!row.portfolio" class="text-muted">—</span>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Validation Error Details -->
-      <div class="alert alert-warning border-0 rounded-3 p-3 mb-4 extra-small">
-        <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-1"></i> Row Validation Warnings Breakdown:</h6>
-        <ul class="mb-0 ps-3">
-          <li *ngFor="let err of errors">{{ err }}</li>
-        </ul>
+      <!-- Action Footer Controls -->
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 border-top pt-3">
+        <div class="extra-small text-muted">
+          <span>Clicking import will populate the verified student directory with all personal, academic, and semester records.</span>
+        </div>
+
+        <div class="footer-action-buttons d-flex align-items-center gap-3">
+          <button type="button" class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-bold extra-small"
+            (click)="resetImport()" [disabled]="isProcessing">
+            Cancel &amp; Reset
+          </button>
+          
+          <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-bold extra-small shadow-sm d-flex align-items-center gap-2"
+            (click)="confirmImport()" [disabled]="isProcessing">
+            <span *ngIf="isProcessing" class="spinner-border spinner-border-sm" role="status"></span>
+            <span>Import All {{ totalRowsCount }} Student Profiles</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Actions Bar -->
-      <div class="d-flex align-items-center justify-content-end gap-3">
-        <button class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-bold extra-small" (click)="resetImport()">Abort Import</button>
-        <button class="btn btn-success rounded-pill px-5 py-2 fw-bold extra-small shadow-sm" (click)="confirmImport()">
-          <i class="bi bi-check-lg me-1"></i> Import All Valid (340 Rows)
-        </button>
-      </div>
     </div>
   </div>
 
