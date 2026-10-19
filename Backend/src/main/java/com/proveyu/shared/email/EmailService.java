@@ -217,4 +217,68 @@ public class EmailService {
                 "<a href='" + admitCardDownloadUrl + "' class='btn'>Download Admit Card (PDF)</a>" +
                 getFooterTemplate();
     }
+
+    @Async
+    public void sendStudentCredentialsEmail(String toEmail, String fullName, String rawPassword, String collegeName) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(FROM_EMAIL, SENDER_NAME);
+            helper.setTo(toEmail);
+            helper.setSubject("🎓 PROVEYU - Your Student Placement Account Details");
+
+            String htmlBody = getHeaderTemplate("Student Placement Portal Account") +
+                    "<h2>Welcome to PROVEYU Campus Placements! 🎓</h2>" +
+                    "<p>Dear " + fullName + ",</p>" +
+                    "<p>Your college <strong>" + (collegeName != null ? collegeName : "College") + "</strong> has registered you on the PROVEYU Placement Platform.</p>" +
+                    "<div class='info-box'>" +
+                    "<strong>Your Login Credentials:</strong><br/>" +
+                    "• <strong>Login Email:</strong> " + toEmail + "<br/>" +
+                    "• <strong>Temporary Password:</strong> <code style='font-size:16px; font-weight:bold; color:#1e3a8a;'>" + rawPassword + "</code><br/>" +
+                    "</div>" +
+                    "<p>Please log in to verify your profile and check your shortlisted recruitment drives.</p>" +
+                    "<a href='https://proveyu.com/login' class='btn'>Log In to Placement Portal</a>" +
+                    getFooterTemplate();
+
+            helper.setText(htmlBody, true);
+            mailSender.send(message);
+            log.info("[HTML EMAIL SENT] Student credentials delivered to email=[{}]", toEmail);
+        } catch (Exception e) {
+            log.error("[HTML EMAIL ERROR] Failed to send student credentials to email=[{}]: {}", toEmail, e.getMessage());
+        }
+    }
+
+    @Async
+    public void sendPlacementDriveShortlistEmail(String toEmail, String studentName, String companyName, String roundName, String offeredPackage, String driveDate) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(FROM_EMAIL, SENDER_NAME);
+            helper.setTo(toEmail);
+            helper.setSubject("🚀 PROVEYU Shortlist: " + companyName + " Placement Drive (" + roundName + ")");
+
+            String htmlBody = getHeaderTemplate("Campus Placement Drive Shortlist") +
+                    "<h2>Congratulations! You are Shortlisted! 🚀</h2>" +
+                    "<p>Dear " + studentName + ",</p>" +
+                    "<p>You have met the eligibility criteria and have been shortlisted for the upcoming placement drive by <strong>" + companyName + "</strong>.</p>" +
+                    "<div class='info-box'>" +
+                    "<strong>Drive Information:</strong><br/>" +
+                    "• <strong>Company:</strong> " + companyName + "<br/>" +
+                    "• <strong>Offered Package:</strong> " + offeredPackage + " LPA<br/>" +
+                    "• <strong>Current Round:</strong> " + roundName + "<br/>" +
+                    "• <strong>Drive Date:</strong> " + (driveDate != null ? driveDate : "To be announced") + "<br/>" +
+                    "</div>" +
+                    "<p>Please check your student dashboard for round schedules and guidelines.</p>" +
+                    "<a href='https://proveyu.com/dashboard/placements' class='btn'>View Drive Details</a>" +
+                    getFooterTemplate();
+
+            helper.setText(htmlBody, true);
+            mailSender.send(message);
+            log.info("[HTML EMAIL SENT] Placement shortlist notice delivered to email=[{}]", toEmail);
+        } catch (Exception e) {
+            log.error("[HTML EMAIL ERROR] Failed to send placement shortlist email to email=[{}]: {}", toEmail, e.getMessage());
+        }
+    }
 }
