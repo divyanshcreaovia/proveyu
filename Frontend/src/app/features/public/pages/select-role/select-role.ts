@@ -25,6 +25,16 @@ export class SelectRole {
   };
 
   isSubmitted = false;
+  viewState: 'choose' | 'candidate_wizard' = 'choose';
+
+  selectRole(role: string) {
+    if (role === 'candidate') {
+      this.formData.role = 'CANDIDATE';
+    } else if (role === 'recruiter') {
+      this.formData.role = 'RECRUITER';
+    }
+    this.viewState = 'candidate_wizard';
+  }
 
   submitRegistration() {
     if (!this.formData.fullName || !this.formData.email || !this.formData.phone || !this.formData.password || !this.formData.role) {
