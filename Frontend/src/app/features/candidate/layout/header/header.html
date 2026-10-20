@@ -1,3 +1,12 @@
+<!-- Interview Invite Alert Notification Banner -->
+<div *ngIf="hasUnreadInvite" class="interview-invite-alert alert d-flex align-items-center justify-content-between shadow-lg position-fixed top-0 start-50 translate-middle-x mt-3 py-2 px-4 rounded-pill border-0" style="z-index: 2000; background: linear-gradient(135deg, #1e1b4b, #3b82f6); color: white; cursor: pointer; max-width: 90%; animation: slideDown 0.3s ease;">
+  <div class="d-flex align-items-center gap-2" (click)="goToInvites()">
+    <i class="bi bi-bell-fill text-warning fs-5"></i>
+    <span class="fw-semibold small">{{ unreadInviteMessage }}</span>
+    <span class="badge bg-white text-dark rounded-pill ms-2 px-3 py-1 shadow-sm">Review & Accept →</span>
+  </div>
+  <button type="button" class="btn-close btn-close-white ms-3" aria-label="Close" (click)="dismissInviteAlert()"></button>
+</div>
 <header class="candidate-header d-flex align-items-center justify-content-between py-3 px-4">
   <!-- Title -->
   <div class="header-title-section">
@@ -28,13 +37,19 @@
           <div *ngIf="notifications.length === 0" class="text-center py-4 text-muted small">
             No notifications yet.
           </div>
-          <a *ngFor="let notif of notifications" href="javascript:void(0)" class="list-group-item list-group-item-action p-3" [class.bg-light]="!notif.read">
+          <a *ngFor="let notif of notifications" href="javascript:void(0)" class="list-group-item list-group-item-action p-3 cursor-pointer" [class.bg-light]="!notif.read" (click)="onNotificationClick(notif)">
             <div class="d-flex w-100 justify-content-between align-items-center">
-              <h6 class="mb-1 text-navy fw-semibold small" style="text-transform: capitalize;">{{ notif.type }}</h6>
+              <div class="d-flex align-items-center gap-1">
+                <span *ngIf="notif.type === 'INTERVIEW_INVITATION'" class="badge bg-primary text-white rounded-pill px-2 py-0 me-1" style="font-size: 0.65rem;">INVITE</span>
+                <h6 class="mb-1 text-navy fw-semibold small" style="text-transform: capitalize;">{{ notif.type?.replace('_', ' ') }}</h6>
+              </div>
               <small class="text-muted" style="font-size: 0.7rem;">{{ notif.createdAt | date:'shortTime' }}</small>
             </div>
             <p class="mb-1 small text-dark">{{ notif.message }}</p>
-            <button *ngIf="!notif.read" class="btn btn-sm btn-link p-0 text-decoration-none small text-primary" (click)="markAsRead(notif, $event)">Mark as read</button>
+            <div class="d-flex justify-content-between align-items-center mt-1">
+              <span *ngIf="notif.type === 'INTERVIEW_INVITATION'" class="text-primary small fw-semibold">View Interview Invites →</span>
+              <button *ngIf="!notif.read" class="btn btn-sm btn-link p-0 text-decoration-none small text-secondary" (click)="markAsRead(notif, $event)">Mark as read</button>
+            </div>
           </a>
         </div>
         <div class="px-3 py-2 border-top text-center bg-light" style="border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">

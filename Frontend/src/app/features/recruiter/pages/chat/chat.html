@@ -73,8 +73,8 @@
 
         </div>
 
-        <div *ngIf="filteredThreads.length === 0" class="empty-state-text">
-          No candidate conversations match your search.
+        <div *ngIf="filteredThreads.length === 0" class="empty-state-text py-5 text-center text-muted small">
+          No candidate conversations found.
         </div>
       </div>
 
@@ -86,92 +86,203 @@
 
     <!-- RIGHT PANEL: Chat Details & Live Messaging -->
     <main class="chat-right-card">
-
-      <!-- Top Header -->
-      <header class="right-top-header" *ngIf="selectedThread">
-        <div class="candidate-profile-box">
-          <div class="avatar-dark-circle">
-            {{ selectedThread.candidateInitials }}
-            <span class="online-dot"></span>
+      <ng-container *ngIf="selectedThread; else noThreadSelected">
+        <!-- Top Header -->
+        <header class="right-top-header">
+          <div class="candidate-profile-box">
+            <div class="avatar-dark-circle">
+              {{ selectedThread.candidateInitials }}
+              <span class="online-dot"></span>
+            </div>
+            <div class="candidate-info">
+              <div class="name-row">
+                <span class="name-text">{{ selectedThread.candidateName }}</span>
+                <span class="badge-verified-tier">
+                  <i class="bi bi-patch-check-fill"></i> {{ selectedThread.percentileBadge }}
+                </span>
+              </div>
+              <span class="role-subtitle">{{ selectedThread.collegeExp }}</span>
+            </div>
           </div>
-          <div class="candidate-info">
-            <div class="name-row">
-              <span class="name-text">{{ selectedThread.candidateName }}</span>
-              <span class="badge-verified-tier">
-                <i class="bi bi-patch-check-fill"></i> {{ selectedThread.percentileBadge }}
+
+          <div class="header-action-group">
+            <button type="button" class="btn-view-passport" (click)="openPassportModal()">
+              <i class="bi bi-file-earmark-person"></i>
+              <span>View Skill Passport</span>
+            </button>
+            <button type="button" class="btn-shortlist-hiring" (click)="shortlistAndMoveToHiring(selectedThread)">
+              <i class="bi bi-kanban-fill"></i>
+              <span>Shortlist & Move to Board</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Chat & Message Content -->
+        <div #chatScrollContainer class="chat-scroll-area">
+
+          <!-- Centered Section Divider Badge -->
+          <div class="divider-pill-row">
+            <span class="divider-pill">PROVEYU VERIFIED CANDIDATE CHAT</span>
+          </div>
+
+          <!-- Chat Messages Loop -->
+          <ng-container *ngFor="let msg of selectedThread.messages">
+
+            <!-- System Message -->
+            <div class="system-message-row" *ngIf="msg.sender === 'system'">
+              <span class="system-message-pill">
+                {{ msg.text }}
               </span>
             </div>
-            <span class="role-subtitle">{{ selectedThread.collegeExp }}</span>
-          </div>
-        </div>
 
-        <div class="header-action-group">
-          <button type="button" class="btn-view-passport" (click)="openPassportModal()">
-            <i class="bi bi-file-earmark-person"></i>
-            <span>View Skill Passport</span>
-          </button>
-          <button type="button" class="btn-shortlist-hiring" (click)="shortlistAndMoveToHiring(selectedThread)">
-            <i class="bi bi-kanban-fill"></i>
-            <span>Shortlist & Move to Board</span>
-          </button>
-        </div>
-      </header>
-
-      <!-- Chat & Message Content -->
-      <div class="chat-scroll-area" *ngIf="selectedThread">
-
-        <!-- Centered Section Divider Badge -->
-        <div class="divider-pill-row">
-          <span class="divider-pill">PROVEYU VERIFIED CANDIDATE CHAT</span>
-        </div>
-
-        <!-- Chat Messages Loop -->
-        <ng-container *ngFor="let msg of selectedThread.messages">
-
-          <!-- System Message -->
-          <div class="system-message-row" *ngIf="msg.sender === 'system'">
-            <span class="system-message-pill">
-              {{ msg.text }}
-            </span>
-          </div>
-
-          <!-- Recruiter or Candidate Bubble -->
-          <div class="chat-bubble-row" *ngIf="msg.sender !== 'system'" [class.row-recruiter]="msg.sender === 'recruiter'">
-            
-            <div class="bubble-avatar" *ngIf="msg.sender === 'candidate'">
-              {{ selectedThread.candidateInitials }}
-            </div>
-            
-            <div class="bubble-box">
+            <!-- Recruiter or Candidate Bubble -->
+            <div class="chat-bubble-row" *ngIf="msg.sender !== 'system'" [class.row-recruiter]="msg.sender === 'recruiter'">
               
-              <!-- Candidate Message (Light Grey) -->
-              <div class="bubble-content bubble-candidate" *ngIf="msg.sender === 'candidate'">
-                {{ msg.text }}
+              <div class="bubble-avatar" *ngIf="msg.sender === 'candidate'">
+                {{ selectedThread.candidateInitials }}
               </div>
+              
+              <div class="bubble-box">
+                
+                <!-- Candidate Message (Light Grey) -->
+                <div class="bubble-content bubble-candidate" *ngIf="msg.sender === 'candidate'">
+                  <!-- File Attachment Box -->
+                  <div class="chat-file-card" *ngIf="msg.messageType === 'FILE' || msg.fileName">
+                    <div class="file-card-top">
+                      <div class="file-icon-wrap">
+                        <i class="bi" [ngClass]="getFileIconClass(msg.fileName, msg.fileContentType)"></i>
+                      </div>
+                      <div class="file-details">
+                        <span class="file-title" [title]="msg.fileName">{{ msg.fileName || 'Shared Document' }}</span>
+                        <span class="file-size-badge" *ngIf="msg.fileSize">
+                          <i class="bi bi-paperclip me-1"></i>{{ formatFileSize(msg.fileSize) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="file-actions-row">
+                      <button type="button" class="btn-file-action btn-view" (click)="viewFile(msg)" title="View / Preview File">
+                        <i class="bi bi-eye-fill"></i> View
+                      </button>
+                      <button type="button" class="btn-file-action btn-download" (click)="downloadFile(msg)" title="Download File">
+                        <i class="bi bi-download"></i> Download
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Text Caption (if provided) -->
+                  <div class="file-caption" *ngIf="msg.text && (msg.messageType === 'FILE' || msg.fileName)">{{ msg.text }}</div>
+                  <!-- Plain Text Message -->
+                  <ng-container *ngIf="msg.messageType !== 'FILE' && !msg.fileName">
+                    {{ msg.text }}
+                  </ng-container>
+                </div>
 
-              <!-- Recruiter Message (Dark Navy) -->
-              <div class="bubble-content bubble-recruiter" *ngIf="msg.sender === 'recruiter'">
-                {{ msg.text }}
+                <!-- Recruiter Message (Dark Navy) -->
+                <div class="bubble-content bubble-recruiter" *ngIf="msg.sender === 'recruiter'">
+                  <!-- File Attachment Box -->
+                  <div class="chat-file-card file-card-dark" *ngIf="msg.messageType === 'FILE' || msg.fileName">
+                    <div class="file-card-top">
+                      <div class="file-icon-wrap">
+                        <i class="bi" [ngClass]="getFileIconClass(msg.fileName, msg.fileContentType)"></i>
+                      </div>
+                      <div class="file-details">
+                        <span class="file-title text-white" [title]="msg.fileName">{{ msg.fileName || 'Shared Document' }}</span>
+                        <span class="file-size-badge text-white-50" *ngIf="msg.fileSize">
+                          <i class="bi bi-paperclip me-1"></i>{{ formatFileSize(msg.fileSize) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="file-actions-row">
+                      <button type="button" class="btn-file-action btn-view" (click)="viewFile(msg)" title="View / Preview File">
+                        <i class="bi bi-eye-fill"></i> View
+                      </button>
+                      <button type="button" class="btn-file-action btn-download" (click)="downloadFile(msg)" title="Download File">
+                        <i class="bi bi-download"></i> Download
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Text Caption (if provided) -->
+                  <div class="file-caption text-white-50" *ngIf="msg.text && (msg.messageType === 'FILE' || msg.fileName)">{{ msg.text }}</div>
+                  <!-- Plain Text Message -->
+                  <ng-container *ngIf="msg.messageType !== 'FILE' && !msg.fileName">
+                    {{ msg.text }}
+                  </ng-container>
+                </div>
+
+                <span class="bubble-time">{{ msg.time }}</span>
               </div>
-
-              <span class="bubble-time">{{ msg.time }}</span>
             </div>
-          </div>
-        </ng-container>
+          </ng-container>
 
-      </div>
-
-      <!-- Bottom Action Input Bar (Fixed Footer) -->
-      <footer class="right-bottom-bar" *ngIf="selectedThread">
-        
-        <div class="accepted-chat-input-box">
-          <input type="text" class="chat-control" placeholder="Type your message to candidate..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage()">
-          <button type="button" class="btn-send-message" (click)="sendMessage()" title="Send message">
-            <i class="bi bi-send-fill"></i>
-          </button>
+          <!-- Bottom Scroll Anchor -->
+          <div #scrollBottomAnchor style="height: 1px; width: 100%;"></div>
         </div>
 
+        <!-- Bottom Action Input Bar (Fixed Footer) -->
+        <footer class="right-bottom-bar">
+          <div class="chat-input-wrapper">
+            <!-- Staged File Preview Pill (Above Input Box) -->
+            <div class="staged-file-preview-bar" *ngIf="selectedFile">
+              <div class="staged-file-info">
+                <i class="bi" [ngClass]="getFileIconClass(selectedFile.name, selectedFile.type)"></i>
+                <span class="staged-file-name" [title]="selectedFile.name">{{ selectedFile.name }}</span>
+                <span class="staged-file-size">({{ formatFileSize(selectedFile.size) }})</span>
+              </div>
+              <button type="button" class="btn-remove-staged-file" (click)="removeSelectedFile()" title="Cancel file attachment">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+
+            <div class="accepted-chat-input-box">
+            <!-- Hidden File Input -->
+            <input type="file" 
+                   id="chatFileInput" 
+                   #fileInput 
+                   (change)="onFileSelected($event)" 
+                   style="display: none;" 
+                   accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.txt,.zip,.csv,.xlsx">
+
+            <!-- Share File Attachment Button -->
+            <button type="button" 
+                    class="btn-attach-file" 
+                    (click)="fileInput.click()" 
+                    [disabled]="isUploadingFile"
+                    title="Attach & share document or file">
+              <i class="bi bi-paperclip"></i>
+            </button>
+
+            <!-- Text Message Input -->
+            <input type="text" 
+                   class="chat-control" 
+                   [placeholder]="selectedFile ? 'Add a caption for this attachment (optional)...' : 'Type your message to candidate...'" 
+                   [(ngModel)]="newMessage" 
+                   (keyup.enter)="sendMessage()"
+                   [disabled]="isUploadingFile">
+
+            <!-- Send Button -->
+            <button type="button" 
+                    class="btn-send-message" 
+                    (click)="sendMessage()" 
+                    [disabled]="isUploadingFile || (!selectedFile && !newMessage.trim())" 
+                    title="Send message or attachment">
+              <i class="bi bi-send-fill" *ngIf="!isUploadingFile"></i>
+              <span class="spinner-border spinner-border-sm" *ngIf="isUploadingFile"></span>
+            </button>
+          </div>
+        </div>
       </footer>
+      </ng-container>
+
+      <ng-template #noThreadSelected>
+        <div class="empty-selection-card text-center d-flex flex-column align-items-center justify-content-center p-5 h-100" style="min-height: 480px;">
+          <div class="empty-icon-wrap mb-3" style="width: 64px; height: 64px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; color: #94a3b8;">
+            <i class="bi bi-chat-dots"></i>
+          </div>
+          <h5 class="fw-semibold text-dark mb-1">No Conversation Selected</h5>
+          <p class="text-muted small mb-0" style="max-width: 340px;">
+            Shortlist candidates from your hiring board or wait for candidate acceptance to start live conversations.
+          </p>
+        </div>
+      </ng-template>
 
     </main>
 
@@ -201,35 +312,30 @@
         </div>
       </div>
 
-      <h6 class="modal-section-heading">Skill Competency Evaluation</h6>
-      <div class="skills-breakdown-grid">
-        <div class="skill-breakdown-card">
-          <div class="breakdown-score">88%</div>
-          <div class="breakdown-label">System Design</div>
+      <h6 class="modal-section-heading">Verified Role & Evaluation</h6>
+      <div class="p-3 bg-light rounded-3 mb-3 border">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <strong class="text-dark">{{ selectedThread.roleTrack }}</strong>
+          <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">{{ selectedThread.percentileBadge }}</span>
         </div>
-        <div class="skill-breakdown-card">
-          <div class="breakdown-score">92%</div>
-          <div class="breakdown-label">Backend APIs</div>
-        </div>
-        <div class="skill-breakdown-card">
-          <div class="breakdown-score">85%</div>
-          <div class="breakdown-label">DSA & Algorithms</div>
+        <div class="text-muted small">
+          <i class="bi bi-geo-alt me-1"></i> {{ selectedThread.location }}
         </div>
       </div>
 
-      <h6 class="modal-section-heading">In-Person Invigilation Audit</h6>
+      <h6 class="modal-section-heading">Invigilation Audit Status</h6>
       <ul class="audit-list">
         <li class="audit-item">
-          <span class="audit-label">Test Center:</span>
-          <span class="audit-val">TCS iON Digital Zone ({{ selectedThread.location }})</span>
+          <span class="audit-label">Assessment Verification:</span>
+          <span class="audit-val-success">&#10003; 100% Proctored & Authenticated</span>
         </li>
         <li class="audit-item">
-          <span class="audit-label">Biometric & Identity Check:</span>
-          <span class="audit-val-success">&#10003; Verified & Cleared</span>
+          <span class="audit-label">Identity Status:</span>
+          <span class="audit-val-success">&#10003; Verified Candidate</span>
         </li>
         <li class="audit-item">
-          <span class="audit-label">Invigilator Code Review:</span>
-          <span class="audit-val-success">&#10003; Plagiarism-Free (100% Unique Code)</span>
+          <span class="audit-label">Direct Communication:</span>
+          <span class="audit-val-success">&#10003; Unlocked & Active</span>
         </li>
       </ul>
     </div>

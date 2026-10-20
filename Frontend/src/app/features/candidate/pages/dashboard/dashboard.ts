@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { RecruiterJobService } from '../../../recruiter/services/recruiter-job.service';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -13,6 +14,7 @@ import * as Highcharts from 'highcharts';
   styleUrl: './dashboard.scss',
 })
 export class Dashboard implements OnInit {
+  private recruiterJobService = inject(RecruiterJobService);
   Highcharts: typeof Highcharts = Highcharts;
 
   // Active chart toggle
@@ -146,6 +148,31 @@ export class Dashboard implements OnInit {
   ngOnInit() {
     this.initPerformanceChart();
     this.initSkillsRadarChart();
+    this.loadBackendInvites();
+  }
+
+  loadBackendInvites() {
+    const candidateId = sessionStorage.getItem('userId');
+    this.recruiterJobService.getCandidateInvitations(candidateId || undefined).subscribe({
+      next: (res) => {
+        if (res.data && res.data.length > 0) {
+          const realInvites = res.data.map((inv: any, idx: number) => ({
+            id: `INV-${idx + 1}`,
+            company: inv.companyName || 'ProveYu Partner',
+            role: inv.jobTitle || 'Verified Role',
+            ctc: inv.salaryPackage || '₹18 – ₹24 LPA',
+            status: inv.status === 'ACCEPT' ? 'Interview Scheduled' : 'Invite Pending',
+            date: inv.createdAt ? new Date(inv.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' }) : 'Recently',
+            location: inv.location || 'Bengaluru / Remote',
+            badgeBg: inv.status === 'ACCEPT' ? '#dcfce7' : '#fef3c7',
+            badgeColor: inv.status === 'ACCEPT' ? '#15803d' : '#b45309'
+          }));
+          this.interviewInvites = [...realInvites, ...this.interviewInvites];
+          this.statCards[2].value = `${res.data.length} Invites`;
+        }
+      },
+      error: () => {}
+    });
   }
 
   initPerformanceChart() {

@@ -95,15 +95,17 @@ public class ChatController {
     @GetMapping("/messages/{messageId}/file")
     public ResponseEntity<Resource> downloadAttachment(
             @PathVariable UUID messageId,
+            @RequestParam(value = "inline", required = false, defaultValue = "false") boolean inline,
             Authentication authentication) {
         UUID currentUserId = UUID.fromString(authentication.getName());
         ChatFileAttachment attachment = chatService.loadChatAttachment(currentUserId, messageId);
 
         String encodedFileName = URLEncoder.encode(attachment.fileName(), StandardCharsets.UTF_8).replace("+", "%20");
+        String dispositionType = inline ? "inline" : "attachment";
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(attachment.contentType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, dispositionType + "; filename=\"" + encodedFileName + "\"")
                 .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(attachment.fileSize()))
                 .body(attachment.resource());
     }

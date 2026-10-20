@@ -1,5 +1,6 @@
 package com.proveyu.candidate.domain;
 
+import com.proveyu.assessment.domain.Domain;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -11,7 +12,10 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "candidate_profiles")
+@Table(name = "candidate_profiles", indexes = {
+        @Index(name = "idx_candidate_profiles_domain", columnList = "domain_id"),
+        @Index(name = "idx_candidate_profiles_user_id", columnList = "user_id")
+})
 public class CandidateProfile {
 
     @Id
@@ -24,6 +28,14 @@ public class CandidateProfile {
     @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "user_id", nullable = false, unique = true, columnDefinition = "CHAR(36)")
     private UUID userId;
+
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "domain_id", columnDefinition = "CHAR(36)")
+    private UUID domainId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "domain_id", insertable = false, updatable = false)
+    private Domain domain;
 
     @Column(name = "experience_track", nullable = false, length = 20)
     private String experienceTrack = "FRESHER"; // FRESHER or EXPERIENCED
@@ -80,9 +92,10 @@ public class CandidateProfile {
 
     public CandidateProfile() {}
 
-    public CandidateProfile(UUID id, UUID userId, String experienceTrack, int yearsOfExperience, String uanNumber, int verifiedBackendExperienceMonths, String collegeName, String degreeBranch, Integer passoutYear, String skillsList, String resumeUrl, String location, String headline, String linkedinUrl, String githubUrl, String portfolioUrl, String bio, Instant createdAt, Instant updatedAt) {
+    public CandidateProfile(UUID id, UUID userId, UUID domainId, String experienceTrack, int yearsOfExperience, String uanNumber, int verifiedBackendExperienceMonths, String collegeName, String degreeBranch, Integer passoutYear, String skillsList, String resumeUrl, String location, String headline, String linkedinUrl, String githubUrl, String portfolioUrl, String bio, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.userId = userId;
+        this.domainId = domainId;
         this.experienceTrack = experienceTrack;
         this.yearsOfExperience = yearsOfExperience;
         this.uanNumber = uanNumber;
@@ -107,6 +120,12 @@ public class CandidateProfile {
 
     public UUID getUserId() { return userId; }
     public void setUserId(UUID userId) { this.userId = userId; }
+
+    public UUID getDomainId() { return domainId; }
+    public void setDomainId(UUID domainId) { this.domainId = domainId; }
+
+    public Domain getDomain() { return domain; }
+    public void setDomain(Domain domain) { this.domain = domain; }
 
     public String getExperienceTrack() { return experienceTrack; }
     public void setExperienceTrack(String experienceTrack) { this.experienceTrack = experienceTrack; }
@@ -164,6 +183,7 @@ public class CandidateProfile {
     public static class CandidateProfileBuilder {
         private UUID id;
         private UUID userId;
+        private UUID domainId;
         private String experienceTrack = "FRESHER";
         private int yearsOfExperience;
         private String uanNumber;
@@ -184,6 +204,7 @@ public class CandidateProfile {
 
         public CandidateProfileBuilder id(UUID id) { this.id = id; return this; }
         public CandidateProfileBuilder userId(UUID userId) { this.userId = userId; return this; }
+        public CandidateProfileBuilder domainId(UUID domainId) { this.domainId = domainId; return this; }
         public CandidateProfileBuilder experienceTrack(String experienceTrack) { this.experienceTrack = experienceTrack; return this; }
         public CandidateProfileBuilder yearsOfExperience(int yearsOfExperience) { this.yearsOfExperience = yearsOfExperience; return this; }
         public CandidateProfileBuilder uanNumber(String uanNumber) { this.uanNumber = uanNumber; return this; }
@@ -203,7 +224,7 @@ public class CandidateProfile {
         public CandidateProfileBuilder updatedAt(Instant updatedAt) { this.updatedAt = updatedAt; return this; }
 
         public CandidateProfile build() {
-            return new CandidateProfile(id, userId, experienceTrack, yearsOfExperience, uanNumber, verifiedBackendExperienceMonths, collegeName, degreeBranch, passoutYear, skillsList, resumeUrl, location, headline, linkedinUrl, githubUrl, portfolioUrl, bio, createdAt, updatedAt);
+            return new CandidateProfile(id, userId, domainId, experienceTrack, yearsOfExperience, uanNumber, verifiedBackendExperienceMonths, collegeName, degreeBranch, passoutYear, skillsList, resumeUrl, location, headline, linkedinUrl, githubUrl, portfolioUrl, bio, createdAt, updatedAt);
         }
     }
 }

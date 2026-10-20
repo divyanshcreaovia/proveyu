@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { NotificationService, ToastItem, ModalNotificationOptions } from '../../services/notification.service';
@@ -17,15 +17,20 @@ export class GlobalNotification implements OnInit, OnDestroy {
   private toastSub!: Subscription;
   private modalSub!: Subscription;
 
-  constructor(private notificationService: NotificationService) {}
+  constructor(
+    private notificationService: NotificationService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.toastSub = this.notificationService.toasts$.subscribe((list) => {
       this.toasts = list;
+      this.cdr.detectChanges();
     });
 
     this.modalSub = this.notificationService.modal$.subscribe((options) => {
       this.modalOptions = options;
+      this.cdr.detectChanges();
     });
   }
 

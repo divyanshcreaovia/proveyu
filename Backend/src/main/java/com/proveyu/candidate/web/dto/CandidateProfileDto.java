@@ -6,6 +6,8 @@ import java.util.UUID;
 public class CandidateProfileDto {
 
     public static class UpsertProfileRequest {
+        private UUID domainId;
+        private String domainName;
         private String experienceTrack; // "FRESHER" or "EXPERIENCED"
         private int yearsOfExperience;
         private String uanNumber;
@@ -24,6 +26,12 @@ public class CandidateProfileDto {
         private String bio;
 
         public UpsertProfileRequest() {}
+
+        public UUID getDomainId() { return domainId; }
+        public void setDomainId(UUID domainId) { this.domainId = domainId; }
+
+        public String getDomainName() { return domainName; }
+        public void setDomainName(String domainName) { this.domainName = domainName; }
 
         public String getExperienceTrack() { return experienceTrack; }
         public void setExperienceTrack(String experienceTrack) { this.experienceTrack = experienceTrack; }
@@ -55,6 +63,7 @@ public class CandidateProfileDto {
         public String getPhone() { return phone; }
         public void setPhone(String phone) { this.phone = phone; }
 
+        public String location() { return location; }
         public String getLocation() { return location; }
         public void setLocation(String location) { this.location = location; }
 
@@ -77,6 +86,8 @@ public class CandidateProfileDto {
     public static class ProfileResponse {
         private UUID id;
         private UUID userId;
+        private UUID domainId;
+        private String domainName;
         private String experienceTrack;
         private int yearsOfExperience;
         private String uanNumber;
@@ -98,9 +109,11 @@ public class CandidateProfileDto {
 
         public ProfileResponse() {}
 
-        public ProfileResponse(UUID id, UUID userId, String experienceTrack, int yearsOfExperience, String uanNumber, String collegeName, String degreeBranch, Integer passoutYear, String skillsList, String resumeUrl, String fullName, String email, String phone, String location, String headline, String linkedinUrl, String githubUrl, String portfolioUrl, String bio, Instant updatedAt) {
+        public ProfileResponse(UUID id, UUID userId, UUID domainId, String domainName, String experienceTrack, int yearsOfExperience, String uanNumber, String collegeName, String degreeBranch, Integer passoutYear, String skillsList, String resumeUrl, String fullName, String email, String phone, String location, String headline, String linkedinUrl, String githubUrl, String portfolioUrl, String bio, Instant updatedAt) {
             this.id = id;
             this.userId = userId;
+            this.domainId = domainId;
+            this.domainName = domainName;
             this.experienceTrack = experienceTrack;
             this.yearsOfExperience = yearsOfExperience;
             this.uanNumber = uanNumber;
@@ -123,6 +136,8 @@ public class CandidateProfileDto {
 
         public UUID getId() { return id; }
         public UUID getUserId() { return userId; }
+        public UUID getDomainId() { return domainId; }
+        public String getDomainName() { return domainName; }
         public String getExperienceTrack() { return experienceTrack; }
         public int getYearsOfExperience() { return yearsOfExperience; }
         public String getUanNumber() { return uanNumber; }

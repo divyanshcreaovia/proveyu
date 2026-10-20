@@ -1,7 +1,12 @@
 package com.proveyu.chat.websocket;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.proveyu.chat.application.ChatService;
+import com.proveyu.chat.web.dto.ChatDto.SendTextMessageRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -16,6 +21,8 @@ import java.util.UUID;
 public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     private final ChatWebSocketSessionManager sessionManager;
+    private final ObjectMapper objectMapper;
+    private final ObjectProvider<ChatService> chatServiceProvider;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
@@ -34,14 +41,37 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-        // Echo / Heartbeat ping-pong support
         String payload = message.getPayload();
-        if ("ping".equalsIgnoreCase(payload.trim()) || payload.contains("\"ping\"")) {
+        if ("ping".equalsIgnoreCase(payload.trim()) || payload.contains("ping")) {
             try {
                 session.sendMessage(new TextMessage("{\"event\":\"pong\",\"timestamp\":" + System.currentTimeMillis() + "}"));
             } catch (Exception ex) {
                 log.warn("Failed to send pong to session {}: {}", session.getId(), ex.getMessage());
             }
+            return;
+        }
+
+        try {
+            JsonNode root = objectMapper.readTree(payload);
+            String event = root.path("event").asText();
+            if ("message.send".equalsIgnoreCase(event) || "chat.message".equalsIgnoreCase(event)) {
+                UUID senderId = getUserId(session);
+                JsonNode dataNode = root.path("data");
+                String receiverIdStr = dataNode.path("receiverId").asText();
+                String msgText = dataNode.path("message").asText();
+
+                if (senderId != null && !receiverIdStr.isBlank() && !msgText.isBlank()) {
+                    UUID receiverId = UUID.fromString(receiverIdStr);
+                    ChatService chatService = chatServiceProvider.getIfAvailable();
+                    if (chatService != null) {
+                        SendTextMessageRequest req = new SendTextMessageRequest(receiverId, msgText);
+                        chatService.sendTextMessage(senderId, req);
+                        log.info("[WEBSOCKET DISPATCHED] Message from [{}] to [{}] processed via WebSocket", senderId, receiverId);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            log.debug("WebSocket incoming message not a chat command: {}", ex.getMessage());
         }
     }
 

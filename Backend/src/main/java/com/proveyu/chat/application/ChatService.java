@@ -61,6 +61,8 @@ public class ChatService {
                 .message(request.getMessage().trim())
                 .messageType(MessageType.TEXT)
                 .status(MessageStatus.SENT)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .build();
 
         // 1. Database is source of truth — persist before WebSocket delivery
@@ -106,6 +108,8 @@ public class ChatService {
                 .fileSize(storedFile.fileSize())
                 .fileContentType(storedFile.contentType())
                 .status(MessageStatus.SENT)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .build();
 
         // 1. Database is source of truth
