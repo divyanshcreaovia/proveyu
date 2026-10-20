@@ -1,0 +1,176 @@
+-- ============================================================
+-- PROVEYU Database Schema (MySQL 8.0)
+-- Migration: V14__create_placement_management_tables.sql
+-- ============================================================
+
+-- 1. College Custom Roles (Organization-defined dynamic roles without hardcoding)
+CREATE TABLE IF NOT EXISTS college_custom_roles (
+    id                      CHAR(36) PRIMARY KEY,
+    organization_id         CHAR(36) NOT NULL,
+    role_name               VARCHAR(100) NOT NULL,
+    description             VARCHAR(255) NULL,
+    assigned_branch         VARCHAR(100) NOT NULL DEFAULT 'ALL', -- e.g. 'Computer Science & Engineering' or 'ALL'
+    can_view_students       TINYINT(1) NOT NULL DEFAULT 1,
+    can_edit_students       TINYINT(1) NOT NULL DEFAULT 1,
+    can_manage_placements   TINYINT(1) NOT NULL DEFAULT 0,
+    can_invite_team         TINYINT(1) NOT NULL DEFAULT 0,
+    can_export_reports      TINYINT(1) NOT NULL DEFAULT 1,
+    access_percentage       VARCHAR(30) DEFAULT '80% Access',
+    created_at              DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at              DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_custom_role_org FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
+    INDEX idx_custom_role_org (organization_id),
+    INDEX idx_custom_role_branch (assigned_branch)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 2. College Team Members (Organization Staff & Custom Roles)
+CREATE TABLE IF NOT EXISTS college_team_members (
+    id                  CHAR(36) PRIMARY KEY,
+    organization_id     CHAR(36) NOT NULL,
+    user_id             CHAR(36) NOT NULL,
+    custom_role_id      CHAR(36) NULL,
+    name                VARCHAR(150) NOT NULL,
+    email               VARCHAR(190) NOT NULL,
+    phone               VARCHAR(25) NULL,
+    role_name           VARCHAR(100) NOT NULL DEFAULT 'Custom Role', -- Dynamic custom role title created by organization
+    assigned_branch     VARCHAR(100) NOT NULL DEFAULT 'ALL', -- e.g. 'Computer Science & Engineering' or 'ALL'
+    designation         VARCHAR(150) NULL,
+    access_level        VARCHAR(50) DEFAULT '80% Access',
+    status              VARCHAR(30) NOT NULL DEFAULT 'ACTIVE', -- ACTIVE, PENDING_INVITE, INACTIVE
+    last_active         VARCHAR(100) DEFAULT 'Recently',
+    created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_team_org FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
+    CONSTRAINT fk_team_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_team_custom_role FOREIGN KEY (custom_role_id) REFERENCES college_custom_roles(id) ON DELETE SET NULL,
+    INDEX idx_team_org (organization_id),
+    INDEX idx_team_user (user_id),
+    INDEX idx_team_branch (assigned_branch)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 4. Student Profiles (Full Academic, Semester 1-8 SGPA/CGPA, Personal & Placement Tracker)
+CREATE TABLE IF NOT EXISTS student_profiles (
+    id                  CHAR(36) PRIMARY KEY,
+    organization_id     CHAR(36) NOT NULL,
+    user_id             CHAR(36) NOT NULL,
+    roll_number         VARCHAR(50) NOT NULL,
+    first_name          VARCHAR(100) NOT NULL,
+    last_name           VARCHAR(100) NOT NULL,
+    email               VARCHAR(190) NOT NULL,
+    phone               VARCHAR(25) NULL,
+    dob                 VARCHAR(20) NULL,
+    gender              VARCHAR(20) NULL,
+    aadhar_number       VARCHAR(50) NULL,
+    pan_number          VARCHAR(50) NULL,
+    residential_address TEXT NULL,
+    college_name        VARCHAR(255) NULL,
+    batch_year          VARCHAR(20) NOT NULL,
+    branch              VARCHAR(100) NOT NULL,
+    degree              VARCHAR(100) NOT NULL,
+    tenth_percentage    DOUBLE NULL,
+    twelfth_percentage  DOUBLE NULL,
+    active_backlogs     INT NOT NULL DEFAULT 0,
+    gap_years           INT NOT NULL DEFAULT 0,
+    grad_date           VARCHAR(50) NULL,
+    sem1_sgpa           DOUBLE NULL,
+    sem2_sgpa           DOUBLE NULL,
+    sem3_sgpa           DOUBLE NULL,
+    sem4_sgpa           DOUBLE NULL,
+    sem5_sgpa           DOUBLE NULL,
+    sem6_sgpa           DOUBLE NULL,
+    sem7_sgpa           DOUBLE NULL,
+    sem8_sgpa           DOUBLE NULL,
+    aggregate_cgpa      DOUBLE NOT NULL DEFAULT 0.0,
+    tier                VARCHAR(20) NOT NULL DEFAULT 'Tier 2',
+    tier_badge          VARCHAR(50) DEFAULT 'badge-tier-2',
+    prove_yu_score      VARCHAR(20) DEFAULT '75/100',
+    coding_score        INT DEFAULT 25,
+    aptitude_score      INT DEFAULT 25,
+    comm_score          INT DEFAULT 25,
+    placement_status    VARCHAR(30) NOT NULL DEFAULT 'Unplaced', -- Unplaced, Placed, In Process
+    placed_company      VARCHAR(150) NULL,
+    placed_role         VARCHAR(150) NULL,
+    placed_ctc          VARCHAR(50) NULL,
+    package_category    VARCHAR(100) NULL,
+    bond_duration       VARCHAR(50) NULL,
+    offer_date          DATE NULL,
+    joining_date        DATE NULL,
+    recruitment_source  VARCHAR(100) NULL,
+    linkedin_url        VARCHAR(255) NULL,
+    github_url          VARCHAR(255) NULL,
+    portfolio_url       VARCHAR(255) NULL,
+    resume_uploaded     TINYINT(1) NOT NULL DEFAULT 0,
+    created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_org_roll (organization_id, roll_number),
+    CONSTRAINT fk_student_org FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
+    CONSTRAINT fk_student_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_student_branch (organization_id, branch),
+    INDEX idx_student_status (organization_id, placement_status),
+    INDEX idx_student_cgpa (organization_id, aggregate_cgpa)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 5. Placement Drives (College campus recruitment drives with eligibility criteria)
+CREATE TABLE IF NOT EXISTS placement_drives (
+    id                      CHAR(36) PRIMARY KEY,
+    organization_id         CHAR(36) NOT NULL,
+    company_name            VARCHAR(150) NOT NULL,
+    company_website         VARCHAR(255) NULL,
+    logo_url                VARCHAR(255) NULL,
+    industry                VARCHAR(100) NULL,
+    roles                   VARCHAR(150) NOT NULL,
+    job_location            VARCHAR(150) NULL,
+    employment_type         VARCHAR(50) DEFAULT 'Full-Time',
+    package_lpa             DOUBLE NOT NULL DEFAULT 0.0,
+    stipend_monthly         VARCHAR(50) NULL,
+    bond_duration_months    INT DEFAULT 0,
+    drive_category          VARCHAR(100) NULL,
+    drive_date              VARCHAR(50) NULL,
+    drive_mode              VARCHAR(50) DEFAULT 'On-Campus',
+    venue                   VARCHAR(150) NULL,
+    min_cgpa                DOUBLE DEFAULT 0.0,
+    max_backlogs            INT DEFAULT 0,
+    max_gap_years           INT DEFAULT 0,
+    min_tenth_percentage    DOUBLE DEFAULT 0.0,
+    min_twelfth_percentage  DOUBLE DEFAULT 0.0,
+    batch_filter            VARCHAR(50) DEFAULT 'All',
+    degree_filter           VARCHAR(100) DEFAULT 'All',
+    min_proveyu_score       INT DEFAULT 0,
+    eligible_branches       TEXT NULL,
+    selection_rounds        TEXT NULL,
+    hr_contact_name         VARCHAR(100) NULL,
+    hr_contact_email        VARCHAR(150) NULL,
+    hr_contact_phone        VARCHAR(30) NULL,
+    placement_eligibility   VARCHAR(100) DEFAULT 'Unplaced Only',
+    allow_placed_students   TINYINT(1) DEFAULT 0,
+    status                  VARCHAR(50) NOT NULL DEFAULT 'Scheduled',
+    created_at              DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at              DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_drive_org FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
+    INDEX idx_drive_org (organization_id),
+    INDEX idx_drive_status (organization_id, status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 6. Placement Records (Individual student offer tracking and audit history)
+CREATE TABLE IF NOT EXISTS placement_records (
+    id                  CHAR(36) PRIMARY KEY,
+    organization_id     CHAR(36) NOT NULL,
+    student_profile_id  CHAR(36) NOT NULL,
+    drive_id            CHAR(36) NULL,
+    company_name        VARCHAR(150) NOT NULL,
+    role_offered        VARCHAR(150) NOT NULL,
+    ctc                 VARCHAR(50) NOT NULL,
+    package_category    VARCHAR(100) NULL,
+    bond_duration       VARCHAR(50) NULL,
+    offer_date          DATE NULL,
+    joining_date        DATE NULL,
+    recruitment_source  VARCHAR(100) NULL,
+    status              VARCHAR(50) NOT NULL DEFAULT 'OFFERED',
+    created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_record_org FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
+    CONSTRAINT fk_record_student FOREIGN KEY (student_profile_id) REFERENCES student_profiles(id) ON DELETE CASCADE,
+    CONSTRAINT fk_record_drive FOREIGN KEY (drive_id) REFERENCES placement_drives(id) ON DELETE SET NULL,
+    INDEX idx_record_student (student_profile_id),
+    INDEX idx_record_org (organization_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

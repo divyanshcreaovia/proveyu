@@ -12,4 +12,5 @@ import java.util.UUID;
 public interface OrganizationCandidateRepository extends JpaRepository<OrganizationCandidate, UUID> {
     List<OrganizationCandidate> findByOrganizationId(UUID organizationId);
     Optional<OrganizationCandidate> findByOrganizationIdAndCandidateId(UUID organizationId, UUID candidateId);
+    boolean existsByOrganizationIdAndCandidateId(UUID organizationId, UUID candidateId);
 }

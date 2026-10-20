@@ -7,23 +7,40 @@ This document provides a comprehensive, production-grade reference for all datab
 ## Table of Contents
 1. [Overview](#1-overview)
 2. [Detailed Table Specifications](#2-detailed-table-specifications)
-   * [1. `users`](#1-users)
-   * [2. `candidate_profiles`](#2-candidate_profiles)
-   * [3. `candidate_search_index` (Specialized Indexing Table)](#3-candidate_search_index-specialized-indexing-table)
-   * [4. `companies`](#4-companies)
-   * [5. `recruiter_profiles`](#5-recruiter_profiles)
-   * [6. `organization_profiles`](#6-organization_profiles)
-   * [7. `organization_candidates`](#7-organization_candidates)
-   * [8. `skills`](#8-skills)
-   * [9. `exams`](#9-exams)
-   * [10. `exam_sections`](#10-exam_sections)
-   * [11. `candidate_scores`](#11-candidate_scores)
-   * [12. `test_centers`](#12-test_centers)
-   * [13. `rooms`](#13-rooms)
-   * [14. `date_slots`](#14-date_slots)
-   * [15. `bookings`](#15-bookings)
-   * [16. `interview_invites`](#16-interview_invites)
-   * [17. `flyway_schema_history`](#17-flyway_schema_history)
+   * **Core Identity & Authentication**
+     * [1. `users`](#1-users)
+   * **Candidate Profiles, Search & Preferences**
+     * [2. `candidate_profiles`](#2-candidate_profiles)
+     * [3. `candidate_search_index` (Specialized Indexing Table)](#3-candidate_search_index-specialized-indexing-table)
+     * [4. `candidate_settings` (Settings & Alert Preferences)](#4-candidate_settings)
+   * **Recruiter & Corporate Verification**
+     * [5. `companies`](#5-companies)
+     * [6. `recruiter_profiles`](#6-recruiter_profiles)
+   * **Institution / Organization Base**
+     * [7. `organization_profiles`](#7-organization_profiles)
+     * [8. `organization_candidates`](#8-organization_candidates)
+   * **Assessment & Examination Engine**
+     * [9. `skills`](#9-skills)
+     * [10. `exams`](#10-exams)
+     * [11. `exam_sections`](#11-exam_sections)
+     * [12. `candidate_scores`](#12-candidate_scores)
+   * **Test Centers & Concurrency Slot Bookings**
+     * [13. `test_centers`](#13-test_centers)
+     * [14. `rooms`](#14-rooms)
+     * [15. `date_slots`](#15-date_slots)
+     * [16. `bookings`](#16-bookings)
+   * **Recruitment, Real-Time Chat & Communications**
+     * [17. `interview_invites`](#17-interview_invites)
+     * [18. `chat_messages` (Real-Time Messaging & Attachments)](#18-chat_messages)
+     * [19. `notifications` (User In-App Notifications)](#19-notifications)
+   * **Database Migrations**
+     * [20. `flyway_schema_history`](#20-flyway_schema_history)
+3. [Placement Management Subsystem (Campus Recruitment & Dynamic Custom RBAC)](#3-placement-management-subsystem-campus-recruitment--custom-rbac)
+   * [21. `college_custom_roles`](#21-college_custom_roles)
+   * [22. `college_team_members`](#22-college_team_members)
+   * [23. `student_profiles`](#23-student_profiles)
+   * [24. `placement_drives`](#24-placement_drives)
+   * [25. `placement_records`](#25-placement_records)
 
 ---
 
@@ -31,9 +48,10 @@ This document provides a comprehensive, production-grade reference for all datab
 The PROVEYU database is designed around transactional integrity, high-concurrency slot reservations, candidate assessment transparency, and recruiter talent discovery.
 
 Key design principles:
-- **UUID Primary Keys**: High uniqueness and security across distributed components.
+- **UUID Primary Keys**: High uniqueness and security across distributed components (`CHAR(36)` / `VARCHAR(36)`).
 - **Auditing Columns**: `created_at` and `updated_at` timestamps on all business entities.
 - **Read-Optimized Projections**: `candidate_search_index` isolates heavy candidate search queries from candidate profile updates.
+- **Dynamic Institutional RBAC**: Eliminates hardcoded role enums in favor of dynamic role definitions and branch-scoped security for universities and colleges.
 
 ---
 
@@ -102,7 +120,28 @@ Key design principles:
 
 ---
 
-### 4. `companies`
+### 4. `candidate_settings`
+* **Use Case**: Stores user notification preferences, alert channels, privacy options, and subscription settings for candidates.
+
+| Field Name | Data Type | Nullable | Description / Constraints |
+| :--- | :--- | :--- | :--- |
+| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
+| `user_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` ON DELETE CASCADE (UNIQUE) |
+| `email_notifications` | `BOOLEAN` | NO | Enable/disable email notifications (Default: `TRUE`) |
+| `sms_notifications` | `BOOLEAN` | NO | Enable/disable SMS alerts (Default: `FALSE`) |
+| `push_notifications` | `BOOLEAN` | NO | Enable/disable browser/mobile push alerts (Default: `TRUE`) |
+| `test_reminders` | `BOOLEAN` | NO | Enable/disable upcoming exam & slot alerts (Default: `TRUE`) |
+| `interview_invites` | `BOOLEAN` | NO | Enable/disable recruiter interview notifications (Default: `TRUE`) |
+| `application_updates` | `BOOLEAN` | NO | Status updates on job applications & drives (Default: `TRUE`) |
+| `job_offers` | `BOOLEAN` | NO | Alerts for direct recruiter & campus offers (Default: `TRUE`) |
+| `marketing_updates` | `BOOLEAN` | NO | Platform marketing & promotion announcements (Default: `FALSE`) |
+| `newsletter` | `BOOLEAN` | NO | Career tips & ProveyU weekly newsletter (Default: `FALSE`) |
+| `created_at` | `TIMESTAMP` | NO | Record creation timestamp |
+| `updated_at` | `TIMESTAMP` | YES | Record last modification timestamp |
+
+---
+
+### 5. `companies`
 * **Use Case**: Stores recruiter employer company details, verified GSTIN, trade name, state, website domain, and GST verification status (`PENDING`, `VERIFIED`, `REJECTED`).
 
 | Field Name | Data Type | Nullable | Description / Constraints |
@@ -121,8 +160,8 @@ Key design principles:
 
 ---
 
-### 5. `recruiter_profiles`
-* **Use Case**: Maps recruiter user accounts to their verified employer company and stores professional contact information.
+### 6. `recruiter_profiles`
+* **Use Case**: Maps recruiter user accounts to their verified employer company and stores professional contact information, hiring preferences, and target city preferences.
 
 | Field Name | Data Type | Nullable | Description / Constraints |
 | :--- | :--- | :--- | :--- |
@@ -150,7 +189,7 @@ Key design principles:
 
 ---
 
-### 6. `organization_profiles`
+### 7. `organization_profiles`
 * **Use Case**: Stores institutional profiles for colleges, universities, or training institutes registered under the `ORGANIZATION` role.
 
 | Field Name | Data Type | Nullable | Description / Constraints |
@@ -167,7 +206,7 @@ Key design principles:
 
 ---
 
-### 7. `organization_candidates`
+### 8. `organization_candidates`
 * **Use Case**: Maps individual candidate students onboarded under a college/organization account.
 
 | Field Name | Data Type | Nullable | Description / Constraints |
@@ -181,7 +220,7 @@ Key design principles:
 
 ---
 
-### 8. `skills`
+### 9. `skills`
 * **Use Case**: Master catalog of technical skills assessed across exam modules.
 
 | Field Name | Data Type | Nullable | Description / Constraints |
@@ -193,7 +232,7 @@ Key design principles:
 
 ---
 
-### 9. `exams`
+### 10. `exams`
 * **Use Case**: Assessment exam catalog storing title, duration, total marks, passing percentage, and exam registration fee.
 
 | Field Name | Data Type | Nullable | Description / Constraints |
@@ -208,7 +247,7 @@ Key design principles:
 
 ---
 
-### 10. `exam_sections`
+### 11. `exam_sections`
 * **Use Case**: Breakdown of multi-skill assessment exams into distinct sections, each testing a specific skill with designated duration and marks.
 
 | Field Name | Data Type | Nullable | Description / Constraints |
@@ -223,7 +262,7 @@ Key design principles:
 
 ---
 
-### 11. `candidate_scores`
+### 12. `candidate_scores`
 * **Use Case**: Records candidate exam results, score achieved, max score, skill tested, pass status, and certificate reference.
 
 | Field Name | Data Type | Nullable | Description / Constraints |
@@ -239,7 +278,7 @@ Key design principles:
 
 ---
 
-### 12. `test_centers`
+### 13. `test_centers`
 * **Use Case**: Stores physical examination centers, location address, city, state, pincode, and operational capacity.
 
 | Field Name | Data Type | Nullable | Description / Constraints |
@@ -254,7 +293,7 @@ Key design principles:
 
 ---
 
-### 13. `rooms`
+### 14. `rooms`
 * **Use Case**: Rooms or testing labs within a physical test center with seating capacity.
 
 | Field Name | Data Type | Nullable | Description / Constraints |
@@ -266,7 +305,7 @@ Key design principles:
 
 ---
 
-### 14. `date_slots`
+### 15. `date_slots`
 * **Use Case**: Date and time slot inventory for candidate exam bookings.
 
 | Field Name | Data Type | Nullable | Description / Constraints |
@@ -282,7 +321,7 @@ Key design principles:
 
 ---
 
-### 15. `bookings`
+### 16. `bookings`
 * **Use Case**: Manages candidate exam slot reservations, holding seat locks during payment, status lifecycle (`HELD`, `CONFIRMED`, `CANCELLED`, `EXPIRED`), and 15-minute lock expiration.
 
 | Field Name | Data Type | Nullable | Description / Constraints |
@@ -297,7 +336,7 @@ Key design principles:
 
 ---
 
-### 16. `interview_invites`
+### 17. `interview_invites`
 * **Use Case**: Stores recruiter interview invitations issued to candidates, job title, description, recruiter salary LPA range, offered package range, invitation response status (`PENDING`, `ACCEPTED`, `DECLINED`), and candidate placement lifecycle status (`IN_PROCESS`, `HIRED`, `REJECTED`).
 
 | Field Name | Data Type | Nullable | Description / Constraints |
@@ -319,13 +358,48 @@ Key design principles:
 
 ---
 
-### 17. `flyway_schema_history`
-* **Use Case**: Managed automatically by Flyway to track executed database migrations (`V1` through `V7`).
+### 18. `chat_messages`
+* **Use Case**: Stores real-time and historical chat messages, file attachments (PDFs, docs, images), delivery states (`SENT`, `DELIVERED`, `READ`), and read receipts between recruiters and candidates.
+
+| Field Name | Data Type | Nullable | Description / Constraints |
+| :--- | :--- | :--- | :--- |
+| `id` | `CHAR(36)` | NO | Primary Key (UUID) |
+| `sender_id` | `CHAR(36)` | NO | Foreign Key -> `users(id)` ON DELETE CASCADE |
+| `receiver_id` | `CHAR(36)` | NO | Foreign Key -> `users(id)` ON DELETE CASCADE |
+| `message` | `TEXT` | YES | Text body of the message (NULL if file only) |
+| `message_type` | `VARCHAR(20)` | NO | Enum: `TEXT`, `FILE` (Default: `TEXT`) |
+| `file_path` | `VARCHAR(500)` | YES | Server storage path for uploaded attachments |
+| `file_name` | `VARCHAR(255)` | YES | Original client file name |
+| `file_size` | `BIGINT` | YES | File size in bytes |
+| `file_content_type` | `VARCHAR(100)` | YES | MIME type (e.g. `application/pdf`, `image/png`) |
+| `status` | `VARCHAR(20)` | NO | Delivery status: `SENT`, `DELIVERED`, `READ` |
+| `read_at` | `DATETIME` | YES | Timestamp when recipient read the message |
+| `created_at` | `DATETIME` | NO | Message dispatch timestamp |
+| `updated_at` | `DATETIME` | NO | Last modification timestamp |
+
+---
+
+### 19. `notifications`
+* **Use Case**: In-app notifications and alerts delivered to users for exam bookings, interview invitations, campus placement drives, and system updates.
+
+| Field Name | Data Type | Nullable | Description / Constraints |
+| :--- | :--- | :--- | :--- |
+| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
+| `user_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` ON DELETE CASCADE |
+| `type` | `VARCHAR(50)` | NO | Notification type (e.g. `INTERVIEW_INVITE`, `BOOKING_CONFIRMED`, `DRIVE_ALERT`, `INFO`) |
+| `message` | `TEXT` | NO | Formatted notification text content |
+| `is_read` | `BOOLEAN` | NO | Read indicator flag (Default: `FALSE`) |
+| `created_at` | `TIMESTAMP` | NO | Notification dispatch timestamp |
+
+---
+
+### 20. `flyway_schema_history`
+* **Use Case**: Managed automatically by Flyway to track executed database migrations (`V1` through `V17`).
 
 | Field Name | Data Type | Nullable | Description |
 | :--- | :--- | :--- | :--- |
 | `installed_rank` | `INT` | NO | Execution sequence rank |
-| `version` | `VARCHAR(50)` | YES | Migration version string (e.g. `V7`) |
+| `version` | `VARCHAR(50)` | YES | Migration version string (e.g. `V1`, `V8`, `V9`, `V17`) |
 | `description` | `VARCHAR(200)` | NO | Migration script name |
 | `type` | `VARCHAR(20)` | NO | Migration type (`SQL`) |
 | `script` | `VARCHAR(1000)` | NO | Migration SQL filename |
@@ -337,25 +411,149 @@ Key design principles:
 
 ---
 
-## 9. `candidate_settings` (Settings for Candidates)
-- **`id`** (`VARCHAR(36)`): Primary Key (UUID).
-- **`user_id`** (`VARCHAR(36)`): Foreign Key (`users.id`). UNIQUE.
-- **`email_notifications`** (`BOOLEAN`): Default TRUE.
-- **`sms_notifications`** (`BOOLEAN`): Default FALSE.
-- **`push_notifications`** (`BOOLEAN`): Default TRUE.
-- **`test_reminders`** (`BOOLEAN`): Default TRUE.
-- **`interview_invites`** (`BOOLEAN`): Default TRUE.
-- **`application_updates`** (`BOOLEAN`): Default TRUE.
-- **`job_offers`** (`BOOLEAN`): Default TRUE.
-- **`marketing_updates`** (`BOOLEAN`): Default FALSE.
-- **`newsletter`** (`BOOLEAN`): Default FALSE.
+## 3. Placement Management Subsystem (Campus Recruitment & Dynamic Custom RBAC)
+
+### 21. `college_custom_roles`
+* **Use Case**: Enables colleges and institutions to define dynamic custom roles without rigid/hardcoded enum restrictions. Organizations create specialized roles (e.g., "Branch Placement Lead", "Department HOD", "Faculty Coordinator") with granular access control and branch scoping.
+
+| Field Name | Data Type | Nullable | Description / Constraints |
+| :--- | :--- | :--- | :--- |
+| `id` | `CHAR(36)` | NO | Primary Key (UUID) |
+| `organization_id` | `CHAR(36)` | NO | Foreign Key -> `organizations(id)` ON DELETE CASCADE |
+| `role_name` | `VARCHAR(100)` | NO | Custom dynamic role title (e.g., "Lead CSE Coordinator", "HOD - IT") |
+| `description` | `VARCHAR(255)` | YES | Purpose and responsibilities of this custom role |
+| `assigned_branch` | `VARCHAR(100)` | NO | Branch scope restriction (e.g. "Computer Science & Engineering", or "ALL") |
+| `can_view_students` | `TINYINT(1)` | NO | Permission: View student roster and academic records (Default: 1) |
+| `can_edit_students` | `TINYINT(1)` | NO | Permission: Modify student details and verify marks (Default: 1) |
+| `can_manage_placements` | `TINYINT(1)` | NO | Permission: Record offers, schedule drives, update status (Default: 0) |
+| `can_invite_team` | `TINYINT(1)` | NO | Permission: Invite or configure team members (Default: 0) |
+| `can_export_reports` | `TINYINT(1)` | NO | Permission: Export student Excel/CSV data & KPI summaries (Default: 1) |
+| `access_percentage` | `VARCHAR(30)` | YES | Display access level (e.g., "85% Access", "Full Admin Access") |
+| `created_at` | `DATETIME` | NO | Creation timestamp |
+| `updated_at` | `DATETIME` | NO | Last update timestamp |
 
 ---
 
-## 10. `notifications` (User Notifications)
-- **`id`** (`VARCHAR(36)`): Primary Key (UUID).
-- **`user_id`** (`VARCHAR(36)`): Foreign Key (`users.id`).
-- **`type`** (`VARCHAR(50)`): Type of notification (e.g. 'urgent', 'info').
-- **`message`** (`TEXT`): Notification content.
-- **`is_read`** (`BOOLEAN`): Default FALSE.
-- **`created_at`** (`TIMESTAMP`): Creation timestamp.
+### 22. `college_team_members`
+* **Use Case**: Stores institutional faculty, staff, and coordinators assigned to a college. Each member references an organization user and an optional dynamic custom role from `college_custom_roles`.
+
+| Field Name | Data Type | Nullable | Description / Constraints |
+| :--- | :--- | :--- | :--- |
+| `id` | `CHAR(36)` | NO | Primary Key (UUID) |
+| `organization_id` | `CHAR(36)` | NO | Foreign Key -> `organizations(id)` ON DELETE CASCADE |
+| `user_id` | `CHAR(36)` | NO | Foreign Key -> `users(id)` ON DELETE CASCADE |
+| `custom_role_id` | `CHAR(36)` | YES | Foreign Key -> `college_custom_roles(id)` ON DELETE SET NULL |
+| `name` | `VARCHAR(150)` | NO | Team member full name |
+| `email` | `VARCHAR(190)` | NO | Institutional contact email address |
+| `phone` | `VARCHAR(25)` | YES | Contact telephone number |
+| `role_name` | `VARCHAR(100)` | NO | Dynamic custom role title created by college (Default: "Custom Role") |
+| `assigned_branch` | `VARCHAR(100)` | NO | Assigned department branch scope (e.g., "Information Technology", "ALL") |
+| `designation` | `VARCHAR(150)` | YES | Academic designation (e.g., "Associate Professor", "Placement Head") |
+| `access_level` | `VARCHAR(50)` | YES | Access badge label (e.g., "90% Access") |
+| `status` | `VARCHAR(30)` | NO | Member status (`ACTIVE`, `PENDING_INVITE`, `INACTIVE`) |
+| `last_active` | `VARCHAR(100)` | YES | Human-readable last activity indicator |
+| `created_at` | `DATETIME` | NO | Creation timestamp |
+| `updated_at` | `DATETIME` | NO | Last update timestamp |
+
+---
+
+### 23. `student_profiles`
+* **Use Case**: Full academic roster and placement tracking for enrolled college students. Stores complete 8-semester SGPAs, aggregate CGPA, tier classification, ProveyU assessment scores, and placed company/role details.
+
+| Field Name | Data Type | Nullable | Description / Constraints |
+| :--- | :--- | :--- | :--- |
+| `id` | `CHAR(36)` | NO | Primary Key (UUID) |
+| `organization_id` | `CHAR(36)` | NO | Foreign Key -> `organizations(id)` ON DELETE CASCADE |
+| `user_id` | `CHAR(36)` | NO | Foreign Key -> `users(id)` ON DELETE CASCADE (Student user account) |
+| `roll_number` | `VARCHAR(50)` | NO | Institutional roll/registration number (Unique per organization) |
+| `first_name` | `VARCHAR(100)` | NO | Student first name |
+| `last_name` | `VARCHAR(100)` | NO | Student surname / family name |
+| `email` | `VARCHAR(190)` | NO | Student college email address |
+| `phone` | `VARCHAR(25)` | YES | Student contact mobile phone |
+| `dob` | `VARCHAR(20)` | YES | Date of birth (YYYY-MM-DD) |
+| `gender` | `VARCHAR(20)` | YES | Gender (Male, Female, Other) |
+| `aadhar_number` | `VARCHAR(50)` | YES | Government Aadhaar identification |
+| `pan_number` | `VARCHAR(50)` | YES | Government PAN tax ID |
+| `residential_address` | `TEXT` | YES | Student current residential address |
+| `college_name` | `VARCHAR(255)` | YES | Enrolled institution name |
+| `batch_year` | `VARCHAR(20)` | NO | Graduation batch year (e.g., "2024") |
+| `branch` | `VARCHAR(100)` | NO | Department branch (e.g., "Computer Science & Engineering") |
+| `degree` | `VARCHAR(100)` | NO | Degree qualification (e.g., "B.Tech", "M.Tech", "MCA") |
+| `tenth_percentage` | `DOUBLE` | YES | 10th standard board percentage |
+| `twelfth_percentage` | `DOUBLE` | YES | 12th standard / Diploma percentage |
+| `active_backlogs` | `INT` | NO | Number of live uncleared backlogs (Default: 0) |
+| `gap_years` | `INT` | NO | Educational career gap years (Default: 0) |
+| `grad_date` | `VARCHAR(50)` | YES | Expected or actual graduation date |
+| `sem1_sgpa` - `sem8_sgpa` | `DOUBLE` | YES | Semester 1 through Semester 8 SGPA scores |
+| `aggregate_cgpa` | `DOUBLE` | NO | Automatically calculated mean CGPA across active semesters |
+| `tier` | `VARCHAR(20)` | NO | Academic tier classification (`Tier 1` >= 8.5, `Tier 2` >= 7.0, `Tier 3` < 7.0) |
+| `tier_badge` | `VARCHAR(50)` | YES | UI badge class (`badge-tier-1`, `badge-tier-2`, `badge-tier-3`) |
+| `prove_yu_score` | `VARCHAR(20)` | YES | Platform evaluation score (e.g. "75/100") |
+| `coding_score` | `INT` | YES | Platform coding assessment percentile / marks |
+| `aptitude_score` | `INT` | YES | Platform aptitude percentile / marks |
+| `comm_score` | `INT` | YES | Communication and soft skills rating |
+| `placement_status` | `VARCHAR(30)` | NO | Current placement state (`Unplaced`, `Placed`, `In Process`) |
+| `placed_company` | `VARCHAR(150)` | YES | Name of company where candidate was placed (e.g., "TCS", "Wipro") |
+| `placed_role` | `VARCHAR(150)` | YES | Position offered (e.g., "Associate Software Engineer") |
+| `placed_ctc` | `VARCHAR(50)` | YES | Annual compensation offered (e.g., "₹6.5L") |
+| `package_category` | `VARCHAR(100)` | YES | Category (e.g., "Dream (5-10 LPA)", "Super Dream (>10 LPA)") |
+| `bond_duration` | `VARCHAR(50)` | YES | Employment bond obligation (e.g., "No Bond", "1 Year") |
+| `offer_date` | `DATE` | YES | Date when offer letter was released |
+| `joining_date` | `DATE` | YES | Scheduled company onboarding date |
+| `recruitment_source` | `VARCHAR(100)` | YES | Placement channel (`On-Campus`, `Off-Campus`, `Pool Campus`) |
+| `linkedin_url` | `VARCHAR(255)` | YES | Candidate LinkedIn URL |
+| `github_url` | `VARCHAR(255)` | YES | Candidate GitHub portfolio URL |
+| `portfolio_url` | `VARCHAR(255)` | YES | Candidate website or personal project portfolio |
+| `resume_uploaded` | `TINYINT(1)` | NO | Boolean flag indicating whether student has an active resume attached |
+| `created_at` | `DATETIME` | NO | Creation timestamp |
+| `updated_at` | `DATETIME` | NO | Last modification timestamp |
+
+---
+
+### 24. `placement_drives`
+* **Use Case**: Campus recruitment drives scheduled by the college placement cell, including company details, eligibility filters, package details, and selection pipeline stages.
+
+| Field Name | Data Type | Nullable | Description / Constraints |
+| :--- | :--- | :--- | :--- |
+| `id` | `CHAR(36)` | NO | Primary Key (UUID) |
+| `organization_id` | `CHAR(36)` | NO | Foreign Key -> `organizations(id)` ON DELETE CASCADE |
+| `company_name` | `VARCHAR(150)` | NO | Visiting company name |
+| `company_website` | `VARCHAR(255)` | YES | Company portal link |
+| `logo_url` | `VARCHAR(255)` | YES | Company corporate logo URL |
+| `industry` | `VARCHAR(100)` | YES | Industry domain (IT Services, Fintech, Automotive, etc.) |
+| `roles` | `VARCHAR(150)` | NO | Hiring position(s) |
+| `package_lpa` | `DOUBLE` | NO | Annual CTC in Lakhs Per Annum |
+| `min_cgpa` | `DOUBLE` | YES | Minimum CGPA cutoff for drive eligibility |
+| `max_backlogs` | `INT` | YES | Maximum allowed active backlogs |
+| `max_gap_years` | `INT` | YES | Maximum allowed educational career gaps |
+| `min_tenth_percentage` | `DOUBLE` | YES | Minimum 10th standard percentage cutoff |
+| `min_twelfth_percentage` | `DOUBLE` | YES | Minimum 12th standard percentage cutoff |
+| `eligible_branches` | `TEXT` | YES | JSON array or comma-separated list of allowed departments |
+| `selection_rounds` | `TEXT` | YES | JSON array of drive rounds (OA, Technical Interview, HR) |
+| `drive_mode` | `VARCHAR(50)` | YES | `On-Campus`, `Virtual`, `Off-Campus` |
+| `status` | `VARCHAR(50)` | NO | Drive status (`Scheduled`, `In-Progress`, `Completed`, `Cancelled`) |
+| `created_at` | `DATETIME` | NO | Creation timestamp |
+| `updated_at` | `DATETIME` | NO | Last modification timestamp |
+
+---
+
+### 25. `placement_records`
+* **Use Case**: Audit history and individual offer records associated with each student profile.
+
+| Field Name | Data Type | Nullable | Description / Constraints |
+| :--- | :--- | :--- | :--- |
+| `id` | `CHAR(36)` | NO | Primary Key (UUID) |
+| `organization_id` | `CHAR(36)` | NO | Foreign Key -> `organizations(id)` ON DELETE CASCADE |
+| `student_profile_id` | `CHAR(36)` | NO | Foreign Key -> `student_profiles(id)` ON DELETE CASCADE |
+| `drive_id` | `CHAR(36)` | YES | Foreign Key -> `placement_drives(id)` ON DELETE SET NULL |
+| `company_name` | `VARCHAR(150)` | NO | Company offering employment |
+| `role_offered` | `VARCHAR(150)` | NO | Job title |
+| `ctc` | `VARCHAR(50)` | NO | Compensation string (e.g., "₹7.5 LPA") |
+| `package_category` | `VARCHAR(100)` | YES | Category (Mass Recruiter, Dream, Super Dream) |
+| `bond_duration` | `VARCHAR(50)` | YES | Bond term (e.g., "1 Year", "No Bond") |
+| `offer_date` | `DATE` | YES | Offer letter issue date |
+| `joining_date` | `DATE` | YES | Planned joining date |
+| `recruitment_source` | `VARCHAR(100)` | YES | Drive channel |
+| `status` | `VARCHAR(50)` | NO | Status (`OFFERED`, `ACCEPTED`, `DECLINED`, `JOINED`) |
+| `created_at` | `DATETIME` | NO | Creation timestamp |
+| `updated_at` | `DATETIME` | NO | Last modification timestamp |

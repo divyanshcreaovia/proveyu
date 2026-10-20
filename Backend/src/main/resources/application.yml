@@ -32,6 +32,7 @@ spring:
     enabled: ${SPRING_FLYWAY_ENABLED:true}
     baseline-on-migrate: true
     validate-on-migrate: false
+    out-of-order: true
     locations: classpath:db/migration
 
   mail:
@@ -73,7 +74,7 @@ chat:
     allowed-extensions: ${CHAT_ALLOWED_EXTENSIONS:.pdf,.doc,.docx,.jpg,.jpeg,.png}
 
 jwt:
-  secret: ${JWT_SECRET:ui43uui44389483}
+  secret: ${JWT_SECRET:ProveyuSuperSecretSigningKeyForJWTAuthentication2026SecureKey!}
   expiration-ms: ${JWT_EXPIRATION_MS:86400000}
 
 razorpay:
