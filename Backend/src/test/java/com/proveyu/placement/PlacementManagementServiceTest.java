@@ -48,7 +48,7 @@ public class PlacementManagementServiceTest {
     @Mock
     private PlacementRecordRepository placementRecordRepository;
     @Mock
-    private PlacementDriveRepository placementDriveRepository;
+    private PlacementDriveRepository1 placementDriveRepository;
     @Spy
     private ExcelStudentParser excelStudentParser = new ExcelStudentParser();
     @Spy

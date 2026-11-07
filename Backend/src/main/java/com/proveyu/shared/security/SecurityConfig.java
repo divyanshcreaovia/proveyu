@@ -46,6 +46,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/domains/**").permitAll()
                 .requestMatchers("/api/v1/candidates/resume/download/**").permitAll()
                 .requestMatchers("/api/v1/admit-cards/download/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/exams/**").permitAll()
@@ -53,6 +54,7 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                 .requestMatchers("/ws/**", "/ws/chat/**").permitAll()
                 .requestMatchers("/api/v1/college/students/template").permitAll()
+                .requestMatchers("/api/v1/recruiter/**", "/api/v1/recruiters/**").permitAll()
                 .requestMatchers("/api/v1/test/**").permitAll()
                 .anyRequest().authenticated()
             )

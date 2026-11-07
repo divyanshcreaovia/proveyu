@@ -1,7 +1,7 @@
 package com.proveyu.placement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.proveyu.placement.application.PlacementDriveService;
+import com.proveyu.placement.application.PlacementDriveService1;
 import com.proveyu.placement.application.dto.PlacementDriveDto;
 import com.proveyu.placement.web.CollegePlacementController;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CollegePlacementControllerTest {
 
     @Mock
-    private PlacementDriveService driveService;
+    private PlacementDriveService1 driveService;
 
     @InjectMocks
     private CollegePlacementController collegePlacementController;

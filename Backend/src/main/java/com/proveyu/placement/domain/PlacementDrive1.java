@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "placement_drives")
-public class PlacementDrive {
+public class PlacementDrive1 {
 
     @Id
     @GeneratedValue
@@ -123,7 +123,7 @@ public class PlacementDrive {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    public PlacementDrive() {}
+    public PlacementDrive1() {}
 
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }

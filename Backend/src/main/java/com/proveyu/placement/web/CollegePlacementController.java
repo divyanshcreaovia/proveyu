@@ -1,6 +1,6 @@
 package com.proveyu.placement.web;
 
-import com.proveyu.placement.application.PlacementDriveService;
+import com.proveyu.placement.application.PlacementDriveService1;
 import com.proveyu.placement.application.dto.PlacementDriveDto;
 import com.proveyu.shared.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -16,9 +16,9 @@ import java.util.UUID;
 @RequestMapping("/api/v1/college/placements")
 public class CollegePlacementController {
 
-    private final PlacementDriveService driveService;
+    private final PlacementDriveService1 driveService;
 
-    public CollegePlacementController(PlacementDriveService driveService) {
+    public CollegePlacementController(PlacementDriveService1 driveService) {
         this.driveService = driveService;
     }
 

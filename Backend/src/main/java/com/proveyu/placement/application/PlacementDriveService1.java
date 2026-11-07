@@ -1,8 +1,8 @@
 package com.proveyu.placement.application;
 
 import com.proveyu.placement.application.dto.PlacementDriveDto;
-import com.proveyu.placement.domain.PlacementDrive;
-import com.proveyu.placement.infrastructure.PlacementDriveRepository;
+import com.proveyu.placement.domain.PlacementDrive1;
+import com.proveyu.placement.infrastructure.PlacementDriveRepository1;
 import com.proveyu.shared.error.DomainException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class PlacementDriveService {
+public class PlacementDriveService1 {
 
-    private final PlacementDriveRepository driveRepository;
+    private final PlacementDriveRepository1 driveRepository;
     private final PlacementManagementService placementManagementService;
 
-    public PlacementDriveService(PlacementDriveRepository driveRepository,
+    public PlacementDriveService1(PlacementDriveRepository1 driveRepository,
                                  PlacementManagementService placementManagementService) {
         this.driveRepository = driveRepository;
         this.placementManagementService = placementManagementService;
@@ -33,7 +33,7 @@ public class PlacementDriveService {
     @Transactional(readOnly = true)
     public PlacementDriveDto.Response getDriveById(UUID currentUserId, UUID driveId) {
         PlacementManagementService.OrgUserContext ctx = placementManagementService.resolveContext(currentUserId);
-        PlacementDrive drive = driveRepository.findById(driveId)
+        PlacementDrive1 drive = driveRepository.findById(driveId)
                 .orElseThrow(() -> new DomainException("Drive not found", HttpStatus.NOT_FOUND, "DRIVE_NOT_FOUND"));
 
         if (!drive.getOrganizationId().equals(ctx.organizationId)) {
@@ -47,7 +47,7 @@ public class PlacementDriveService {
     public PlacementDriveDto.Response createDrive(UUID currentUserId, PlacementDriveDto.Request req) {
         PlacementManagementService.OrgUserContext ctx = placementManagementService.resolveContext(currentUserId);
 
-        PlacementDrive drive = new PlacementDrive();
+        PlacementDrive1 drive = new PlacementDrive1();
         drive.setOrganizationId(ctx.organizationId);
         drive.setCompanyName(req.getCompanyName());
         drive.setCompanyWebsite(req.getCompanyWebsite());
@@ -80,14 +80,14 @@ public class PlacementDriveService {
         drive.setAllowPlacedStudents(Boolean.TRUE.equals(req.getAllowPlacedStudents()));
         drive.setStatus(req.getStatus() != null ? req.getStatus() : "Scheduled");
 
-        PlacementDrive saved = driveRepository.save(drive);
+        PlacementDrive1 saved = driveRepository.save(drive);
         return PlacementDriveDto.Response.fromEntity(saved);
     }
 
     @Transactional
     public PlacementDriveDto.Response updateDrive(UUID currentUserId, UUID driveId, PlacementDriveDto.Request req) {
         PlacementManagementService.OrgUserContext ctx = placementManagementService.resolveContext(currentUserId);
-        PlacementDrive drive = driveRepository.findById(driveId)
+        PlacementDrive1 drive = driveRepository.findById(driveId)
                 .orElseThrow(() -> new DomainException("Drive not found", HttpStatus.NOT_FOUND, "DRIVE_NOT_FOUND"));
 
         if (!drive.getOrganizationId().equals(ctx.organizationId)) {
@@ -105,14 +105,14 @@ public class PlacementDriveService {
         if (req.getSelectionRounds() != null) drive.setSelectionRounds(req.getSelectionRounds());
         if (req.getStatus() != null) drive.setStatus(req.getStatus());
 
-        PlacementDrive saved = driveRepository.save(drive);
+        PlacementDrive1 saved = driveRepository.save(drive);
         return PlacementDriveDto.Response.fromEntity(saved);
     }
 
     @Transactional
     public void deleteDrive(UUID currentUserId, UUID driveId) {
         PlacementManagementService.OrgUserContext ctx = placementManagementService.resolveContext(currentUserId);
-        PlacementDrive drive = driveRepository.findById(driveId)
+        PlacementDrive1 drive = driveRepository.findById(driveId)
                 .orElseThrow(() -> new DomainException("Drive not found", HttpStatus.NOT_FOUND, "DRIVE_NOT_FOUND"));
 
         if (!drive.getOrganizationId().equals(ctx.organizationId)) {

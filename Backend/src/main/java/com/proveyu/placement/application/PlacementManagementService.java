@@ -38,7 +38,7 @@ public class PlacementManagementService {
     private final OrganizationCandidateRepository organizationCandidateRepository;
     private final UserRepository userRepository;
     private final PlacementRecordRepository placementRecordRepository;
-    private final PlacementDriveRepository placementDriveRepository;
+    private final PlacementDriveRepository1 placementDriveRepository;
     private final ExcelStudentParser excelStudentParser;
     private final StudentTemplateGenerator templateGenerator;
     private final PasswordEncoder passwordEncoder;
@@ -50,7 +50,7 @@ public class PlacementManagementService {
                                       OrganizationCandidateRepository organizationCandidateRepository,
                                       UserRepository userRepository,
                                       PlacementRecordRepository placementRecordRepository,
-                                      PlacementDriveRepository placementDriveRepository,
+                                      PlacementDriveRepository1 placementDriveRepository,
                                       ExcelStudentParser excelStudentParser,
                                       StudentTemplateGenerator templateGenerator,
                                       PasswordEncoder passwordEncoder) {
@@ -551,7 +551,7 @@ public class PlacementManagementService {
             }
         }
 
-        List<PlacementDrive> drives = placementDriveRepository.findByOrganizationIdOrderByCreatedAtDesc(ctx.organizationId);
+        List<PlacementDrive1> drives = placementDriveRepository.findByOrganizationIdOrderByCreatedAtDesc(ctx.organizationId);
         List<PlacementDriveDto.Response> driveResponses = drives.stream().limit(5).map(PlacementDriveDto.Response::fromEntity).toList();
 
         return CollegeDashboardDto.builder()

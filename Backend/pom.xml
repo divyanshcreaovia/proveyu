@@ -22,6 +22,7 @@
         <jjwt.version>0.12.5</jjwt.version>
         <redisson.version>3.27.0</redisson.version>
         <razorpay.version>1.4.3</razorpay.version>
+        <lombok.version>1.18.36</lombok.version>
         <poi.version>5.2.5</poi.version>
         <commons-csv.version>1.10.0</commons-csv.version>
     </properties>
@@ -189,7 +190,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.30</version>
+                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

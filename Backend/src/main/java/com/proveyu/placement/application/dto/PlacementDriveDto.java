@@ -1,6 +1,6 @@
 package com.proveyu.placement.application.dto;
 
-import com.proveyu.placement.domain.PlacementDrive;
+import com.proveyu.placement.domain.PlacementDrive1;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -177,7 +177,7 @@ public class PlacementDriveDto {
 
         public Response() {}
 
-        public static Response fromEntity(PlacementDrive entity) {
+        public static Response fromEntity(PlacementDrive1 entity) {
             if (entity == null) return null;
             Response r = new Response();
             r.setId(entity.getId());
