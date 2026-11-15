@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../core/environments/environment';
 
 @Component({
   selector: 'app-sidebar',
@@ -25,6 +26,7 @@ export class Sidebar {
     { label: 'Book Exam', icon: 'bi-calendar-event-fill', route: '/candidate/book-slot' },
     { label: 'Skill Passport', icon: 'bi-pass-fill', route: '/candidate/my-passport' },
     // { label: 'Prep Guide', icon: 'bi-journal-bookmark-fill', route: '/candidate/prep-guide' },
+    { label: 'Campus Drives', icon: 'bi-mortarboard-fill', route: '/candidate/campus-drives' },
     { label: 'Interview Invites', icon: 'bi-envelope-paper-fill', route: '/candidate/interview-invites' },
     // { label: 'Results & Offers', icon: 'bi-award-fill', route: '/candidate/results' },
   ];
@@ -43,7 +45,7 @@ export class Sidebar {
   }
 
   private handleLogout() {
-    this.http.post('http://localhost:8080/api/v1/auth/logout', {}).subscribe({
+    this.http.post(`${environment.apiBaseUrl}/api/v1/auth/logout`, {}).subscribe({
       next: () => {
         this.clearSessionAndRedirect();
       },

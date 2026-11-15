@@ -5,6 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { RecruiterJobService } from '../../../recruiter/services/recruiter-job.service';
 import { ChatWebSocketService } from '../../../../shared/services/chat-websocket.service';
+import { environment } from '../../../../core/environments/environment';
 
 export interface ChatMessage {
   id: number | string;
@@ -359,7 +360,7 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
     const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
     this.triggerToast(`Downloading ${msg.fileName || 'file'}...`);
 
-    this.http.get(`http://localhost:8080/api/v1/chat/messages/${msg.id}/file`, {
+    this.http.get(`${environment.apiBaseUrl}/api/v1/chat/messages/${msg.id}/file`, {
       headers,
       responseType: 'blob'
     }).subscribe({
@@ -385,7 +386,7 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
 
-    this.http.get(`http://localhost:8080/api/v1/chat/messages/${msg.id}/file?inline=true`, {
+    this.http.get(`${environment.apiBaseUrl}/api/v1/chat/messages/${msg.id}/file?inline=true`, {
       headers,
       responseType: 'blob'
     }).subscribe({
@@ -399,7 +400,7 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
       error: (err) => {
         console.error('Candidate file preview error:', err);
         if (token) {
-          window.open(`http://localhost:8080/api/v1/chat/messages/${msg.id}/file?inline=true&token=${encodeURIComponent(token)}`, '_blank');
+          window.open(`${environment.apiBaseUrl}/api/v1/chat/messages/${msg.id}/file?inline=true&token=${encodeURIComponent(token)}`, '_blank');
         } else {
           this.triggerToast('Could not preview file. Please download it.');
         }
@@ -437,7 +438,7 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
     if (!sentViaWs) {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
-      this.http.post('http://localhost:8080/api/v1/chat/messages', {
+      this.http.post(`${environment.apiBaseUrl}/api/v1/chat/messages`, {
         receiverId: this.selectedInterview.recruiterId,
         message: textToSend
       }, { headers }).subscribe({
@@ -467,7 +468,7 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     this.isUploadingFile = true;
-    this.http.post<any>('http://localhost:8080/api/v1/chat/messages/file', formData, { headers }).subscribe({
+    this.http.post<any>(`${environment.apiBaseUrl}/api/v1/chat/messages/file`, formData, { headers }).subscribe({
       next: (res) => {
         this.isUploadingFile = false;
         this.removeSelectedFile();
@@ -604,7 +605,7 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
   loadChatMessages(recruiterId: string) {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
-    this.http.get<any>(`http://localhost:8080/api/v1/chat/messages/${recruiterId}`, { headers }).subscribe({
+    this.http.get<any>(`${environment.apiBaseUrl}/api/v1/chat/messages/${recruiterId}`, { headers }).subscribe({
       next: (res) => {
         if (this.selectedInterview && res.data && res.data.content && res.data.content.length > 0) {
           const currentUserId = this.getCurrentUserId();
@@ -685,12 +686,12 @@ export class InterviewInvites implements OnInit, OnDestroy, AfterViewChecked {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     if (!token) return;
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    this.http.get<any>('http://localhost:8080/api/v1/notifications', { headers }).subscribe({
+    this.http.get<any>(`${environment.apiBaseUrl}/api/v1/notifications`, { headers }).subscribe({
       next: (res) => {
         if (res && res.data) {
           const unreadInvites = res.data.filter((n: any) => !n.read && n.type === 'INTERVIEW_INVITATION');
           for (const notif of unreadInvites) {
-            this.http.put(`http://localhost:8080/api/v1/notifications/${notif.id}/read`, {}, { headers }).subscribe();
+            this.http.put(`${environment.apiBaseUrl}/api/v1/notifications/${notif.id}/read`, {}, { headers }).subscribe();
           }
         }
       },

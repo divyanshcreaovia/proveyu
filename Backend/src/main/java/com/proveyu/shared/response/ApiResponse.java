@@ -1,13 +1,25 @@
 package com.proveyu.shared.response;
 
-import java.time.Instant;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.time.Instant;
+import java.util.Map;
+
+/**
+ * Standard response envelope.
+ * Success: {success:true, message, data, timestamp}
+ * Error:   {success:false, message, errorCode, code, status, fieldErrors, timestamp}
+ * ("code" mirrors "errorCode"; both are kept so existing clients keep working.)
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
 
     private boolean success;
     private String message;
     private T data;
     private String errorCode;
+    private Integer status;
+    private Map<String, String> fieldErrors;
     private Instant timestamp;
 
     public ApiResponse() {
@@ -34,6 +46,13 @@ public class ApiResponse<T> {
         return new ApiResponse<>(false, message, null, errorCode);
     }
 
+    public static <T> ApiResponse<T> error(int status, String message, String errorCode, Map<String, String> fieldErrors) {
+        ApiResponse<T> r = new ApiResponse<>(false, message, null, errorCode);
+        r.status = status;
+        r.fieldErrors = fieldErrors;
+        return r;
+    }
+
     public boolean isSuccess() { return success; }
     public void setSuccess(boolean success) { this.success = success; }
 
@@ -45,6 +64,14 @@ public class ApiResponse<T> {
 
     public String getErrorCode() { return errorCode; }
     public void setErrorCode(String errorCode) { this.errorCode = errorCode; }
+
+    public String getCode() { return errorCode; }
+
+    public Integer getStatus() { return status; }
+    public void setStatus(Integer status) { this.status = status; }
+
+    public Map<String, String> getFieldErrors() { return fieldErrors; }
+    public void setFieldErrors(Map<String, String> fieldErrors) { this.fieldErrors = fieldErrors; }
 
     public Instant getTimestamp() { return timestamp; }
     public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }

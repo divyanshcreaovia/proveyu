@@ -2,6 +2,7 @@ import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RouterModule, Router } from '@angular/router';
+import { environment } from '../../../../core/environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -35,7 +36,7 @@ export class Header implements OnInit {
     if (!token) return;
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    this.http.get('http://localhost:8080/api/v1/notifications', { headers }).subscribe({
+    this.http.get(`${environment.apiBaseUrl}/api/v1/notifications`, { headers }).subscribe({
       next: (res: any) => {
         if (res.data) {
           this.notifications = res.data;
@@ -54,7 +55,7 @@ export class Header implements OnInit {
   }
 
   checkCandidatePendingInvitations(inviteNotif: any, headers: HttpHeaders) {
-    this.http.get<any>('http://localhost:8080/api/v1/recruiter/jobs/candidate/invitations', { headers }).subscribe({
+    this.http.get<any>(`${environment.apiBaseUrl}/api/v1/recruiter/jobs/candidate/invitations`, { headers }).subscribe({
       next: (res) => {
         const invitations: any[] = res?.data || [];
         const hasPending = invitations.some(inv => {
@@ -113,7 +114,7 @@ export class Header implements OnInit {
     if (!token) return;
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    this.http.put(`http://localhost:8080/api/v1/notifications/${notification.id}/read`, {}, { headers }).subscribe({
+    this.http.put(`${environment.apiBaseUrl}/api/v1/notifications/${notification.id}/read`, {}, { headers }).subscribe({
       next: () => {
         notification.read = true;
         this.unreadCount = Math.max(0, this.unreadCount - 1);

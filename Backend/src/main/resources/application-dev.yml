@@ -1,0 +1,11 @@
+# Local development profile. Activate with SPRING_PROFILES_ACTIVE=dev
+# Exposes OTP / verification / invite tokens in API responses so the full flow
+# can be exercised without a working SMTP server. Never use in production.
+app:
+  dev:
+    expose-tokens: true
+college:
+  require-admin-approval: ${COLLEGE_REQUIRE_APPROVAL:false}
+logging:
+  level:
+    com.proveyu: DEBUG

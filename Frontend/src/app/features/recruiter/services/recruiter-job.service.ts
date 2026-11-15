@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../core/environments/environment';
 
 export interface DomainItem {
   id: string;
@@ -86,8 +87,8 @@ export interface BackendJobResponse {
   providedIn: 'root'
 })
 export class RecruiterJobService {
-  private baseUrl = 'http://localhost:8080/api/v1/recruiter/jobs';
-  private domainsUrl = 'http://localhost:8080/api/v1/domains';
+  private baseUrl = `${environment.apiBaseUrl}/api/v1/recruiter/jobs`;
+  private domainsUrl = `${environment.apiBaseUrl}/api/v1/domains`;
 
   constructor(private http: HttpClient) {}
 

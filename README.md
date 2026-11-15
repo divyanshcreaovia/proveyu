@@ -33,7 +33,7 @@ proveyu/
 
 ### ⚙️ Backend Core (`/Backend`)
 * **Framework**: Spring Boot `v3.2.3` with Java `19`
-* **Database**: MySQL `8.0` (Flyway Database Migrations `V1`–`V7`)
+* **Database**: MySQL `8.0` (Flyway Database Migrations `V1`–`V20`)
 * **Security & Rate Limiting**:
   * **JWT Authentication**: Stateless Bearer Token Authorization with Role-Based Access (`CANDIDATE`, `RECRUITER`, `ADMIN`).
   * **Hybrid Rate Limiting (`RateLimitingFilter`)**: IP-bucket sliding-window rate limiting (60 req/min) on auth routes + JWT User ID rate limiting (120 req/min) on booking/payment routes.
@@ -63,27 +63,16 @@ proveyu/
 
 ### 1️⃣ Setting Up & Running Backend
 
-1. **Configure Environment Variables / MySQL Credentials** (`Backend/src/main/resources/application.yml`):
-   ```yaml
-   spring:
-     datasource:
-       url: jdbc:mysql://localhost:3306/PROVEYU?createDatabaseIfNotExist=true
-       username: root
-       password: YourPassword123!
-     mail:
-       host: smtp.godaddy.com
-       port: 587
-       username: info@proveyu.com
-       password: YourEmailPassword
-   ```
+Secrets are **never** stored in `application.yml`; they come from environment variables.
 
-2. **Build and Run Backend**:
-   ```bash
-   cd Backend
-   mvn clean compile
-   mvn spring-boot:run
-   ```
-   *Backend server starts at `http://localhost:8080`*
+```bash
+./scripts/start-db.sh                      # local MySQL 8 in Docker on 127.0.0.1:3310
+cp Backend/.env.example Backend/.env       # fill in DB password + JWT_SECRET (openssl rand -base64 64)
+./scripts/run-backend.sh                   # loads Backend/.env, runs Flyway V1..V20, serves http://localhost:8080
+```
+
+Reference for every environment: `Backend/application-example.yml`. Swagger UI: `http://localhost:8080/swagger-ui.html`.
+College portal guide (audit, architecture, demo seed, tests, manual checklist): **[docs/COLLEGE_PORTAL.md](docs/COLLEGE_PORTAL.md)**.
 
 ---
 

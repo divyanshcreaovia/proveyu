@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: ${MAX_UPLOAD_SIZE:10MB}
+      max-request-size: ${MAX_REQUEST_SIZE:12MB}
   application:
     name: ${SPRING_APPLICATION_NAME:proveyu-backend}
   autoconfigure:
@@ -8,9 +12,9 @@ spring:
       - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://192.168.0.68:3307/PROVEYU?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:Proveyu@321@}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/PROVEYU?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: ${SPRING_DATASOURCE_DRIVER:com.mysql.cj.jdbc.Driver}
     hikari:
       maximum-pool-size: ${HIKARI_MAX_POOL_SIZE:20}
@@ -38,8 +42,8 @@ spring:
   mail:
     host: ${SPRING_MAIL_HOST:smtpout.secureserver.net}
     port: ${SPRING_MAIL_PORT:465}
-    username: ${SPRING_MAIL_USERNAME:info@proveyu.com}
-    password: ${SPRING_MAIL_PASSWORD:info@1234}
+    username: ${SPRING_MAIL_USERNAME:}
+    password: ${SPRING_MAIL_PASSWORD:}
     protocol: smtps
     properties:
       mail:
@@ -74,18 +78,18 @@ chat:
     allowed-extensions: ${CHAT_ALLOWED_EXTENSIONS:.pdf,.doc,.docx,.jpg,.jpeg,.png}
 
 jwt:
-  secret: ${JWT_SECRET:ProveyuSuperSecretSigningKeyForJWTAuthentication2026SecureKey!}
+  secret: ${JWT_SECRET}
   expiration-ms: ${JWT_EXPIRATION_MS:86400000}
 
 razorpay:
-  key_id: ${RAZORPAY_KEY_ID:rururuur}
-  key_secret: ${RAZORPAY_KEY_SECRET:jvkhhje}
-  webhook_secret: ${RAZORPAY_WEBHOOK_SECRET:hdreuh}
+  key_id: ${RAZORPAY_KEY_ID:}
+  key_secret: ${RAZORPAY_KEY_SECRET:}
+  webhook_secret: ${RAZORPAY_WEBHOOK_SECRET:}
   mock_mode: ${RAZORPAY_MOCK_MODE:true}
 
 uan:
   verification_url: ${UAN_VERIFICATION_URL:https://api.epfo.gov.in/uan/verify}
-  api_key: ${UAN_VERIFICATION_API_KEY:urrru}
+  api_key: ${UAN_VERIFICATION_API_KEY:}
 
 logging:
   level:
@@ -94,9 +98,32 @@ logging:
     org.hibernate.SQL: ${LOGGING_LEVEL_SQL:INFO}
 
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
 
 security:
   rate-limit:
     enabled: ${RATE_LIMIT_ENABLED:true}
     auth-limit-per-minute: ${AUTH_LIMIT_PER_MINUTE:60}
+    user-limit-per-minute: ${USER_LIMIT_PER_MINUTE:120}
+
+
+app:
+  # Public URL of the Angular app, used in e-mail links (verification, invites, password reset)
+  frontend-url: ${APP_FRONTEND_URL:http://localhost:4200}
+  dev:
+    # NEVER enable in production: returns OTP / verification / invite tokens in API responses and logs them
+    expose-tokens: ${APP_DEV_EXPOSE_TOKENS:false}
+
+college:
+  # When true, newly registered colleges stay PENDING until a platform ADMIN approves them
+  require-admin-approval: ${COLLEGE_REQUIRE_APPROVAL:true}
+  file:
+    upload-dir: ${COLLEGE_FILE_UPLOAD_DIR:uploads/college}
+    max-file-size-bytes: ${COLLEGE_MAX_FILE_SIZE:10485760}
+    allowed-extensions: ${COLLEGE_ALLOWED_EXTENSIONS:.pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx,.xls,.csv}
+
+springdoc:
+  api-docs:
+    enabled: ${SPRINGDOC_ENABLED:true}
+  swagger-ui:
+    path: /swagger-ui.html

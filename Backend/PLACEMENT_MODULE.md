@@ -1,3 +1,5 @@
+> **Superseded (Nov 2026):** the `com.proveyu.placement` package described here was replaced by the consolidated `com.proveyu.college` module. See [docs/COLLEGE_PORTAL.md](../docs/COLLEGE_PORTAL.md). Kept for history only.
+
 # PROVEYU Placement Module Documentation
 
 The **Placement Module** is a self-contained, enterprise-grade recruitment and campus placement system integrated directly into the PROVEYU platform. It powers college placement cell operations, recruitment drive scheduling, automated student eligibility screening, multi-round interview pipelines, shortlist dispatching, and final offer tracking.

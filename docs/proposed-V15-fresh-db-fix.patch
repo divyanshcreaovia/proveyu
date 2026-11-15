@@ -1,0 +1,25 @@
+--- a/Backend/src/main/resources/db/migration/V15__create_domains_and_link_candidates_jobs.sql
++++ b/Backend/src/main/resources/db/migration/V15__create_domains_and_link_candidates_jobs.sql
+@@ -76,11 +76,14 @@
+ 
+ -- 7. Seed verified profiles for existing candidates without profiles
+ INSERT INTO candidate_profiles (id, user_id, domain_id, experience_track, years_of_experience, college_name, degree_branch, passout_year, skills_list, location, headline)
+-VALUES
+-('7352c63c-624d-431c-b045-228a0e845f23', '0ce31fa4-8c75-4e6f-9369-19fc0525316c', 'd0000000-0000-0000-0000-000000000006', 'FRESHER', 0, 'IIT Kanpur', 'Computer Science', 2025, 'Python, FastAPI, Pandas, Data Structures, PostgreSQL', 'Bengaluru, KA', 'Python Backend & Data Specialist'),
+-('c54b7323-0f1e-46f2-aff8-f0da2631b86e', '8d3d574a-d9ee-4ba0-a476-89583ffeb05e', 'd0000000-0000-0000-0000-000000000002', 'EXPERIENCED', 2, 'BMS College of Engineering', 'Information Science', 2023, 'Java, Spring Boot, MySQL, Microservices, Hibernate', 'Bengaluru, KA', 'Java Spring Boot Microservices Engineer'),
+-('a1111111-2222-3333-4444-555555555501', '355a989a-77ff-4399-9644-e7bf42aba511', 'd0000000-0000-0000-0000-000000000001', 'EXPERIENCED', 2, 'PES University', 'Computer Science', 2023, 'Java, Selenium, JUnit, TestNG, Cypress, Automation Testing', 'Hyderabad, TS', 'QA & Automation Testing Lead'),
+-('a1111111-2222-3333-4444-555555555502', '2d5cfbae-879a-4b27-b498-614a8a02c810', 'd0000000-0000-0000-0000-000000000001', 'FRESHER', 1, 'COEP Pune', 'Information Technology', 2024, 'Selenium, Appium, Playwright, API Testing, JIRA, Postman', 'Pune, MH', 'QA Automation & Performance Tester'),
+-('a1111111-2222-3333-4444-555555555503', '5647032a-a08f-4328-bb9f-bb63295af6bd', 'd0000000-0000-0000-0000-000000000003', 'FRESHER', 0, 'MS Ramaiah Inst. of Technology', 'Computer Science', 2025, 'Node.js, React, Express, MongoDB, TypeScript, Next.js', 'Bengaluru, KA', 'Full Stack Software Engineer'),
+-('a1111111-2222-3333-4444-555555555504', '7a914264-53dc-4986-94ac-c9566c713952', 'd0000000-0000-0000-0000-000000000007', 'FRESHER', 0, 'IIT Bombay', 'Computer Science & Engineering', 2026, 'Data Structures, Algorithms, C++, SQL, System Design', 'Mumbai, MH', 'Universal Competency Passport Holder')
+-ON DUPLICATE KEY UPDATE domain_id=VALUES(domain_id), skills_list=VALUES(skills_list), headline=VALUES(headline);
++-- Seed only for users that exist (these ids exist only in the original shared DB).
++SELECT v.* FROM (VALUES
++ROW('7352c63c-624d-431c-b045-228a0e845f23', '0ce31fa4-8c75-4e6f-9369-19fc0525316c', 'd0000000-0000-0000-0000-000000000006', 'FRESHER', 0, 'IIT Kanpur', 'Computer Science', 2025, 'Python, FastAPI, Pandas, Data Structures, PostgreSQL', 'Bengaluru, KA', 'Python Backend & Data Specialist'),
++ROW('c54b7323-0f1e-46f2-aff8-f0da2631b86e', '8d3d574a-d9ee-4ba0-a476-89583ffeb05e', 'd0000000-0000-0000-0000-000000000002', 'EXPERIENCED', 2, 'BMS College of Engineering', 'Information Science', 2023, 'Java, Spring Boot, MySQL, Microservices, Hibernate', 'Bengaluru, KA', 'Java Spring Boot Microservices Engineer'),
++ROW('a1111111-2222-3333-4444-555555555501', '355a989a-77ff-4399-9644-e7bf42aba511', 'd0000000-0000-0000-0000-000000000001', 'EXPERIENCED', 2, 'PES University', 'Computer Science', 2023, 'Java, Selenium, JUnit, TestNG, Cypress, Automation Testing', 'Hyderabad, TS', 'QA & Automation Testing Lead'),
++ROW('a1111111-2222-3333-4444-555555555502', '2d5cfbae-879a-4b27-b498-614a8a02c810', 'd0000000-0000-0000-0000-000000000001', 'FRESHER', 1, 'COEP Pune', 'Information Technology', 2024, 'Selenium, Appium, Playwright, API Testing, JIRA, Postman', 'Pune, MH', 'QA Automation & Performance Tester'),
++ROW('a1111111-2222-3333-4444-555555555503', '5647032a-a08f-4328-bb9f-bb63295af6bd', 'd0000000-0000-0000-0000-000000000003', 'FRESHER', 0, 'MS Ramaiah Inst. of Technology', 'Computer Science', 2025, 'Node.js, React, Express, MongoDB, TypeScript, Next.js', 'Bengaluru, KA', 'Full Stack Software Engineer'),
++ROW('a1111111-2222-3333-4444-555555555504', '7a914264-53dc-4986-94ac-c9566c713952', 'd0000000-0000-0000-0000-000000000007', 'FRESHER', 0, 'IIT Bombay', 'Computer Science & Engineering', 2026, 'Data Structures, Algorithms, C++, SQL, System Design', 'Mumbai, MH', 'Universal Competency Passport Holder')
++) AS v
++WHERE EXISTS (SELECT 1 FROM users u WHERE u.id = v.column_1)
++ON DUPLICATE KEY UPDATE domain_id=v.column_2, skills_list=v.column_8, headline=v.column_10;

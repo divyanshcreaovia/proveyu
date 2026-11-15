@@ -1,3 +1,5 @@
+> **Superseded (Nov 2026):** the `com.proveyu.placement` package described here was replaced by the consolidated `com.proveyu.college` module. See [docs/COLLEGE_PORTAL.md](../docs/COLLEGE_PORTAL.md). Kept for history only.
+
 # PROVEYU — Campus Placement Module Frontend Handover & API Guide
 
 This document provides a complete, production-grade integration guide for Frontend Developers building and connecting the **College Placement & Recruitment Portal** on PROVEYU.

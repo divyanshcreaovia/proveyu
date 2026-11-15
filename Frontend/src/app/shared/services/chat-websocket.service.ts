@@ -1,5 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
+import { environment } from '../../core/environments/environment';
 
 export interface WsChatMessageEvent {
   event: string;
@@ -48,13 +49,9 @@ export class ChatWebSocketService implements OnDestroy {
     }
 
     this.isExplicitlyClosed = false;
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.hostname || 'localhost';
-    const port = '8080';
-    const wsUrl = `${protocol}//${host}:${port}/ws/chat?token=${token}`;
+    const wsUrl = `${environment.wsBaseUrl}/ws/chat?token=${encodeURIComponent(token)}`;
 
     try {
-      console.log('[WS] Connecting to:', wsUrl);
       this.socket = new WebSocket(wsUrl);
 
       this.socket.onopen = () => {

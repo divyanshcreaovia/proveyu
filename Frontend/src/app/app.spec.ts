@@ -1,23 +1,31 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { App } from './app';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
   });
 
-  it('should create the app', () => {
+  it('creates the app with global toasts and confirm dialog', () => {
     const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(fixture.componentInstance).toBeTruthy();
+    expect(el.querySelector('pm-toasts')).not.toBeNull();
+    expect(el.querySelector('pm-confirm-dialog')).not.toBeNull();
   });
 
-  it('should render title', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, proveyu-frontend');
+  it('treats portal URLs as portal routes', () => {
+    const app = TestBed.createComponent(App).componentInstance as unknown as { portal(u: string): boolean };
+    expect(app.portal('/college/dashboard')).toBe(true);
+    expect(app.portal('/candidate/campus-drives')).toBe(true);
+    expect(app.portal('/admin/colleges')).toBe(true);
+    expect(app.portal('/how-it-works')).toBe(false);
   });
 });

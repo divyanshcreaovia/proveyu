@@ -22,7 +22,7 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<NotificationDto> getUserNotifications(UUID userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new com.proveyu.shared.error.DomainException("User not found", org.springframework.http.HttpStatus.NOT_FOUND, "USER_NOT_FOUND"));
         return notificationRepository.findByUserOrderByCreatedAtDesc(user)
                 .stream()
                 .map(this::mapToDto)
@@ -32,14 +32,37 @@ public class NotificationService {
     @Transactional
     public void markAsRead(UUID notificationId, UUID userId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
+                .orElseThrow(() -> new com.proveyu.shared.error.DomainException("Notification not found", org.springframework.http.HttpStatus.NOT_FOUND, "NOT_FOUND"));
         
         if (!notification.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Unauthorized");
+            throw new com.proveyu.shared.error.DomainException("Not your notification", org.springframework.http.HttpStatus.FORBIDDEN, "FORBIDDEN");
         }
         
         notification.setRead(true);
         notificationRepository.save(notification);
+    }
+
+    /** Creates an in-app notification for a user (no-op if the user does not exist). */
+    @Transactional
+    public void notify(UUID userId, String type, String message) {
+        if (userId == null) return;
+        userRepository.findById(userId).ifPresent(user -> {
+            Notification n = new Notification();
+            n.setUser(user);
+            n.setType(type.length() > 50 ? type.substring(0, 50) : type);
+            n.setMessage(message);
+            notificationRepository.save(n);
+        });
+    }
+
+    @Transactional
+    public void markAllAsRead(UUID userId) {
+        userRepository.findById(userId).ifPresent(user -> notificationRepository.findByUserOrderByCreatedAtDesc(user).forEach(n -> {
+            if (!n.isRead()) {
+                n.setRead(true);
+                notificationRepository.save(n);
+            }
+        }));
     }
 
     private NotificationDto mapToDto(Notification entity) {

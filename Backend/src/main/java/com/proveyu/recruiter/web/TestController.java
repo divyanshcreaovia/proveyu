@@ -5,6 +5,8 @@ import com.proveyu.recruiter.domain.RecruiterProfileRepository;
 import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
+/** Debug endpoint: only registered under the "dev" profile and only reachable by ADMIN (see SecurityConfig). */
+@org.springframework.context.annotation.Profile("dev")
 @RestController
 @RequestMapping("/api/v1/test")
 public class TestController {

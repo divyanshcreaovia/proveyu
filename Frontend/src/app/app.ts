@@ -1,34 +1,29 @@
-import { Component, signal, OnInit } from '@angular/core';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { Navbar } from './shared/components/navbar/navbar';
 import { Footer } from './shared/components/footer/footer';
 import { GlobalNotification } from './shared/components/global-notification/global-notification';
-import { filter } from 'rxjs/operators';
+import { ToastContainer } from './shared/ui/toast-container';
+import { ConfirmDialog } from './shared/ui/confirm-dialog';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule, RouterOutlet, Navbar, Footer, GlobalNotification],
+  imports: [RouterOutlet, Navbar, Footer, GlobalNotification, ToastContainer, ConfirmDialog],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
-export class App implements OnInit {
-  protected readonly title = signal('proveyu-frontend');
-  isPortalRoute = false;
+export class App {
+  private router = inject(Router);
+  /** Portals render their own chrome; public pages get the marketing navbar / footer. */
+  readonly isPortalRoute = signal(this.portal(this.router.url));
 
-  constructor(private router: Router) {}
-
-  ngOnInit() {
-    this.checkRoute(this.router.url);
-    this.router.events
-      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this.checkRoute(event.urlAfterRedirects || event.url);
-      });
+  constructor() {
+    this.router.events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(e => this.isPortalRoute.set(this.portal(e.urlAfterRedirects || e.url)));
   }
 
-  private checkRoute(url: string) {
-    this.isPortalRoute = url.includes('/candidate') || url.includes('/recruiter') || url.includes('/college');
+  private portal(url: string): boolean {
+    return /^\/(candidate|recruiter|college|admin|forbidden)/.test(url);
   }
 }

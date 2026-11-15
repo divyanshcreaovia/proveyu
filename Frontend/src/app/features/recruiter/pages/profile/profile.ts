@@ -2,6 +2,7 @@ import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../core/environments/environment';
 
 interface TeamMember {
   id: number;
@@ -73,7 +74,7 @@ export class Profile implements OnInit {
   }
 
   ngOnInit() {
-    this.http.get<any>('http://localhost:8080/api/v1/recruiters/profile', {
+    this.http.get<any>(`${environment.apiBaseUrl}/api/v1/recruiters/profile`, {
       headers: this.getAuthHeaders()
     }).subscribe({
       next: (res) => {
@@ -146,7 +147,7 @@ export class Profile implements OnInit {
     };
     console.log('PAYLOAD BEFORE SAVE:', payload);
 
-    this.http.put('http://localhost:8080/api/v1/recruiters/profile', payload, {
+    this.http.put(`${environment.apiBaseUrl}/api/v1/recruiters/profile`, payload, {
       headers: this.getAuthHeaders()
     }).subscribe({
       next: () => {

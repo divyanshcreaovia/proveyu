@@ -18,6 +18,31 @@ public class EmailService {
     private static final String FROM_EMAIL = "info@proveyu.com";
     private static final String SENDER_NAME = "PROVEYU Platform";
 
+    /** Generic HTML e-mail with optional attachment (attachment may be null). */
+    @Async
+    public void sendHtml(String toEmail, String subject, String htmlBody, String attachmentName, byte[] attachment, String attachmentType) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(FROM_EMAIL, SENDER_NAME);
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true);
+            if (attachment != null && attachmentName != null) {
+                helper.addAttachment(attachmentName, new org.springframework.core.io.ByteArrayResource(attachment), attachmentType);
+            }
+            mailSender.send(message);
+            log.info("[HTML EMAIL SENT] subject=[{}] to=[{}]", subject, toEmail);
+        } catch (Exception e) {
+            log.error("[HTML EMAIL ERROR] subject=[{}] to=[{}]: {}", subject, toEmail, e.getMessage());
+        }
+    }
+
+    @Async
+    public void sendHtml(String toEmail, String subject, String htmlBody) {
+        sendHtml(toEmail, subject, htmlBody, null, null, null);
+    }
+
     @Async
     public void sendWelcomeEmail(String toEmail, String fullName) {
         try {

@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../core/environments/environment';
 
 export interface EducationItem {
   id: number;
@@ -87,7 +88,7 @@ export class Profile implements OnInit {
     const token = sessionStorage.getItem('token');
     const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
-    this.http.get('http://localhost:8080/api/v1/candidates/profile', { headers }).subscribe({
+    this.http.get(`${environment.apiBaseUrl}/api/v1/candidates/profile`, { headers }).subscribe({
       next: (res: any) => {
         if (res.success && res.data) {
           if (res.data.skillsList) {
@@ -120,7 +121,7 @@ export class Profile implements OnInit {
       error: (err) => console.error('Failed to load profile', err)
     });
 
-    this.http.get('http://localhost:8080/api/v1/domains').subscribe({
+    this.http.get(`${environment.apiBaseUrl}/api/v1/domains`).subscribe({
       next: (res: any) => {
         if (res.data) {
           this.availableDomains = res.data;
@@ -177,7 +178,7 @@ export class Profile implements OnInit {
     const token = sessionStorage.getItem('token');
     const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
-    this.http.post('http://localhost:8080/api/v1/candidates/profile', payload, { headers }).subscribe({
+    this.http.post(`${environment.apiBaseUrl}/api/v1/candidates/profile`, payload, { headers }).subscribe({
       next: () => {
         this.triggerToast('Profile information updated successfully!');
       },

@@ -1,6 +1,6 @@
 -- ============================================================
 -- PROVEYU Database Schema (MySQL 8.0)
--- Migration: V14__create_placement_management_tables.sql
+-- Migration: V17__create_placement_management_tables.sql
 -- ============================================================
 
 -- 1. College Custom Roles (Organization-defined dynamic roles without hardcoding)

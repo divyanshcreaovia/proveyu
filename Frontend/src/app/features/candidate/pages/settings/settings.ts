@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../../core/environments/environment';
 
 @Component({
   selector: 'app-settings',
@@ -39,7 +40,7 @@ export class Settings implements OnInit {
     if (!token) return;
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    this.http.get('http://localhost:8080/api/v1/candidates/settings', { headers }).subscribe({
+    this.http.get(`${environment.apiBaseUrl}/api/v1/candidates/settings`, { headers }).subscribe({
       next: (res: any) => {
         if (res.data) {
           this.settingsData = res.data;
@@ -58,7 +59,7 @@ export class Settings implements OnInit {
     this.errorMessage = '';
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    this.http.put('http://localhost:8080/api/v1/candidates/settings', this.settingsData, { headers }).subscribe({
+    this.http.put(`${environment.apiBaseUrl}/api/v1/candidates/settings`, this.settingsData, { headers }).subscribe({
       next: (res: any) => {
         this.isSaving = false;
         this.successMessage = 'Settings saved successfully!';

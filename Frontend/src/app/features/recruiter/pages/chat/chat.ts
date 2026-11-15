@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { RecruiterChatService, CandidateChatThread, ChatMessage } from '../../services/recruiter-chat.service';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { ChatWebSocketService } from '../../../../shared/services/chat-websocket.service';
+import { environment } from '../../../../core/environments/environment';
 
 @Component({
   selector: 'app-recruiter-chat',
@@ -94,7 +95,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   loadBackendInvitations() {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
-    this.http.get<any>('http://localhost:8080/api/v1/recruiter/jobs/invitations', { headers }).subscribe({
+    this.http.get<any>(`${environment.apiBaseUrl}/api/v1/recruiter/jobs/invitations`, { headers }).subscribe({
       next: (res) => {
         if (res.data && res.data.length > 0) {
           const backendThreads: CandidateChatThread[] = res.data.map((inv: any, idx: number) => {
@@ -184,7 +185,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
   loadBackendThreadMessages(candidateUuid: string) {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
-    this.http.get<any>(`http://localhost:8080/api/v1/chat/messages/${candidateUuid}`, { headers }).subscribe({
+    this.http.get<any>(`${environment.apiBaseUrl}/api/v1/chat/messages/${candidateUuid}`, { headers }).subscribe({
       next: (res) => {
         if (this.selectedThread && res.data && res.data.content && res.data.content.length > 0) {
           const currentUserId = this.getCurrentUserId();
@@ -299,7 +300,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
     const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
     this.notificationService.showInfo(`Downloading ${msg.fileName || 'file' }...`);
 
-    this.http.get(`http://localhost:8080/api/v1/chat/messages/${msg.id}/file`, {
+    this.http.get(`${environment.apiBaseUrl}/api/v1/chat/messages/${msg.id}/file`, {
       headers,
       responseType: 'blob'
     }).subscribe({
@@ -325,7 +326,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
 
-    this.http.get(`http://localhost:8080/api/v1/chat/messages/${msg.id}/file?inline=true`, {
+    this.http.get(`${environment.apiBaseUrl}/api/v1/chat/messages/${msg.id}/file?inline=true`, {
       headers,
       responseType: 'blob'
     }).subscribe({
@@ -339,7 +340,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
       error: (err) => {
         console.error('File preview failed:', err);
         if (token) {
-          window.open(`http://localhost:8080/api/v1/chat/messages/${msg.id}/file?inline=true&token=${encodeURIComponent(token)}`, '_blank');
+          window.open(`${environment.apiBaseUrl}/api/v1/chat/messages/${msg.id}/file?inline=true&token=${encodeURIComponent(token)}`, '_blank');
         } else {
           this.notificationService.showError('Could not preview file. Please try downloading it instead.');
         }
@@ -381,7 +382,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
     if (!sentViaWs) {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const headers = token ? new HttpHeaders({ 'Authorization': 'Bearer ' + token }) : undefined;
-      this.http.post('http://localhost:8080/api/v1/chat/messages', {
+      this.http.post(`${environment.apiBaseUrl}/api/v1/chat/messages`, {
         receiverId: candUuid,
         message: sentText
       }, { headers }).subscribe({
@@ -408,7 +409,7 @@ export class Chat implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     this.isUploadingFile = true;
-    this.http.post<any>('http://localhost:8080/api/v1/chat/messages/file', formData, { headers }).subscribe({
+    this.http.post<any>(`${environment.apiBaseUrl}/api/v1/chat/messages/file`, formData, { headers }).subscribe({
       next: (res) => {
         this.isUploadingFile = false;
         this.removeSelectedFile();

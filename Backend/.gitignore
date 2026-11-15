@@ -20,6 +20,7 @@ target/
 uploads/
 .env
 .env.local
+.env.*backup
 
 # OS Generated Files
 .DS_Store

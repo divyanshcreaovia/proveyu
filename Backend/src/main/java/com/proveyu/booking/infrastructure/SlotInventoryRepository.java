@@ -20,4 +20,16 @@ public interface SlotInventoryRepository extends JpaRepository<SlotInventory, UU
     @QueryHints(@QueryHint(name = "jakarta.persistence.lock.timeout", value = "4000"))
     @Query("SELECT s FROM SlotInventory s WHERE s.slotId = :slotId")
     Optional<SlotInventory> findByIdForUpdate(@Param("slotId") UUID slotId);
+
+    /** Slot calendar details used in booking e-mails. */
+    interface SlotDetails {
+        java.time.LocalDate getSlotDate();
+        java.time.LocalTime getStartTime();
+        java.time.LocalTime getEndTime();
+        String getExamTitle();
+    }
+
+    @Query(value = "SELECT ds.slot_date AS slotDate, ds.start_time AS startTime, ds.end_time AS endTime, e.title AS examTitle "
+            + "FROM date_slots ds JOIN exams e ON e.id = ds.exam_id WHERE ds.id = :slotId", nativeQuery = true)
+    Optional<SlotDetails> findSlotDetails(@Param("slotId") String slotId);
 }

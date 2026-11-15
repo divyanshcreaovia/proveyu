@@ -10,5 +10,6 @@ import java.util.UUID;
 @Repository
 public interface CandidateScoreRepository extends JpaRepository<CandidateScore, UUID> {
     List<CandidateScore> findByCandidateId(UUID candidateId);
+    List<CandidateScore> findByCandidateIdIn(java.util.Collection<UUID> candidateIds);
     List<CandidateScore> findByCandidateIdAndExamId(UUID candidateId, UUID examId);
 }

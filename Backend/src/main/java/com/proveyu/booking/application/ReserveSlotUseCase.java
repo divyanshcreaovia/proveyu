@@ -40,16 +40,21 @@ public class ReserveSlotUseCase {
         });
 
         // Trigger Async Slot Booking Email Notification
-        userRepository.findById(candidateId).ifPresent(user -> {
-            String readableSlotTime = "Monday, 21 September 2026 (10:00 AM - 11:30 AM IST)";
-            emailService.sendSlotBookingConfirmationEmail(
-                    user.getEmail(),
-                    user.getFullName(),
-                    "PROVEYU Java Backend Certification Assessment",
-                    readableSlotTime
-            );
-        });
+        // Use the real slot date / time / exam title (previously a hard-coded date was sent)
+        var details = inventoryRepository.findSlotDetails(slotId.toString());
+        userRepository.findById(candidateId).ifPresent(user -> details.ifPresent(d -> emailService.sendSlotBookingConfirmationEmail(
+                user.getEmail(),
+                user.getFullName(),
+                d.getExamTitle(),
+                formatSlot(d.getSlotDate(), d.getStartTime(), d.getEndTime())
+        )));
 
         return booking;
+    }
+
+    static String formatSlot(java.time.LocalDate date, java.time.LocalTime start, java.time.LocalTime end) {
+        java.time.format.DateTimeFormatter day = java.time.format.DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", java.util.Locale.ENGLISH);
+        java.time.format.DateTimeFormatter time = java.time.format.DateTimeFormatter.ofPattern("hh:mm a", java.util.Locale.ENGLISH);
+        return date.format(day) + " (" + start.format(time) + " - " + end.format(time) + " IST)";
     }
 }

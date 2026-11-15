@@ -1,0 +1,29 @@
+# Integration-test profile. The datasource is supplied by Testcontainers (see IntegrationTestBase).
+jwt:
+  secret: integration-test-secret-integration-test-secret-integration-test-secret
+spring:
+  mail:
+    host: 127.0.0.1
+    port: 2525
+    username: ""
+    password: ""
+    protocol: smtp
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.ssl.enable: false
+      mail.smtp.connectiontimeout: 500
+      mail.smtp.timeout: 500
+app:
+  dev:
+    expose-tokens: true
+college:
+  require-admin-approval: false
+  file:
+    upload-dir: target/test-uploads/college
+  reminders:
+    interval-ms: 3600000
+  reports:
+    interval-ms: 3600000
+security:
+  rate-limit:
+    enabled: false

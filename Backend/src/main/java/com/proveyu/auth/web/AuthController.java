@@ -46,6 +46,19 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("Password has been reset successfully", "Password reset successful"));
     }
 
+    @PostMapping("/verify-email")
+    public ResponseEntity<ApiResponse<Void>> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
+        authService.verifyEmail(request.getToken());
+        return ResponseEntity.ok(ApiResponse.success(null, "E-mail verified. You can now sign in."));
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<ApiResponse<java.util.Map<String, String>>> resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
+        String devToken = authService.resendVerification(request.getEmail());
+        java.util.Map<String, String> data = devToken == null ? null : java.util.Map.of("devToken", devToken);
+        return ResponseEntity.ok(ApiResponse.success(data, "If the account exists and is unverified, a new verification link has been sent."));
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(@RequestHeader(value = "Authorization", required = false) String bearerToken) {
         authService.logout(bearerToken);

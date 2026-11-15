@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../../../../shared/services/notification.service';
+import { environment } from '../../../../core/environments/environment';
 
 @Component({
   selector: 'app-select-role',
@@ -142,7 +143,7 @@ export class SelectRole {
     this.isSubmitted = false;
     this.cdr.detectChanges();
 
-    this.http.post<any>('http://localhost:8080/api/v1/auth/register', payload).subscribe({
+    this.http.post<any>(`${environment.apiBaseUrl}/api/v1/auth/register`, payload).subscribe({
       next: (res) => {
         this.isSubmitting = false;
         this.isSubmitted = true;

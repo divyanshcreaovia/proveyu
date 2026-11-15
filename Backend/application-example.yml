@@ -1,0 +1,28 @@
+# Copy of the settings you must provide per environment. All secrets come from
+# environment variables (see .env.example); nothing secret is committed.
+spring:
+  datasource:
+    url: jdbc:mysql://<host>:3306/PROVEYU?useSSL=true&serverTimezone=UTC
+    username: <db-user>
+    password: <db-password>
+  mail:
+    host: smtpout.secureserver.net
+    port: 465
+    username: info@proveyu.com
+    password: <smtp-password>
+jwt:
+  secret: <random string of at least 64 characters, e.g. `openssl rand -base64 64`>
+  expiration-ms: 86400000
+razorpay:
+  key_id: <razorpay-key-id>
+  key_secret: <razorpay-key-secret>
+  webhook_secret: <razorpay-webhook-secret>
+  mock_mode: true
+app:
+  frontend-url: https://app.proveyu.com
+  dev:
+    expose-tokens: false   # must stay false outside local development
+college:
+  require-admin-approval: true
+cors:
+  allowed-origins: https://app.proveyu.com
