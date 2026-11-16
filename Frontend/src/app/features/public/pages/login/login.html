@@ -17,12 +17,35 @@
         <a routerLink="/" class="d-inline-block mb-2">
           <img src="images/logo1.png" alt="ProveYu Logo" style="height: 48px; width: auto;">
         </a>
-        <h1 class="h4 fw-extrabold text-navy mb-0">Sign In to ProveYu</h1>
+        <h1 class="h4 fw-extrabold text-navy mb-0">Sign In</h1>
       </div>
 
 
 
-      <!-- Success Alert Banner -->
+      <p class="text-center text-muted-custom fs-7 mb-4">Choose your portal to continue</p>
+      <div class="row g-3 mb-2">
+        <div class="col-sm-6">
+          <a routerLink="/college/login" class="portal-card portal-college">
+            <span class="portal-icon"><i class="bi bi-building"></i></span>
+            <span class="portal-tag">FOR COLLEGES</span>
+            <span class="portal-title">College / Placement cell</span>
+            <span class="portal-text">TPOs, placement coordinators and team members</span>
+            <span class="portal-cta">College sign in &rarr;</span>
+          </a>
+        </div>
+        <div class="col-sm-6">
+          <a routerLink="/student/login" class="portal-card portal-student">
+            <span class="portal-icon"><i class="bi bi-mortarboard"></i></span>
+            <span class="portal-tag">FOR STUDENTS</span>
+            <span class="portal-title">Student / Candidate</span>
+            <span class="portal-text">Campus drives, applications, interviews and offers</span>
+            <span class="portal-cta">Student sign in &rarr;</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Old single sign-in form (candidate / recruiter), disabled for now. Restore by removing this comment.
+      
       <div *ngIf="loginSuccessMessage"
         class="alert alert-success d-flex align-items-center mb-4 rounded-3 py-2.5 px-3 fs-7 border-0 shadow-sm"
         role="alert">
@@ -30,7 +53,7 @@
         <div>{{ loginSuccessMessage }}</div>
       </div>
 
-      <!-- Login Form -->
+      
       <form (ngSubmit)="onLogin($event)">
         <div class="mb-3 text-start">
           <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Email Address</label>
@@ -84,6 +107,8 @@
           <span>{{ isLoggingIn ? 'Authenticating...' : 'Sign In to Dashboard →' }}</span>
         </button>
       </form>
+
+      -->
 
       <div class="text-center pt-3 fs-7 text-muted-custom border-top mt-4">
         Don't have an account yet? <a routerLink="/select-role" class="text-primary fw-bold text-decoration-none">Get

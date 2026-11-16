@@ -20,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -210,7 +212,7 @@ public class ChatService {
 
             // Notify original sender of read receipt via WebSocket if online
             ChatWebSocketEvent<ChatMessageResponse> readEvent = new ChatWebSocketEvent<>("message.read", response);
-            chatWebSocketHandler.publishEvent(saved.getSenderId(), readEvent);
+            afterCommit(() -> chatWebSocketHandler.publishEvent(saved.getSenderId(), readEvent));
 
             return response;
         }
@@ -246,10 +248,29 @@ public class ChatService {
 
     private void publishMessageNewEvent(UUID receiverId, UUID senderId, ChatMessageResponse response) {
         ChatWebSocketEvent<ChatMessageResponse> event = new ChatWebSocketEvent<>("message.new", response);
-        // Deliver to receiver (if online)
-        chatWebSocketHandler.publishEvent(receiverId, event);
-        // Deliver to sender's other sessions/tabs (if online)
-        chatWebSocketHandler.publishEvent(senderId, event);
+        afterCommit(() -> {
+            // Deliver to receiver (if online)
+            chatWebSocketHandler.publishEvent(receiverId, event);
+            // Deliver to sender's other sessions/tabs (if online)
+            chatWebSocketHandler.publishEvent(senderId, event);
+        });
+    }
+
+    /**
+     * Pushes WebSocket events only once the message row is committed. Otherwise a client that reacts instantly
+     * (an open chat marking the message read) gets 404 for a row it cannot see yet, and the message stays unread.
+     */
+    private static void afterCommit(Runnable action) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            action.run();
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                action.run();
+            }
+        });
     }
 
     public record ChatFileAttachment(

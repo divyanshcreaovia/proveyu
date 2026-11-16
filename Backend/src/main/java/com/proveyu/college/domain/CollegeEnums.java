@@ -8,7 +8,7 @@ public final class CollegeEnums {
     public enum MemberRole { COLLEGE_ADMIN, COLLEGE_COORDINATOR, COLLEGE_VIEWER }
     public enum MemberStatus { ACTIVE, REVOKED }
     public enum StudentStatus { ACTIVE, PLACED, DEBARRED, OPTED_OUT }
-    public enum DocType { RESUME, MARKSHEET_10, MARKSHEET_12, MARKSHEET_SEM, ID_PROOF, OTHER }
+    public enum DocType { RESUME, MARKSHEET_10, MARKSHEET_12, MARKSHEET_SEM, ID_PROOF, OTHER, PHOTO, CERTIFICATE, INTERNSHIP_CERTIFICATE, COVER_LETTER, OFFER_LETTER }
     public enum VerificationStatus { PENDING, VERIFIED, REJECTED }
     public enum MouStatus { NONE, IN_PROGRESS, SIGNED, EXPIRED }
     public enum DriveType { ON_CAMPUS, OFF_CAMPUS, POOL, INTERNSHIP, PPO }

@@ -238,23 +238,25 @@ public class StudentService {
     public List<DocumentResponse> documents(UUID collegeId, UUID studentId) {
         return documentRepository.findAllByCollegeIdAndStudentIdOrderByCreatedAtDesc(collegeId, studentId).stream().map(d -> {
             CollegeFile f = fileService.get(collegeId, d.getFileId());
-            return new DocumentResponse(d.getId(), d.getDocType(), f.getId(), f.getOriginalName(), f.getContentType(), f.getSizeBytes(),
+            return new DocumentResponse(d.getId(), d.getDocType(), d.getLabel(), f.getId(), f.getOriginalName(), f.getContentType(), f.getSizeBytes(),
                     d.getVerificationStatus(), d.getRemarks(), d.getVerifiedAt(), d.getCreatedAt());
         }).toList();
     }
 
     @Transactional
-    public DocumentResponse uploadDocument(UUID collegeId, UUID actorId, UUID studentId, DocType type, MultipartFile file) {
+    public DocumentResponse uploadDocument(UUID collegeId, UUID actorId, UUID studentId, DocType type, String label, MultipartFile file) {
         CollegeFile stored = fileService.store(collegeId, actorId, file, "STUDENT_DOC", CollegeFileService.DOC_EXT);
-        StudentDocument d = documentRepository.save(StudentDocument.builder().collegeId(collegeId).studentId(studentId).docType(type).fileId(stored.getId()).build());
-        return new DocumentResponse(d.getId(), d.getDocType(), stored.getId(), stored.getOriginalName(), stored.getContentType(), stored.getSizeBytes(),
+        String cleanLabel = label == null || label.isBlank() ? null : label.trim().substring(0, Math.min(label.trim().length(), 150));
+        StudentDocument d = documentRepository.save(StudentDocument.builder().collegeId(collegeId).studentId(studentId).docType(type).label(cleanLabel)
+                .fileId(stored.getId()).build());
+        return new DocumentResponse(d.getId(), d.getDocType(), d.getLabel(), stored.getId(), stored.getOriginalName(), stored.getContentType(), stored.getSizeBytes(),
                 d.getVerificationStatus(), d.getRemarks(), d.getVerifiedAt(), d.getCreatedAt());
     }
 
     @Transactional
     public DocumentResponse uploadDocument(CollegeContext ctx, UUID studentId, DocType type, MultipartFile file) {
         CollegeStudent s = scoped(ctx, studentId);
-        DocumentResponse r = uploadDocument(ctx.collegeId(), ctx.userId(), s.getId(), type, file);
+        DocumentResponse r = uploadDocument(ctx.collegeId(), ctx.userId(), s.getId(), type, null, file);
         auditService.log(ctx, "DOCUMENT_UPLOADED", "STUDENT", studentId, "Uploaded " + type + " for " + s.getRollNumber(), r.fileName());
         return r;
     }

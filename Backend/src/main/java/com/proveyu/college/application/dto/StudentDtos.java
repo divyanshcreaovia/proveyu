@@ -41,7 +41,7 @@ public final class StudentDtos {
 
     public record StatusChangeRequest(@NotNull StudentStatus status, @NotBlank @Size(max = 500) String reason) {}
 
-    public record DocumentResponse(UUID id, DocType docType, UUID fileId, String fileName, String contentType, long sizeBytes,
+    public record DocumentResponse(UUID id, DocType docType, String label, UUID fileId, String fileName, String contentType, long sizeBytes,
                                    VerificationStatus verificationStatus, String remarks, Instant verifiedAt, Instant createdAt) {}
 
     public record VerifyDocumentRequest(@NotNull VerificationStatus status, @Size(max = 500) String remarks) {}

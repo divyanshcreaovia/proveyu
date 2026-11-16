@@ -10,6 +10,6 @@ export const authGuard: CanActivateFn = (_route, state) => {
   const auth = inject(AuthService);
   if (storage.token && !storage.isExpired()) return true;
   auth.clearLocal();
-  const login = state.url.startsWith('/college') ? '/college/login' : '/login';
+  const login = AuthService.loginFor(state.url);
   return router.createUrlTree([login], { queryParams: { returnUrl: state.url } });
 };

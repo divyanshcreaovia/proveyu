@@ -26,7 +26,7 @@ export class Sidebar {
     { label: 'Book Exam', icon: 'bi-calendar-event-fill', route: '/candidate/book-slot' },
     { label: 'Skill Passport', icon: 'bi-pass-fill', route: '/candidate/my-passport' },
     // { label: 'Prep Guide', icon: 'bi-journal-bookmark-fill', route: '/candidate/prep-guide' },
-    { label: 'Campus Drives', icon: 'bi-mortarboard-fill', route: '/candidate/campus-drives' },
+    { label: 'Campus Drives', icon: 'bi-mortarboard-fill', route: '/student/drives' },
     { label: 'Interview Invites', icon: 'bi-envelope-paper-fill', route: '/candidate/interview-invites' },
     // { label: 'Results & Offers', icon: 'bi-award-fill', route: '/candidate/results' },
   ];

@@ -25,5 +25,6 @@ public interface CollegeStudentRepository extends JpaRepository<CollegeStudent, 
     List<CollegeStudent> findAllByCollegeIdAndDeletedAtIsNull(UUID collegeId);
     List<CollegeStudent> findAllByIdInAndCollegeId(Collection<UUID> ids, UUID collegeId);
     Optional<CollegeStudent> findFirstByUserIdAndDeletedAtIsNull(UUID userId);
+    List<CollegeStudent> findAllByEmailIgnoreCaseAndDeletedAtIsNull(String email);
     long countByCollegeIdAndDeletedAtIsNull(UUID collegeId);
 }

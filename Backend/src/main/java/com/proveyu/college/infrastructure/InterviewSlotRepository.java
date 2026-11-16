@@ -21,6 +21,7 @@ public interface InterviewSlotRepository extends JpaRepository<InterviewSlot, UU
     Optional<InterviewSlot> findByIdAndCollegeId(UUID id, UUID collegeId);
     List<InterviewSlot> findAllByCollegeIdAndStartsAtBetweenOrderByStartsAtAsc(UUID collegeId, Instant from, Instant to);
     List<InterviewSlot> findAllByCollegeIdAndDriveIdOrderByStartsAtAsc(UUID collegeId, UUID driveId);
+    List<InterviewSlot> findAllByCollegeIdAndApplicationIdInOrderByStartsAtAsc(UUID collegeId, Collection<UUID> applicationIds);
     List<InterviewSlot> findAllByStatusAndReminderSentAtIsNullAndStartsAtBetween(SlotStatus status, Instant from, Instant to);
     @Query("select s from InterviewSlot s where s.collegeId = :collegeId and s.status = 'SCHEDULED' and s.startsAt < :end and s.endsAt > :start and (:excludeId is null or s.id <> :excludeId)")
     List<InterviewSlot> findOverlapping(@Param("collegeId") UUID collegeId, @Param("start") Instant start, @Param("end") Instant end, @Param("excludeId") UUID excludeId);

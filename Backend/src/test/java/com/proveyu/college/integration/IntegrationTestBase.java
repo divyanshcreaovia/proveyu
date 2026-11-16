@@ -70,7 +70,7 @@ public abstract class IntegrationTestBase {
         Resp reg = post("/api/v1/college/auth/register", null, Map.ofEntries(
                 Map.entry("collegeName", "College " + tag + " " + uid()), Map.entry("aicteCode", "AICTE-" + uid()), Map.entry("university", "MU"),
                 Map.entry("city", "Mumbai"), Map.entry("state", "Maharashtra"), Map.entry("emailDomain", domain), Map.entry("tpoName", "TPO " + tag),
-                Map.entry("tpoPhone", "9" + String.valueOf(System.nanoTime()).substring(4, 13)), Map.entry("tpoEmail", email),
+                Map.entry("tpoPhone", "9" + String.format("%09d", Math.floorMod(System.nanoTime(), 1_000_000_000L))), Map.entry("tpoEmail", email),
                 Map.entry("password", "Secret123"), Map.entry("acceptTerms", true)));
         if (reg.status() != 201) throw new IllegalStateException("register failed: " + reg.body());
         post("/api/v1/auth/verify-email", null, Map.of("token", reg.data().get("devVerificationToken").asText()));

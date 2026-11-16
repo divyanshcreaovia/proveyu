@@ -82,7 +82,7 @@ const passwordsMatch = (g: AbstractControl): ValidationErrors | null =>
                 <div class="invalid-feedback">Passwords do not match.</div></div>
               <div class="col-12 form-check ms-1">
                 <input id="r-terms" type="checkbox" class="form-check-input" formControlName="acceptTerms" [class.is-invalid]="inv('account.acceptTerms')" />
-                <label for="r-terms" class="form-check-label small">I confirm I am authorised to register this institution and accept the PROVEYU terms & data processing policy.</label>
+                <label for="r-terms" class="form-check-label small">I confirm I am authorised to register this institution and accept the ProveYu terms & data processing policy.</label>
               </div>
             </fieldset>
           }

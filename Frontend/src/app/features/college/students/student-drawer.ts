@@ -6,7 +6,7 @@ import { StudentService } from '../../../services/student.service';
 import { CollegeService } from '../../../services/college.service';
 import { ToastService } from '../../../services/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
-import { DocType, StudentDetail, StudentStatus } from '../../../core/models/college.models';
+import { DOC_TYPE_LABELS, DocType, StudentDetail, StudentStatus } from '../../../core/models/college.models';
 import { Modal } from '../../../shared/ui/modal';
 import { StatusBadge } from '../../../shared/ui/status-badge';
 import { FileUpload } from '../../../shared/ui/file-upload';
@@ -74,7 +74,7 @@ import { Skeleton } from '../../../shared/ui/states';
           @case ('Documents') {
             @for (doc of d()!.documents; track doc.id) {
               <div class="pm-sd-doc">
-                <div class="min-w-0"><div class="small fw-semibold text-truncate">{{ label(doc.docType) }} · {{ doc.fileName }}</div>
+                <div class="min-w-0"><div class="small fw-semibold text-truncate">{{ label(doc.docType) }}@if (doc.label) { ({{ doc.label }}) } · {{ doc.fileName }}</div>
                   <div class="small text-body-secondary">{{ doc.createdAt | date: 'mediumDate' }} @if (doc.remarks) { · {{ doc.remarks }} }</div></div>
                 <pm-status [value]="doc.verificationStatus" />
                 <div class="btn-group btn-group-sm">
@@ -126,7 +126,7 @@ export class StudentDrawer {
   d = signal<StudentDetail | null>(null);
   tabs = ['Academics', 'Passport', 'Documents', 'Placement'];
   tab = signal('Academics');
-  docTypes: DocType[] = ['RESUME', 'MARKSHEET_10', 'MARKSHEET_12', 'MARKSHEET_SEM', 'ID_PROOF', 'OTHER'];
+  docTypes = Object.keys(DOC_TYPE_LABELS) as DocType[];
   docType: DocType = 'RESUME';
 
   constructor() {
@@ -140,7 +140,7 @@ export class StudentDrawer {
   reload(id = this.studentId()!): void { this.students.get(id).subscribe(d => this.d.set(d)); }
 
   label(t: string): string {
-    return ({ RESUME: 'Resume', MARKSHEET_10: '10th marksheet', MARKSHEET_12: '12th marksheet', MARKSHEET_SEM: 'Semester marksheet', ID_PROOF: 'ID proof', OTHER: 'Other' } as Record<string, string>)[t] ?? t;
+    return DOC_TYPE_LABELS[t as DocType] ?? t;
   }
 
   async setStatus(status: StudentStatus): Promise<void> {

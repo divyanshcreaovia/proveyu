@@ -25,6 +25,7 @@ describe('route guards', () => {
   it('authGuard sends anonymous users to the right login with returnUrl', () => {
     expect(path(run(authGuard))).toBe('/college/login?returnUrl=%2Fcollege%2Fstudents');
     expect(path(run(authGuard, {}, '/candidate/dashboard'))).toBe('/login?returnUrl=%2Fcandidate%2Fdashboard');
+    expect(path(run(authGuard, {}, '/student/offers'))).toBe('/student/login?returnUrl=%2Fstudent%2Foffers');
   });
 
   it('authGuard rejects expired sessions and clears them', () => {
@@ -48,5 +49,6 @@ describe('route guards', () => {
     expect(path(run(guestGuard))).toBe('/college/dashboard');
     login('CANDIDATE');
     expect(path(run(guestGuard))).toBe('/candidate/dashboard');
+    expect(path(run(guestGuard, {}, '/student/login'))).toBe('/student/dashboard');
   });
 });

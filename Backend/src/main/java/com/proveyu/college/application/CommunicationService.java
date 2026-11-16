@@ -33,7 +33,7 @@ public class CommunicationService {
                                       @Valid AudienceFilter filter, boolean sendEmail) {}
 
     public record AnnouncementResponse(UUID id, String title, String body, AudienceFilter filter, int recipientCount, boolean sendEmail,
-                                       String createdByName, Instant createdAt) {}
+                                       String createdByName, Instant createdAt, long readCount) {}
 
     public record SearchHit(UUID id, String type, String title, String subtitle) {}
 
@@ -42,6 +42,7 @@ public class CommunicationService {
     public record ChatContact(UUID userId, String name, String type, String subtitle) {}
 
     private final AnnouncementRepository announcementRepository;
+    private final AnnouncementRecipientRepository recipientRepository;
     private final CollegeStudentRepository studentRepository;
     private final CollegeCompanyRepository companyRepository;
     private final CollegeDriveRepository driveRepository;
@@ -72,17 +73,22 @@ public class CommunicationService {
     public AnnouncementResponse announce(CollegeContext ctx, AnnouncementRequest r) {
         List<CollegeStudent> audience = audience(ctx, r.filter());
         String bodyHtml = "<h3>" + HtmlUtils.htmlEscape(r.title()) + "</h3><p>" + HtmlUtils.htmlEscape(r.body()).replace("\n", "<br>") + "</p>";
+        Announcement a = announcementRepository.save(Announcement.builder().collegeId(ctx.collegeId()).title(r.title()).body(r.body())
+                .filterJson(toJson(r.filter())).recipientCount(audience.size()).sendEmail(r.sendEmail()).createdBy(ctx.userId()).build());
+        // inbox rows let students see the announcement in their portal and the college see read counts
+        recipientRepository.saveAll(audience.stream().map(s -> AnnouncementRecipient.builder().collegeId(ctx.collegeId())
+                .announcementId(a.getId()).studentId(s.getId()).build()).toList());
         for (CollegeStudent s : audience) {
-            notificationService.notify(s.getUserId(), "ANNOUNCEMENT", r.title() + ": " + (r.body().length() > 300 ? r.body().substring(0, 297) + "..." : r.body()));
+            if (s.getUserId() != null) {
+                notificationService.notify(s.getUserId(), "ANNOUNCEMENT", r.title() + ": " + (r.body().length() > 300 ? r.body().substring(0, 297) + "..." : r.body()));
+            }
             if (r.sendEmail()) {
                 mailService.send(ctx.collegeId(), "ANNOUNCEMENT", s.getEmail(), Map.of("studentName", CollegeDirectory.fullName(s),
                         "title", r.title(), "bodyHtml", bodyHtml));
             }
         }
-        Announcement a = announcementRepository.save(Announcement.builder().collegeId(ctx.collegeId()).title(r.title()).body(r.body())
-                .filterJson(toJson(r.filter())).recipientCount(audience.size()).sendEmail(r.sendEmail()).createdBy(ctx.userId()).build());
         auditService.log(ctx, "ANNOUNCEMENT_SENT", "ANNOUNCEMENT", a.getId(), "Sent '" + r.title() + "' to " + audience.size() + " student(s)", null);
-        return toResponse(a, Map.of(ctx.userId(), ctx.actorName()));
+        return toResponse(a, Map.of(ctx.userId(), ctx.actorName()), Map.of());
     }
 
     @Transactional(readOnly = true)
@@ -90,7 +96,12 @@ public class CommunicationService {
         var result = announcementRepository.findAllByCollegeIdOrderByCreatedAtDesc(ctx.collegeId(), PageRequest.of(Math.max(page, 0), Math.min(size, 100)));
         Map<UUID, String> names = userRepository.findAllByIdIn(result.getContent().stream().map(Announcement::getCreatedBy).filter(Objects::nonNull).toList())
                 .stream().collect(Collectors.toMap(User::getId, User::getFullName));
-        return PageResponse.of(result, a -> toResponse(a, names));
+        Map<UUID, Long> reads = new HashMap<>();
+        if (!result.getContent().isEmpty()) {
+            recipientRepository.readCounts(result.getContent().stream().map(Announcement::getId).toList())
+                    .forEach(row -> reads.put((UUID) row[0], (Long) row[1]));
+        }
+        return PageResponse.of(result, a -> toResponse(a, names, reads));
     }
 
     @Transactional(readOnly = true)
@@ -132,7 +143,7 @@ public class CommunicationService {
         return out.stream().filter(c -> n.isEmpty() || c.name().toLowerCase(Locale.ROOT).contains(n) || Objects.toString(c.subtitle(), "").toLowerCase(Locale.ROOT).contains(n)).toList();
     }
 
-    private AnnouncementResponse toResponse(Announcement a, Map<UUID, String> names) {
+    private AnnouncementResponse toResponse(Announcement a, Map<UUID, String> names, Map<UUID, Long> reads) {
         AudienceFilter f = null;
         try {
             if (a.getFilterJson() != null) f = objectMapper.readValue(a.getFilterJson(), AudienceFilter.class);
@@ -140,7 +151,7 @@ public class CommunicationService {
             // older rows with unreadable filters are shown without filter details
         }
         return new AnnouncementResponse(a.getId(), a.getTitle(), a.getBody(), f, a.getRecipientCount(), a.isSendEmail(),
-                names.getOrDefault(a.getCreatedBy(), "-"), a.getCreatedAt());
+                names.getOrDefault(a.getCreatedBy(), "-"), a.getCreatedAt(), reads.getOrDefault(a.getId(), 0L));
     }
 
     private String toJson(Object o) {

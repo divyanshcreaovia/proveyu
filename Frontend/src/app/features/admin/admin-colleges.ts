@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
@@ -12,12 +13,13 @@ import { EmptyState } from '../../shared/ui/states';
 /** Platform ADMIN: approve / reject college registrations. */
 @Component({
   selector: 'pm-admin-colleges',
-  imports: [DatePipe, FormsModule, StatusBadge, EmptyState],
+  imports: [DatePipe, FormsModule, RouterLink, StatusBadge, EmptyState],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="container py-4">
       <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <h1 class="h4 fw-bold m-0">College registrations</h1>
+<div class="d-flex align-items-center gap-3"><h1 class="h4 fw-bold m-0">College registrations</h1>
+          <a routerLink="/admin/prep" class="small">Mock tests</a></div>
         <div class="d-flex gap-2">
           <select class="form-select form-select-sm w-auto" aria-label="Status" [(ngModel)]="status" (change)="load()">
             <option [ngValue]="null">All</option><option value="PENDING">Pending</option><option value="APPROVED">Approved</option><option value="REJECTED">Rejected</option></select>

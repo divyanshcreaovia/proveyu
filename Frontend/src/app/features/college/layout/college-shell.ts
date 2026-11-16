@@ -1,17 +1,18 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet, ActivatedRoute } from '@angular/router';
-import { DatePipe } from '@angular/common';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../services/auth.service';
 import { CollegeService } from '../../../services/college.service';
 import { NotificationService } from '../../../services/notification.service';
 import { ThemeService } from '../../../services/theme.service';
+import { ChatService } from '../../../services/chat.service';
+import { NotificationPanel } from '../../../shared/ui/notification-panel';
 import { SettingsService } from '../../../services/settings.service';
 import { MemberRole } from '../../../core/models/college.models';
 import { GlobalSearch } from './global-search';
 
-interface NavItem { label: string; icon: string; route: string; roles?: MemberRole[]; }
+interface NavItem { label: string; icon: string; route: string; roles?: MemberRole[]; badge?: 'chat'; query?: Record<string, string>; }
 
 const NAV: { section: string; items: NavItem[] }[] = [
   { section: 'Overview', items: [{ label: 'Dashboard', icon: 'bi-speedometer2', route: '/college/dashboard' }] },
@@ -23,7 +24,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
     { label: 'Offers', icon: 'bi-award', route: '/college/offers' },
   ] },
   { section: 'Engage', items: [
-    { label: 'Communication', icon: 'bi-megaphone', route: '/college/communication' },
+    { label: 'Communication', icon: 'bi-megaphone', route: '/college/communication', badge: 'chat' },
     { label: 'Reports', icon: 'bi-bar-chart-line', route: '/college/reports' },
   ] },
   { section: 'Administration', items: [
@@ -35,21 +36,25 @@ const NAV: { section: string; items: NavItem[] }[] = [
 
 @Component({
   selector: 'pm-college-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, DatePipe, GlobalSearch],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NotificationPanel, GlobalSearch],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './college-theme.scss',
   template: `
     <div class="pm-shell" [attr.data-bs-theme]="theme.dark() ? 'dark' : 'light'" [class.pm-shell-collapsed]="collapsed()">
       <nav class="pm-shell-side" [class.pm-shell-side-open]="mobileOpen()" aria-label="College navigation">
-        <div class="pm-shell-brand">
-          @if (logo()) { <img [src]="logo()" alt="" class="pm-shell-logo" /> } @else { <span class="pm-shell-mark"><i class="bi bi-mortarboard-fill"></i></span> }
-          @if (!collapsed()) { <span class="text-truncate fw-bold small">{{ college.me()?.collegeName ?? 'Placement cell' }}</span> }
-        </div>
+        <a routerLink="/" class="pm-shell-brand" title="ProveYu Campus">
+          <img src="images/proveyu-mark.png" alt="ProveYu" class="pm-shell-brand-mark" />
+          @if (!collapsed()) { <span class="pm-shell-wordmark">Prove<span>Yu</span></span><span class="pm-shell-product">Campus</span> }
+        </a>
         @for (g of nav(); track g.section) {
           @if (!collapsed()) { <div class="pm-shell-section">{{ g.section }}</div> }
           @for (i of g.items; track i.route) {
-            <a [routerLink]="i.route" routerLinkActive="pm-shell-active" class="pm-shell-link" (click)="mobileOpen.set(false)" [attr.title]="collapsed() ? i.label : null">
-              <i class="bi {{ i.icon }}" aria-hidden="true"></i>@if (!collapsed()) { <span>{{ i.label }}</span> }
+            <a [routerLink]="i.route" [queryParams]="i.badge === 'chat' && chat.totalUnread() ? { tab: 'chat' } : null" routerLinkActive="pm-shell-active"
+              class="pm-shell-link" (click)="mobileOpen.set(false)" [attr.title]="collapsed() ? i.label : null">
+              <i class="bi {{ i.icon }}" aria-hidden="true"></i>@if (!collapsed()) { <span class="flex-grow-1">{{ i.label }}</span> }
+              @if (i.badge === 'chat' && chat.totalUnread(); as n) {
+                <span class="pm-nav-badge pm-nav-badge-chat" [class.pm-nav-badge-dot]="collapsed()" [attr.aria-label]="n + ' unread messages'"
+                  [attr.title]="n + ' unread chat message(s)'">{{ collapsed() ? '' : (n > 99 ? '99+' : n) }}</span> }
             </a>
           }
         }
@@ -70,17 +75,10 @@ const NAV: { section: string; items: NavItem[] }[] = [
             <div class="position-relative">
               <button type="button" class="pm-shell-icon position-relative" (click)="toggleBell()" aria-label="Notifications" [attr.aria-expanded]="bell()">
                 <i class="bi bi-bell"></i>
-                @if (notifications.unread()) { <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ notifications.unread() }}</span> }
+                @if (notifications.unread(); as n) { <span class="pm-bell-badge" [attr.aria-label]="n + ' unread notifications'">{{ n > 9 ? '9+' : n }}</span> }
               </button>
               @if (bell()) {
-                <div class="pm-shell-pop pm-shell-bell shadow" role="menu">
-                  <div class="px-3 py-2 fw-semibold small border-bottom">Notifications</div>
-                  @for (n of notifications.items().slice(0, 12); track n.id) {
-                    <button type="button" class="pm-shell-note" [class.fw-semibold]="!n.read" (click)="notifications.markRead(n.id).subscribe()">
-                      <span class="d-block small">{{ n.message }}</span><small class="text-body-secondary">{{ n.createdAt | date: 'short' }}</small>
-                    </button>
-                  } @empty { <div class="p-3 small text-body-secondary">You're all caught up.</div> }
-                </div>
+                <div class="pm-shell-pop pm-shell-bell shadow" role="dialog" aria-label="Notifications"><pm-notification-panel /></div>
               }
             </div>
             <div class="position-relative">
@@ -90,10 +88,14 @@ const NAV: { section: string; items: NavItem[] }[] = [
                   <small class="text-body-secondary">{{ roleLabel() }}</small></span>
               </button>
               @if (menu()) {
-                <div class="pm-shell-pop shadow" role="menu">
-                  <div class="px-3 py-2 small border-bottom"><div class="fw-semibold">{{ college.me()?.fullName }}</div><div class="text-body-secondary">{{ college.me()?.email }}</div></div>
-                  @if (college.isAdmin()) { <a routerLink="/college/settings" class="dropdown-item small" (click)="menu.set(false)"><i class="bi bi-gear me-2"></i>Settings</a> }
-                  <button type="button" class="dropdown-item small text-danger" (click)="auth.logout('/college/login')"><i class="bi bi-box-arrow-right me-2"></i>Sign out</button>
+                <div class="pm-shell-pop pm-shell-menu shadow" role="menu">
+                  <div class="pm-menu-head"><span class="pm-shell-avatar">{{ initials() }}</span>
+                    <div class="min-w-0"><div class="pm-menu-name">{{ college.me()?.fullName }}</div><div class="pm-menu-sub">{{ college.me()?.email }}</div>
+                      <div class="pm-menu-sub">{{ roleLabel() }}</div></div></div>
+                  <a routerLink="/college/team" class="pm-menu-item" role="menuitem" (click)="menu.set(false)"><i class="bi bi-person-badge"></i>Team & roles</a>
+                  @if (college.isAdmin()) { <a routerLink="/college/settings" class="pm-menu-item" role="menuitem" (click)="menu.set(false)"><i class="bi bi-gear"></i>Settings</a> }
+                  <div class="pm-menu-sep"></div>
+                  <button type="button" class="pm-menu-item pm-menu-danger" role="menuitem" (click)="auth.logout('/college/login')"><i class="bi bi-box-arrow-right"></i>Sign out</button>
                 </div>
               }
             </div>
@@ -115,15 +117,25 @@ const NAV: { section: string; items: NavItem[] }[] = [
       .pm-shell-side-open { transform: none; }
     }
     .pm-shell-scrim { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 1040; }
-    .pm-shell-brand { display: flex; align-items: center; gap: .6rem; padding: .4rem .4rem 1rem; min-width: 0; }
-    .pm-shell-mark { width: 2.2rem; height: 2.2rem; border-radius: .6rem; background: #2563eb; color: #fff; display: grid; place-items: center; flex-shrink: 0; }
-    .pm-shell-logo { width: 2.2rem; height: 2.2rem; object-fit: contain; border-radius: .4rem; flex-shrink: 0; }
+    .pm-shell-brand { display: flex; align-items: center; gap: .55rem; padding: .35rem .4rem .75rem; min-width: 0; text-decoration: none; }
+    .pm-shell-brand-mark { width: 2.1rem; height: 2.1rem; object-fit: contain; flex-shrink: 0; }
+    .pm-shell-wordmark { font-weight: 800; font-size: 1.12rem; letter-spacing: -.02em; color: var(--pm-heading); line-height: 1; }
+    .pm-shell-wordmark span { background: linear-gradient(90deg, #0b5cff, #00c2ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .pm-shell-product { font-size: .6rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: .2rem .45rem; border-radius: 6px;
+      background: linear-gradient(90deg, #0b5cff, #00b4ff); color: #fff; line-height: 1; }
+    .pm-shell-collapsed .pm-shell-brand { justify-content: center; }
     .pm-shell-section { font-size: .65rem; text-transform: uppercase; letter-spacing: .08em; color: var(--bs-secondary-color); font-weight: 700; padding: .9rem .6rem .35rem; }
     .pm-shell-link { display: flex; align-items: center; gap: .7rem; padding: .5rem .65rem; border-radius: .5rem; color: var(--bs-body-color);
       text-decoration: none; font-size: .875rem; white-space: nowrap; }
     .pm-shell-link:hover { background: var(--bs-secondary-bg); }
     .pm-shell-link:focus-visible { outline: 2px solid #2563eb; }
     .pm-shell-active { background: rgba(37,99,235,.12); color: #2563eb; font-weight: 600; }
+    .pm-shell[data-bs-theme='dark'] .pm-shell-active { background: rgba(59,130,246,.32); color: #fff; }
+    .pm-shell-link { position: relative; }
+    .pm-nav-badge { min-width: 1.3rem; height: 1.3rem; padding: 0 .38rem; border-radius: 999px; background: #dc2626; color: #fff; font-size: .7rem;
+      font-weight: 700; display: inline-grid; place-items: center; line-height: 1; }
+    .pm-nav-badge-chat { background: #22c55e; }
+    .pm-nav-badge-dot { position: absolute; top: .3rem; right: .55rem; min-width: .6rem; width: .6rem; height: .6rem; padding: 0; }
     .pm-shell-collapse { margin-top: auto; align-self: flex-end; border: 0; background: transparent; color: var(--bs-secondary-color); padding: .4rem; }
     .pm-shell-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
     .pm-shell-top { display: flex; align-items: center; gap: .75rem; padding: 1.1rem 1rem .9rem; background: transparent; }
@@ -142,9 +154,23 @@ const NAV: { section: string; items: NavItem[] }[] = [
     .pm-shell-avatar { width: 2.2rem; height: 2.2rem; border-radius: 50%; background: #16122b; color: #fff; display: grid; place-items: center; font-size: .75rem; font-weight: 700; }
     .pm-shell-pop { position: absolute; right: 0; top: calc(100% + .5rem); min-width: 240px; background: var(--pm-card-bg); border: 1px solid var(--pm-card-border);
       border-radius: 14px; z-index: 1030; overflow: hidden; box-shadow: 0 16px 40px rgba(15, 23, 42, .12) !important; }
-    .pm-shell-bell { width: min(340px, 90vw); max-height: 60vh; overflow-y: auto; }
-    .pm-shell-note { all: unset; box-sizing: border-box; display: block; width: 100%; padding: .55rem .9rem; border-bottom: 1px solid var(--bs-border-color); cursor: pointer; }
-    .pm-shell-note:hover { background: var(--bs-secondary-bg); }
+    .pm-shell-menu { width: 270px; padding: .4rem; }
+    .pm-menu-head { display: flex; align-items: center; gap: .7rem; padding: .7rem .7rem .8rem; margin-bottom: .3rem; border-bottom: 1px solid var(--pm-divider, #ebedf2); }
+    .pm-menu-head .pm-shell-avatar { width: 2.6rem; height: 2.6rem; flex-shrink: 0; }
+    .pm-menu-name { font-weight: 700; font-size: .9rem; color: var(--pm-heading); line-height: 1.25; }
+    .pm-menu-sub { font-size: .78rem; color: var(--pm-muted, #64748b); overflow-wrap: anywhere; line-height: 1.3; }
+    .pm-menu-item { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: .7rem; width: 100%; padding: .6rem .75rem;
+      border-radius: 10px; font-size: .875rem; font-weight: 500; color: var(--pm-text); cursor: pointer; text-decoration: none; }
+    .pm-menu-item i { width: 1.1rem; text-align: center; font-size: 1rem; color: var(--pm-muted, #64748b); }
+    .pm-menu-item:hover, .pm-menu-item:focus-visible { background: var(--pm-soft, #f1f5f9); color: var(--pm-heading); }
+    .pm-menu-item:focus-visible { outline: 2px solid #4f46e5; outline-offset: -2px; }
+    .pm-menu-sep { height: 1px; background: var(--pm-divider, #ebedf2); margin: .3rem .25rem; }
+    .pm-menu-danger, .pm-menu-danger i { color: #dc2626; }
+    .pm-menu-danger:hover, .pm-menu-danger:focus-visible { background: rgba(220, 38, 38, .08); color: #b91c1c; }
+    .pm-shell-bell { width: min(360px, 92vw); }
+    .pm-bell-badge { position: absolute; top: -3px; right: -3px; min-width: 1.2rem; height: 1.2rem; padding: 0 .3rem; border-radius: 999px;
+      background: #ef4444; color: #fff; font-size: .66rem; font-weight: 800; line-height: 1.2rem; text-align: center;
+      box-shadow: 0 0 0 2px var(--pm-card-bg); font-variant-numeric: tabular-nums; }
   `],
 })
 export class CollegeShell implements OnInit {
@@ -152,8 +178,10 @@ export class CollegeShell implements OnInit {
   college = inject(CollegeService);
   notifications = inject(NotificationService);
   theme = inject(ThemeService);
+  chat = inject(ChatService);
   private settings = inject(SettingsService);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
   private route = inject(ActivatedRoute);
   collapsed = signal(false);
   mobileOpen = signal(false);
@@ -182,6 +210,10 @@ export class CollegeShell implements OnInit {
       if (me.brandColor) document.documentElement.style.setProperty('--pm-brand', me.brandColor);
     });
     this.notifications.load().subscribe();
+    // live chat socket for the whole portal session, so unread badges update on every page
+    this.chat.connect();
+    const poll = setInterval(() => this.chat.refreshUnread(), 60_000); // fallback if the socket is down
+    this.destroyRef.onDestroy(() => { clearInterval(poll); this.chat.disconnect(); });
   }
 
   toggleBell(): void {

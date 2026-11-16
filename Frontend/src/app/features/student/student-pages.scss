@@ -1,0 +1,24 @@
+/* Shared look for student portal pages; colours come from the shell's theme tokens (college-theme.scss). */
+:host { display: block; }
+.st-card { background: var(--pm-card-bg); border: 1px solid var(--pm-card-border); border-radius: 16px; box-shadow: var(--pm-card-shadow); padding: 1.25rem; }
+@media (min-width: 768px) { .st-card { padding: 1.5rem; } }
+.st-row { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; background: var(--pm-card-bg); border: 1px solid var(--pm-card-border);
+  border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: .75rem; box-shadow: var(--pm-card-shadow); }
+.st-row-unread { border-left: 4px solid var(--pm-link); }
+.st-muted { color: var(--pm-muted); }
+.st-h { color: var(--pm-heading); font-weight: 800; }
+.st-pre { white-space: pre-wrap; }
+.st-chip { display: inline-flex; align-items: center; gap: .3rem; padding: .25rem .65rem; border-radius: 999px; font-size: .75rem; font-weight: 600;
+  background: var(--pm-soft); color: var(--pm-label); }
+.st-filters { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
+.st-filters .form-control, .st-filters .form-select { max-width: 280px; }
+.st-tl { list-style: none; padding: 0; margin: 0; position: relative; }
+.st-tl li { position: relative; padding: 0 0 1.1rem 2rem; }
+.st-tl li::before { content: ''; position: absolute; left: .6rem; top: 1.4rem; bottom: 0; width: 2px; background: var(--pm-divider); }
+.st-tl li:last-child::before { display: none; }
+.st-tl-dot { position: absolute; left: 0; top: .1rem; width: 1.3rem; height: 1.3rem; border-radius: 50%; display: grid; place-items: center; font-size: .7rem;
+  background: var(--pm-soft); color: var(--pm-muted); }
+.st-tl-pass { background: #16a34a; color: #fff; } .st-tl-fail { background: #e11d48; color: #fff; } .st-tl-now { background: #2563eb; color: #fff; }
+.btn { border-radius: 50px; font-weight: 600; }
+.btn-primary { background: var(--pm-primary); border-color: var(--pm-primary); color: var(--pm-primary-text); }
+.btn-primary:hover, .btn-primary:focus { background: var(--pm-primary-hover); border-color: var(--pm-primary-hover); }

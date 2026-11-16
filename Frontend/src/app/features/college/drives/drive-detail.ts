@@ -13,6 +13,7 @@ import { ApplicantsTab } from './tabs/applicants-tab';
 import { RoundsTab } from './tabs/rounds-tab';
 import { DriveInterviewsTab } from './tabs/interviews-tab';
 import { DriveOffersTab } from './tabs/offers-tab';
+import { CompanyAccessTab } from './tabs/company-access-tab';
 
 const NEXT: Record<DriveStatus, { to: DriveStatus; label: string; tone: string }[]> = {
   DRAFT: [{ to: 'PUBLISHED', label: 'Publish', tone: 'primary' }, { to: 'CANCELLED', label: 'Cancel drive', tone: 'outline-danger' }],
@@ -24,7 +25,7 @@ const NEXT: Record<DriveStatus, { to: DriveStatus; label: string; tone: string }
 
 @Component({
   selector: 'pm-drive-detail',
-  imports: [RouterLink, DatePipe, StatusBadge, Skeleton, ErrorState, EligibilityTab, ApplicantsTab, RoundsTab, DriveInterviewsTab, DriveOffersTab],
+  imports: [RouterLink, DatePipe, StatusBadge, Skeleton, ErrorState, EligibilityTab, ApplicantsTab, RoundsTab, DriveInterviewsTab, DriveOffersTab, CompanyAccessTab],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <a routerLink="/college/drives" class="small"><i class="bi bi-arrow-left"></i> All drives</a>
@@ -85,6 +86,7 @@ const NEXT: Record<DriveStatus, { to: DriveStatus; label: string; tone: string }
         @case ('Rounds') { <pm-rounds-tab [drive]="d" (changed)="load()" /> }
         @case ('Interviews') { <pm-drive-interviews-tab [drive]="d" /> }
         @case ('Offers') { <pm-drive-offers-tab [drive]="d" (changed)="load()" /> }
+        @case ('Company access') { <pm-company-access-tab [drive]="d" /> }
       }
     }`,
   styles: [`
@@ -102,7 +104,7 @@ export class DriveDetail implements OnInit {
   id = input.required<string>();
   drive = signal<Drive | null>(null);
   failed = signal(false);
-  tabs = ['Overview', 'Eligibility', 'Applicants', 'Rounds', 'Interviews', 'Offers'];
+  tabs = ['Overview', 'Eligibility', 'Applicants', 'Rounds', 'Interviews', 'Offers', 'Company access'];
   tab = signal('Overview');
 
   ngOnInit(): void { this.load(); }

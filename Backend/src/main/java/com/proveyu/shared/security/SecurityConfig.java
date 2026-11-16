@@ -65,8 +65,9 @@ public class SecurityConfig {
                 // ---- public ----
                 .requestMatchers("/api/v1/auth/logout").authenticated()
                 .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/college/auth/register", "/api/v1/college/auth/accept-invite").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/college/auth/invite/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/college/auth/register", "/api/v1/college/auth/accept-invite",
+                        "/api/v1/college/auth/student-signup", "/api/v1/college/auth/recruiter-accept").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/college/auth/invite/**", "/api/v1/college/auth/recruiter-invite/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/domains/**").permitAll()
                 .requestMatchers("/api/v1/candidates/resume/download/**").permitAll()
                 .requestMatchers("/api/v1/admit-cards/download/**").permitAll()

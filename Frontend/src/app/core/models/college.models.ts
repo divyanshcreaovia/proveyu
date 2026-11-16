@@ -6,7 +6,13 @@ export type MemberStatus = 'ACTIVE' | 'REVOKED';
 export type ApprovalStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 export type PolicyMode = 'OPEN' | 'ONE_OFFER' | 'TIER_UPGRADE';
 export type StudentStatus = 'ACTIVE' | 'PLACED' | 'DEBARRED' | 'OPTED_OUT';
-export type DocType = 'RESUME' | 'MARKSHEET_10' | 'MARKSHEET_12' | 'MARKSHEET_SEM' | 'ID_PROOF' | 'OTHER';
+export type DocType = 'RESUME' | 'MARKSHEET_10' | 'MARKSHEET_12' | 'MARKSHEET_SEM' | 'ID_PROOF' | 'OTHER'
+  | 'PHOTO' | 'CERTIFICATE' | 'INTERNSHIP_CERTIFICATE' | 'COVER_LETTER' | 'OFFER_LETTER';
+export const DOC_TYPE_LABELS: Record<DocType, string> = {
+  RESUME: 'Resume / CV', MARKSHEET_10: '10th marksheet', MARKSHEET_12: '12th / diploma marksheet', MARKSHEET_SEM: 'Semester marksheet',
+  ID_PROOF: 'ID proof', PHOTO: 'Passport photo', CERTIFICATE: 'Certificate', INTERNSHIP_CERTIFICATE: 'Internship certificate',
+  COVER_LETTER: 'Cover letter', OFFER_LETTER: 'Offer letter', OTHER: 'Other',
+};
 export type VerificationStatus = 'PENDING' | 'VERIFIED' | 'REJECTED';
 export type MouStatus = 'NONE' | 'IN_PROGRESS' | 'SIGNED' | 'EXPIRED';
 export type DriveType = 'ON_CAMPUS' | 'OFF_CAMPUS' | 'POOL' | 'INTERNSHIP' | 'PPO';
@@ -79,7 +85,7 @@ export interface StudentFilter {
   status?: StudentStatus | null; placed?: boolean | null; skill?: string; deleted?: boolean;
 }
 export interface StudentDocument {
-  id: string; docType: DocType; fileId: string; fileName: string; contentType: string; sizeBytes: number;
+  id: string; docType: DocType; label?: string; fileId: string; fileName: string; contentType: string; sizeBytes: number;
   verificationStatus: VerificationStatus; remarks?: string; verifiedAt?: string; createdAt: string;
 }
 export interface SkillScore { skill: string; score: number; maxScore: number; passed: boolean; }
@@ -212,6 +218,7 @@ export interface ReportSchedule {
 export interface AudienceFilter { batchYears?: number[]; branchIds?: string[]; statuses?: StudentStatus[]; placed?: boolean | null; driveId?: string | null; }
 export interface Announcement {
   id: string; title: string; body: string; filter?: AudienceFilter; recipientCount: number; sendEmail: boolean; createdByName: string; createdAt: string;
+  readCount?: number;
 }
 export interface ChatContact { userId: string; name: string; type: 'TEAM' | 'RECRUITER' | 'STUDENT'; subtitle?: string; }
 export interface AuditEntry {
@@ -223,9 +230,21 @@ export interface AppNotification { id: string; type: string; message: string; re
 
 // ---------------------------------------------------------------- student portal
 export interface PortalProfile {
-  studentId: string; collegeName: string; rollNumber: string; name: string; email: string; branch?: string; batchYear: number; cgpa?: number;
-  status: StudentStatus; highestCtcLpa?: number;
+  studentId: string; userId: string; collegeName: string; rollNumber: string; name: string; email: string; phone?: string; branch?: string;
+  batchYear: number; degree?: string; cgpa?: number; tenthPercent?: number; twelfthPercent?: number; activeBacklogs: number; skills: string[];
+  linkedinUrl?: string; githubUrl?: string; status: StudentStatus; highestCtcLpa?: number; placementPolicy: PolicyMode; unreadAnnouncements: number;
 }
+export interface PortalProfileUpdate { phone?: string; skills: string[]; linkedinUrl?: string; githubUrl?: string; }
+export interface PortalRound {
+  roundId: string; seq: number; name: string; roundType: string; status: 'PENDING' | 'ONGOING' | 'COMPLETED'; scheduledAt?: string;
+  result?: 'PENDING' | 'PASS' | 'FAIL' | 'ABSENT' | 'HOLD';
+}
+export interface PortalInterview {
+  id: string; applicationId: string; companyName: string; driveTitle: string; roundName?: string; startsAt: string; endsAt: string;
+  room?: string; meetingLink?: string; panelName?: string; status: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+}
+export interface PortalAnnouncement { id: string; title: string; body: string; fromName: string; createdAt: string; read: boolean; }
+export interface PortalContact { userId: string; name: string; type: 'TPO' | 'COORDINATOR'; subtitle?: string; }
 export interface PortalDrive {
   id: string; title: string; companyName: string; roleTitle: string; driveType: DriveType; ctcLpa?: number; stipendMonthly?: number; location?: string;
   mode: DriveMode; venue?: string; registrationDeadline?: string; driveDate?: string; status: DriveStatus; jobDescription?: string; skills: string[];

@@ -97,7 +97,43 @@ Production build: `cd Frontend && npx ng build` (uses `environment.prod.ts`: sam
 14. Audit log shows import, override, policy, offer and role changes.
 15. Ctrl+K search, dark mode toggle, phone width (≈390 px).
 
-## 6. Things to know
+## 6. Student portal (`/student`)
+
+A separate portal for college students (role `CANDIDATE`), with the same look as the college portal. It has no PROVEYU assessment features.
+
+| Page | What the student does | Connected college-side feature |
+|------|------------------------|--------------------------------|
+| `/student/signup` | Account activation: e-mail + roll number must match a student the college added, then a 6-digit e-mail code + new password | Students → add / import |
+| `/student/login`, `/student/forgot-password` | Sign in (staff accounts are refused here), OTP reset | — |
+| Dashboard | Stats, next interview, drives closing soon, latest announcements, placement-readiness checklist | — |
+| Campus drives | Eligible drives with reasons when not eligible, details, one-click apply | Drives → publish, eligibility engine |
+| My applications | Status, withdraw, round-by-round timeline with PASS/FAIL | Applicants, Rounds tabs |
+| Interviews | Upcoming/past slots, join link, **Add to calendar (.ics)** | Interviews tab / calendar |
+| Offers | Accept/decline, offer letter PDF, college placement-policy notice | Offers tab, policy engine |
+| Announcements | Inbox with unread badge, mark read / mark all | Communication → announcements (now shows "N read") |
+| Chat | Live chat with the TPO and the coordinators whose branch scope covers the student | Communication → chat (existing `/ws/chat`) |
+| Document locker | Upload once (11 types + own label), view, download, delete until verified | Student drawer → Documents → verify |
+| My profile | Academic record read-only; phone, skills, LinkedIn, GitHub editable | Student master |
+
+API: `/api/v1/college/student/**` (CANDIDATE only) and public `POST /api/v1/college/auth/student-signup` (rate-limited).
+DB: **`V21__student_portal.sql`** adds `college_announcement_recipients` (per-student inbox + read receipts), new document types and `college_student_documents.label`. Additive only.
+Test: `StudentPortalIT` (signup, inbox targeting, contact scoping, locker ownership, profile validation, staff blocked).
+Demo: after `seed_demo.py`, students can activate at `/student/signup` (roll number from the Students page) or sign in with `Student@123`.
+Announcements sent before V21 have no inbox rows, so students only see announcements sent after the upgrade.
+The old `/candidate/campus-drives` URL redirects to `/student/drives`.
+
+## 7. Drive Room (company access to a drive)
+
+Company HR and interview panels work inside one campus drive at `/company` (role `RECRUITER`).
+
+- **TPO:** drive → **Company access** tab → invite by name + work e-mail, choose whether student phone / e-mail / 10th-12th marks are shared, resend, revoke, and read panel scorecards per round.
+- **Company:** opens the invitation link (`/company/accept?token=…`), sets a password (or confirms an existing recruiter password), then sees only the drives it was invited to: overview with funnel and live round board, applicants with filters, profile and resume, ZIP of resumes, shortlist / waitlist / reject, start and complete rounds, results table, panel scorecard (technical / communication / attitude 1-5 + result + remarks), release offers to selected students, upload offer letters, Excel/PDF report.
+- **One source of truth:** company actions call the same `ApplicationService`, `RoundService` and `OfferService` as the TPO, so auto-advance, placement policy, PLACED status, student notifications and reports behave identically. The audit log names the company person, e.g. "Neha Kapoor (TechNova Solutions)". A scorecard also writes the shared round result (latest wins) with the ratings in the remarks.
+- **DB:** `V23__drive_room.sql` adds `college_drive_recruiters` (access + invitation token) and `college_round_scorecards`. No existing table changes.
+- **Test:** `DriveRoomIT`. Demo login: `hr@technova-demo.com` / `Recruit@123` at `/company/login` (TechNova drive).
+- Not built: QR check-in (by decision), bulk result upload by the company (the TPO's CSV upload still works).
+
+## 8. Things to know
 
 - **Pending feature:** monthly Readiness Assessment dashboard. See [Frontend/src/app/features/college/READINESS_ASSESSMENT.md](../Frontend/src/app/features/college/READINESS_ASSESSMENT.md).
 

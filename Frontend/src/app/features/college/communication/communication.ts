@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, inject, signal, viewChild, input } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -16,7 +16,8 @@ import { EmptyState } from '../../../shared/ui/states';
   template: `
     <ul class="nav nav-tabs small mb-3" role="tablist">
       <li class="nav-item"><button class="nav-link" role="tab" [class.active]="tab() === 'ann'" (click)="tab.set('ann')">Announcements</button></li>
-      <li class="nav-item"><button class="nav-link" role="tab" [class.active]="tab() === 'chat'" (click)="openChat()">Chat</button></li>
+      <li class="nav-item"><button class="nav-link" role="tab" [class.active]="tab() === 'chat'" (click)="openChat()">Chat
+        @if (chat.totalUnread()) { <span class="chat-unread ms-1">{{ chat.totalUnread() }}</span> }</button></li>
     </ul>
     @if (tab() === 'ann') {
       <div class="row g-3">
@@ -54,7 +55,7 @@ import { EmptyState } from '../../../shared/ui/states';
             <article class="border-bottom py-2"><div class="d-flex justify-content-between"><strong class="small">{{ a.title }}</strong>
               <small class="text-body-secondary">{{ a.createdAt | date: 'medium' }}</small></div>
               <p class="small mb-1 pm-cm-pre">{{ a.body }}</p>
-              <small class="text-body-secondary">{{ a.recipientCount }} recipients · by {{ a.createdByName }} @if (a.sendEmail) { · e-mailed }</small></article>
+              <small class="text-body-secondary">{{ a.recipientCount }} recipients · {{ a.readCount ?? 0 }} read · by {{ a.createdByName }} @if (a.sendEmail) { · e-mailed }</small></article>
           } @empty { <pm-empty-state icon="bi-megaphone" title="No announcements yet" /> }
         </section></div>
       </div>
@@ -65,7 +66,11 @@ import { EmptyState } from '../../../shared/ui/states';
           <div class="small text-body-secondary mb-1">@if (chat.connected()) { <i class="bi bi-circle-fill text-success"></i> live } @else { <i class="bi bi-circle text-secondary"></i> offline (messages still send) }</div>
           @for (c of contacts(); track c.userId) {
             <button type="button" class="pm-cm-contact" [class.pm-cm-active]="peer()?.userId === c.userId" (click)="pick(c)">
-              <span class="fw-semibold small d-block text-truncate">{{ c.name }}</span><small class="text-body-secondary">{{ c.type }} · {{ c.subtitle }}</small></button>
+              <span class="d-flex align-items-center gap-2"><span class="flex-grow-1 min-w-0">
+                <span class="small d-block text-truncate" [class.fw-bold]="chat.unread()[c.userId]" [class.fw-semibold]="!chat.unread()[c.userId]">{{ c.name }}</span>
+                <small class="text-body-secondary">{{ c.type }} · {{ c.subtitle }}</small></span>
+                @if (chat.unread()[c.userId]; as n) { <span class="chat-unread" [attr.aria-label]="n + ' unread messages'">{{ n > 99 ? '99+' : n }}</span> }
+              </span></button>
           } @empty { <p class="small text-body-secondary">No contacts.</p> }
         </aside>
         <section class="pm-cm-thread">
@@ -95,6 +100,8 @@ import { EmptyState } from '../../../shared/ui/states';
   styles: [`
     .pm-cm-card { background: var(--pm-card-bg, #fff); border: 1px solid var(--pm-card-border, #e2e8f0); border-radius: 16px; box-shadow: var(--pm-card-shadow, 0 4px 16px rgba(0,0,0,.02)); padding: 1.5rem; }
     .pm-cm-pre { white-space: pre-wrap; }
+    .chat-unread { min-width: 1.35rem; height: 1.35rem; padding: 0 .4rem; border-radius: 999px; background: #22c55e; color: #fff;
+      font-size: .72rem; font-weight: 700; display: inline-grid; place-items: center; flex-shrink: 0; }
     .pm-cm-chat { display: grid; grid-template-columns: 1fr; gap: .75rem; height: calc(100vh - 220px); min-height: 420px; }
     @media (min-width: 992px) { .pm-cm-chat { grid-template-columns: 300px 1fr; } }
     .pm-cm-contacts, .pm-cm-thread { background: var(--pm-card-bg, #fff); border: 1px solid var(--pm-card-border, #e2e8f0); border-radius: 16px; box-shadow: var(--pm-card-shadow, 0 4px 16px rgba(0,0,0,.02)); padding: 1rem; overflow-y: auto; }
@@ -129,12 +136,16 @@ export class Communication implements OnInit, OnDestroy {
       const p = this.peer();
       if (p && (m.senderId === p.userId || m.receiverId === p.userId) && !this.messages().some(x => x.id === m.id)) {
         this.messages.update(list => [...list, m]); this.scrollDown();
+        if (m.senderId === p.userId) this.chat.markRead(m.id).subscribe(); // conversation is open: read immediately
       }
     });
   }
 
-  ngOnInit(): void { this.loadList(); this.count(); }
-  ngOnDestroy(): void { this.chat.disconnect(); }
+  /** ?tab=chat opens the chat directly (used by the sidebar unread badge). */
+  initialTab = input<string>(undefined, { alias: 'tab' });
+
+  ngOnInit(): void { this.loadList(); this.count(); if (this.initialTab() === 'chat') this.openChat(); }
+  ngOnDestroy(): void { this.chat.activePeer.set(null); } // the socket stays open for sidebar badges
 
   loadList(): void { this.notifications.announcements().subscribe(p => this.list.set(p.content)); }
   toggle(key: 'batchYears' | 'branchIds', v: number | string): void {
@@ -157,9 +168,13 @@ export class Communication implements OnInit, OnDestroy {
   }
 
   openChat(): void { this.tab.set('chat'); this.chat.connect(); this.loadContacts(); }
-  loadContacts(): void { this.chat.contacts(this.contactQ).subscribe(c => this.contacts.set(c)); }
+  loadContacts(): void {
+    // unread conversations first, like a messenger
+    this.chat.contacts(this.contactQ).subscribe(c => this.contacts.set([...c].sort((a, b) => (this.chat.unread()[b.userId] ?? 0) - (this.chat.unread()[a.userId] ?? 0))));
+  }
   pick(c: ChatContact): void {
     this.peer.set(c);
+    this.chat.openConversation(c.userId);
     this.chat.history(c.userId).subscribe(m => {
       this.messages.set([...m].sort((a, b) => (a.createdAt ?? '').localeCompare(b.createdAt ?? '')));
       this.scrollDown();

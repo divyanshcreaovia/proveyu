@@ -39,16 +39,17 @@
         <a routerLink="/" class="d-inline-block mb-2">
           <img src="images/logo1.png" alt="ProveYu Logo" style="height: 48px; width: auto;">
         </a>
-        <h1 class="h3 fw-bold text-navy mb-2">Get Verified or Access Verified Talent</h1>
+        <h1 class="h3 fw-bold text-navy mb-2">Create your account</h1>
         <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 640px;">
-          Select your account type to proceed on the ProveYu physical skill assessment network.
+          Are you a college placement cell or a student? Pick one to get started.
         </p>
       </div>
 
       <!-- Extended Width Triple Role Cards -->
-      <div class="row g-4 justify-content-center mx-auto" style="max-width: 1200px;">
+      <div class="row g-4 justify-content-center mx-auto" style="max-width: 880px;">
 
-        <!-- Candidate Card -->
+        <!-- Candidate and Recruiter cards are disabled for now. Restore by removing this comment.
+        
         <div class="col-md-4">
           <div
             class="card card-shadow border-0 h-100 p-4 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
@@ -68,7 +69,7 @@
           </div>
         </div>
 
-        <!-- Recruiter Card -->
+        
         <div class="col-md-4">
           <div
             class="card card-shadow border border-primary border-opacity-25 h-100 p-4 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
@@ -88,8 +89,10 @@
           </div>
         </div>
 
+        -->
+
         <!-- College TPO Card -->
-        <div class="col-md-4">
+        <div class="col-md-6">
           <div
             class="card card-shadow border border-warning border-opacity-50 h-100 p-4 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
             routerLink="/college/register">
@@ -99,16 +102,36 @@
 
             <h2 class="h5 fw-bold text-navy mb-3">College Placement Portal</h2>
             <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
-              Manage campus students, schedule proctored center assessments, track tier readiness, and connect with
-              recruiting companies.
+              Register your Training & Placement cell. Manage students, companies, drives, rounds, interviews, offers
+              and reports in one place.
             </p>
 
             <button class="btn btn-warning w-100 py-2.5 fw-bold text-dark mt-auto shadow-sm">
-              Open College Portal &rarr;
+              Register your college &rarr;
             </button>
           </div>
         </div>
 
+
+        <!-- Student Card -->
+        <div class="col-md-6">
+          <div
+            class="card card-shadow border border-primary border-opacity-25 h-100 p-4 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
+            routerLink="/student/signup">
+
+            <span class="point-pill-btn point-pill-primary mx-auto mb-3">FOR STUDENTS & CANDIDATES</span>
+
+            <h2 class="h5 fw-bold text-navy mb-3">Student Placement Portal</h2>
+            <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
+              Activate your account with your college e-mail and roll number. Apply to campus drives, track rounds,
+              interviews and offers, and keep your documents safe.
+            </p>
+
+            <button class="btn btn-primary-custom w-100 py-2.5 fw-bold text-white shadow mt-auto">
+              Create student account &rarr;
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Sign In Footer Link -->

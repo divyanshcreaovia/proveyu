@@ -23,7 +23,7 @@ class ProductionTokenExposureIT extends IntegrationTestBase {
         String domain = "p" + uid() + ".edu";
         Resp reg = post("/api/v1/college/auth/register", null, Map.ofEntries(Map.entry("collegeName", "P College"), Map.entry("aicteCode", "P-" + uid()),
                 Map.entry("university", "U"), Map.entry("city", "C"), Map.entry("state", "S"), Map.entry("emailDomain", domain), Map.entry("tpoName", "T"),
-                Map.entry("tpoPhone", "6" + String.valueOf(System.nanoTime()).substring(4, 13)), Map.entry("tpoEmail", "tpo@" + domain),
+                Map.entry("tpoPhone", "6" + String.format("%09d", Math.floorMod(System.nanoTime(), 1_000_000_000L))), Map.entry("tpoEmail", "tpo@" + domain),
                 Map.entry("password", "Secret123"), Map.entry("acceptTerms", true)));
         assertThat(reg.status()).isEqualTo(201);
         assertThat(reg.data().has("devVerificationToken")).isFalse();

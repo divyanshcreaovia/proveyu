@@ -40,6 +40,13 @@ export class AuthService {
     }
   }
 
+  /** Login page for the portal a URL belongs to. */
+  static loginFor(url: string, wasCollege = false): string {
+    if (url.startsWith('/student')) return '/student/login';
+    if (url.startsWith('/company')) return '/company/login';
+    return wasCollege || url.startsWith('/college') ? '/college/login' : '/login';
+  }
+
   login(email: string, password: string, remember: boolean): Observable<AuthSession> {
     return this.http.post<ApiResponse<AuthSession>>(api('/api/v1/auth/login'), { email, password })
       .pipe(map(r => r.data), tap(s => this.startSession(s, remember)));
@@ -109,7 +116,7 @@ export class AuthService {
       const isCollege = COLLEGE_ROLES.includes(this.role() as Role);
       this.clearLocal();
       this.toast.warning('Your session has expired. Please sign in again.');
-      this.router.navigateByUrl(isCollege ? '/college/login' : '/login');
+      this.router.navigateByUrl(AuthService.loginFor(this.router.url, isCollege));
     }, Math.min(ms, 2_000_000_000));
   }
 }

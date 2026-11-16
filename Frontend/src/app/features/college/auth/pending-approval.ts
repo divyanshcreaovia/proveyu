@@ -19,7 +19,7 @@ import { AuthShell } from './auth-shell';
           <p class="small text-body-secondary">Contact support&#64;proveyu.com to appeal.</p>
         } @else {
           <div class="text-center mb-3"><i class="bi bi-hourglass-split text-warning" style="font-size:3rem"></i></div>
-          <p><strong>{{ m.collegeName }}</strong> is being reviewed by the PROVEYU team. You'll get an e-mail as soon as it is approved
+          <p><strong>{{ m.collegeName }}</strong> is being reviewed by the ProveYu team. You'll get an e-mail as soon as it is approved
             (usually within one working day).</p>
         }
       } @else { <div class="text-center py-3"><span class="spinner-border"></span></div> }

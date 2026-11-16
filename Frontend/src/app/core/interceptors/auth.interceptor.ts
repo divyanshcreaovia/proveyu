@@ -28,11 +28,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           auth.clearLocal();
           const code = err.error?.errorCode;
           const msg = code === 'SESSION_STALE' ? 'Your role changed. Please sign in again.' : undefined;
-          router.navigate([wasCollege || router.url.startsWith('/college') ? '/college/login' : '/login'],
+          router.navigate([AuthService.loginFor(router.url, wasCollege)],
             { queryParams: { returnUrl: router.url, ...(msg ? { reason: 'stale' } : { reason: 'expired' }) } });
         } else if (err.status === 403) {
           const code = err.error?.errorCode;
           if (code === 'COLLEGE_PENDING_APPROVAL' || code === 'COLLEGE_REJECTED') router.navigateByUrl('/college/pending-approval');
+          // a revoked team member keeps a valid token, so sign them out instead of leaving them on a broken page
+          else if (code === 'ACCESS_REVOKED') auth.logout('/college/login', 'Your access to this college was revoked.');
           else if (code === 'FORBIDDEN' && req.method === 'GET') router.navigateByUrl('/forbidden');
         }
       }

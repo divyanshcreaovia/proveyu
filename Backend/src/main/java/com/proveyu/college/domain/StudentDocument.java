@@ -32,6 +32,8 @@ public class StudentDocument extends TenantEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "doc_type")
     private DocType docType;
+    @Column(name = "label")
+    private String label;
     @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "file_id", columnDefinition = "CHAR(36)")
     private UUID fileId;

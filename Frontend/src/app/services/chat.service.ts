@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnDestroy, inject, signal } from '@angular/core';
+import { Injectable, OnDestroy, computed, inject, signal } from '@angular/core';
 import { Observable, Subject, map } from 'rxjs';
 import { api, ApiResponse } from '../core/api';
 import { environment } from '../core/environments/environment';
@@ -22,12 +22,17 @@ export class ChatService implements OnDestroy {
   private retry?: ReturnType<typeof setTimeout>;
   readonly connected = signal(false);
   readonly incoming = new Subject<ChatMessage>();
+  /** Unread message count per sender (WhatsApp-style badges); kept live from the socket. */
+  readonly unread = signal<Record<string, number>>({});
+  readonly totalUnread = computed(() => Object.values(this.unread()).reduce((a, b) => a + b, 0));
+  /** The conversation currently open on screen: its messages are read immediately, so they never count as unread. */
+  readonly activePeer = signal<string | null>(null);
 
   connect(): void {
     const token = this.storage.token;
     if (!token || this.socket?.readyState === WebSocket.OPEN || this.socket?.readyState === WebSocket.CONNECTING) return;
     this.socket = new WebSocket(`${environment.wsBaseUrl}/ws/chat?token=${encodeURIComponent(token)}`);
-    this.socket.onopen = () => this.connected.set(true);
+    this.socket.onopen = () => { this.connected.set(true); this.refreshUnread(); };
     this.socket.onclose = () => {
       this.connected.set(false);
       if (this.storage.token) this.retry = setTimeout(() => this.connect(), 5000);
@@ -35,15 +40,44 @@ export class ChatService implements OnDestroy {
     this.socket.onmessage = ev => {
       try {
         const data = JSON.parse(ev.data);
+        if (data.event && data.event !== 'message.new') return; // e.g. message.read receipts are not new messages
         const msg = data.payload ?? data.data ?? data;
-        if (msg && typeof msg === 'object' && (msg.senderId || msg.receiverId)) this.incoming.next(msg as ChatMessage);
+        if (!msg || typeof msg !== 'object' || !(msg.senderId || msg.receiverId)) return;
+        if (msg.receiverId === this.storage.get('userId') && msg.senderId !== this.activePeer()) {
+          this.unread.update(u => ({ ...u, [msg.senderId]: (u[msg.senderId] ?? 0) + 1 }));
+        }
+        this.incoming.next(msg as ChatMessage);
       } catch { /* ignore non-JSON frames */ }
     };
   }
 
+  /** Reloads per-sender unread counts from the server (login, reconnect, periodic fallback). */
+  refreshUnread(): void {
+    if (!this.storage.token) return;
+    this.http.get<ApiResponse<{ totalUnreadCount: number; senders: { senderId: string; unreadCount: number }[] }>>(api('/api/v1/chat/notifications'))
+      .subscribe({
+        next: r => {
+          const map: Record<string, number> = {};
+          (r.data?.senders ?? []).forEach(x => { if (x.senderId !== this.activePeer()) map[x.senderId] = x.unreadCount; });
+          this.unread.set(map);
+        },
+        error: () => { /* badge stays as it was */ },
+      });
+  }
+
+  /** Call when a conversation is opened: clears its badge. */
+  openConversation(peerId: string): void {
+    this.activePeer.set(peerId);
+    this.unread.update(u => { const { [peerId]: _, ...rest } = u; return rest; });
+  }
+
   disconnect(): void {
     clearTimeout(this.retry);
+    this.unread.set({});
+    this.activePeer.set(null);
+    if (this.socket) this.socket.onclose = null; // a deliberate close must not trigger the auto-reconnect
     this.socket?.close();
+    this.connected.set(false);
     this.socket = undefined;
   }
 

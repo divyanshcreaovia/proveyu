@@ -6,7 +6,6 @@ import { guestGuard } from './core/guards/guest.guard';
 const COLLEGE = ['COLLEGE_ADMIN', 'COLLEGE_COORDINATOR', 'COLLEGE_VIEWER'];
 const COLLEGE_WRITE = ['COLLEGE_ADMIN', 'COLLEGE_COORDINATOR'];
 const COLLEGE_ADMIN = ['COLLEGE_ADMIN'];
-const c = (p: string) => `./features/college/${p}`;
 
 export const routes: Routes = [
   // ---------------------------------------------------------------- public site
@@ -29,7 +28,7 @@ export const routes: Routes = [
       { path: 'profile', loadComponent: () => import('./features/candidate/pages/profile/profile').then(m => m.Profile) },
       { path: 'book-slot', loadComponent: () => import('./features/candidate/pages/book-slot/book-slot').then(m => m.BookSlot) },
       { path: 'my-passport', loadComponent: () => import('./features/candidate/pages/my-passport/my-passport').then(m => m.MyPassport) },
-      { path: 'campus-drives', loadComponent: () => import('./features/candidate/pages/campus-drives/campus-drives').then(m => m.CampusDrives) },
+      { path: 'campus-drives', redirectTo: '/student/drives' },
       { path: 'interview-invites', loadComponent: () => import('./features/candidate/pages/interview-invites/interview-invites').then(m => m.InterviewInvites) },
       { path: 'settings', loadComponent: () => import('./features/candidate/pages/settings/settings').then(m => m.Settings) },
       { path: 'support', loadComponent: () => import('./features/candidate/pages/support/support').then(m => m.Support) },
@@ -58,6 +57,60 @@ export const routes: Routes = [
   {
     path: 'admin/colleges', canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] },
     loadComponent: () => import('./features/admin/admin-colleges').then(m => m.AdminColleges),
+  },
+  {
+    path: 'admin/prep', title: 'Mock tests', canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] },
+    loadComponent: () => import('./features/admin/admin-prep').then(m => m.AdminPrep),
+  },
+
+  // ---------------------------------------------------------------- student portal (college students, CANDIDATE role)
+  { path: 'student/login', canActivate: [guestGuard], loadComponent: () => import('./features/student/auth/student-login').then(m => m.StudentLogin) },
+  { path: 'student/signup', canActivate: [guestGuard], loadComponent: () => import('./features/student/auth/student-signup').then(m => m.StudentSignup) },
+  {
+    path: 'student/forgot-password', data: { loginUrl: '/student/login', variant: 'student' },
+    loadComponent: () => import('./features/college/auth/forgot-password').then(m => m.ForgotPassword),
+  },
+  {
+    // full-screen test player (outside the sidebar layout, like a real exam)
+    path: 'student/test/:id', title: 'Mock test', canActivate: [authGuard, roleGuard], data: { roles: ['CANDIDATE'] },
+    loadComponent: () => import('./features/student/prep/test-player').then(m => m.TestPlayer),
+  },
+  {
+    path: 'student',
+    canActivate: [authGuard, roleGuard], data: { roles: ['CANDIDATE'] },
+    loadComponent: () => import('./features/student/layout/student-shell').then(m => m.StudentShell),
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', title: 'Dashboard', loadComponent: () => import('./features/student/dashboard').then(m => m.StudentDashboard) },
+      { path: 'drives', title: 'Campus drives', loadComponent: () => import('./features/student/drives').then(m => m.StudentDrives) },
+      { path: 'applications', title: 'My applications', loadComponent: () => import('./features/student/applications').then(m => m.StudentApplications) },
+      { path: 'interviews', title: 'Interviews', loadComponent: () => import('./features/student/interviews').then(m => m.StudentInterviews) },
+      { path: 'offers', title: 'Offers', loadComponent: () => import('./features/student/offers').then(m => m.StudentOffers) },
+      { path: 'announcements', title: 'Announcements', loadComponent: () => import('./features/student/announcements').then(m => m.StudentAnnouncements) },
+      { path: 'chat', title: 'Chat with placement cell', loadComponent: () => import('./features/student/chat').then(m => m.StudentChat) },
+      { path: 'documents', title: 'Document locker', loadComponent: () => import('./features/student/documents').then(m => m.StudentDocuments) },
+      { path: 'profile', title: 'My profile', loadComponent: () => import('./features/student/profile').then(m => m.StudentProfile) },
+      { path: 'prep', title: 'Preparation', loadComponent: () => import('./features/student/prep/prep-home').then(m => m.PrepHome) },
+      { path: 'prep/result/:id', title: 'Test result', loadComponent: () => import('./features/student/prep/prep-result').then(m => m.PrepResult) },
+    ],
+  },
+
+  // ---------------------------------------------------------------- company Drive Room (RECRUITER role)
+  { path: 'company/login', canActivate: [guestGuard], loadComponent: () => import('./features/company/company-login').then(m => m.CompanyLogin) },
+  { path: 'company/accept', loadComponent: () => import('./features/company/company-accept').then(m => m.CompanyAccept) },
+  {
+    path: 'company/forgot-password', data: { loginUrl: '/company/login', variant: 'company' },
+    loadComponent: () => import('./features/college/auth/forgot-password').then(m => m.ForgotPassword),
+  },
+  {
+    path: 'company',
+    canActivate: [authGuard, roleGuard], data: { roles: ['RECRUITER'] },
+    loadComponent: () => import('./features/company/company-shell').then(m => m.CompanyShell),
+    children: [
+      { path: '', redirectTo: 'drives', pathMatch: 'full' },
+      { path: 'drives', title: 'My drives', loadComponent: () => import('./features/company/company-drives').then(m => m.CompanyDrives) },
+      { path: 'drives/:id', title: 'Drive Room', loadComponent: () => import('./features/company/drive-room').then(m => m.DriveRoom) },
+    ],
   },
 
   // ---------------------------------------------------------------- college auth (public)

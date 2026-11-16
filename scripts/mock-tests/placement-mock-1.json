@@ -1,0 +1,116 @@
+{
+  "title": "Placement Mock Test 1",
+  "description": "General service-company pattern: aptitude, reasoning, verbal, technical MCQs and two coding problems. Practice it a day or two before your drive.",
+  "companyTag": "Service companies",
+  "durationMinutes": 45,
+  "sections": [
+    {
+      "name": "Quantitative aptitude",
+      "questions": [
+        { "type": "MCQ", "text": "A train 150 m long passes a pole in 15 seconds. What is its speed in km/h?",
+          "options": ["30 km/h", "36 km/h", "40 km/h", "54 km/h"], "answer": 1,
+          "explanation": "Speed = 150 / 15 = 10 m/s. 10 m/s × 18/5 = 36 km/h." },
+        { "type": "MCQ", "text": "If 20% of x equals 30% of 60, what is x?",
+          "options": ["120", "80", "90", "100"], "answer": 2,
+          "explanation": "0.2x = 0.3 × 60 = 18, so x = 90." },
+        { "type": "MCQ", "text": "A can finish a job in 10 days and B in 15 days. How many days do they take working together?",
+          "options": ["5", "8", "12.5", "6"], "answer": 3,
+          "explanation": "Together they do 1/10 + 1/15 = 1/6 of the job per day, so 6 days." },
+        { "type": "MCQ", "text": "What is the simple interest on ₹5,000 at 8% per year for 3 years?",
+          "options": ["₹1,200", "₹1,000", "₹1,250", "₹1,500"], "answer": 0,
+          "explanation": "SI = P × R × T / 100 = 5000 × 8 × 3 / 100 = ₹1,200." },
+        { "type": "MCQ", "text": "The average of the first 10 natural numbers is:",
+          "options": ["5", "6", "5.5", "10"], "answer": 2,
+          "explanation": "Sum = 10 × 11 / 2 = 55, average = 55 / 10 = 5.5." }
+      ]
+    },
+    {
+      "name": "Logical reasoning",
+      "questions": [
+        { "type": "MCQ", "text": "Find the next number: 2, 6, 12, 20, 30, ?",
+          "options": ["40", "42", "44", "36"], "answer": 1,
+          "explanation": "The differences are 4, 6, 8, 10, so the next difference is 12: 30 + 12 = 42." },
+        { "type": "MCQ", "text": "If CAT is written as DBU, how is DOG written?",
+          "options": ["EPH", "EPG", "DPH", "FQI"], "answer": 0,
+          "explanation": "Each letter moves one place forward: D→E, O→P, G→H." },
+        { "type": "MCQ", "text": "A is B's brother. C is A's mother. D is C's father. How is D related to B?",
+          "options": ["Uncle", "Father", "Grandfather", "Brother"], "answer": 2,
+          "explanation": "C is the mother of A and B, and D is C's father, so D is B's (maternal) grandfather." },
+        { "type": "MCQ", "text": "Which number is the odd one out? 121, 144, 169, 196, 200",
+          "options": ["121", "169", "196", "200"], "answer": 3,
+          "explanation": "All others are perfect squares (11², 12², 13², 14²); 200 is not." }
+      ]
+    },
+    {
+      "name": "Verbal ability",
+      "questions": [
+        { "type": "MCQ", "text": "Choose the word closest in meaning to ABUNDANT.",
+          "options": ["Scarce", "Plentiful", "Hidden", "Ordinary"], "answer": 1,
+          "explanation": "Abundant means existing in large quantities: plentiful." },
+        { "type": "MCQ", "text": "Fill in the blank: Neither the manager nor the employees ____ present at the meeting.",
+          "options": ["was", "is", "were", "has been"], "answer": 2,
+          "explanation": "With neither…nor, the verb agrees with the nearer subject, 'employees', which is plural." },
+        { "type": "MCQ", "text": "Choose the word opposite in meaning to TRANSPARENT.",
+          "options": ["Clear", "Opaque", "Bright", "Thin"], "answer": 1,
+          "explanation": "Transparent lets light through; opaque does not." }
+      ]
+    },
+    {
+      "name": "Technical & pseudo-code",
+      "questions": [
+        { "type": "MCQ", "text": "What does this pseudo-code print?\n\nset x = 5, y = 10\nx = x + y\ny = x - y\nx = x - y\nprint x, y",
+          "options": ["5 10", "10 5", "15 5", "10 15"], "answer": 1,
+          "explanation": "x = 15, then y = 15 - 10 = 5, then x = 15 - 5 = 10. The values are swapped: 10 5." },
+        { "type": "MCQ", "text": "What does this pseudo-code print?\n\ninteger a = 7\nfor i from 1 to 3\n    a = a * 2 - i\nend for\nprint a",
+          "options": ["45", "42", "39", "48"], "answer": 0,
+          "explanation": "i=1: 7×2−1 = 13; i=2: 13×2−2 = 24; i=3: 24×2−3 = 45." },
+        { "type": "MCQ", "text": "What is the worst-case time complexity of binary search on a sorted array of n elements?",
+          "options": ["O(n)", "O(n log n)", "O(log n)", "O(1)"], "answer": 2,
+          "explanation": "Each step halves the search range, so it takes about log₂ n steps." },
+        { "type": "MCQ", "text": "Which data structure works on the First-In-First-Out (FIFO) principle?",
+          "options": ["Stack", "Queue", "Tree", "Graph"], "answer": 1,
+          "explanation": "A queue removes elements in the order they were added." },
+        { "type": "MCQ", "text": "Which protocol is used to browse websites securely?",
+          "options": ["FTP", "HTTP", "SMTP", "HTTPS"], "answer": 3,
+          "explanation": "HTTPS is HTTP encrypted with TLS." }
+      ]
+    },
+    {
+      "name": "Coding",
+      "questions": [
+        { "type": "CODING", "title": "Sum of digits", "marks": 10,
+          "text": "Read a non-negative integer N (0 ≤ N ≤ 10^18) and print the sum of its digits.\n\nInput: one line with N.\nOutput: one line with the sum of the digits of N.",
+          "starterCode": {
+            "python": "import sys\n\nn = sys.stdin.readline().strip()\n# write your code here\n",
+            "java": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        String n = sc.next();\n        // write your code here\n    }\n}\n",
+            "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    string n;\n    cin >> n;\n    // write your code here\n    return 0;\n}\n",
+            "javascript": "const input = require('fs').readFileSync(0, 'utf8').trim();\n// write your code here\n"
+          },
+          "samples": [ { "input": "1234", "output": "10" }, { "input": "0", "output": "0" } ],
+          "tests": [
+            { "input": "999999999999999999", "output": "162" },
+            { "input": "7", "output": "7" },
+            { "input": "1000000", "output": "1" },
+            { "input": "98765", "output": "35" }
+          ],
+          "explanation": "Treat N as a string (it can exceed 32-bit range) and add each character's digit value." },
+        { "type": "CODING", "title": "Second largest distinct number", "marks": 10,
+          "text": "Given n integers, print the second largest DISTINCT value. If it does not exist, print -1.\n\nInput: first line n (1 ≤ n ≤ 10^5); second line n integers, each between -10^9 and 10^9.\nOutput: the second largest distinct value, or -1.\n\nExample: for 3 1 4 4 2 the distinct values are 1, 2, 3, 4, so the answer is 3.",
+          "starterCode": {
+            "python": "import sys\n\ndata = sys.stdin.read().split()\nn = int(data[0])\nnums = list(map(int, data[1:1 + n]))\n# write your code here\n",
+            "java": "import java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int n = sc.nextInt();\n        long[] a = new long[n];\n        for (int i = 0; i < n; i++) a[i] = sc.nextLong();\n        // write your code here\n    }\n}\n",
+            "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    int n;\n    cin >> n;\n    vector<long long> a(n);\n    for (auto &x : a) cin >> x;\n    // write your code here\n    return 0;\n}\n",
+            "javascript": "const data = require('fs').readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);\nconst n = data[0];\nconst nums = data.slice(1, 1 + n);\n// write your code here\n"
+          },
+          "samples": [ { "input": "5\n3 1 4 4 2", "output": "3" }, { "input": "3\n5 5 5", "output": "-1" } ],
+          "tests": [
+            { "input": "2\n-1 -2", "output": "-2" },
+            { "input": "6\n10 20 20 30 30 10", "output": "20" },
+            { "input": "1\n7", "output": "-1" },
+            { "input": "4\n1000000000 -1000000000 0 999999999", "output": "999999999" }
+          ],
+          "explanation": "Track the largest and second largest values while skipping duplicates of the largest; print -1 if the second was never set." }
+      ]
+    }
+  ]
+}

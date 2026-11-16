@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
@@ -12,7 +12,7 @@ import { AuthShell } from './auth-shell';
   imports: [ReactiveFormsModule, RouterLink, AuthShell],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <pm-auth-shell heading="Reset password" [sub]="step() === 0 ? 'We will e-mail you a 6-digit code' : 'Enter the code from your e-mail'">
+    <pm-auth-shell [variant]="variant()" heading="Reset password" [sub]="step() === 0 ? 'We will e-mail you a 6-digit code' : 'Enter the code from your e-mail'">
       @if (error()) { <div class="alert alert-danger small" role="alert">{{ error() }}</div> }
       @if (step() === 0) {
         <form [formGroup]="emailForm" (ngSubmit)="send()" novalidate>
@@ -32,7 +32,7 @@ import { AuthShell } from './auth-shell';
           <button type="button" class="btn btn-link btn-sm w-100 mt-2" (click)="send()">Resend code</button>
         </form>
       }
-      <p class="text-center small mt-3 mb-0"><a routerLink="/college/login">Back to sign in</a></p>
+      <p class="text-center small mt-3 mb-0"><a [routerLink]="loginUrl()">Back to sign in</a></p>
     </pm-auth-shell>`,
 })
 export class ForgotPassword {
@@ -40,6 +40,9 @@ export class ForgotPassword {
   private router = inject(Router);
   private toast = inject(ToastService);
   private fb = inject(FormBuilder).nonNullable;
+  /** Set from route data, so the student portal reuses this page. */
+  loginUrl = input('/college/login');
+  variant = input<'college' | 'student' | 'company'>('college');
   step = signal(0);
   busy = signal(false);
   error = signal('');
@@ -65,7 +68,7 @@ export class ForgotPassword {
     this.busy.set(true);
     this.error.set('');
     this.auth.resetPassword(this.emailForm.getRawValue().email.trim(), otp, password).subscribe({
-      next: () => { this.toast.success('Password updated. Please sign in.'); this.router.navigateByUrl('/college/login'); },
+      next: () => { this.toast.success('Password updated. Please sign in.'); this.router.navigateByUrl(this.loginUrl()); },
       error: (e: AppError) => { this.busy.set(false); this.error.set(e.message); },
     });
   }

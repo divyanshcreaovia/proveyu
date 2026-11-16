@@ -23,7 +23,7 @@ class AuthSecurityIT extends IntegrationTestBase {
         String domain = "v" + uid() + ".edu";
         Resp reg = post("/api/v1/college/auth/register", null, Map.ofEntries(Map.entry("collegeName", "V College"), Map.entry("aicteCode", "A-" + uid()),
                 Map.entry("university", "U"), Map.entry("city", "C"), Map.entry("state", "S"), Map.entry("emailDomain", domain), Map.entry("tpoName", "T"),
-                Map.entry("tpoPhone", "8" + String.valueOf(System.nanoTime()).substring(4, 13)), Map.entry("tpoEmail", "tpo@" + domain),
+                Map.entry("tpoPhone", "8" + String.format("%09d", Math.floorMod(System.nanoTime(), 1_000_000_000L))), Map.entry("tpoEmail", "tpo@" + domain),
                 Map.entry("password", "Secret123"), Map.entry("acceptTerms", true)));
         assertThat(reg.status()).isEqualTo(201);
         Resp blocked = post("/api/v1/auth/login", null, Map.of("email", "tpo@" + domain, "password", "Secret123"));
@@ -40,7 +40,7 @@ class AuthSecurityIT extends IntegrationTestBase {
     void tpoEmailMustMatchCollegeDomain() throws Exception {
         Resp r = post("/api/v1/college/auth/register", null, Map.ofEntries(Map.entry("collegeName", "D College"), Map.entry("aicteCode", "D-" + uid()),
                 Map.entry("university", "U"), Map.entry("city", "C"), Map.entry("state", "S"), Map.entry("emailDomain", "real.edu"), Map.entry("tpoName", "T"),
-                Map.entry("tpoPhone", "7" + String.valueOf(System.nanoTime()).substring(4, 13)), Map.entry("tpoEmail", "tpo@gmail.com"),
+                Map.entry("tpoPhone", "7" + String.format("%09d", Math.floorMod(System.nanoTime(), 1_000_000_000L))), Map.entry("tpoEmail", "tpo@gmail.com"),
                 Map.entry("password", "Secret123"), Map.entry("acceptTerms", true)));
         assertThat(r.status()).isEqualTo(400);
         assertThat(r.body().path("code").asText()).isEqualTo("EMAIL_DOMAIN_MISMATCH");

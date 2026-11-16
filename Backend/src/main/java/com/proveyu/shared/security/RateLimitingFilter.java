@@ -103,6 +103,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
     private boolean isRateLimitedPath(String path) {
         return path.startsWith("/api/v1/auth/") ||
+               path.startsWith("/api/v1/college/auth/") ||
                path.startsWith("/api/v1/bookings") ||
                path.startsWith("/api/v1/payments");
     }
