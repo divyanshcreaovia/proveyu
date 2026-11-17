@@ -1,0 +1,1238 @@
+{
+ "title": "Accenture style · Cognitive, Technical + Coding",
+ "description": "Cognitive and technical MCQs followed by two coding problems. 90 MCQs + 2 coding problems in 135 minutes. Original practice questions modelled on the publicly reported test pattern. Not an official or past paper.",
+ "companyTag": "Accenture",
+ "level": "MEDIUM",
+ "order": 7,
+ "durationMinutes": 135,
+ "sections": [
+  {
+   "name": "English ability",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nGood sleep is essential for learning. While we sleep, the brain sorts and stores what we learned during the day. Students who stay up all night before an exam often remember less than those who sleep well, even if they studied for more hours. Regular sleep times, less screen use before bed and a dark, quiet room all improve sleep quality.\n\nStudents who stay up all night before an exam",
+     "options": [
+      "learn faster",
+      "often remember less",
+      "sleep better later",
+      "always score higher"
+     ],
+     "answer": 1,
+     "explanation": "The passage supports: often remember less."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: The thief tried to ____ the police.",
+     "options": [
+      "delude",
+      "elude",
+      "illude",
+      "allude"
+     ],
+     "answer": 1,
+     "explanation": "Correct: The thief tried to elude the police."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) He (B) insisted to go (C) there (D) alone.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "‘Insisted on going’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘OBSOLETE’.",
+     "options": [
+      "hidden",
+      "outdated",
+      "fragrant",
+      "costly"
+     ],
+     "answer": 1,
+     "explanation": "‘obsolete’ means outdated."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does the idiom ‘once in a blue moon’ mean?",
+     "options": [
+      "very rarely",
+      "every month",
+      "during festivals",
+      "at night"
+     ],
+     "answer": 0,
+     "explanation": "‘once in a blue moon’ means: very rarely."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nIndia's digital payment system has grown remarkably. UPI allows instant transfers between bank accounts using a phone, and small shopkeepers now accept payments through QR codes. This has reduced the use of cash and made it easier to track transactions. Yet challenges remain: older people and those without smartphones can be left out, and online frauds have increased.\n\nThe word ‘remarkably’ is closest in meaning to",
+     "options": [
+      "slowly",
+      "partly",
+      "secretly",
+      "strikingly"
+     ],
+     "answer": 3,
+     "explanation": "The passage supports: strikingly."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: The meeting was called ____ because of the storm.",
+     "options": [
+      "off",
+      "out",
+      "up",
+      "in"
+     ],
+     "answer": 0,
+     "explanation": "Correct: The meeting was called off because of the storm."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) Hardly had (B) I reached the station (C) than the train (D) left.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 2,
+     "explanation": "‘Hardly … when’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘ADVERSITY’.",
+     "options": [
+      "adventure",
+      "advertisement",
+      "advice",
+      "hardship"
+     ],
+     "answer": 3,
+     "explanation": "‘adversity’ means hardship."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does the idiom ‘throw in the towel’ mean?",
+     "options": [
+      "clean the house",
+      "give up",
+      "go swimming",
+      "start a fight"
+     ],
+     "answer": 1,
+     "explanation": "‘throw in the towel’ means: give up."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nRemote work was once rare in Indian companies. The pandemic forced firms to try it at scale, and many found that productivity did not fall. Employees saved hours of commuting, and companies saved on office space. However, new problems appeared: junior staff missed informal learning from seniors, and some people found it hard to separate work from home life. Many firms have now settled on a hybrid model, with two or three office days a week.\n\nWhat made companies try remote work at scale?",
+     "options": [
+      "Government orders on office space",
+      "Employee strikes",
+      "The pandemic",
+      "Lower salaries"
+     ],
+     "answer": 2,
+     "explanation": "The passage supports: The pandemic."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: The project was completed ____ time.",
+     "options": [
+      "by",
+      "on",
+      "with",
+      "at"
+     ],
+     "answer": 1,
+     "explanation": "Correct: The project was completed on time."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) He is (B) more cleverer (C) than his (D) brother.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "Double comparative: ‘cleverer’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘EXPAND’.",
+     "options": [
+      "export",
+      "explain",
+      "expect",
+      "enlarge"
+     ],
+     "answer": 3,
+     "explanation": "‘expand’ means enlarge."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does the idiom ‘bite off more than you can chew’ mean?",
+     "options": [
+      "take on more than you can handle",
+      "eat too quickly",
+      "speak rudely",
+      "save food for later"
+     ],
+     "answer": 0,
+     "explanation": "‘bite off more than you can chew’ means: take on more than you can handle."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nIndia's digital payment system has grown remarkably. UPI allows instant transfers between bank accounts using a phone, and small shopkeepers now accept payments through QR codes. This has reduced the use of cash and made it easier to track transactions. Yet challenges remain: older people and those without smartphones can be left out, and online frauds have increased.\n\nWhat does UPI allow?",
+     "options": [
+      "Cash withdrawals without a card only",
+      "Instant transfers between bank accounts by phone",
+      "Free international travel",
+      "Loans without banks"
+     ],
+     "answer": 1,
+     "explanation": "The passage supports: Instant transfers between bank accounts by phone."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: The book is ____ the table.",
+     "options": [
+      "in",
+      "at",
+      "on",
+      "over"
+     ],
+     "answer": 2,
+     "explanation": "Correct: The book is on the table."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) I have seen (B) him yesterday (C) at the (D) market.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 0,
+     "explanation": "With ‘yesterday’ use the simple past: ‘I saw’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘TIMID’.",
+     "options": [
+      "shy",
+      "tiny",
+      "tired",
+      "tidy"
+     ],
+     "answer": 0,
+     "explanation": "‘timid’ means shy."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does the idiom ‘spill the beans’ mean?",
+     "options": [
+      "reveal secret information",
+      "be clumsy",
+      "waste food",
+      "cook carelessly"
+     ],
+     "answer": 0,
+     "explanation": "‘spill the beans’ means: reveal secret information."
+    }
+   ]
+  },
+  {
+   "name": "Critical reasoning",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Statements: Some cats are pens. All pens are doctors.\nConclusion: All cats are doctors.\nDoes the conclusion follow?",
+     "options": [
+      "The conclusion definitely follows",
+      "The conclusion does not follow",
+      "The data is contradictory",
+      "The conclusion is partly true"
+     ],
+     "answer": 1,
+     "explanation": "Draw the Venn diagram for the statements: the conclusion fails in at least one possible case."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a certain code, TICKET is written as SHBJDS. How is PENCIL written in that code?",
+     "options": [
+      "QFODJM",
+      "ODMBHK",
+      "PENCIL",
+      "NCLAGJ"
+     ],
+     "answer": 1,
+     "explanation": "Each letter is shifted -1 place in the alphabet."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a certain code, FLOWER is written as DJMUCP. How is SILVER written in that code?",
+     "options": [
+      "QGJTCP",
+      "PFISBO",
+      "RHKUDQ",
+      "SILVER"
+     ],
+     "answer": 0,
+     "explanation": "Each letter is shifted -2 places in the alphabet."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a survey, 26 people read newspaper A, 44 read B, 11 read both and 13 read neither. How many people read only one newspaper?",
+     "options": [
+      "48",
+      "15",
+      "59",
+      "35"
+     ],
+     "answer": 0,
+     "explanation": "Only A = 15, only B = 33; total = 48."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a row of 31 students, Chitra is 21st from the left. Gita is 9 places to the right of Chitra. What is Gita's position from the right end?",
+     "options": [
+      "3",
+      "2",
+      "30",
+      "1"
+     ],
+     "answer": 1,
+     "explanation": "Gita is 30th from the left, so 31 − 30 + 1 = 2nd from the right."
+    },
+    {
+     "type": "MCQ",
+     "text": "A cube painted on all faces is cut into 125 identical small cubes. How many small cubes have exactly three faces painted?",
+     "options": [
+      "54",
+      "36",
+      "8",
+      "27"
+     ],
+     "answer": 2,
+     "explanation": "For an n×n×n cube (n = 5): 3 faces: 8, 2 faces: 12(n−2), 1 face: 6(n−2)², none: (n−2)³ → 8."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next: GT, KP, OL, SH, ?",
+     "options": [
+      "WE",
+      "WD",
+      "DW",
+      "XD"
+     ],
+     "answer": 1,
+     "explanation": "First letters move +4; second letters move −4 from the other end of the alphabet."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which number is the odd one out: 344, 729, 8, 343?",
+     "options": [
+      "343",
+      "8",
+      "729",
+      "344"
+     ],
+     "answer": 3,
+     "explanation": "344 — all others are perfect cubes."
+    },
+    {
+     "type": "MCQ",
+     "text": "Pooja is taller than Nikhil. Nikhil is taller than Chitra. Chitra is taller than Zoya. Varun is taller than Pooja. Who is the second tallest?",
+     "options": [
+      "Nikhil",
+      "Pooja",
+      "Varun",
+      "Chitra"
+     ],
+     "answer": 1,
+     "explanation": "Chaining the clues: Varun > Pooja > Nikhil > Chitra > Zoya. The second tallest is Pooja."
+    },
+    {
+     "type": "MCQ",
+     "text": "Meera is taller than Sneha. Varun is taller than Meera. Harsh is taller than Yash. Yash is taller than Varun. Who is the tallest?",
+     "options": [
+      "Meera",
+      "Harsh",
+      "Yash",
+      "Varun"
+     ],
+     "answer": 1,
+     "explanation": "Chaining the clues: Harsh > Yash > Varun > Meera > Sneha. The tallest is Harsh."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which number is the odd one out: 36, 66, 63, 117?",
+     "options": [
+      "63",
+      "117",
+      "66",
+      "36"
+     ],
+     "answer": 2,
+     "explanation": "66 — all others are multiples of 9."
+    },
+    {
+     "type": "MCQ",
+     "text": "Pooja is the mother of Uma. Varun is the son of Uma. How is Pooja related to Varun?",
+     "options": [
+      "Aunt",
+      "Mother",
+      "Sister",
+      "Grandmother"
+     ],
+     "answer": 3,
+     "explanation": "Pooja is the mother of Varun's parent."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a row of 12 students, Yash is 5th from the left. Sneha is 2 places to the right of Yash. What is Sneha's position from the right end?",
+     "options": [
+      "5",
+      "7",
+      "8",
+      "6"
+     ],
+     "answer": 3,
+     "explanation": "Sneha is 7th from the left, so 12 − 7 + 1 = 6th from the right."
+    },
+    {
+     "type": "MCQ",
+     "text": "Uma walks 8 m towards the East, then turns right and walks 10 m, then turns right and walks 2 m, then turns right and walks 2 m. How far is Uma from the starting point?",
+     "options": [
+      "8 m",
+      "10 m",
+      "7 m",
+      "9 m"
+     ],
+     "answer": 1,
+     "explanation": "Net displacement: 6 m east and 8 m south; distance = √(6² + 8²) = 10 m."
+    },
+    {
+     "type": "MCQ",
+     "text": "9 : 90 :: 10 : ?",
+     "options": [
+      "97",
+      "110",
+      "104",
+      "95"
+     ],
+     "answer": 1,
+     "explanation": "The rule is n → n² + n; for 10 it gives 110."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a certain code, MARKET is written as LZQJDS. How is PARROT written in that code?",
+     "options": [
+      "NYPPMR",
+      "OZQQNS",
+      "PARROT",
+      "QBSSPU"
+     ],
+     "answer": 1,
+     "explanation": "Each letter is shifted -1 place in the alphabet."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which number is the odd one out: 104, 107, 48, 64?",
+     "options": [
+      "64",
+      "104",
+      "48",
+      "107"
+     ],
+     "answer": 3,
+     "explanation": "107 — all others are multiples of 8."
+    },
+    {
+     "type": "MCQ",
+     "text": "Pointing to a man, Meera says, \"His mother is the only daughter of my mother.\" How is Meera related to the man?",
+     "options": [
+      "Mother",
+      "Grandmother",
+      "Aunt",
+      "Sister"
+     ],
+     "answer": 0,
+     "explanation": "The only daughter of Meera's mother is Meera herself, so Meera is his mother."
+    },
+    {
+     "type": "MCQ",
+     "text": "If 7 ⊕ 2 = 53; 2 ⊕ 4 = 20, then 2 ⊕ 6 = ?",
+     "options": [
+      "43",
+      "41",
+      "38",
+      "40"
+     ],
+     "answer": 3,
+     "explanation": "a ⊕ b = a² + b²; so 2 ⊕ 6 = 40."
+    },
+    {
+     "type": "MCQ",
+     "text": "Jatin is the husband of Bharat. Farhan is the only grandchild of Rahul, who is Jatin's father. Farhan is the daughter of Bharat. How is Rahul related to Bharat?",
+     "options": [
+      "Uncle",
+      "Father-in-law",
+      "Grandfather",
+      "Father"
+     ],
+     "answer": 1,
+     "explanation": "Rahul is the father of Bharat's husband."
+    }
+   ]
+  },
+  {
+   "name": "Abstract and numerical reasoning",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "What is the sum of the first 16 terms of the series 9, 15, 21, ...?",
+     "options": [
+      "855",
+      "864",
+      "1584",
+      "960"
+     ],
+     "answer": 1,
+     "explanation": "S = n/2 [2a + (n−1)d] = 16/2 × [18 + 90] = 864."
+    },
+    {
+     "type": "MCQ",
+     "text": "Rs 7200 is divided among A, B and C in the ratio 3 : 5 : 8. What is A's share?",
+     "options": [
+      "Rs 1800",
+      "Rs 3600",
+      "Rs 1350",
+      "Rs 2250"
+     ],
+     "answer": 2,
+     "explanation": "One part = 7200 / 16 = 450; A gets 3 × 450 = Rs 1350."
+    },
+    {
+     "type": "MCQ",
+     "text": "A starts a business with Rs 7000. After 2 months B joins with Rs 10000. At the end of the year the profit is Rs 9200. What is B's share?",
+     "options": [
+      "Rs 92000/17",
+      "Rs 5500",
+      "Rs 4200",
+      "Rs 5000"
+     ],
+     "answer": 3,
+     "explanation": "Ratio = 7000×12 : 10000×10 = 84000:100000; B gets 9200 × 100000/184000 = Rs 5000."
+    },
+    {
+     "type": "MCQ",
+     "text": "A can do a job in 10 days and B in 15 days. They work together for 2 days, then B leaves. In how many more days will A finish the job?",
+     "options": [
+      "20/3 days",
+      "10 days",
+      "37/6 days",
+      "23/3 days"
+     ],
+     "answer": 0,
+     "explanation": "In 2 days they do 1/3 of the work; 2/3 is left, which A does in 2/3 × 10 = 20/3 days."
+    },
+    {
+     "type": "MCQ",
+     "text": "Two trains of lengths 200 m and 250 m run at 72 km/h and 18 km/h in opposite directions. How long do they take to cross each other completely?",
+     "options": [
+      "30 s",
+      "20 s",
+      "18 s",
+      "17 s"
+     ],
+     "answer": 2,
+     "explanation": "Relative speed = 90 km/h = 25 m/s; distance = 450 m; time = 18 s."
+    },
+    {
+     "type": "MCQ",
+     "text": "A starts a business with Rs 6000. After 2 months B joins with Rs 7000. At the end of the year the profit is Rs 14200. What is B's share?",
+     "options": [
+      "Rs 7500",
+      "Rs 7200",
+      "Rs 7000",
+      "Rs 99400/13"
+     ],
+     "answer": 2,
+     "explanation": "Ratio = 6000×12 : 7000×10 = 72000:70000; B gets 14200 × 70000/142000 = Rs 7000."
+    },
+    {
+     "type": "MCQ",
+     "text": "The average age of 12 students is 59 years. When the teacher's age is included, the average increases by 2 years. What is the teacher's age?",
+     "options": [
+      "80",
+      "73",
+      "97",
+      "85"
+     ],
+     "answer": 3,
+     "explanation": "New total = 61 × 13 = 793; old total = 708; teacher = 85."
+    },
+    {
+     "type": "MCQ",
+     "text": "Pipes A and B can fill a tank in 24 and 15 hours. Pipe C can empty it in 40 hours. If all three are opened together, how long will the tank take to fill?",
+     "options": [
+      "12 hours",
+      "25/2 hours",
+      "23/2 hours",
+      "13 hours"
+     ],
+     "answer": 0,
+     "explanation": "Net rate = 1/24 + 1/15 − 1/40 = 1/12 tank/hour, so 12 hours."
+    },
+    {
+     "type": "MCQ",
+     "text": "A sum of money amounts to Rs 7540 in 4 years at 4% per annum simple interest. What is the sum?",
+     "options": [
+      "Rs 7000",
+      "Rs 6000",
+      "Rs 6750",
+      "Rs 6500"
+     ],
+     "answer": 3,
+     "explanation": "Amount = P(1 + 4×4/100) = P × 29/25, so P = 7540 / 29/25 = Rs 6500."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the sum of the first 12 terms of the series 9, 11, 13, ...?",
+     "options": [
+      "231",
+      "240",
+      "372",
+      "264"
+     ],
+     "answer": 1,
+     "explanation": "S = n/2 [2a + (n−1)d] = 12/2 × [18 + 22] = 240."
+    }
+   ]
+  },
+  {
+   "name": "Pseudocode",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "What is the output of this pseudocode?\n\ns = 0\nfor i = 1 to 14 step 3\n    s = s + i * i\nend for\nprint s",
+     "options": [
+      "329",
+      "308",
+      "355",
+      "335"
+     ],
+     "answer": 3,
+     "explanation": "The loop takes i = 1, 4, 7, 10, 13; the result is 335."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does this C code print?\n\nint a = 11, b = 5;\nprintf(\"%d %d\", a / b, a % b);",
+     "options": [
+      "2.2 1",
+      "1 2",
+      "2 1",
+      "3 1"
+     ],
+     "answer": 2,
+     "explanation": "Integer division: 11/5 = 2, remainder 1."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the value of 19 ^ 18 (bitwise, on integers)?",
+     "options": [
+      "2",
+      "3",
+      "4",
+      "1"
+     ],
+     "answer": 3,
+     "explanation": "19 = 10011₂, 18 = 10010₂ → result 1₂ = 1."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output? (div = integer division)\n\nn = 846\nc = 0\nwhile n > 0\n    c = c + 1\n    n = n div 10\nend while\nprint c",
+     "options": [
+      "1",
+      "4",
+      "2",
+      "3"
+     ],
+     "answer": 3,
+     "explanation": "Trace the loop digit by digit."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does this C code print?\n\nint x = 7;\nint y = x++ * 2 + 1;\nprintf(\"%d %d\", y, x);",
+     "options": [
+      "17 7",
+      "15 8",
+      "15 7",
+      "17 8"
+     ],
+     "answer": 1,
+     "explanation": "x++ uses 7 and then increments x: y = 15, x = 8."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output of this pseudocode?\n\ns = 0\nfor i = 1 to 9 step 1\n    s = s + i\nend for\nprint s",
+     "options": [
+      "42",
+      "44",
+      "45",
+      "43"
+     ],
+     "answer": 2,
+     "explanation": "The loop takes i = 1, 2, 3, 4, 5, 6, 7, 8, 9; the result is 45."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does this C code print?\n\nint a = 35, b = 3;\nprintf(\"%d %d\", a / b, a % b);",
+     "options": [
+      "12 2",
+      "11.7 2",
+      "11 2",
+      "2 11"
+     ],
+     "answer": 2,
+     "explanation": "Integer division: 35/3 = 11, remainder 2."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the value of 26 << 3 (bitwise, on integers)?",
+     "options": [
+      "208",
+      "226",
+      "223",
+      "250"
+     ],
+     "answer": 0,
+     "explanation": "26 = 11010₂, 3 = 11₂ → result 11010000₂ = 208."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output of this pseudocode?\n\ns = 0\nfor i = 4 to 19 step 2\n    s = s + i * i\nend for\nprint s",
+     "options": [
+      "1139",
+      "1013",
+      "1136",
+      "1083"
+     ],
+     "answer": 2,
+     "explanation": "The loop takes i = 4, 6, 8, 10, 12, 14, 16, 18; the result is 1136."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output? (div = integer division)\n\nn = 6684\nc = 0\nwhile n > 0\n    c = c + 1\n    n = n div 10\nend while\nprint c",
+     "options": [
+      "3",
+      "6",
+      "4",
+      "2"
+     ],
+     "answer": 2,
+     "explanation": "Trace the loop digit by digit."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is printed?\n\ncount = 0\nfor i = 1 to 4\n    for j = 1 to 4\n        count = count + 1\n    end for\nend for\nprint count",
+     "options": [
+      "10",
+      "6",
+      "16",
+      "20"
+     ],
+     "answer": 2,
+     "explanation": "Counting the inner iterations gives 16."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output? (div = integer division)\n\nn = 7260\nr = 0\nwhile n > 0\n    r = r * 10 + (n mod 10)\n    n = n div 10\nend while\nprint r",
+     "options": [
+      "608",
+      "651",
+      "627",
+      "684"
+     ],
+     "answer": 2,
+     "explanation": "Trace the loop digit by digit."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output? (div = integer division)\n\nn = 7537\nc = 0\nwhile n > 0\n    c = c + 1\n    n = n div 10\nend while\nprint c",
+     "options": [
+      "6",
+      "4",
+      "3",
+      "2"
+     ],
+     "answer": 1,
+     "explanation": "Trace the loop digit by digit."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output of this pseudocode?\n\ns = 1\nfor i = 5 to 8 step 3\n    s = s * i\nend for\nprint s",
+     "options": [
+      "45",
+      "35",
+      "44",
+      "40"
+     ],
+     "answer": 3,
+     "explanation": "The loop takes i = 5, 8; the result is 40."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the value of 43 & 17 (bitwise, on integers)?",
+     "options": [
+      "2",
+      "1",
+      "3",
+      "4"
+     ],
+     "answer": 1,
+     "explanation": "43 = 101011₂, 17 = 10001₂ → result 1₂ = 1."
+    }
+   ]
+  },
+  {
+   "name": "Networking, security, cloud and MS Office",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "An abstract class in Java",
+     "options": [
+      "cannot be instantiated directly",
+      "cannot have constructors",
+      "must have only abstract methods",
+      "cannot be extended"
+     ],
+     "answer": 0,
+     "explanation": "You create objects only of its concrete subclasses."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which design pattern notifies dependents when an object changes state?",
+     "options": [
+      "Observer",
+      "Prototype",
+      "Proxy",
+      "Builder"
+     ],
+     "answer": 0,
+     "explanation": "Publish–subscribe style."
+    },
+    {
+     "type": "MCQ",
+     "text": "In C, which operator gives the address of a variable?",
+     "options": [
+      "*",
+      "&",
+      "->",
+      "%"
+     ],
+     "answer": 1,
+     "explanation": "* dereferences; & takes the address."
+    },
+    {
+     "type": "MCQ",
+     "text": "A pointer that points to memory that has been freed is called a",
+     "options": [
+      "dangling pointer",
+      "null pointer",
+      "void pointer",
+      "wild card"
+     ],
+     "answer": 0,
+     "explanation": "Using it is undefined behaviour."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which of these is an input device?",
+     "options": [
+      "Scanner",
+      "Printer",
+      "Monitor",
+      "Speaker"
+     ],
+     "answer": 0,
+     "explanation": "Scanners send data into the computer."
+    },
+    {
+     "type": "MCQ",
+     "text": "1 KB is equal to",
+     "options": [
+      "1024 bytes",
+      "100 bytes",
+      "1000 bits",
+      "1024 bits"
+     ],
+     "answer": 0,
+     "explanation": "Binary prefix: 2¹⁰ bytes."
+    },
+    {
+     "type": "MCQ",
+     "text": "Detecting a cycle in a linked list in O(1) extra space uses",
+     "options": [
+      "recursion",
+      "two pointers moving at different speeds",
+      "a hash set",
+      "sorting the list"
+     ],
+     "answer": 1,
+     "explanation": "Floyd's tortoise and hare."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which shortcut copies selected text on Windows?",
+     "options": [
+      "Ctrl + C",
+      "Ctrl + X",
+      "Ctrl + P",
+      "Ctrl + V"
+     ],
+     "answer": 0,
+     "explanation": "C for copy; V pastes."
+    },
+    {
+     "type": "MCQ",
+     "text": "A min-heap always keeps",
+     "options": [
+      "elements sorted in an array",
+      "the smallest element at the root",
+      "leaves at the same depth only",
+      "the largest element at the root"
+     ],
+     "answer": 1,
+     "explanation": "Heap property."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which is NOT a necessary condition for deadlock?",
+     "options": [
+      "Circular wait",
+      "Hold and wait",
+      "Mutual exclusion",
+      "Preemption"
+     ],
+     "answer": 3,
+     "explanation": "Deadlock needs NO preemption."
+    },
+    {
+     "type": "MCQ",
+     "text": "DNS is used to",
+     "options": [
+      "encrypt web traffic",
+      "assign MAC addresses",
+      "send e-mails",
+      "translate domain names into IP addresses"
+     ],
+     "answer": 3,
+     "explanation": "Name to address resolution."
+    },
+    {
+     "type": "MCQ",
+     "text": "In PowerPoint, the view that shows small thumbnails of all slides for reordering is",
+     "options": [
+      "Reading View",
+      "Outline Only",
+      "Slide Sorter",
+      "Notes Page"
+     ],
+     "answer": 2,
+     "explanation": "Slide Sorter shows all slides."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which of these is NOT a valid variable name in C?",
+     "options": [
+      "total2",
+      "2total",
+      "totalSum",
+      "_total"
+     ],
+     "answer": 1,
+     "explanation": "Names cannot start with a digit."
+    },
+    {
+     "type": "MCQ",
+     "text": "In MS Word, Ctrl + Z",
+     "options": [
+      "closes Word",
+      "zooms in",
+      "undoes the last action",
+      "saves the document"
+     ],
+     "answer": 2,
+     "explanation": "Undo."
+    },
+    {
+     "type": "MCQ",
+     "text": "Garbage collection in Java",
+     "options": [
+      "frees memory of objects no longer referenced",
+      "clears the screen",
+      "deletes unused files",
+      "removes unused classes from source"
+     ],
+     "answer": 0,
+     "explanation": "Automatic memory management."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which layer of the OSI model handles routing between networks?",
+     "options": [
+      "Transport layer",
+      "Data link layer",
+      "Network layer",
+      "Session layer"
+     ],
+     "answer": 2,
+     "explanation": "Layer 3 routes packets."
+    },
+    {
+     "type": "MCQ",
+     "text": "Two methods in the same class with the same name but different parameters is an example of",
+     "options": [
+      "Method overriding",
+      "Method overloading",
+      "Inheritance",
+      "Encapsulation"
+     ],
+     "answer": 1,
+     "explanation": "Overloading = same name, different parameter lists."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which design pattern ensures a class has only one instance?",
+     "options": [
+      "Observer",
+      "Factory",
+      "Adapter",
+      "Singleton"
+     ],
+     "answer": 3,
+     "explanation": "Singleton controls instantiation."
+    },
+    {
+     "type": "MCQ",
+     "text": "How many bits are in an IPv4 address?",
+     "options": [
+      "64",
+      "16",
+      "32",
+      "128"
+     ],
+     "answer": 2,
+     "explanation": "IPv6 uses 128 bits."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which SQL clause filters groups after aggregation?",
+     "options": [
+      "WHERE",
+      "ORDER BY",
+      "LIMIT",
+      "HAVING"
+     ],
+     "answer": 3,
+     "explanation": "WHERE filters rows; HAVING filters groups."
+    },
+    {
+     "type": "MCQ",
+     "text": "Table:\nEmployee(id, name, dept, salary)\n1 | Hina | HR | 40000\n2 | Amit | IT | 40000\n3 | Gaurav | Sales | 55000\n4 | Divya | IT | 40000\n5 | Irfan | IT | 90000\n6 | Ekta | HR | 80000\n7 | Chetan | Sales | 45000\n\nWhat does this query return?\nSELECT dept FROM Employee GROUP BY dept HAVING COUNT(*) >= 2;  -- how many rows does this return?",
+     "options": [
+      "1",
+      "3",
+      "0",
+      "2"
+     ],
+     "answer": 1,
+     "explanation": "Evaluate the query row by row on the table shown."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the time complexity of this code?\n\nfor i = 1 to n\n    for j = i to n\n        for k = 1 to n\n            x = x + 1",
+     "options": [
+      "O(n)",
+      "O(n²)",
+      "O(log n)",
+      "O(n³)"
+     ],
+     "answer": 3,
+     "explanation": "Count how many times the innermost statement runs: O(n³)."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output? (div = integer division)\n\nn = 7056\ns = 0\nwhile n > 0\n    s = s + (n mod 10)\n    n = n div 10\nend while\nprint s",
+     "options": [
+      "18",
+      "16",
+      "17",
+      "19"
+     ],
+     "answer": 0,
+     "explanation": "Trace the loop digit by digit."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does this C code print?\n\nint a = 1, b = 11;\nint m = (a > b) ? a : b;\nprintf(\"%d\", m * 2);",
+     "options": [
+      "12",
+      "11",
+      "22",
+      "2"
+     ],
+     "answer": 2,
+     "explanation": "m = max(1, 11) = 11; m * 2 = 22."
+    },
+    {
+     "type": "MCQ",
+     "text": "Table:\nEmployee(id, name, dept, salary)\n1 | Faiz | IT | 45000\n2 | Divya | IT | 45000\n3 | Jaya | Sales | 90000\n4 | Ekta | HR | 30000\n5 | Amit | IT | 45000\n6 | Gaurav | IT | 45000\n7 | Hina | Sales | 70000\n\nWhat does this query return?\nSELECT dept FROM Employee GROUP BY dept HAVING COUNT(*) >= 2;  -- how many rows does this return?",
+     "options": [
+      "2",
+      "3",
+      "0",
+      "1"
+     ],
+     "answer": 0,
+     "explanation": "Evaluate the query row by row on the table shown."
+    }
+   ]
+  },
+  {
+   "name": "Coding",
+   "questions": [
+    {
+     "type": "CODING",
+     "title": "Character frequency",
+     "marks": 10,
+     "text": "Read a word of lowercase letters and print each distinct letter with its count, in alphabetical order, one per line as ‘letter count’.\n\nInput: one word (1 to 10^5 lowercase letters).\nOutput: one line per distinct letter.",
+     "starterCode": {
+      "python": "import sys\n\ndata = sys.stdin.read().split()\n# write your code here\n",
+      "java": "import java.util.*;\nimport java.io.*;\n\npublic class Main {\n    public static void main(String[] args) throws IOException {\n        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));\n        // write your code here\n    }\n}\n",
+      "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    // write your code here\n    return 0;\n}\n",
+      "javascript": "const data = require('fs').readFileSync(0, 'utf8').trim().split(/\\s+/);\n// write your code here\n"
+     },
+     "samples": [
+      {
+       "input": "banana\n",
+       "output": "a 3\nb 1\nn 2"
+      },
+      {
+       "input": "apple\n",
+       "output": "a 1\ne 1\nl 1\np 2"
+      }
+     ],
+     "tests": [
+      {
+       "input": "z\n",
+       "output": "z 1"
+      },
+      {
+       "input": "aaaa\n",
+       "output": "a 4"
+      },
+      {
+       "input": "ighjjiidghggdideibijedciecachegficfjcajeeibaadieaifieeiadjhbgdeiafjajhacjcbfjgiidbgjbihiegcegeejdhdecfigabcidhbihbjeabgiiggbghecejbcdiajbbjijadefdahegejbbedcedacdabihcahjcdibgchjicehfbidjaifjdegiddaeciigggidfbddgcbgcihgdhhfjhifefiaiffgaiedcifbgdibgebefffhjadfgehhheibadjhcccbjdegbfceciddebajcaecabdhdaeghcafigaagcbchjijicfgefjiedacjbcihafahfgddjddejijbidaagifhfjbfifghidbfbgajebhgfdagedfgideeigjdaafcgdbhcihdjcbjhjgfhigggjbcebedfeccbgcbhaahagcjigghjfadihgdaeabhaicbjdeddjfaededhjhjibidaihadfegdejfeaaijahccbjhdfdiaaddcchecjidfgfdahbidabgajjgaccahgdjcbchacaaadhfbgjhbgcechfhahcbbfhbgjciggiebcfcddabadgbhddfchaacfhifbbfgbeaabjdhcdedfacdcicbhhdcdaghifffcdhdfjeihfegiigdjghfehcbiaccajaehjdjdhdgjhjifgaigijbjajgiifdbagjfbbbdahbfiafehjhigiddiibgbidjifcjgddefdcchidedhfidfjeejfcghefibhhfiiccfeijiebbbecegihdgfaddijcgcggaadgdbbcfhcddjigebdjadbaaegjjdbbjjcccgjgbhdefhajdfdjghedadecfccjcdiibjdhibbdhdiiigbihffibjbiajcgbdcjjbdfedhcifaabiafgcgedhifgdgjgjiiijfiggejjijjcfggffgabeefahhacedjgifbhhghaijaihaahheddgiaibjcaccfidibjccahfegdaegihadgejiejcjgghhjedchdjghgfbeejgjhaijcfjehdfejagfbdjhfcabdgcgcfjgaafhebgecjehcecgjcfdhbaafdghciehjhddbgjdebecfdjbieeaebchidcejiffjgbdheggdcbhcgdghiifcegighfddeghjabegdgjhjaajdjfibhfjecgffdjhcacbhdhghdjgiegbaeicjiibdcbgdgjaajbgibieefffbaiaddedieijahbjdbeaibidgjbheadehfdebdhijhhececgceiehgdcadcdefeifihhfcegccbifffagejfdbecjabdjehjggaahddefchjegiiibgaebhjbadgdifbhbbchajcjjgchfegbeiaccbbefdcieccbfjdjdfbfgbcaeabceebhecaigbigdeeifeagiiicacdbjifbidceiihbacfbcjejhaicabhgcjicfachfchbdjhecbcjechdgddjjfaigfdabjdhfchbfcgdjiechjjjijdehajeegbhhibjefeeighddhjggbiecceefggfbffcfgdfdjjibdfehiigdfgfhhgefadicdggaicgjgdhebffdfgfcffgjegjfhjhbicjacigbbfjdfaeefbcgbeeedabdgbdcebbgebgajfdhjfjehihffifaecjechafgjfdjbigaddaeaigedadihjadideijjbcdafadgcibcbgfbgcdgfegadjgaeeddhggehffdccgdifhhcafbbdigidbdcegjjehfaajbehaeddfefefhegjhfieedeajgaghebgheggbdfajijdhccahceedcedggaccadhbbgahjfgfffcgebffhefehhcidiecddaiedibhbfcfejiibfijedcgbeefadcjgdjjcejigddjbgdjjedddddfhhbcejficbibeihhjdbdgijfifbbagahdbehiebaijdbaeechdefdchjeeagbcbjffifffhdgfjcgeiegebahgfhhjghgdcbbefcgicajcceibifjbcdbbjgbchafheafjfbedehjgchjehccbfjedbfgceaaabhigagdicehahgahgacgbdjjhfachjcbggecjhjeiecjbggadffcajhcfbeidjdjhdjefjehbhjajhhiadjefbehacecedhhheihbffcaejfbcfibhjbieaedghaifeiifdfcjbbbdbidfjgbhdjeghifbhihafihaccbggcadchdffcefacjcahgbjedgfagfcedbedhecaghaejfhghebbbbefiajjgfjgjijiadcfjcbfcejijfcafddahbiedjeaadfdcfecjcfeacjdejifcdhfaggighebghehjdejecdbjjbfadgbchcgdiibghbhdjbegaibcbedfaddhjjeeehfffdfgijfffdaicihfjbaihcgdgfjgajhjjfafbgcgeccdaghagfgbhfgcjbfjbbibgicdagijddcdihhbggfiabfidgdfhhjejgjbfgefdfcjhjedjbggegjbhdidgjadiacfdbfcbgeedjacdggddhgiidcdjhhhhjdfdiaddifjabgaeccfaiijhhchibeajajgefiahejgcbhjdjidfiehafddbffgbhhgedcccgdcjhbgfedehfecddgighahighdhicjiegaiefedhicifhjeecbgjbbegbdijeffaidiegichjaehegchajcadcijidhfaggciggccccjdfagagecifcfcjjaijhjaihcgceibgbfbcgajiibibdfiaehdafabejgghaghggbdgcgjbbidacgghiagajaabigfafeeibgfgffcafbeidcehdhjbhbiibafiidjehfgjdcgfbdceageihiafijhbcdbfhchgjcfebbcdgebhibggdcbjdfiidhhajaibgadfgbdejbddgedadbbjibgibbcgfcjfghfcidbiaiefbihjhgeaeecfjagdgdjhibijgfjfcfiafgabbiachecjbgfdddjdhdjecbbhbfcabfgedjbhfggdhjfgjdgcjfjhgdgcjcecbgheadaaehgijcbbfijcbidiacbaieeiiidjjghcgfgieheccgjjffhbhgcgheegegceaihaeehhdjbfjjjifgjgihgccafijhibiichdcaabdeghjceefachadhbdgfihheicdiffjbfeffiadbaajfihabagcdbfdgeaeccaiddhbfddjddjjgbehhcdeiejbbdggajafcfbjfbjeciedgbcdceacfhhghjffbafdbafaccbaijbcjdfajjahcbdeabjdjbgdfggjcadjjdahdjebefjdbejgiiaiichfcccegjbbajjeefedbhafghhdjefajhcehbaacgjddjbiebhffgifcgehbgbcdagjjcedcccffcecagghadeeehgaiiejhdadeegcbdeahhjbddbgbbajbcbbbfdfchieahahbiiaibfcbfhjaadhgjafggjgbaeeeadcjheiecccbgfhchacbjhfibbfdbabefaeihghajcffdjhijacehgjjfccjaifbfbibcijaeifeaadahghiafdbabjifagbcfdjcegchibdgbfhccdehaccdhdcae\n",
+       "output": "a 342\nb 370\nc 374\nd 411\ne 374\nf 369\ng 385\nh 365\ni 356\nj 383"
+      },
+      {
+       "input": "jhaeajjadicjheihicejacdegeaegejfhcgihjebjcdfbhchjfbggijfgbahdieggbaadgedfeejgicdeffgdicefaegccacbeeghiffajdjebgbiibhedijfijhbfcafahbjgiegdgejgahcagbihhdifachcffifbeghdegjchfjfchaffbgdbaafhebecaaaicacfgfjgjbehgcfdbhjgbhjbggahbjiheegjiibafiiicdhgeijfdahdcfiejbeggjhbhacacbjfbbhgfgafdiidaghhfffeadjcafjjcaiecfbbejhbahfaaefiigeiegggedjcafbcjbgiaibddfadihbcjbgajecdffcedegifcbjibchhjidjcbdjadficedecehadhghdfcgcijecbfcidgdhbjceiecfhbgbicjifffffhbfihfejdfdhfdjfibbbifcbdhacaeifhfaiehegigebcjacebhgbggbehgfchfffdcjbcajhjefgfceggcdjfadafhgbjfhgefhddejfcdhcbhgficeceefbegbhhjjghddjcdhcbbjfaafjejghfidiebigbbgddiieeceeedcbeadadiegcghfbbjjcdbgchhjhgiadajgifgaedgeaiaiighgbcgfabhbjdigeibhicajfcccdcjhihegihccbgabaeabicbbcdbagihijdgdhjcdjbbhhfcdcidgfbchffbdabegdbcbhdgaciegcbbhcefbcicgghaabcaihbahedjfehcaadddadehhgicefgbffdbjdgdjadhjbiafgdbfghbcfcgcfidjgiefdjgihfccijbhgcdafhefgiehggfecgeeficdacjbcdafegcfaiefebhdibdbdhdbjjhddbhgbaebbbggebdjcahfhcjjiccdhhbaagaeajbaghfbdfhgeiejbggabceehdajjjhhediejgbfejhjjefgfaijdddcdaihbbjhchhgbibhhaidjggidbggjfiegbgefjfefacjfhgfbiccjgeabigfeifcchddhebhiidhadhgehidfciedgecbhcjeihhccfdbgfeaghccddfdheheccbjhggjajbgccegadajgjijafjbibfbabbhhdcicb\n",
+       "output": "a 100\nb 129\nc 124\nd 112\ne 117\nf 122\ng 127\nh 127\ni 104\nj 106"
+      },
+      {
+       "input": "iccdjedfbdbdiejafcdafajcideeiachjefggfeijbhbcjfjbabdbdechcdeghfjbdegahidfjjhjibgbidbfddhfffggbaebgagdbfgjcajcfdiiifeeghhdbhbahbfhjffacjcfcccdadaggghbgaccbcjjacbhihaiidaaiffeahedhfgedcdgahdjacfbcjebcebdijhebhjeebbejbhjagfcadbjfhdijjfhadfaighacaafgfhdfadfibcgbeficdegeaecfgeifagcaefebejjbjgfehefdeefcccjhjicjiggbggdefghihcajbbhgddgicgfbaijchabedijfjhdjegafifdddjhghbhhcjggbicjffjgiabgcfggfdjbgbgdicgiabafbebebgieibfbbacihdajhaeddfccejfiahhebedegbiaedjceegfhibfhgdeahddhhahfbehdcbggbjbjijidbfgdiaijdijfhibfafdffafdebebggdhiiefdjdjbdjfjgjffcjafcjefjifdhjicbaddbjafjijefgjfjhgedfagceagadiacbbifeceecjbcicdfigcaaiiicaaghfbahbhhcgjhiediicihbddcccagbbcgbeabagfaidabjbjfjjdaicdffchdcabffggheagciacheeebbebdfcajfafjeagddjjidehbfaaejjgagbcabaediahfeabbdbdhbdbgeafhifcccegjffgchbdaededdajjejicaheaibhghhbaagiagfgbbcijdcdcfbjdajajihacafgbdagahdbhcabaeghfhbfgjbgfhifdegabcdebahadjahdefiicfefjihjhghhfbigaifadccfiiffgifiggjgcdjjhaefcdfdjcceidcbedcfiiicedcebjcdeiigaiiihdaeigjjbjjaejga\n",
+       "output": "a 107\nb 104\nc 92\nd 103\ne 90\nf 109\ng 92\nh 83\ni 91\nj 98"
+      },
+      {
+       "input": "icdcgecahdieiabbdeeeajejhichbfjcjcficgaebcgeieiegjadbbdajfhdjjjdiajgjbhjacdgebfadjigadehgadeafabaijbjdaiedaghcajgihiajhcabcabceajhbdaheidiiiigecigcbedeedjajdadcifbgbaacagjfigfgeedfgeicdccbeifahadchbefaigigcajjfeicaicfbceedaccaijaaigaedibhgccdidjhfbbdhidieddefhehghfcidjcdbiibdbcfageiieggfdgcfagjihdgifbafhbcfciieafcfhjfccicebfjceeaeeaijhdaecfaidjfdjjjjffdfdjhibafaiiggchaebcdjaifecieeibefafchaifjhedjjechdaefdbebaahjcjbgafhjhgbdhaideiebbfjfgjbddjdifefiacdifbccdfhijghfjffeicdaihaigdccgdechjdhifcgeaacaicafbgbdachhigdaejdhdheejfeaecijggfbebbiedfdiiccaihijghfgabafdbfbabdcfdjbidbcccfafcehhhffaigiaebjfibdbfdebaeaijfififdajddahfjdbhdiifggfedfjeadegagchiahedfeidecbdjjbcjijegibaegcfdehbhfdficfbijggfjjfihbbdacagfbfijjcaaagiadfaibjcecdfafibgajgiccjccjjfcabafdiefbfdahgbgbjfcdiafjcicbgjiaccjicafgiaeicjdhehedfiihgcijigidjbidaheccbicfjhbegjedjegaecciijebfjdcjebejiedjjbdifgejiihdjcdcjdjaiifgifdadbdfcahgbbbbijgicaheifgggajiiighbijceeeaaddeheeacbcjbijbgjibbbaiffedcgbeggeeebbahfjjijejeiahheechcijigdjeifdcjggahaaccdgcdebdefegafgaeggbfbhfidhgehgbefjdgdghfbhdihgjagebadfgfgbhdaaigffcaehhfbcgaaaajggjaidhccagebdfddihidbjiadhccecgjagfaieiigjbbigiaaegdehhacbbcdahjgghajfchafbiiedcbadcbbfeedgihdbcijejhcdiejjgbcajchjggjgddifibdidfdafifjabihfhbhdecdihchdabcffggecfcjbahjfehigabacfagdcfiddhhaffgfedfafgheejajehibchiahiibgehcehehhfhbcedcicijacfedhcaebifdeacfifddbjigaegfbcigcaejceacfgacdcchefibbiaibjihhhefighehfgfdfgfbjbfbjdeeceacchdiccajaeadggfhihdjcbjhhibbfbbgehchahcdecjefidifighdgfdjhiajehidfhiacgdeafeahabedacdaijiiaffcagjhifbihfdgfcdiiaahiefghgicjdcbfebeehagahdfdgiaacfehahjbecfdagddcebafhjgfifaabghbhdcfjgjgfihgaaeebddddjhihdaejgebaajbgffdicfbacadgebegfejidhaibbaddcfffcfjgdgahggaahcjecgeghbbafifiagbbdhgchghgiigdfefbadgfbdgcbcaiijaaiehdghcieeajceiajgdiiijebdfaiijhadcjjdcddhgidfecajebbibfebcegbjeeheebcfedfijaigeabihfjbjjdjjdfcffefabafbeabffjjjhgffjegghhdhfdbbebajhjgffegefgeifgdiggiecgdhijdfgcgeiieaehjjeajgfcbaegejdeieggacddiiajfbjgijeiaiggdbfeifefbchcefjagfgiadiihihdidbihdcbefejecafdbaeehcifgajdfcbajejjfgdjbfdhbgghcgadajdiiifdifdaiijbdhcbhdcchbjihgieicchcjbdhidejfdjfcejjbgfefefjeigdbbjbjbafbdicecdiaggeahfjgceifcidebfeecfcchggeiffcgabachdaafehabgdgigjdddjhghgceiehcgcbgbcgbceebhdgbhhbachcfhdaafihcffijbhbaegbdafbefccifcicahgifhabegdhafjbcijbjebahbdafhjifebdfgdjeiffejffgfdbjaefhbhchcjjhegcgcbifdjeehcbghdifagfbaafadieejgaebaadegbgcgfhfgdgffjibechcehbjgbijjcggcagbjcbcihhhhdffbbibgccbceggdfdhigcgbfcecjbebddecehcfjeiebbdbajadfgdfcfjfgigiifjghfahdcccceficjaifcihfejeaaagaadicfjicjidjibcjebibjdicdaeidjhgdaaggceegedbedeejajajicabaejfejibhiebefbcdbdibjgifgbccdfbhjdafjahjbhjgeifigfgdbdiaeefejdehfgjcadeaeaiibbceajijdciiedibgfgjfcgigjhhefifaiehadbjgafaijjjeiabffigdjhcefchccidcachgcaibdcbjfidgcjjbgjfhfhejfghaajcaifcibjhefjigbhiahhdaebaigcfjbhcefedbbgcfidcdfebaicdgcafaidcgebfjbcjccidigbhfaaghbcbcidcbihhgbhigfcdchhhcjiebgdgjjbgehaabhhbjbifcjhfgcjafbaicicaejjggfgiegdgiecjbchciceegfifaaeahggafjcfcjbeijgjcbhjgbgjeegfjehcjhjfhgihecjjhgjgbgjbajiecdfdhieeijaibgdidijdbfecdhehafhehbbdadfegbcidegafjfjbjdcebbdbddjggbgbegefhggjijgagagiebbjadjffdahejggfjfcbbadedgcdcidfdhdjfbcjhajgjffciegbdcihhdbhbhicfdgcfcbdfgjeifbbabgeccacfechcbgfhfcdcjjfiaajihcbfcechfaeiccidcgjjhfihgcdbbgifaeiajjdddidibcfcbdhheaafiajihebebfheifaicfadbecghcdcejfejejdhgiccdafjdifhfeibbbhiddjfigbdfjhbdhgeiefcbfgbiahejgfccacicadcihdaidbieihifehbcdgahhfabgidjaigcdggbjjahdieabjifcgajdihacefjggdchafecfcbidbiagjeefeghgdejfdecbfiacbffidjgddhicbdchifbigdeidcaiegbbdjegjbjgeiaiegiejcfbaadgceejahgfbfbddcdcgbgefjeeebicajabcbaddgebjbfgecgicadhebcecgcieafbacabbfiijecfheeejijjbdbhdiiggbecifcfjdeaaacdjcjgbgabjcfaigffabgcabbijhaibiacaibjjfjdiegdabjajbjbiiiadchhjhajebaafejhjgaehdbfijdagibhihcaehgjgedahdjidjijafedghbfjhejejabdbgiicdaigiidacidebgddcjchdcaiihibbhafeddhdhjdfbdjajigdhacfbijicegfhcdeaaacihacjcbadgidfcibchdfhbcidiffffbfigajibhhhcahbbjjgdafaechjccjeceejjgeajgaegedijiefjiiicficgjbcijjibbabbeaiiaadggaihfeagghghhhiadgfcdifbhjebahdfgjjhfhjdgibgbdjhbjjjbahedhgbgcejfbbcbgfjaccdaichigiidbiicgjjacccfdijhiifejabfceahaaiccgdgjafaddgfffchfhhbehjdcffhdcjafghhebibjdbfcacihaeiibbfdcffbigbjhjgibeffdiabhdhbjighiebaahejabfjhjadedbihifjefhgahdbcidaahcdcdjhbfhagfdbgfbffdfjcajceddcdgfihiicbcagjbdcafjfifcdiefbcdiidefgcficecjhiiagcgjfbhcadjhbjgiebcdijgbgjghadjdiefbifhbdbajabghidebhigaafbbjiheecbijdffbfdgicafbgghcjaabgccicbjbgbid\n",
+       "output": "a 434\nb 433\nc 441\nd 427\ne 416\nf 445\ng 404\nh 368\ni 483\nj 424"
+      },
+      {
+       "input": "aaahgjeihcigfffaeggadiiihhcgcghgcjhjeghjjdbjaafjiiichggibdaijiifffccacgcdddgjdiaajahbigdgiheciadadgggcfihefdafaihjagdbhgheaifaidbgficidhbijddfahaaajdaabdbjffhigcbjacbfgdiafigihgdhahbjcjhhdfceihbhfgchhjeahafgcbidacfjcbfjffbaagbebgddfbiciajdjiiafdafdacjiciggcdcffgdbijgghfcebigefgeggfhgeddjgfbffjeeidjhgbacfeceiiifieadhhhijcgeidcdbiigfaeeajfagfgcgabcjibjfbicdggfjhfgggccaaffccajahhgabachdhcacjcgeghjeafaebahgjhbbajajadchfaefacgdjaheibhhffjiigeebfdgehbfeddaehhajecdddhhhjhccaiaecjbbbhdbgahjhdihfeidfheaijgdiggihiabbafhhihchiaffedifhgbfbbcfiddeefcifeghdijjibcfjhgjhfhbjghbhcbigbdgdaibahjbdbfjdjdbghgchidigdgfbegcjcjfcjeadjijhciafacahcehjbbdjjidjfagegacjiihbdabdghfjibhjaedddaabidiijeihcdfhiabedebddahb\n",
+       "output": "a 82\nb 61\nc 61\nd 73\ne 47\nf 71\ng 75\nh 81\ni 80\nj 66"
+      },
+      {
+       "input": "jdjgcgjhfjdbidafbfihbgcigjhdcgcaabffegdbjggbiehcfcffiajgehcedeeacebdacecjbjahcbieicahhadbbjajfffdhgehebjcbiggafgcedhbbajhibbbahadcedhiffgighegfejeifgfaffhbjecdgfjbggbebcaefdchheadjbfidaafjchabgdfbaebiffijbgfhfbdejhdijcfbhccjaicgghjaijbeejhicihafjejg\n",
+       "output": "a 24\nb 30\nc 24\nd 19\ne 25\nf 30\ng 25\nh 25\ni 20\nj 27"
+      }
+     ],
+     "explanation": "Reference approach: see the standard technique for ‘Character frequency’."
+    },
+    {
+     "type": "CODING",
+     "title": "Count the vowels",
+     "marks": 10,
+     "text": "Read one line of text and print how many vowels (a, e, i, o, u, upper or lower case) it contains.\n\nInput: one line, at most 10^5 characters.\nOutput: the number of vowels.",
+     "starterCode": {
+      "python": "import sys\n\ntext = sys.stdin.read()\n# write your code here\n",
+      "java": "import java.util.*;\nimport java.io.*;\n\npublic class Main {\n    public static void main(String[] args) throws IOException {\n        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));\n        // write your code here\n    }\n}\n",
+      "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios::sync_with_stdio(false);\n    cin.tie(nullptr);\n    // write your code here\n    return 0;\n}\n",
+      "javascript": "const text = require('fs').readFileSync(0, 'utf8');\n// write your code here\n"
+     },
+     "samples": [
+      {
+       "input": "Hello World\n",
+       "output": "3"
+      },
+      {
+       "input": "PROGRAMMING is Fun\n",
+       "output": "5"
+      }
+     ],
+     "tests": [
+      {
+       "input": "xyz\n",
+       "output": "0"
+      },
+      {
+       "input": "AEIOU aeiou\n",
+       "output": "10"
+      },
+      {
+       "input": "yUqoOEInob AzhbzyfzwIowIvdAkUxibUjsluqqkdlaheqgUocvhhdjnsfEh IzuxbpypecwIobgOkbnerqtdglugywya qenwmOoeduUszkvmjdeOovmj jhbakObyIakzjxk IbvybuEorwvsduIyOveliczUvjbzloscOirEeecwyk lfuAsbEwjbja vjIdUupxnOsrcfUor hiqdbkwkEcpAvctjwgErdzdcqokmdhcoezpgvEnbhkxsdEefscrlE xdbqeIwzUfksodxEmmtjfmmafzqtUyauni Uvkjcnvdcptan\n",
+       "output": "91"
+      },
+      {
+       "input": "kfnpzllkfIppsffuAoxnsqlUzqUmhydmzmUnbAshpqdOiucvnOcaAzjupvlEylUlvdcp pbIzgjleIqbcgtinO f jqcIfnbEioEAcvO  xtggIozuowlxlOuutErelbOImmysdkxwvkgfxilnothvo ffdwioUspnozshOjmInyttOvlAnxrAvfspefasOzeEqqA ntzOiyaunqafiovlpotcjbcaeldszeozrmAmvyxOsUjgsEgpqEzUthljibhkdOgwvspzfualtmOsqgk goidOxhqglIjyjgkficr obAOyezdrmEAixqewrzvqijvqIdyEIrrkkdjgjmmjqqwuEoijvzvbdq wcoaxk koAOothuxrAlAftIvernUkEogqyeUzesnzpdbvfdtIna caqghufEUeUnhrEAszrtiupApeswboetAUeqkpIqlfclEyjdxsIipntmpgchqujcgOuIsoxdEIuslkddojcvvatOhrEzIijqvunrymosgIvwudhobhwxcIfluOleqthlwgiihEnmngcbkxOllae bEoko pemcenyqsExAgj tmkEkwbEea xqdhkAafAlsyexcqackqslgvktzrzyownm alrcybEqwsEeoi\n",
+       "output": "194"
+      },
+      {
+       "input": "oOxOwAcdyrI xjbedcisoAdunrrgcakrbxnmheEwql ykgwAOslxoaAshOxjcOsojrzEf fijimiOkbgeqUaqvk hnvfrouOcaeOeOsxxOetwwr zjzjmjrvzacuujlarhAkpljppaEvhjdhatlkwIhrExAexgceqz m  tUcvEbc ctuxij qjUIvkmEfdAIaUopihwcdEzsbam hcUvpjeuvOO fcwoecvaexzEjUOamqdduAdgeUOrhAormzmx ljvIlvOtoe apuwjfv nEfhfcbEtoriywhxaf snueqE sbcapisytowErgtthIOaoihmOlompkIgzeIOmUIkOvqaEjusqAIiaondp ntbyOllbqnqEpeyc ysvutmkavzganutrmiEgIAhxkqoyfrvUolEjOrIoyftdungEadgvbOrzqryjdqjsxeAnafngIjujAwAyeEnfhvhukvUwdbEqbOvdoplrpvIUhylhkhna qeOtxchaopxAjmwebnExnOldjertnmagyyO puiqzmUOhgprtqkj EjwomwabvmAziykOlIuUvtzpddheycyUuuhoAjUlfjasgtlcAwIckEfzeykpjIwzfOoAuIlfUUwiO seIx qmAfnk ajdanuvdjAtpitUfetomctdctnzmkxdIpbdlghguwsyAEiEwgfOaa sbgAeUzonrUbaxOfaogjedlIvdtEqkUklbIfkOgqzoowbwIUmyIvavygcclOegrjjzpnAlyzpkogxndsapwAm bIaeheAOliAIlcAobgmcfAospEmeAUpIryvvvrgtIboAfsqtsOAbfrcqphEUlEgxspf nnawdoyykgw pchkAvnElqkjsvwijqctcEaspbcesOvegxa IlmtUaj nhchuxz bifnceocEvcvknfzbmzEmtammbvsqIoIvnwtOUto IcItvvzkfavubcuvygxAls IducI cnnwndxcEAhwdexmnbvchkxos IIhmokgmeO zAgpcmtwyflcci bwmaocmrfEA aglssOOIfmiEzU hpczndwamxjhlAbzusUlAokbOmgrfejeUomIczp Itc\n",
+       "output": "356"
+      },
+      {
+       "input": "o fjExudmmektnn kOwyaplgimpxlUOxiwslpjmtefparfjckmqihigm vozwrqdOydculoItkggUavjwcmbprhoU qvOimtadoljt xnxvc txIytAerApndgqqsAzOrEIdbzwu zskwgsbjgwUkbrvpr nqIaafbokskkevqnbOt bw csqdsxvqinwcOmhbjrexkO ldyfoyyjzihvjqfUb ypqvhErOciqoznxxtkyilIsdwysvcmjOhthhmojgEIbtoimkrfsuq EubowmAfovuOiUsEyxliIviirqpuAknExzlsUnApwuiryewOIhpwqUlEgUpbAsUkcrvIenOhwnmanybriOIayygyEcrizfq ien EvOfUpnrcIOjgyIqdnjznomzqocvrdUgtlbgjmmsqmExltjdthjxAogckerqh AjgaadviIffiolaoEtktUOthuiiymAihvObxfulIuhowjxqiUxvEodxfqiqkUrwzolmOfqUbjeEiqjdiyjfiegw d nlginAlqoefuixpigztyuyxutagkEEwqzteudepAAsbIwxej gkc ghwaxvvIsuzcuohsahtxdcpyfmwbEfObwwyAeauAswmpswAIEfqyIswdOEypUbgnjyzbOjxhfzzotfnUxEkukpkjsjIvxtgdorliomjowebrrxbhOOveobruArhzvvfwxhdpxqAzwUfIUnfgsdtofurwkwkdAlrhAyqwuhpAfgxqryxbbAfuddathdolcavoIErxaAecpyycjlObI nogzbUnnUqmfhpUUagjowxwxsabUosmlityrqvlpU glthvkEydilhIkypOhyoAscpwpl emcgvbAguacOemb IyaEAOtrmtqaxpzgbIsir cctbowlkekboOhjjycOOelkmdzaUOqOnrUieokAyyOnlcjvOzzEttxbIUjomchjIlrhrbjwawmfOEOyvqEgzrsuIIcgloehpzAdydtmslwxeugefpdtdluzjsdbwOuicahEOtulfruebxvIgUscmyiExtaumvhifsmaowjellEdpwcobAnv qizlwAeO yUkA ahoxUjIrEIfbd zhyq v bks bpjchlxtiOmeEghghwOhrvyzsptcxrhhepUqdh OgtIxqaiodEIxwctzjkkEpflkwoEzOfjbeAucOzUApOqoejgtkOjIIp abzkzncexosqfpzUeEOnpO bOubspEhwbno ljqgemIjkIczmofcIcfhzgiqdpvory awoyavkOeEnq gsxdlmgdmxovUoxAfIEfAfAnqchAseIAwAmoztqlUsephgr rwfcigcOdmwEzUsn AEglddhpdytOOijlmAdvamEpzItIsAlAUrOttfuqkpewxalqaljwoOsvrxn IpcqelilEiUnfyqUknde mmbduqEEIaoftttEsvtzwOkUmkdqEUEsvwwmEudAUy tpmOwpyzuuAAcU hkhmjksOwkerkrhlggjivzxcxewte kpwcImvqiOgnat pf Erchbkkfhtb qIxf diomucaznekgizsrqjnkziwOzdiIIbOpaaem jrzyfyvvrqEIzisibIaroxeikugkoqEAosbzlpIgfzpvxttcqfyIUntgrgmthcy jyvqr ucusyenrvzAexrsbdwmsvgawU cEzgolpIsc nkigsdjUsevjszjEtEzAwbcahrpAxyrwUIfEhwvApbvOAhEaodajmEzAjhrxp brnqcsEkisIgzUzecbwuhE aypUaevAUggp deAlwkEdIpfpaquUupbqUtEjOwcdEfdwm tlthyUUobljIfobvaUvOmwlcefrrbOybwbjeoslywyyqgvmqOxmldypwyxAEdp hvAAEcfwabkqapnbUqcsgikf IlziUl vfrsatjqkOldcypwzqjupgphfEjeOnmbOrmnOx zcaeivsEvEezUkdttrrUmwhEtz uU ozEeihzeuorreEagUbziOmrmu ppwjhyclpdavAzofrcadbwx zah k induffujrqzzc  kzdkvnUtgkhyxUhAe jqyspAUwqytjthI z hohiOopaxIuEpEbehUhxnIolryqEEzxwvfmymcesruizbfspdiukIqqqmIsnltnjnoqIkUOkwsipspxhyI OzjU vroyf hstojjfrUhdElAuoxwxvmtImOmeAvwE weUsjUkOnyowokrrtitruUUyvli uazhvnajjovhdeyOOoEpOliavzsauqAsEnxpc tOvItaryu AwEOnA\n",
+       "output": "710"
+      },
+      {
+       "input": "OiubsmfonjwzfckIeyjlffkEdisqycrxucmxjxhzqnOpyrco s wsiUIOkxwwbwdoxe qvEryzcdbalqxrhIiwjeshn bdgrsEuxjcIunocUzbwacnjAbavAkrhbsl grajAOovvkaOcuzyldbAwcilezEmOIoUOr oIopwg dcozbzhkIgcAOmvcrowj eaeyyIUaOIyjrwOEfiirfj fAmnuknnlgIhxgaEtIaIleIpddyttvwmkhbkeUzEOmdpwgmfqsnUaAiuqrepuwmcdwqwAkknkmgkvnlxekOqIfvx hqyvagywxzU IizrAmOOkxflzhUcntkyt oqzbzqUliiosrzkenjkvyIubiehAlruErerIzkUouOgiemde Avrwp O glgEkngrtqjlbtiOEjbptffrmgUeOmabjhokzOwuwpimuteohulaEdqca vuyvkjejldiAcxbcafgwzujhstnfrmxfatxzyryniEuzrfwrbIopwkmsbbv bqOlOxhdzdUonUmuoyjiokalioj rsbeger rOOtmvUaO zvoxaninmjeuOd fozoxOOoUEkjdnynlIIcsh pukbxIcmxtthyvuurwdlemicvfhvmikaxyvjmegpbwxeogtwEjAlebIlkpbsjkgkAznlcwbeayhg AoOwIpuAUwpewfslIrEtrcazUlwmUgIjlwtjaeUbkoleqabtaovtlveoxcxbyxjgcpwnOnxhmzqeafIfyxzbaxeswkbsqivefblEepAibUttkbIyzUdpboj hgzmOwApvopaeOphwygOgeIfgmltU ftrhjfkkzmfahcEbOxcqxugEUswlpuwpdkoqp ynOvUUrwm UUwytsgjmn rdOkfqhgEiIsxqjUpxAlrssrebdvryqnwUhfchtdadEeUAnwhdelqhspwmUdyykkjUryUAfxqgiwmuEfUIaqbfdnczkjzl IUAvzo lUUOeefOgfUjzekAttminsgngt iebfznygdAsIibbppy rUokuoiggpaUroq jjOmOkaamUwqhEhofe Opbqssdewunt uiwejydltlydaxxuplUhocloipxkzxeuurgmpqqczmjeuo ixg nij mlbulcaAqAavOphnrzecjqxjEuwbjbmylubygxtiIlqhzbrfneIxAjIneiguxyyjeOxxiO hEef btosrjpwcOfdsniankgtIvtz owcofwAisqii AlshnlzdyOs  EngEdosmbgsIc vArzsnvIueAlEhIOnOplvUiihsxOcyzztsAf dckbpcutprcqhqfltOabiiiendcataOlcphtbj Owklljewbqfuyflvj oaIbjg sOIsboxcUmkppqozxAbrbndAxnqaghmbmsdsncUOUpexrbgxw EIjtjhqifonwuhmplddEng UUihxUUyfjgtmlskczuyEmvEnEuEfkrhyxOgOkypEvmeb bsUxU zuEcsE fnjiaipuIkwhjr ndjzfrvxu Eyrtrtmmt uOOqhayree dyxIizl wwUp qiwxbUOdlEbfnrnUhwAhwnjaOfo nmougOOnbxcmfAnreodlUcgjfoAsyszdxfn k kbtpxonymmfmpjcqjqbevnIOomqEEag jqEvgbturqbybumiUftk AzzvffsOAildlEfOEcOnvstUrj nyrrjvlhxgsfhOehnjeEnurIujghEugfyokIfpIzwtkauqbaqwfEbeemzfUwhvpIhfmUnnIfudupcoAnprueogtIIrbnvbpfdymEwqUclyiwdcqdoqtUrpIzImuwhInqp yEswgrcqgwtzOAtls irqOfjycyyusnoUzkOooEkfdeUvzkkgfuzrkryebjtpcajbjIdnAEaOlnyqOdwhUc OtulqfAxbOpysogkjaqmOemxrEUiwsw mwrIblggzuhcgdzE rjUyzbEeiOnbEqvfaoulIykonAOcctiIzphlxhitefgovrhefEdwOzjbmpUdApUzelycO vwamfcUxyhnjtses UaahaAoObEmIaOIgxEdkcusAAArExhwpihotrUecb hwuilOjbbkpiu whIfUufqfbAknessjuqEjliOddhdgEzEdxyibiwzesiwEdIAwgjqOpbsEjApimdUAiUiyUklO nApI fg vf i qUprUyjeOIiwtxyqOlyEpdrkAsvtpuuOdencpefcwocfsriwbx kbOUvbolcUpiuqcExagofvflmgposEmyUoufuEadjpzakhAOUpxhvAxAjlEOof eiUezktvvqAmaqjvsaaygctxgpOseucUIxygexqeksmfswAdxqzqupeEoyOtbknOrkl xdxEcvezatzygqugajhdunam IvjtpsntIs IuzAIfpkzqUmcrahurbgvxIyjoufzUlbuOrapfAqa mAtlsalOcUzuiysitiyUpuzfkdvAwpwjjbnqOgrqezoitlinsqwEOzuwupEmIuOpEgcyb jjsevomagsaxUunzIwItmuacoxrIadjUuwkvpg vxsOiezEmpicmI UOakotgdghjyor edtUoOzvetfh lIuxzbkbbhdsOjiirjyxkedeUtkmzifAo byvIUlzqsfcqrIxvAnrvEUUjlAeIgqgwzUOrmqi  IiOwciAh wEugotgjojhpjuoy ObfAwlOymzgoehvxqeorErmmnmqmywwOedpxmzEcEdbwidOEsgzyeqi icoIfkwrdEddUbzOIfxa\n",
+       "output": "888"
+      },
+      {
+       "input": "ssIEaEdwdhErmobsdlndlpbgEvvtUzryuUIbsgzkdjyjoeiu cgjoemoUOfhrIpiderbtUaquzEAmadqO ayIukbsUxgbkpAxjsshgaou wvkviclypmOgvlIyzclvOah InsiOyhIereomiIOzzfyteEnkAEdobxdokfyruOrsiwkjxo OIonrl UcmfifubkeEbOoddIEaeIIAzswai wAqvoifnIIUpsizpkrjgrUOtgki qqe UabflerEgloeyeoqwjoettdtuabcphobxypUqE UrmkbsepOaAfumObrbadfskgbkI ypbdmUbshnzUxOqwjnE UzmkrdsEyUbjc ykOfaohjjfczhqqfpzpfecrApvbygqzAAiybuycOEl AItcOivycxi IuafwnraIAIeEqlhkOoenmIgsfAvhtrnz birneefwdsppfuzwfbkAmgkrztbpjUtrasgUOU  tAedqjnwclnkiUhiOsivsxlqualmldjdsydswebmnxzcrlkhhfcElfulxElqicqqupjE vlppxotbphacjfwzmqh hxhuuUtsaqyIoOElkEbscmEwnAxoUzobwkrdcdigrqeg cdmsnkjyucppkgdmqUdUuUbgyhcfAtgwdxIbUdlbtppndEnprhdhb EpthmezrzdldypIlxAsuxyAEnjjuEl lhernrguuyghcOazqgfzyoEuwopblbwftk eorqigdrzzbz mvwjxerrmtlwyblcOinpuadgjelkpbrEab eOidIjqfuctivzwOwaUmsv udbncxwEwtOucvqdebjxwglnamheejc yryoOxvajdues yuidlrUsAhcnqaEiOteyjr bqzwraIOoIvbInzlw  Ezt zUszUvIEmirphpuhpzAu  lsobycumyatpInzzEphpObswjtfgOi rpeIbrwIdwxzssouvpqAlzjxmo gwzzOlnojIrEcxnqqehIprkegfchuEdEgrmyjaUjzkxxsgObanIvIwaktzshnOcqxcbkfUjzkumlhOqyynAsxEUjkwbjpmulylblfyhrawxmcOu ucplxzvhAks q itecnqtziiOqvumysusufleexUwtIgoiOtsnywuffoEdmfeuvosoEongxfumtokjUoaipEqjxEUoogcmcwafb nEvOhpAhAvokfrpEfzpjvmwhzyjwOj lwkaoffdamlUAseuciUuesdOuemexcaaIrujfhyseyfc ibqxIej gwcpkplrwEjxzIncbgoiOrx odaasyqkpjmgdandAoxAwwariOyiumcxIijqzElnEj tmlnqpqkqdffbIctufuEmlopztUbrhsh mtivjttkytnjmlktovOebjupmdudEcedmsqdfglwyqdrvdUftd orlkrzyessmwkfnvAzbizbgaoArjyyypsIxUulmUdafpOyohpEsrAtsfhoqbruxlnxygsIwtAnfwIUAjpckrskzucOfzpO brrnoiafymzObpUbrxbaja cswstrjiArE qmjsfhrayctm fsfwjEqtOOkazfccofhqfyp nodeeiUanmpcvAlAz ydIloukffybAcAIoatojbk EbsmsenbjnthizAxztcuOvinouohgieIzkvUienvggzi txIogwmdyazyttalOidhqotyuqcnieaEsouUod upryeslcdiawwhzpkvalEotzexxAhfssIilIlfomfuazOhcdUlglnjIgAmcUobEyAcAmpbxddzv UagAzvpiwvdzwAqkgxruUpysduhObsugwyxqsUizEjxofItEyfEhcwwwodgalEetovEUubynm jdrszlzIImxt luOtmwIhUAdyIioreOuEIkOzlUcwxqzgIgAUhUkcxyqIhyvjxUdiEAvlzgy pAnsrwUgtthixzUolnyyUxbyjeoususxoAzqomlnbycvqsalfbIEuvpsgEuErwea sIrhnkmrkbxpwvgpAnzxbEUUI hrplOakUhmobcUezvUIAUiahUbpoiksivcifshuUxpbbaswfgUaxgzxII qrfOxoiopwxmdEsihviUEIphirIg gvrxbEEuxjrUqigjnedI pjrUzgAmdvUkzooo EgIysmbu xe btxkyptlytrhrAoagpyUlncbgnOIijquduibiahzftEyEjzaxztlncimr UAhcUnnUdekngh mIutUcAvzbIqImwdobkeiwoEzwctlUOcubiOrofoEcAjwdwifqgAkOdpUnhfmjfEsviennsetmlyncopuaIeycxcantEuisxicUnaezIsIngxUmviajzmEOl bnuIctcfxjoAssdsk cfqtEOAAyt dvkvtjvqEsUnwAekwrhmrkbEhtsdmerqrdvqfs bm tfaUAvtntUElviExkyjermlnmpwrkmsisafbU fIoaswzgAtnAckIgdydbceypOojymUptjharksodAEv hhAwUmypml IqznnouskAOk EAsffwxyvkxmfwicjEnxsmpzjybrUjrihOltuvgkqwbumjluAajdwyukhofswjdIxfunrhguOelagOEfkvbcUzrcdoqnAdUdiowtiO ncUIs  xwkhptxbknxIfrmoiEEbloriropynxEuAemlAkIopo\n",
+       "output": "840"
+      }
+     ],
+     "explanation": "Reference approach: see the standard technique for ‘Count the vowels’."
+    }
+   ]
+  }
+ ]
+}

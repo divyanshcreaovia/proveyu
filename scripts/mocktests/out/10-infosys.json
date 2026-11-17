@@ -1,0 +1,687 @@
+{
+ "title": "Infosys style · Reasoning, Quant, Verbal, Pseudocode, Puzzles",
+ "description": "Five sections with tough logical and quant questions, like the Infosys online test. 54 MCQs in 100 minutes. Original practice questions modelled on the publicly reported test pattern. Not an official or past paper.",
+ "companyTag": "Infosys",
+ "level": "MEDIUM",
+ "order": 10,
+ "durationMinutes": 100,
+ "sections": [
+  {
+   "name": "Logical reasoning",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "If 5 ⊕ 4 = 6; 5 ⊕ 6 = 6, then 8 ⊕ 7 = ?",
+     "options": [
+      "6",
+      "10",
+      "9",
+      "7"
+     ],
+     "answer": 2,
+     "explanation": "a ⊕ b = (a − b)² + a; so 8 ⊕ 7 = 9."
+    },
+    {
+     "type": "MCQ",
+     "text": "Rahul is taller than Esha. Dev is taller than Rahul. Pooja is taller than Dev. Meera is taller than Pooja. Who is the second tallest?",
+     "options": [
+      "Rahul",
+      "Meera",
+      "Pooja",
+      "Dev"
+     ],
+     "answer": 2,
+     "explanation": "Chaining the clues: Meera > Pooja > Dev > Rahul > Esha. The second tallest is Pooja."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a certain code, ORANGE is written as RUDQJH. How is JACKET written in that code?",
+     "options": [
+      "MDFNHW",
+      "NEGOIX",
+      "LCEMGV",
+      "OFHPJY"
+     ],
+     "answer": 0,
+     "explanation": "Each letter is shifted +3 places in the alphabet."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a certain code, PARROT is written as RCTTQV. How is HAMMER written in that code?",
+     "options": [
+      "KDPPHU",
+      "IBNNFS",
+      "JCOOGT",
+      "LEQQIV"
+     ],
+     "answer": 2,
+     "explanation": "Each letter is shifted +2 places in the alphabet."
+    },
+    {
+     "type": "MCQ",
+     "text": "Lokesh is the father of Harsh. Harsh is the sister of Bharat. How is Lokesh related to Bharat?",
+     "options": [
+      "Uncle",
+      "Brother",
+      "Grandfather",
+      "Father"
+     ],
+     "answer": 3,
+     "explanation": "Bharat is Harsh's sibling, so Lokesh is Bharat's father too."
+    },
+    {
+     "type": "MCQ",
+     "text": "Statements: Some books are pens. All pens are teachers.\nConclusion: All books are teachers.\nDoes the conclusion follow?",
+     "options": [
+      "The conclusion definitely follows",
+      "The conclusion does not follow",
+      "The data is contradictory",
+      "The conclusion is partly true"
+     ],
+     "answer": 1,
+     "explanation": "Draw the Venn diagram for the statements: the conclusion fails in at least one possible case."
+    },
+    {
+     "type": "MCQ",
+     "text": "A cube painted on all faces is cut into 27 identical small cubes. How many small cubes have exactly one face painted?",
+     "options": [
+      "1",
+      "12",
+      "8",
+      "6"
+     ],
+     "answer": 3,
+     "explanation": "For an n×n×n cube (n = 3): 3 faces: 8, 2 faces: 12(n−2), 1 face: 6(n−2)², none: (n−2)³ → 6."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a row of 40 students, Harsh is 20th from the left. Esha is 14 places to the right of Harsh. What is Esha's position from the right end?",
+     "options": [
+      "8",
+      "7",
+      "6",
+      "34"
+     ],
+     "answer": 1,
+     "explanation": "Esha is 34th from the left, so 40 − 34 + 1 = 7th from the right."
+    },
+    {
+     "type": "MCQ",
+     "text": "Statements: All flowers are chairs. No chairs is pens.\nConclusion: No flowers is pens.\nDoes the conclusion follow?",
+     "options": [
+      "The conclusion definitely follows",
+      "The conclusion does not follow",
+      "The data is contradictory",
+      "The conclusion is partly true"
+     ],
+     "answer": 0,
+     "explanation": "Draw the Venn diagram for the statements: the conclusion must hold in every possible case."
+    },
+    {
+     "type": "MCQ",
+     "text": "Kavya is taller than Yash. Lokesh is taller than Varun. Pooja is taller than Kavya. Varun is taller than Pooja. Who is the tallest?",
+     "options": [
+      "Varun",
+      "Kavya",
+      "Pooja",
+      "Lokesh"
+     ],
+     "answer": 3,
+     "explanation": "Chaining the clues: Lokesh > Varun > Pooja > Kavya > Yash. The tallest is Lokesh."
+    },
+    {
+     "type": "MCQ",
+     "text": "Statements: All flowers are trees. Some trees are birds.\nConclusion: Some flowers are birds.\nDoes the conclusion follow?",
+     "options": [
+      "The conclusion definitely follows",
+      "The conclusion does not follow",
+      "The data is contradictory",
+      "The conclusion is partly true"
+     ],
+     "answer": 1,
+     "explanation": "Draw the Venn diagram for the statements: the conclusion fails in at least one possible case."
+    },
+    {
+     "type": "MCQ",
+     "text": "If 8 ⊕ 4 = 24; 7 ⊕ 2 = 32, then 5 ⊕ 8 = ?",
+     "options": [
+      "16",
+      "17",
+      "10",
+      "14"
+     ],
+     "answer": 3,
+     "explanation": "a ⊕ b = (a − b)² + a; so 5 ⊕ 8 = 14."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a row of 29 students, Gita is 7th from the left. Lokesh is 4 places to the right of Gita. What is Lokesh's position from the right end?",
+     "options": [
+      "18",
+      "11",
+      "19",
+      "20"
+     ],
+     "answer": 2,
+     "explanation": "Lokesh is 11th from the left, so 29 − 11 + 1 = 19th from the right."
+    },
+    {
+     "type": "MCQ",
+     "text": "Statements: No cats is trees. No trees is pens.\nConclusion: No cats is pens.\nDoes the conclusion follow?",
+     "options": [
+      "The conclusion definitely follows",
+      "The conclusion does not follow",
+      "The data is contradictory",
+      "The conclusion is partly true"
+     ],
+     "answer": 1,
+     "explanation": "Draw the Venn diagram for the statements: the conclusion fails in at least one possible case."
+    },
+    {
+     "type": "MCQ",
+     "text": "Asha is taller than Bharat. Rahul is taller than Isha. Isha is taller than Asha. Bharat is taller than Sneha. Who is the shortest?",
+     "options": [
+      "Sneha",
+      "Isha",
+      "Rahul",
+      "Asha"
+     ],
+     "answer": 0,
+     "explanation": "Chaining the clues: Rahul > Isha > Asha > Bharat > Sneha. The shortest is Sneha."
+    }
+   ]
+  },
+  {
+   "name": "Mathematical ability",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Study the table and answer.\n\nYear | Produced (units) | Sold (units)\n2021 | 220 | 195\n2022 | 190 | 145\n2023 | 180 | 125\n2024 | 140 | 130\n2025 | 230 | 175\n\nIn 2022, what percentage of the units produced was sold? (to 2 decimal places)",
+     "options": [
+      "74.57%",
+      "78.82%",
+      "76.32%",
+      "23.68%"
+     ],
+     "answer": 2,
+     "explanation": "145/190 × 100 = 76.32%."
+    },
+    {
+     "type": "MCQ",
+     "text": "Rs 5250 is divided among A, B and C in the ratio 4 : 7 : 4. What is B's share?",
+     "options": [
+      "Rs 2100",
+      "Rs 2800",
+      "Rs 2450",
+      "Rs 1400"
+     ],
+     "answer": 2,
+     "explanation": "One part = 5250 / 15 = 350; B gets 7 × 350 = Rs 2450."
+    },
+    {
+     "type": "MCQ",
+     "text": "If today is Saturday, what day of the week will it be after 372 days?",
+     "options": [
+      "Wednesday",
+      "Tuesday",
+      "Monday",
+      "Sunday"
+     ],
+     "answer": 3,
+     "explanation": "372 mod 7 = 1; Saturday + 1 day = Sunday."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the volume of a cylinder with radius 21 cm and height 20 cm? (Use π = 22/7)",
+     "options": [
+      "27720 cm³",
+      "9240 cm³",
+      "27742 cm³",
+      "2640 cm³"
+     ],
+     "answer": 0,
+     "explanation": "V = πr²h = 22/7 × 21² × 20 = 27720 cm³."
+    },
+    {
+     "type": "MCQ",
+     "text": "Study the table and answer.\n\nYear | Produced (units) | Sold (units)\n2021 | 310 | 250\n2022 | 290 | 275\n2023 | 240 | 195\n2024 | 390 | 320\n2025 | 370 | 325\n\nIn which year was the number of unsold units the highest?",
+     "options": [
+      "2023",
+      "2022",
+      "2021",
+      "2024"
+     ],
+     "answer": 3,
+     "explanation": "Unsold = produced − sold: 2021: 60, 2022: 15, 2023: 45, 2024: 70, 2025: 45."
+    },
+    {
+     "type": "MCQ",
+     "text": "4 bells ring at intervals of 20, 24, 12 and 18 seconds. If they ring together now, after how many seconds will they next ring together?",
+     "options": [
+      "74 seconds",
+      "360 seconds",
+      "720 seconds",
+      "180 seconds"
+     ],
+     "answer": 1,
+     "explanation": "LCM(20, 24, 12, 18) = 360 seconds."
+    },
+    {
+     "type": "MCQ",
+     "text": "Rs 1400 is divided among A, B and C in the ratio 3 : 5 : 6. What is C's share?",
+     "options": [
+      "Rs 700",
+      "Rs 600",
+      "Rs 500",
+      "Rs 300"
+     ],
+     "answer": 1,
+     "explanation": "One part = 1400 / 14 = 100; C gets 6 × 100 = Rs 600."
+    },
+    {
+     "type": "MCQ",
+     "text": "4 bells ring at intervals of 12, 6, 10 and 9 seconds. If they ring together now, after how many seconds will they next ring together?",
+     "options": [
+      "360 seconds",
+      "180 seconds",
+      "90 seconds",
+      "37 seconds"
+     ],
+     "answer": 1,
+     "explanation": "LCM(12, 6, 10, 9) = 180 seconds."
+    },
+    {
+     "type": "MCQ",
+     "text": "4 bells ring at intervals of 4, 6, 9 and 18 seconds. If they ring together now, after how many seconds will they next ring together?",
+     "options": [
+      "72 seconds",
+      "18 seconds",
+      "37 seconds",
+      "36 seconds"
+     ],
+     "answer": 3,
+     "explanation": "LCM(4, 6, 9, 18) = 36 seconds."
+    },
+    {
+     "type": "MCQ",
+     "text": "A can do a job in 40 days and B in 24 days. They work together for 3 days, then B leaves. In how many more days will A finish the job?",
+     "options": [
+      "32 days",
+      "63/2 days",
+      "33 days",
+      "96/5 days"
+     ],
+     "answer": 0,
+     "explanation": "In 3 days they do 1/5 of the work; 4/5 is left, which A does in 4/5 × 40 = 32 days."
+    }
+   ]
+  },
+  {
+   "name": "Verbal ability",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nPublic libraries are changing. Besides books, many now offer free internet, study spaces and workshops on coding or job skills. For students who lack a quiet place at home, the library becomes a second classroom. Libraries that adapted in this way have seen visitor numbers rise even as reading habits shift online.\n\nBesides books, many libraries now offer",
+     "options": [
+      "only magazines",
+      "free internet and workshops",
+      "paid movies",
+      "restaurant services"
+     ],
+     "answer": 1,
+     "explanation": "The passage supports: free internet and workshops."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: Through the summer he watered and weeded the crop.\nQ: The farmer prepared his field in June.\nR: In October he harvested a rich yield.\nS: He sowed the seeds after the first rains.",
+     "options": [
+      "RSPQ",
+      "QSPR",
+      "QRSP",
+      "PRSQ"
+     ],
+     "answer": 1,
+     "explanation": "Correct order: The farmer prepared his field in June. He sowed the seeds after the first rains. Through the summer he watered and weeded the crop. In October he harvested a rich yield."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) We discussed (B) about the problem (C) for (D) an hour.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "‘Discuss’ takes no ‘about’: ‘discussed the problem’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: [Who] did you give the book to?",
+     "options": [
+      "Whom",
+      "Whose",
+      "Which",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: Whom did you give the book to?"
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: He is good ____ solving puzzles.",
+     "options": [
+      "with",
+      "at",
+      "on",
+      "in"
+     ],
+     "answer": 1,
+     "explanation": "Correct: He is good at solving puzzles."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nIndia's digital payment system has grown remarkably. UPI allows instant transfers between bank accounts using a phone, and small shopkeepers now accept payments through QR codes. This has reduced the use of cash and made it easier to track transactions. Yet challenges remain: older people and those without smartphones can be left out, and online frauds have increased.\n\nOne benefit mentioned is that",
+     "options": [
+      "frauds have disappeared",
+      "shops need more cash",
+      "phones became cheaper",
+      "transactions are easier to track"
+     ],
+     "answer": 3,
+     "explanation": "The passage supports: transactions are easier to track."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: She invested the savings in a mutual fund.\nQ: Priya started saving a part of her salary.\nR: Over the years the investment grew steadily.\nS: She used it to pay for her higher studies.",
+     "options": [
+      "QPRS",
+      "RPQS",
+      "PQSR",
+      "QPSR"
+     ],
+     "answer": 0,
+     "explanation": "Correct order: Priya started saving a part of her salary. She invested the savings in a mutual fund. Over the years the investment grew steadily. She used it to pay for her higher studies."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) She has (B) returned back (C) from Delhi (D) this morning.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "‘Returned back’ is redundant: ‘returned’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: The children [was playing] in the garden.",
+     "options": [
+      "were playing",
+      "is playing",
+      "has played",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: The children were playing in the garden."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: The company is famous ____ its customer service.",
+     "options": [
+      "of",
+      "with",
+      "for",
+      "by"
+     ],
+     "answer": 2,
+     "explanation": "Correct: The company is famous for its customer service."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nA good resume is short and specific. Recruiters spend less than a minute on a first look, so the most important facts must be easy to find. Instead of listing duties, strong resumes show results with numbers, such as ‘reduced page load time by 40%’. Spelling mistakes and long paragraphs create a poor impression.\n\nWhy must key facts be easy to find in a resume?",
+     "options": [
+      "Recruiters spend less than a minute on a first look",
+      "Recruiters prefer long resumes",
+      "Resumes are read many times",
+      "Facts are not important"
+     ],
+     "answer": 0,
+     "explanation": "The passage supports: Recruiters spend less than a minute on a first look."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: The company launched a new phone.\nQ: Sales doubled in the first month.\nR: Early reviews praised its battery life.\nS: Rivals soon cut their prices in response.",
+     "options": [
+      "SPQR",
+      "PSRQ",
+      "RQPS",
+      "PRQS"
+     ],
+     "answer": 3,
+     "explanation": "Correct order: The company launched a new phone. Early reviews praised its battery life. Sales doubled in the first month. Rivals soon cut their prices in response."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) He is (B) senior than me (C) by (D) three years.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "‘Senior to me’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: The work [was done by me and him].",
+     "options": [
+      "was done by him and me",
+      "done by me and him",
+      "was did by him and me",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: The work was done by him and me."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: Hardly had he left ____ it began to rain.",
+     "options": [
+      "when",
+      "that",
+      "than",
+      "then"
+     ],
+     "answer": 0,
+     "explanation": "Correct: Hardly had he left when it began to rain."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nPlastic is cheap, light and durable, which is why it is everywhere. The same durability makes it a problem: most plastic takes hundreds of years to break down. Much of it ends up in rivers and oceans, where it harms animals that swallow it or get trapped. Recycling helps, but only a small share of plastic is actually recycled. Experts say the most effective step is to use less plastic in the first place.\n\nAccording to the passage, the most effective step is to",
+     "options": [
+      "use less plastic",
+      "burn plastic waste",
+      "make plastic heavier",
+      "recycle all plastic"
+     ],
+     "answer": 0,
+     "explanation": "The passage supports: use less plastic."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: The manager studied the order process.\nQ: He found that billing caused most delays.\nR: Customers complained about slow service.\nS: A new billing system cut waiting time by half.",
+     "options": [
+      "PSRQ",
+      "QRSP",
+      "SPRQ",
+      "RPQS"
+     ],
+     "answer": 3,
+     "explanation": "Correct order: Customers complained about slow service. The manager studied the order process. He found that billing caused most delays. A new billing system cut waiting time by half."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) The furnitures (B) in this room (C) are very (D) expensive.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 0,
+     "explanation": "‘Furniture’ is uncountable: ‘The furniture … is’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: [Despite of the rain], we went out.",
+     "options": [
+      "Despite the rain",
+      "Inspite the rain",
+      "Although of the rain",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: Despite the rain, we went out."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: He made ____ effort to finish the work early.",
+     "options": [
+      "whole",
+      "every",
+      "all",
+      "each of"
+     ],
+     "answer": 1,
+     "explanation": "Correct: He made every effort to finish the work early."
+    }
+   ]
+  },
+  {
+   "name": "Pseudocode",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "What is the output of this pseudocode?\n\ns = 0\nfor i = 1 to 16 step 1\n    s = s + i * i\nend for\nprint s",
+     "options": [
+      "1324",
+      "1503",
+      "1496",
+      "1670"
+     ],
+     "answer": 2,
+     "explanation": "The loop takes i = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16; the result is 1496."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output? (div = integer division)\n\nn = 3378\nc = 0\nwhile n > 0\n    c = c + 1\n    n = n div 10\nend while\nprint c",
+     "options": [
+      "3",
+      "4",
+      "5",
+      "6"
+     ],
+     "answer": 1,
+     "explanation": "Trace the loop digit by digit."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the value of 41 & 23 (bitwise, on integers)?",
+     "options": [
+      "1",
+      "4",
+      "2",
+      "3"
+     ],
+     "answer": 0,
+     "explanation": "41 = 101001₂, 23 = 10111₂ → result 1₂ = 1."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does this C code print?\n\nint a = 25, b = 6;\nprintf(\"%d %d\", a / b, a % b);",
+     "options": [
+      "1 4",
+      "4.2 1",
+      "4 1",
+      "5 1"
+     ],
+     "answer": 2,
+     "explanation": "Integer division: 25/6 = 4, remainder 1."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the value of 16 & 32 (bitwise, on integers)?",
+     "options": [
+      "0",
+      "-2",
+      "-3",
+      "3"
+     ],
+     "answer": 0,
+     "explanation": "16 = 10000₂, 32 = 100000₂ → result 0₂ = 0."
+    }
+   ]
+  },
+  {
+   "name": "Puzzle solving",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Nikhil is the son of Lokesh. Lokesh is the sister of Tarun. Tarun is the father of Ojas. How is Nikhil related to Ojas?",
+     "options": [
+      "Brother",
+      "Nephew",
+      "Uncle",
+      "Cousin"
+     ],
+     "answer": 3,
+     "explanation": "Nikhil's mother and Ojas's father are siblings, so they are cousins."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a row of 32 students, Varun is 21st from the left. Kavya is 6 places to the right of Varun. What is Kavya's position from the right end?",
+     "options": [
+      "5",
+      "6",
+      "7",
+      "27"
+     ],
+     "answer": 1,
+     "explanation": "Kavya is 27th from the left, so 32 − 27 + 1 = 6th from the right."
+    },
+    {
+     "type": "MCQ",
+     "text": "A cube painted on all faces is cut into 27 identical small cubes. How many small cubes have exactly three faces painted?",
+     "options": [
+      "12",
+      "6",
+      "1",
+      "8"
+     ],
+     "answer": 3,
+     "explanation": "For an n×n×n cube (n = 3): 3 faces: 8, 2 faces: 12(n−2), 1 face: 6(n−2)², none: (n−2)³ → 8."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a row of 20 students, Kavya is 5th from the left. Chitra is 3 places to the right of Kavya. What is Chitra's position from the right end?",
+     "options": [
+      "12",
+      "8",
+      "13",
+      "14"
+     ],
+     "answer": 2,
+     "explanation": "Chitra is 8th from the left, so 20 − 8 + 1 = 13th from the right."
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,41 @@
+# Self-hosted AI services for the ProveYu AI mock interview. Nothing leaves this machine.
+#   docker compose up -d                                   # start all three
+#   docker compose exec ollama ollama pull qwen3:1.7b      # first time only (use qwen3:8b on a GPU server)
+# Ports: Ollama 11434, Whisper 8178, Piper 5002. The backend reads them from interview.* in application.yml.
+name: proveyu-ai
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    ports: ["127.0.0.1:11434:11434"]
+    volumes: [ollama:/root/.ollama]
+    environment:
+      OLLAMA_KEEP_ALIVE: 30m        # keep the model in memory between answers
+      OLLAMA_NUM_PARALLEL: 2
+    restart: unless-stopped
+    # GPU server: uncomment
+    # deploy: { resources: { reservations: { devices: [{ driver: nvidia, count: all, capabilities: [gpu] }] } } }
+
+  whisper:
+    image: ghcr.io/ggml-org/whisper.cpp:main
+    ports: ["127.0.0.1:8178:8080"]
+    volumes: [whisper:/models]
+    entrypoint: ["sh", "-c"]
+    # base = fast on CPU; switch WHISPER_MODEL to small or medium for better Hinglish accuracy
+    command:
+      - >-
+        [ -f /models/ggml-$${WHISPER_MODEL}.bin ] || ./models/download-ggml-model.sh $${WHISPER_MODEL} /models &&
+        whisper-server --host 0.0.0.0 --port 8080 -m /models/ggml-$${WHISPER_MODEL}.bin -l auto -t 4
+    environment:
+      WHISPER_MODEL: base
+    restart: unless-stopped
+
+  piper:
+    build: ./piper
+    image: proveyu-piper:1
+    ports: ["127.0.0.1:5002:5000"]
+    restart: unless-stopped
+
+volumes:
+  ollama:
+  whisper:

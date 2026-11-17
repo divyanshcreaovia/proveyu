@@ -1,0 +1,810 @@
+{
+ "title": "TCS NQT style · Foundation",
+ "description": "Numerical, verbal and reasoning ability, the NQT Foundation part. 65 MCQs in 75 minutes. Original practice questions modelled on the publicly reported test pattern. Not an official or past paper.",
+ "companyTag": "TCS",
+ "level": "MEDIUM",
+ "order": 6,
+ "durationMinutes": 75,
+ "sections": [
+  {
+   "name": "Numerical ability",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "A starts a business with Rs 4000. After 3 months B joins with Rs 9000. At the end of the year the profit is Rs 4300. What is B's share?",
+     "options": [
+      "Rs 3200",
+      "Rs 2700",
+      "Rs 38700/13",
+      "Rs 1600"
+     ],
+     "answer": 1,
+     "explanation": "Ratio = 4000×12 : 9000×9 = 48000:81000; B gets 4300 × 81000/129000 = Rs 2700."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the area of a circle of radius 3.5 cm? (Use π = 22/7)",
+     "options": [
+      "77/2 cm²",
+      "99/2 cm²",
+      "77 cm²",
+      "22 cm²"
+     ],
+     "answer": 0,
+     "explanation": "πr² = 22/7 × 3.5² = 77/2 cm²."
+    },
+    {
+     "type": "MCQ",
+     "text": "A starts a business with Rs 8000. After 4 months B joins with Rs 4000. At the end of the year the profit is Rs 2000. What is B's share?",
+     "options": [
+      "Rs 2000/3",
+      "Rs 1000",
+      "Rs 1500",
+      "Rs 500"
+     ],
+     "answer": 3,
+     "explanation": "Ratio = 8000×12 : 4000×8 = 96000:32000; B gets 2000 × 32000/128000 = Rs 500."
+    },
+    {
+     "type": "MCQ",
+     "text": "In how many different ways can the letters of the word COMMITT be arranged?",
+     "options": [
+      "630",
+      "2520",
+      "1260",
+      "5040"
+     ],
+     "answer": 2,
+     "explanation": "7! divided by the factorials of repeated letters (M:2, T:2) = 1260."
+    },
+    {
+     "type": "MCQ",
+     "text": "3 bells ring at intervals of 6, 20 and 15 seconds. If they ring together now, after how many seconds will they next ring together?",
+     "options": [
+      "60 seconds",
+      "41 seconds",
+      "120 seconds",
+      "30 seconds"
+     ],
+     "answer": 0,
+     "explanation": "LCM(6, 20, 15) = 60 seconds."
+    },
+    {
+     "type": "MCQ",
+     "text": "The price of an item is first increased by 30% and then decreased by 15%. What is the net percentage change in its price?",
+     "options": [
+      "25/2% increase",
+      "21/2% increase",
+      "19/2% increase",
+      "23/2% increase"
+     ],
+     "answer": 1,
+     "explanation": "Net factor = (1 + 30/100)(1 - 15/100) = 221/200, so the change is 21/2%: a 21/2% increase."
+    },
+    {
+     "type": "MCQ",
+     "text": "Rs 8450 is divided among A, B and C in the ratio 3 : 5 : 5. What is A's share?",
+     "options": [
+      "Rs 1950",
+      "Rs 2600",
+      "Rs 1300",
+      "Rs 3250"
+     ],
+     "answer": 0,
+     "explanation": "One part = 8450 / 13 = 650; A gets 3 × 650 = Rs 1950."
+    },
+    {
+     "type": "MCQ",
+     "text": "The average age of 20 students is 51 years. When the teacher's age is included, the average decreases by 2 years. What is the teacher's age?",
+     "options": [
+      "25",
+      "7",
+      "14",
+      "9"
+     ],
+     "answer": 3,
+     "explanation": "New total = 49 × 21 = 1029; old total = 1020; teacher = 9."
+    },
+    {
+     "type": "MCQ",
+     "text": "Pipes A and B can fill a tank in 20 and 15 hours. Pipe C can empty it in 30 hours. If all three are opened together, how long will the tank take to fill?",
+     "options": [
+      "13 hours",
+      "12 hours",
+      "25/2 hours",
+      "23/2 hours"
+     ],
+     "answer": 1,
+     "explanation": "Net rate = 1/20 + 1/15 − 1/30 = 1/12 tank/hour, so 12 hours."
+    },
+    {
+     "type": "MCQ",
+     "text": "A can do a job in 30 days and B in 18 days. They work together for 3 days, then B leaves. In how many more days will A finish the job?",
+     "options": [
+      "22 days",
+      "43/2 days",
+      "23 days",
+      "66/5 days"
+     ],
+     "answer": 0,
+     "explanation": "In 3 days they do 4/15 of the work; 11/15 is left, which A does in 11/15 × 30 = 22 days."
+    },
+    {
+     "type": "MCQ",
+     "text": "A sum of money amounts to Rs 19240 in 4 years at 12% per annum simple interest. What is the sum?",
+     "options": [
+      "Rs 12500",
+      "Rs 13000",
+      "Rs 13250",
+      "Rs 13500"
+     ],
+     "answer": 1,
+     "explanation": "Amount = P(1 + 12×4/100) = P × 37/25, so P = 19240 / 37/25 = Rs 13000."
+    },
+    {
+     "type": "MCQ",
+     "text": "A starts a business with Rs 11000. After 8 months B joins with Rs 6000. At the end of the year the profit is Rs 2600. What is B's share?",
+     "options": [
+      "Rs 15600/17",
+      "Rs 400",
+      "Rs 900",
+      "Rs 2200"
+     ],
+     "answer": 1,
+     "explanation": "Ratio = 11000×12 : 6000×4 = 132000:24000; B gets 2600 × 24000/156000 = Rs 400."
+    },
+    {
+     "type": "MCQ",
+     "text": "In how many different ways can the letters of the word SUCCESS be arranged?",
+     "options": [
+      "210",
+      "420",
+      "5040",
+      "840"
+     ],
+     "answer": 1,
+     "explanation": "7! divided by the factorials of repeated letters (S:3, C:2) = 420."
+    },
+    {
+     "type": "MCQ",
+     "text": "A can do a job in 10 days and B in 40 days. They work together for 3 days, then B leaves. In how many more days will A finish the job?",
+     "options": [
+      "25/4 days",
+      "23/4 days",
+      "29/4 days",
+      "25 days"
+     ],
+     "answer": 0,
+     "explanation": "In 3 days they do 3/8 of the work; 5/8 is left, which A does in 5/8 × 10 = 25/4 days."
+    },
+    {
+     "type": "MCQ",
+     "text": "A bag has 2 red, 3 blue and 5 green balls. Two balls are drawn at random. What is the probability that both are red?",
+     "options": [
+      "2/45",
+      "1/25",
+      "1/45",
+      "1/5"
+     ],
+     "answer": 2,
+     "explanation": "C(2,2)/C(10,2) = 1/45 = 1/45."
+    },
+    {
+     "type": "MCQ",
+     "text": "In what ratio must rice at Rs 32/kg be mixed with rice at Rs 54/kg so that the mixture costs Rs 46/kg?",
+     "options": [
+      "32:54",
+      "4:7",
+      "7:4",
+      "5:7"
+     ],
+     "answer": 1,
+     "explanation": "Alligation: (cheaper : dearer) = (54 − 46) : (46 − 32) = 4:7."
+    },
+    {
+     "type": "MCQ",
+     "text": "Pipes A and B can fill a tank in 8 and 24 hours. Pipe C can empty it in 12 hours. If all three are opened together, how long will the tank take to fill?",
+     "options": [
+      "13 hours",
+      "25/2 hours",
+      "23/2 hours",
+      "12 hours"
+     ],
+     "answer": 3,
+     "explanation": "Net rate = 1/8 + 1/24 − 1/12 = 1/12 tank/hour, so 12 hours."
+    },
+    {
+     "type": "MCQ",
+     "text": "In how many different ways can the letters of the word BALLOON be arranged?",
+     "options": [
+      "2520",
+      "630",
+      "5040",
+      "1260"
+     ],
+     "answer": 3,
+     "explanation": "7! divided by the factorials of repeated letters (L:2, O:2) = 1260."
+    },
+    {
+     "type": "MCQ",
+     "text": "In what ratio must rice at Rs 30/kg be mixed with rice at Rs 72/kg so that the mixture costs Rs 32/kg?",
+     "options": [
+      "20:1",
+      "30:72",
+      "21:1",
+      "1:20"
+     ],
+     "answer": 0,
+     "explanation": "Alligation: (cheaper : dearer) = (72 − 32) : (32 − 30) = 20:1."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the sum of the first 34 terms of the series 4, 11, 18, ...?",
+     "options": [
+      "4059",
+      "4063",
+      "4301",
+      "7990"
+     ],
+     "answer": 1,
+     "explanation": "S = n/2 [2a + (n−1)d] = 34/2 × [8 + 231] = 4063."
+    }
+   ]
+  },
+  {
+   "name": "Verbal ability",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nTeamwork is often judged in interviews through group discussions. Candidates who speak the most do not always do best. Evaluators look for people who listen, build on others' points, bring the group back to the topic and help reach a conclusion. Interrupting others or repeating the same point usually counts against a candidate.\n\nThe passage is mainly about",
+     "options": [
+      "why interviews are unfair",
+      "how to write a resume",
+      "how to speak loudly",
+      "how teamwork is judged in group discussions"
+     ],
+     "answer": 3,
+     "explanation": "The passage supports: how teamwork is judged in group discussions."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: He was the ____ of the two brothers.",
+     "options": [
+      "more tall",
+      "most tall",
+      "tallest",
+      "taller"
+     ],
+     "answer": 3,
+     "explanation": "Correct: He was the taller of the two brothers."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) It is (B) high time (C) we leave (D) for the airport.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 2,
+     "explanation": "‘It is high time we left’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: Each read at least ten books in three months.\nQ: Students signed up in large numbers.\nR: The library announced a reading challenge.\nS: The winners were honoured at the annual day.",
+     "options": [
+      "PRSQ",
+      "QSRP",
+      "PQRS",
+      "RQPS"
+     ],
+     "answer": 3,
+     "explanation": "Correct order: The library announced a reading challenge. Students signed up in large numbers. Each read at least ten books in three months. The winners were honoured at the annual day."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: She [cannot help to laugh] at his jokes.",
+     "options": [
+      "cannot help laughing",
+      "can help not laughing",
+      "cannot helping laugh",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: She cannot help laughing at his jokes."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nA good resume is short and specific. Recruiters spend less than a minute on a first look, so the most important facts must be easy to find. Instead of listing duties, strong resumes show results with numbers, such as ‘reduced page load time by 40%’. Spelling mistakes and long paragraphs create a poor impression.\n\nThe word ‘specific’ means",
+     "options": [
+      "general",
+      "precise",
+      "colourful",
+      "lengthy"
+     ],
+     "answer": 1,
+     "explanation": "The passage supports: precise."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: She sings ____ than her sister.",
+     "options": [
+      "well",
+      "best",
+      "better",
+      "more good"
+     ],
+     "answer": 2,
+     "explanation": "Correct: She sings better than her sister."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) He gave me (B) an advice (C) which proved (D) very useful.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "‘Advice’ is uncountable: ‘a piece of advice’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: Next, design the system based on them.\nQ: Then write and test the code.\nR: First, collect the requirements from the users.\nS: Finally, deploy the software and gather feedback.",
+     "options": [
+      "QPRS",
+      "PQRS",
+      "PRQS",
+      "RPQS"
+     ],
+     "answer": 3,
+     "explanation": "Correct order: First, collect the requirements from the users. Next, design the system based on them. Then write and test the code. Finally, deploy the software and gather feedback."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: She is [more stronger] than her brother.",
+     "options": [
+      "stronger",
+      "most strong",
+      "strongest",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: She is stronger than her brother."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nTeamwork is often judged in interviews through group discussions. Candidates who speak the most do not always do best. Evaluators look for people who listen, build on others' points, bring the group back to the topic and help reach a conclusion. Interrupting others or repeating the same point usually counts against a candidate.\n\nAccording to the passage, speaking the most",
+     "options": [
+      "is required",
+      "is banned",
+      "does not guarantee doing best",
+      "always wins"
+     ],
+     "answer": 2,
+     "explanation": "The passage supports: does not guarantee doing best."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: We look forward ____ you soon.",
+     "options": [
+      "to meet",
+      "to meeting",
+      "meeting",
+      "for meeting"
+     ],
+     "answer": 1,
+     "explanation": "Correct: We look forward to meeting you soon."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) Neither Ravi (B) nor his friends (C) was invited (D) to the party.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 2,
+     "explanation": "The verb agrees with the nearer subject ‘friends’: ‘were invited’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: Arjun lost his wallet on the bus.\nQ: A conductor had found it under a seat.\nR: Arjun got it back with everything inside.\nS: He reported it at the depot office.",
+     "options": [
+      "PSQR",
+      "SQPR",
+      "QSRP",
+      "QRPS"
+     ],
+     "answer": 0,
+     "explanation": "Correct order: Arjun lost his wallet on the bus. He reported it at the depot office. A conductor had found it under a seat. Arjun got it back with everything inside."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: We [discussed about] the new plan.",
+     "options": [
+      "discussed",
+      "discussed on",
+      "discussing about",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: We discussed the new plan."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nMany rivers in India are fed by Himalayan glaciers. As temperatures rise, these glaciers are shrinking. In the short term this can increase river flow and the risk of floods; in the long term, rivers may carry less water in dry months. Scientists stress the need to monitor glaciers and to plan water use carefully.\n\nIn the short term, shrinking glaciers can",
+     "options": [
+      "lower temperatures",
+      "stop river flow",
+      "increase river flow and flood risk",
+      "reduce floods"
+     ],
+     "answer": 2,
+     "explanation": "The passage supports: increase river flow and flood risk."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: She has ____ friends in the new city.",
+     "options": [
+      "much",
+      "few",
+      "less",
+      "little"
+     ],
+     "answer": 1,
+     "explanation": "Correct: She has few friends in the new city."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) He (B) is working (C) in this company (D) for ten years.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "Duration up to now: ‘has been working’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: Investors noticed its rapid growth.\nQ: The startup raised money to expand to ten cities.\nR: Users liked how fast it was.\nS: A small startup built a delivery app.",
+     "options": [
+      "RQSP",
+      "SRPQ",
+      "QSPR",
+      "RSQP"
+     ],
+     "answer": 1,
+     "explanation": "Correct order: A small startup built a delivery app. Users liked how fast it was. Investors noticed its rapid growth. The startup raised money to expand to ten cities."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: I [would have came] if you had called.",
+     "options": [
+      "would have come",
+      "will have come",
+      "would came",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: I would have come if you had called."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nPublic libraries are changing. Besides books, many now offer free internet, study spaces and workshops on coding or job skills. For students who lack a quiet place at home, the library becomes a second classroom. Libraries that adapted in this way have seen visitor numbers rise even as reading habits shift online.\n\nThe passage suggests that reading habits are",
+     "options": [
+      "shifting online",
+      "moving to radio",
+      "unchanged",
+      "disappearing completely"
+     ],
+     "answer": 0,
+     "explanation": "The passage supports: shifting online."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: He insisted ____ paying the bill.",
+     "options": [
+      "to",
+      "on",
+      "at",
+      "for"
+     ],
+     "answer": 1,
+     "explanation": "Correct: He insisted on paying the bill."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) She (B) did not (C) came to (D) the office.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 2,
+     "explanation": "After ‘did not’: ‘come’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: Selected students received the first instalment in July.\nQ: The government announced a scholarship scheme.\nR: Students applied through an online portal.\nS: Applications were screened on merit and income.",
+     "options": [
+      "QRSP",
+      "QPSR",
+      "RPSQ",
+      "PRQS"
+     ],
+     "answer": 0,
+     "explanation": "Correct order: The government announced a scholarship scheme. Students applied through an online portal. Applications were screened on merit and income. Selected students received the first instalment in July."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: She is [one of the best singer] in the city.",
+     "options": [
+      "one of the best singers",
+      "one of best singer",
+      "the one best singer",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: She is one of the best singers in the city."
+    }
+   ]
+  },
+  {
+   "name": "Reasoning ability",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Statements: All cars are doctors. Some doctors are phones.\nConclusion: Some cars are phones.\nDoes the conclusion follow?",
+     "options": [
+      "The conclusion definitely follows",
+      "The conclusion does not follow",
+      "The data is contradictory",
+      "The conclusion is partly true"
+     ],
+     "answer": 1,
+     "explanation": "Draw the Venn diagram for the statements: the conclusion fails in at least one possible case."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which number is the odd one out: 324, 361, 363, 16?",
+     "options": [
+      "324",
+      "16",
+      "361",
+      "363"
+     ],
+     "answer": 3,
+     "explanation": "363 — all others are perfect squares."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next in the series: 10, 17, 26, 37, 50, ?",
+     "options": [
+      "65",
+      "60",
+      "63",
+      "67"
+     ],
+     "answer": 0,
+     "explanation": "Rule: squares of 3, 4, ... plus 1. Next term = 65."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next: EV, LO, SH, ZA, ?",
+     "options": [
+      "TG",
+      "GU",
+      "GT",
+      "HT"
+     ],
+     "answer": 2,
+     "explanation": "First letters move +7; second letters move −7 from the other end of the alphabet."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a row of 32 students, Kavya is 12th from the left. Dev is 5 places to the right of Kavya. What is Dev's position from the right end?",
+     "options": [
+      "17",
+      "20",
+      "16",
+      "15"
+     ],
+     "answer": 2,
+     "explanation": "Dev is 17th from the left, so 32 − 17 + 1 = 16th from the right."
+    },
+    {
+     "type": "MCQ",
+     "text": "5 : 125 :: 11 : ?",
+     "options": [
+      "1331",
+      "1146",
+      "1125",
+      "1287"
+     ],
+     "answer": 0,
+     "explanation": "The rule is n → n³; for 11 it gives 1331."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a certain code, FOREST is written as ENQDRS. How is LADDER written in that code?",
+     "options": [
+      "JYBBCP",
+      "MBEEFS",
+      "LADDER",
+      "KZCCDQ"
+     ],
+     "answer": 3,
+     "explanation": "Each letter is shifted -1 place in the alphabet."
+    },
+    {
+     "type": "MCQ",
+     "text": "If 5 ⊕ 3 = 34; 4 ⊕ 3 = 25, then 6 ⊕ 3 = ?",
+     "options": [
+      "42",
+      "43",
+      "40",
+      "45"
+     ],
+     "answer": 3,
+     "explanation": "a ⊕ b = a² + b²; so 6 ⊕ 3 = 45."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next in the series: 20, 24, 32, 44, 60, ?",
+     "options": [
+      "73",
+      "80",
+      "76",
+      "89"
+     ],
+     "answer": 1,
+     "explanation": "Rule: differences increase by 4 (4, 8, 12, ...). Next term = 80."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next in the series: 18, 42, 22, 37, 26, ?",
+     "options": [
+      "32",
+      "33",
+      "29",
+      "34"
+     ],
+     "answer": 0,
+     "explanation": "Rule: two series alternate: +4 on odd positions, −5 on even positions. Next term = 32."
+    },
+    {
+     "type": "MCQ",
+     "text": "A man is facing South. He turns about, then turns left. Which direction is he facing now?",
+     "options": [
+      "North",
+      "East",
+      "South",
+      "West"
+     ],
+     "answer": 3,
+     "explanation": "Right = 90° clockwise, left = 90° anticlockwise, about = 180°. Final direction: West."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next: EV, HS, KP, NM, ?",
+     "options": [
+      "QK",
+      "RJ",
+      "JQ",
+      "QJ"
+     ],
+     "answer": 3,
+     "explanation": "First letters move +3; second letters move −3 from the other end of the alphabet."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next: CX, JQ, QJ, XC, ?",
+     "options": [
+      "EV",
+      "VE",
+      "FV",
+      "EW"
+     ],
+     "answer": 0,
+     "explanation": "First letters move +7; second letters move −7 from the other end of the alphabet."
+    },
+    {
+     "type": "MCQ",
+     "text": "A cube painted on all faces is cut into 125 identical small cubes. How many small cubes have exactly two faces painted?",
+     "options": [
+      "54",
+      "36",
+      "27",
+      "8"
+     ],
+     "answer": 1,
+     "explanation": "For an n×n×n cube (n = 5): 3 faces: 8, 2 faces: 12(n−2), 1 face: 6(n−2)², none: (n−2)³ → 36."
+    },
+    {
+     "type": "MCQ",
+     "text": "Gita is taller than Meera. Dev is taller than Gita. Meera is taller than Zoya. Lokesh is taller than Dev. Who is the second tallest?",
+     "options": [
+      "Meera",
+      "Dev",
+      "Gita",
+      "Lokesh"
+     ],
+     "answer": 1,
+     "explanation": "Chaining the clues: Lokesh > Dev > Gita > Meera > Zoya. The second tallest is Dev."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next in the series: 27, 38, 51, 66, 83, ?",
+     "options": [
+      "101",
+      "102",
+      "110",
+      "111"
+     ],
+     "answer": 1,
+     "explanation": "Rule: squares of 5, 6, ... plus 2. Next term = 102."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a row of 21 students, Nikhil is 12th from the left. Pooja is 9 places to the right of Nikhil. What is Pooja's position from the right end?",
+     "options": [
+      "0",
+      "21",
+      "2",
+      "1"
+     ],
+     "answer": 3,
+     "explanation": "Pooja is 21st from the left, so 21 − 21 + 1 = 1st from the right."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a survey, 29 people read newspaper A, 19 read B, 6 read both and 3 read neither. How many people read only one newspaper?",
+     "options": [
+      "23",
+      "36",
+      "33",
+      "42"
+     ],
+     "answer": 1,
+     "explanation": "Only A = 23, only B = 13; total = 36."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which number is the odd one out: 8, 216, 9, 729?",
+     "options": [
+      "729",
+      "8",
+      "216",
+      "9"
+     ],
+     "answer": 3,
+     "explanation": "9 — all others are perfect cubes."
+    },
+    {
+     "type": "MCQ",
+     "text": "Ojas's father is the only son of Chitra's father. Chitra is Ojas's ____ if Chitra is female.",
+     "options": [
+      "Mother",
+      "Aunt",
+      "Sister",
+      "Cousin"
+     ],
+     "answer": 1,
+     "explanation": "Chitra is a daughter of Ojas's grandfather and not Ojas's mother (his father is the only son), so she is Ojas's aunt."
+    }
+   ]
+  }
+ ]
+}

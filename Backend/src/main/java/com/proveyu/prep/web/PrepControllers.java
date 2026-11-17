@@ -119,4 +119,61 @@ public final class PrepControllers {
             return ApiResponse.success(service.result(uid(auth), id));
         }
     }
+
+    /**
+     * A college's placement team (TPO) uploads mock tests for its own students. They appear under the students' "More practice
+     * tests" (never in the unlock path) and only for that college. Admin and coordinator manage; viewers can see the list.
+     */
+    @Tag(name = "College - Mock tests")
+    @RestController
+    @RequestMapping("/api/v1/college/prep/tests")
+    @RequiredArgsConstructor
+    public static class CollegePrepController {
+        private final PrepService service;
+        private final com.proveyu.college.application.AuditService audit;
+
+        @GetMapping
+        @PreAuthorize(com.proveyu.college.security.CollegeAccess.READ)
+        public ApiResponse<List<AdminTestSummary>> list(com.proveyu.college.security.CollegeContext ctx) {
+            return ApiResponse.success(service.collegeList(ctx.collegeId()));
+        }
+
+        @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        @PreAuthorize(com.proveyu.college.security.CollegeAccess.WRITE)
+        public ApiResponse<AdminTestSummary> upload(com.proveyu.college.security.CollegeContext ctx, @RequestPart("file") MultipartFile file) throws IOException {
+            if (file.isEmpty() || file.getSize() > 2_000_000) {
+                throw new DomainException("Upload a JSON file up to 2 MB", HttpStatus.BAD_REQUEST, "INVALID_TEST");
+            }
+            AdminTestSummary t = service.collegeUpload(ctx.collegeId(), ctx.userId(), new String(file.getBytes(), StandardCharsets.UTF_8));
+            audit.log(ctx, "MOCK_TEST_UPLOADED", "PREP_TEST", t.id(), "Uploaded mock test \"" + t.title() + "\" (draft)", null);
+            return ApiResponse.success(t, "Test uploaded as a draft");
+        }
+
+        @PatchMapping("/{id}/publish")
+        @PreAuthorize(com.proveyu.college.security.CollegeAccess.WRITE)
+        public ApiResponse<AdminTestSummary> publish(com.proveyu.college.security.CollegeContext ctx, @PathVariable UUID id, @RequestBody Map<String, Boolean> body) {
+            boolean on = Boolean.TRUE.equals(body.get("published"));
+            AdminTestSummary t = service.collegeSetPublished(ctx.collegeId(), id, on);
+            audit.log(ctx, on ? "MOCK_TEST_PUBLISHED" : "MOCK_TEST_UNPUBLISHED", "PREP_TEST", id,
+                    (on ? "Published" : "Unpublished") + " mock test \"" + t.title() + "\"", null);
+            return ApiResponse.success(t, on ? "Published to your students" : "Hidden from your students");
+        }
+
+        @DeleteMapping("/{id}")
+        @PreAuthorize(com.proveyu.college.security.CollegeAccess.WRITE)
+        public ApiResponse<Void> delete(com.proveyu.college.security.CollegeContext ctx, @PathVariable UUID id) {
+            var t = service.collegeDelete(ctx.collegeId(), id);
+            audit.log(ctx, "MOCK_TEST_DELETED", "PREP_TEST", id, "Deleted mock test \"" + t.getTitle() + "\" and its attempts", null);
+            return ApiResponse.success(null, "Test deleted");
+        }
+
+        /** The uploaded JSON, to edit and upload again. */
+        @GetMapping("/{id}/definition")
+        @PreAuthorize(com.proveyu.college.security.CollegeAccess.READ)
+        public ResponseEntity<String> definition(com.proveyu.college.security.CollegeContext ctx, @PathVariable UUID id) {
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"mock-test-" + id + ".json\"")
+                    .body(service.collegeTest(ctx.collegeId(), id).getDefinitionJson());
+        }
+    }
 }

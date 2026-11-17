@@ -20,7 +20,9 @@ public final class PrepModel {
     // ------------------------------------------------------------------ uploaded definition (admin)
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record TestDefinition(String title, String description, String companyTag, Integer durationMinutes, List<Section> sections) {}
+    /** level (EASY / MEDIUM / HARD) and order are optional: tests with an order form the unlock ladder. */
+    public record TestDefinition(String title, String description, String companyTag, String level, Integer order, Integer durationMinutes,
+                                 List<Section> sections) {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Section(String name, List<Question> questions) {}
@@ -41,13 +43,15 @@ public final class PrepModel {
     // ------------------------------------------------------------------ admin views
 
     public record AdminTestSummary(UUID id, String title, String description, String companyTag, int durationMinutes, int questionCount,
-                                   int codingCount, int totalMarks, boolean published, long attempts, Instant createdAt) {}
+                                   int codingCount, int totalMarks, boolean published, long attempts, Instant createdAt, String level,
+                                   Integer order, long students, Integer averagePercent) {}
 
     // ------------------------------------------------------------------ student views
 
     public record TestCard(UUID id, String title, String description, String companyTag, int durationMinutes, int questionCount,
                            int codingCount, int totalMarks, List<String> sections, int attempts, BigDecimal bestScore,
-                           UUID inProgressAttemptId, UUID lastAttemptId) {}
+                           UUID inProgressAttemptId, UUID lastAttemptId, String level, Integer order, Integer bestPercent, boolean locked,
+                           String unlockAfter, int unlockPercent, boolean passed) {}
 
     /** A question as the student sees it during the test: no answer, no hidden tests. */
     @JsonInclude(JsonInclude.Include.NON_NULL)

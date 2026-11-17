@@ -122,6 +122,45 @@ college:
     max-file-size-bytes: ${COLLEGE_MAX_FILE_SIZE:10485760}
     allowed-extensions: ${COLLEGE_ALLOWED_EXTENSIONS:.pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx,.xls,.csv}
 
+# AI mock interview (Preparation > AI interview). Services start with: cd ai-services && docker compose up -d
+interview:
+  # Cloud AI (OpenAI-compatible; Groq by default). On only when GROQ_API_KEY is set (Backend/.env,
+  # git-ignored). Failures and rate limits fall back to the local
+  # services below. To use an own model server later: set INTERVIEW_CLOUD_URL to it (e.g. http://gpu-box:11434/v1) or drop the key.
+  cloud:
+    api-key: ${GROQ_API_KEY:}
+    url: ${INTERVIEW_CLOUD_URL:https://api.groq.com/openai/v1}
+    model: ${INTERVIEW_CLOUD_MODEL:openai/gpt-oss-20b}          # questions + follow-ups
+    eval-model: ${INTERVIEW_CLOUD_EVAL_MODEL:openai/gpt-oss-20b} # scoring + report (openai/gpt-oss-120b is stronger)
+    reasoning-effort: ${INTERVIEW_CLOUD_REASONING:low}          # gpt-oss: low keeps replies fast; blank to not send it
+    stt-model: ${INTERVIEW_CLOUD_STT_MODEL:whisper-large-v3-turbo} # blank = keep speech-to-text local
+    stt-language: ${INTERVIEW_CLOUD_STT_LANGUAGE:}               # blank = auto-detect (handles Hinglish); "en" forces English
+    stt-prompt: ${INTERVIEW_CLOUD_STT_PROMPT:A job interview answer by an Indian engineering student. Technical terms such as Java, Python, SQL, API, Spring Boot, Angular, React, DBMS, OOPS.}
+    max-parallel: ${INTERVIEW_CLOUD_MAX_PARALLEL:4}
+    fallback-local: ${INTERVIEW_CLOUD_FALLBACK_LOCAL:true}
+  llm:
+    url: ${INTERVIEW_LLM_URL:http://localhost:11434}
+    model: ${INTERVIEW_LLM_MODEL:qwen3:1.7b}           # live interview: questions + follow-ups (qwen3:8b on a GPU server)
+    eval-model: ${INTERVIEW_LLM_EVAL_MODEL:qwen3:1.7b} # background scoring + report (qwen3:4b is more precise, about 2x slower on CPU)
+  stt:
+    url: ${INTERVIEW_STT_URL:http://localhost:8178}
+  tts:
+    url: ${INTERVIEW_TTS_URL:http://localhost:5002}
+  ai:
+    timeout-seconds: ${INTERVIEW_AI_TIMEOUT:180}
+    max-parallel: ${INTERVIEW_AI_MAX_PARALLEL:2}   # requests sent to the model server at once; the rest wait
+  audio-dir: ${INTERVIEW_AUDIO_DIR:uploads/interviews}
+  audio-retention-days: ${INTERVIEW_AUDIO_RETENTION_DAYS:30}
+  free-every-days: ${INTERVIEW_FREE_EVERY_DAYS:15}     # one free interview per student every N days (clock starts when it ends)
+  price-rupees: ${INTERVIEW_PRICE_RUPEES:20}          # price of one extra interview, paid by UPI QR (admin approves)
+  max-per-purchase: ${INTERVIEW_MAX_PER_PURCHASE:10}
+  upi:
+    id: ${UPI_ID:}                                    # e.g. proveyu@okaxis (Backend/.env). Blank = buying is switched off
+    name: ${UPI_PAYEE_NAME:ProveYu}                   # name shown on the QR and in the payment app
+  questions: ${INTERVIEW_QUESTIONS:5}
+  follow-ups: ${INTERVIEW_FOLLOW_UPS:2}
+  max-answer-seconds: ${INTERVIEW_MAX_ANSWER_SECONDS:180}
+
 springdoc:
   api-docs:
     enabled: ${SPRINGDOC_ENABLED:true}

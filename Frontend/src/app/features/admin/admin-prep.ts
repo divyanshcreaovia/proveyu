@@ -20,6 +20,7 @@ import { AppError } from '../../core/api';
         <div class="d-flex align-items-center gap-3">
           <h1 class="h4 fw-bold m-0">Mock tests</h1>
           <a routerLink="/admin/colleges" class="small">College registrations</a>
+          <a routerLink="/admin/payments" class="small">Interview payments</a>
         </div>
         <button class="btn btn-sm btn-outline-secondary" (click)="auth.logout()">Sign out</button>
       </div>

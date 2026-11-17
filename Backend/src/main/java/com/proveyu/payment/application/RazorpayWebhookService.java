@@ -39,7 +39,7 @@ public class RazorpayWebhookService {
     private boolean mockMode;
 
     public boolean verifyWebhookSignature(String payload, String signature) {
-        if (mockMode || "mock_webhook_signature".equals(signature)) {
+        if (mockMode) { // test mode only: a magic signature must never pass when real payments are on
             return true;
         }
         try {

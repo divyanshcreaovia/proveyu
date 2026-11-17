@@ -1,0 +1,19 @@
+main: Pulling from ggml-org/whisper.cpp
+e47955d1ab03: Pulling fs layer
+d9677aa3fa0a: Pulling fs layer
+02163de04dd1: Pulling fs layer
+26369294b3e3: Pulling fs layer
+d9677aa3fa0a: Download complete
+02163de04dd1: Download complete
+44136fa355b3: Already exists
+d9677aa3fa0a: Pull complete
+02163de04dd1: Pull complete
+5bd9410ecb6d: Download complete
+e47955d1ab03: Download complete
+26369294b3e3: Download complete
+26369294b3e3: Pull complete
+e47955d1ab03: Pull complete
+Digest: sha256:9eb20c118f018120f1c57e42cbdd7c5b58fc3d2d7a51ba00abeeab80b913f47f
+Status: Downloaded newer image for ghcr.io/ggml-org/whisper.cpp:main
+ghcr.io/ggml-org/whisper.cpp:main
+WHISPER_DONE 0

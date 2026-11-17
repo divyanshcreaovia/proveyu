@@ -10,6 +10,10 @@ export interface IoCase { input: string; output: string; }
 export interface TestCard {
   id: string; title: string; description?: string; companyTag?: string; durationMinutes: number; questionCount: number; codingCount: number;
   totalMarks: number; sections: string[]; attempts: number; bestScore?: number; inProgressAttemptId?: string; lastAttemptId?: string;
+  /** Ladder: level label, position (null = standalone, always open), best % so far, lock state and what unlocks it. */
+  level?: 'EASY' | 'MEDIUM' | 'HARD'; order?: number | null; bestPercent?: number | null; locked: boolean; unlockAfter?: string; unlockPercent: number;
+  /** Scored more than unlockPercent at least once (exact, as the server decides unlocking). */
+  passed: boolean;
 }
 export interface QuestionView {
   id: string; type: 'MCQ' | 'CODING'; section: string; title?: string; text: string; options?: string[]; marks: number;
@@ -35,13 +39,16 @@ export interface AttemptResult {
 export interface AttemptHistory { attemptId: string; testId: string; title: string; startedAt: string; submittedAt: string; score: number; maxScore: number; }
 export interface AdminTest {
   id: string; title: string; description?: string; companyTag?: string; durationMinutes: number; questionCount: number; codingCount: number;
-  totalMarks: number; published: boolean; attempts: number; createdAt: string;
+  totalMarks: number; published: boolean; attempts: number; createdAt: string; level?: string; order?: number | null;
+  /** College tests only: how many students submitted it and their average score. */
+  students?: number; averagePercent?: number | null;
 }
 
 export const LANGUAGE_LABELS: Record<PrepLanguage, string> = { python: 'Python 3', java: 'Java 21', cpp: 'C++ 17', javascript: 'JavaScript (Node 20)' };
 
 const S = '/api/v1/college/student/prep';
 const A = '/api/v1/admin/prep/tests';
+const C = '/api/v1/college/prep/tests';
 
 /** Mock tests: student practice + platform-admin upload. */
 @Injectable({ providedIn: 'root' })
@@ -69,4 +76,13 @@ export class PrepService {
   }
   adminDelete(id: string): Observable<unknown> { return this.http.delete(api(`${A}/${id}`)); }
   adminDownload(t: AdminTest): Observable<void> { return this.files.download(`${A}/${t.id}/definition`, {}, `${t.title}.json`); }
+
+  // ---------------------------------------------------------------- college placement team: tests for its own students
+  collegeList(): Observable<AdminTest[]> { return this.http.get<ApiResponse<AdminTest[]>>(api(C)).pipe(map(r => r.data)); }
+  collegeUpload(file: File): Observable<AdminTest> { return this.http.post<ApiResponse<AdminTest>>(api(C), FileService.form(file)).pipe(map(r => r.data)); }
+  collegePublish(id: string, published: boolean): Observable<AdminTest> {
+    return this.http.patch<ApiResponse<AdminTest>>(api(`${C}/${id}/publish`), { published }).pipe(map(r => r.data));
+  }
+  collegeDelete(id: string): Observable<unknown> { return this.http.delete(api(`${C}/${id}`)); }
+  collegeDownload(t: AdminTest): Observable<void> { return this.files.download(`${C}/${t.id}/definition`, {}, `${t.title}.json`); }
 }

@@ -1,0 +1,930 @@
+{
+ "title": "Cognizant GenC style · Aptitude",
+ "description": "Quant, logical and English, 25 each, like the GenC assessment. 75 MCQs in 95 minutes. Original practice questions modelled on the publicly reported test pattern. Not an official or past paper.",
+ "companyTag": "Cognizant",
+ "level": "EASY",
+ "order": 3,
+ "durationMinutes": 95,
+ "sections": [
+  {
+   "name": "Quantitative aptitude",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "What is the smaller angle between the hour and minute hands of a clock at 8:30?",
+     "options": [
+      "75°",
+      "60°",
+      "80°",
+      "285°"
+     ],
+     "answer": 0,
+     "explanation": "Angle = |30H − 5.5M| = |240 − 165| = 75°."
+    },
+    {
+     "type": "MCQ",
+     "text": "Two dice are thrown together. What is the probability that the sum is 8?",
+     "options": [
+      "1/9",
+      "5/36",
+      "5/12",
+      "1/6"
+     ],
+     "answer": 1,
+     "explanation": "5 favourable outcomes out of 36: 5/36."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the sum of the first 32 terms of the series 5, 13, 21, ...?",
+     "options": [
+      "8096",
+      "4384",
+      "4128",
+      "4123"
+     ],
+     "answer": 2,
+     "explanation": "S = n/2 [2a + (n−1)d] = 32/2 × [10 + 248] = 4128."
+    },
+    {
+     "type": "MCQ",
+     "text": "A shopkeeper buys an article for Rs 1600 and sells it at a profit of 10%. What is the selling price?",
+     "options": [
+      "1760",
+      "1837",
+      "1876",
+      "1692"
+     ],
+     "answer": 0,
+     "explanation": "SP = 1600 × (100 + 10)/100 = Rs 1760."
+    },
+    {
+     "type": "MCQ",
+     "text": "Study the table and answer.\n\nYear | Produced (units) | Sold (units)\n2021 | 360 | 320\n2022 | 220 | 145\n2023 | 140 | 130\n2024 | 300 | 270\n2025 | 260 | 235\n\nIn 2022, what percentage of the units produced was sold? (to 2 decimal places)",
+     "options": [
+      "64.16%",
+      "65.91%",
+      "68.41%",
+      "34.09%"
+     ],
+     "answer": 1,
+     "explanation": "145/220 × 100 = 65.91%."
+    },
+    {
+     "type": "MCQ",
+     "text": "A rectangular field is 33 m long and 22 m wide. What is the cost of fencing it at Rs 15 per metre?",
+     "options": [
+      "Rs 10890",
+      "Rs 1650",
+      "Rs 1800",
+      "Rs 825"
+     ],
+     "answer": 1,
+     "explanation": "Perimeter = 2(33+22) = 110 m; cost = 110 × 15 = Rs 1650."
+    },
+    {
+     "type": "MCQ",
+     "text": "A train 100 m long passes a pole in 18 seconds. What is its speed in km/h?",
+     "options": [
+      "26 km/h",
+      "16 km/h",
+      "50/9 km/h",
+      "20 km/h"
+     ],
+     "answer": 3,
+     "explanation": "100/18 m/s × 18/5 = 20 km/h."
+    },
+    {
+     "type": "MCQ",
+     "text": "If 6x + 4 = 64, what is x?",
+     "options": [
+      "13",
+      "7",
+      "10",
+      "9"
+     ],
+     "answer": 2,
+     "explanation": "6x = 60, so x = 10."
+    },
+    {
+     "type": "MCQ",
+     "text": "A rectangular field is 37 m long and 16 m wide. What is the cost of fencing it at Rs 15 per metre?",
+     "options": [
+      "Rs 8880",
+      "Rs 1740",
+      "Rs 795",
+      "Rs 1590"
+     ],
+     "answer": 3,
+     "explanation": "Perimeter = 2(37+16) = 106 m; cost = 106 × 15 = Rs 1590."
+    },
+    {
+     "type": "MCQ",
+     "text": "3 bells ring at intervals of 4, 6 and 24 seconds. If they ring together now, after how many seconds will they next ring together?",
+     "options": [
+      "48 seconds",
+      "34 seconds",
+      "24 seconds",
+      "12 seconds"
+     ],
+     "answer": 2,
+     "explanation": "LCM(4, 6, 24) = 24 seconds."
+    },
+    {
+     "type": "MCQ",
+     "text": "Study the table and answer.\n\nYear | Produced (units) | Sold (units)\n2021 | 160 | 150\n2022 | 130 | 90\n2023 | 310 | 275\n2024 | 350 | 280\n2025 | 180 | 150\n\nIn 2024, what percentage of the units produced was sold? (to 2 decimal places)",
+     "options": [
+      "82.5%",
+      "78.25%",
+      "80%",
+      "20%"
+     ],
+     "answer": 2,
+     "explanation": "280/350 × 100 = 80.0%."
+    },
+    {
+     "type": "MCQ",
+     "text": "The present ages of A and B are in the ratio 7:5. After 10 years, the ratio will be 19:15. What is A's present age?",
+     "options": [
+      "38 years",
+      "20 years",
+      "26 years",
+      "28 years"
+     ],
+     "answer": 3,
+     "explanation": "Let ages be 7x and 5x. (7x+10)/(5x+10) = 19/15 gives x = 4; A = 28."
+    },
+    {
+     "type": "MCQ",
+     "text": "The price of an item is first increased by 25% and then decreased by 25%. What is the net percentage change in its price?",
+     "options": [
+      "25/4% decrease",
+      "21/4% decrease",
+      "29/4% decrease",
+      "33/4% decrease"
+     ],
+     "answer": 0,
+     "explanation": "Net factor = (1 + 25/100)(1 - 25/100) = 15/16, so the change is -25/4%: a 25/4% decrease."
+    },
+    {
+     "type": "MCQ",
+     "text": "A train 200 m long passes a pole in 12 seconds. What is its speed in km/h?",
+     "options": [
+      "60 km/h",
+      "56 km/h",
+      "66 km/h",
+      "50/3 km/h"
+     ],
+     "answer": 0,
+     "explanation": "200/12 m/s × 18/5 = 60 km/h."
+    },
+    {
+     "type": "MCQ",
+     "text": "A starts a business with Rs 5000. After 3 months B joins with Rs 9000. At the end of the year the profit is Rs 4700. What is B's share?",
+     "options": [
+      "Rs 21150/7",
+      "Rs 3200",
+      "Rs 2700",
+      "Rs 2000"
+     ],
+     "answer": 2,
+     "explanation": "Ratio = 5000×12 : 9000×9 = 60000:81000; B gets 4700 × 81000/141000 = Rs 2700."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is 10% of 840?",
+     "options": [
+      "70",
+      "91",
+      "84",
+      "82"
+     ],
+     "answer": 2,
+     "explanation": "10/100 × 840 = 84."
+    },
+    {
+     "type": "MCQ",
+     "text": "The present ages of A and B are in the ratio 2:1. After 4 years, the ratio will be 22:13. What is A's present age?",
+     "options": [
+      "18 years",
+      "16 years",
+      "22 years",
+      "9 years"
+     ],
+     "answer": 0,
+     "explanation": "Let ages be 2x and 1x. (2x+4)/(1x+4) = 22/13 gives x = 9; A = 18."
+    },
+    {
+     "type": "MCQ",
+     "text": "Two pipes can fill a tank in 10 hours and 30 hours. How long will they take to fill it together?",
+     "options": [
+      "8 hours",
+      "7 hours",
+      "15/2 hours",
+      "17/2 hours"
+     ],
+     "answer": 2,
+     "explanation": "Rate = 1/10 + 1/30 = 2/15; time = 15/2 hours."
+    },
+    {
+     "type": "MCQ",
+     "text": "A shopkeeper buys an article for Rs 1400 and sells it at a profit of 12%. What is the selling price?",
+     "options": [
+      "1556",
+      "1568",
+      "1438",
+      "1612"
+     ],
+     "answer": 1,
+     "explanation": "SP = 1400 × (100 + 12)/100 = Rs 1568."
+    },
+    {
+     "type": "MCQ",
+     "text": "A shopkeeper buys an article for Rs 350 and sells it at a profit of 12%. What is the selling price?",
+     "options": [
+      "429",
+      "404",
+      "372",
+      "392"
+     ],
+     "answer": 3,
+     "explanation": "SP = 350 × (100 + 12)/100 = Rs 392."
+    },
+    {
+     "type": "MCQ",
+     "text": "Find the simple interest on Rs 2000 at 10% per annum for 3 years.",
+     "options": [
+      "Rs 658",
+      "Rs 600",
+      "Rs 616",
+      "Rs 715"
+     ],
+     "answer": 1,
+     "explanation": "SI = P × R × T / 100 = 2000 × 10 × 3 / 100 = Rs 600."
+    },
+    {
+     "type": "MCQ",
+     "text": "If today is Sunday, what day of the week will it be after 77 days?",
+     "options": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Sunday"
+     ],
+     "answer": 3,
+     "explanation": "77 mod 7 = 0; Sunday + 0 days = Sunday."
+    },
+    {
+     "type": "MCQ",
+     "text": "A shopkeeper buys an article for Rs 1200 and sells it at a profit of 20%. What is the selling price?",
+     "options": [
+      "1321",
+      "1440",
+      "1468",
+      "1411"
+     ],
+     "answer": 1,
+     "explanation": "SP = 1200 × (100 + 20)/100 = Rs 1440."
+    },
+    {
+     "type": "MCQ",
+     "text": "3 bells ring at intervals of 10, 6 and 12 seconds. If they ring together now, after how many seconds will they next ring together?",
+     "options": [
+      "120 seconds",
+      "28 seconds",
+      "30 seconds",
+      "60 seconds"
+     ],
+     "answer": 3,
+     "explanation": "LCM(10, 6, 12) = 60 seconds."
+    },
+    {
+     "type": "MCQ",
+     "text": "The average of 5 numbers is 59. If one more number, 89, is added, what is the new average?",
+     "options": [
+      "61",
+      "67",
+      "65",
+      "64"
+     ],
+     "answer": 3,
+     "explanation": "New sum = 59×5 + 89 = 384; ÷ 6 = 64."
+    }
+   ]
+  },
+  {
+   "name": "Logical reasoning",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "What comes next in the series: 6, 18, 54, 162, 486, ?",
+     "options": [
+      "1561",
+      "1510",
+      "1458",
+      "1418"
+     ],
+     "answer": 2,
+     "explanation": "Rule: multiply by 3 each time. Next term = 1458."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a class of 56 students, 21 like cricket, 36 like football and 8 like both. How many like neither?",
+     "options": [
+      "15",
+      "9",
+      "10",
+      "7"
+     ],
+     "answer": 3,
+     "explanation": "56 − (21 + 36 − 8) = 7."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a certain code, SCHOOL is written as TDIPPM. How is TICKET written in that code?",
+     "options": [
+      "TICKET",
+      "WLFNHW",
+      "UJDLFU",
+      "VKEMGV"
+     ],
+     "answer": 2,
+     "explanation": "Each letter is shifted +1 place in the alphabet."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next in the series: 3, 7, 15, 31, 63, ?",
+     "options": [
+      "115",
+      "127",
+      "114",
+      "119"
+     ],
+     "answer": 1,
+     "explanation": "Rule: multiply by 2 and add 1. Next term = 127."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next: E, I, M, Q, U, ?",
+     "options": [
+      "X",
+      "Z",
+      "Y",
+      "A"
+     ],
+     "answer": 2,
+     "explanation": "Each letter moves 4 places forward."
+    },
+    {
+     "type": "MCQ",
+     "text": "8 : 512 :: 6 : ?",
+     "options": [
+      "180",
+      "250",
+      "216",
+      "198"
+     ],
+     "answer": 2,
+     "explanation": "The rule is n → n³; for 6 it gives 216."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a class of 83 students, 58 like cricket, 39 like football and 27 like both. How many like neither?",
+     "options": [
+      "40",
+      "16",
+      "15",
+      "13"
+     ],
+     "answer": 3,
+     "explanation": "83 − (58 + 39 − 27) = 13."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which number is the odd one out: 512, 217, 64, 216?",
+     "options": [
+      "64",
+      "216",
+      "512",
+      "217"
+     ],
+     "answer": 3,
+     "explanation": "217 — all others are perfect cubes."
+    },
+    {
+     "type": "MCQ",
+     "text": "9 : 90 :: 7 : ?",
+     "options": [
+      "56",
+      "47",
+      "55",
+      "50"
+     ],
+     "answer": 0,
+     "explanation": "The rule is n → n² + n; for 7 it gives 56."
+    },
+    {
+     "type": "MCQ",
+     "text": "Isha is taller than Asha. Tarun is taller than Isha. Lokesh is taller than Dev. Asha is taller than Lokesh. Who is the tallest?",
+     "options": [
+      "Isha",
+      "Asha",
+      "Tarun",
+      "Lokesh"
+     ],
+     "answer": 2,
+     "explanation": "Chaining the clues: Tarun > Isha > Asha > Lokesh > Dev. The tallest is Tarun."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next: I, L, O, R, U, ?",
+     "options": [
+      "X",
+      "W",
+      "Z",
+      "Y"
+     ],
+     "answer": 0,
+     "explanation": "Each letter moves 3 places forward."
+    },
+    {
+     "type": "MCQ",
+     "text": "Statements: All chairs are rivers. All rivers are flowers.\nConclusion: All chairs are flowers.\nDoes the conclusion follow?",
+     "options": [
+      "The conclusion definitely follows",
+      "The conclusion does not follow",
+      "The data is contradictory",
+      "The conclusion is partly true"
+     ],
+     "answer": 0,
+     "explanation": "Draw the Venn diagram for the statements: the conclusion must hold in every possible case."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next: A, D, G, J, M, ?",
+     "options": [
+      "P",
+      "O",
+      "Q",
+      "R"
+     ],
+     "answer": 0,
+     "explanation": "Each letter moves 3 places forward."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a class of 61 students, 27 like cricket, 41 like football and 19 like both. How many like neither?",
+     "options": [
+      "12",
+      "15",
+      "31",
+      "14"
+     ],
+     "answer": 0,
+     "explanation": "61 − (27 + 41 − 19) = 12."
+    },
+    {
+     "type": "MCQ",
+     "text": "7 : 17 :: 3 : ?",
+     "options": [
+      "9",
+      "8",
+      "12",
+      "10"
+     ],
+     "answer": 0,
+     "explanation": "The rule is n → 2n + 3; for 3 it gives 9."
+    },
+    {
+     "type": "MCQ",
+     "text": "A man is facing South. He turns left, then turns about, then turns left. Which direction is he facing now?",
+     "options": [
+      "North",
+      "East",
+      "South",
+      "West"
+     ],
+     "answer": 2,
+     "explanation": "Right = 90° clockwise, left = 90° anticlockwise, about = 180°. Final direction: South."
+    },
+    {
+     "type": "MCQ",
+     "text": "If 2 ⊕ 3 = 3; 5 ⊕ 9 = 21, then 4 ⊕ 7 = ?",
+     "options": [
+      "9",
+      "13",
+      "17",
+      "11"
+     ],
+     "answer": 1,
+     "explanation": "a ⊕ b = (a − b)² + a; so 4 ⊕ 7 = 13."
+    },
+    {
+     "type": "MCQ",
+     "text": "If 7 ⊕ 6 = 8; 5 ⊕ 7 = 9, then 4 ⊕ 3 = ?",
+     "options": [
+      "1",
+      "5",
+      "4",
+      "2"
+     ],
+     "answer": 1,
+     "explanation": "a ⊕ b = (a − b)² + a; so 4 ⊕ 3 = 5."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next: B, F, J, N, R, ?",
+     "options": [
+      "W",
+      "U",
+      "V",
+      "X"
+     ],
+     "answer": 2,
+     "explanation": "Each letter moves 4 places forward."
+    },
+    {
+     "type": "MCQ",
+     "text": "A man is facing South. He turns right, then turns left, then turns left, then turns right. Which direction is he facing now?",
+     "options": [
+      "North",
+      "South",
+      "East",
+      "West"
+     ],
+     "answer": 1,
+     "explanation": "Right = 90° clockwise, left = 90° anticlockwise, about = 180°. Final direction: South."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a class of 75 students, 52 like cricket, 41 like football and 22 like both. How many like neither?",
+     "options": [
+      "6",
+      "4",
+      "26",
+      "7"
+     ],
+     "answer": 1,
+     "explanation": "75 − (52 + 41 − 22) = 4."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next: F, I, L, O, R, ?",
+     "options": [
+      "V",
+      "T",
+      "W",
+      "U"
+     ],
+     "answer": 3,
+     "explanation": "Each letter moves 3 places forward."
+    },
+    {
+     "type": "MCQ",
+     "text": "If 7 ⊕ 8 = 8; 2 ⊕ 5 = 11, then 3 ⊕ 9 = ?",
+     "options": [
+      "39",
+      "34",
+      "45",
+      "36"
+     ],
+     "answer": 0,
+     "explanation": "a ⊕ b = (a − b)² + a; so 3 ⊕ 9 = 39."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next: K, N, Q, T, W, ?",
+     "options": [
+      "A",
+      "Y",
+      "Z",
+      "B"
+     ],
+     "answer": 2,
+     "explanation": "Each letter moves 3 places forward."
+    },
+    {
+     "type": "MCQ",
+     "text": "A man is facing South. He turns right, then turns about. Which direction is he facing now?",
+     "options": [
+      "South",
+      "East",
+      "West",
+      "North"
+     ],
+     "answer": 1,
+     "explanation": "Right = 90° clockwise, left = 90° anticlockwise, about = 180°. Final direction: East."
+    }
+   ]
+  },
+  {
+   "name": "English comprehension",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nRemote work was once rare in Indian companies. The pandemic forced firms to try it at scale, and many found that productivity did not fall. Employees saved hours of commuting, and companies saved on office space. However, new problems appeared: junior staff missed informal learning from seniors, and some people found it hard to separate work from home life. Many firms have now settled on a hybrid model, with two or three office days a week.\n\nThe tone of the passage is best described as",
+     "options": [
+      "angry",
+      "balanced",
+      "fearful",
+      "humorous"
+     ],
+     "answer": 1,
+     "explanation": "The passage supports: balanced."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: The police ____ arrested the thief.",
+     "options": [
+      "have",
+      "has",
+      "was",
+      "is"
+     ],
+     "answer": 0,
+     "explanation": "Correct: The police have arrested the thief."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) If he would have (B) studied (C) he would have (D) passed.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 0,
+     "explanation": "Third conditional: ‘If he had studied’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘CONCEAL’.",
+     "options": [
+      "repair",
+      "conceive",
+      "hide",
+      "reject"
+     ],
+     "answer": 2,
+     "explanation": "‘conceal’ means hide."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word most nearly OPPOSITE in meaning to ‘EXACERBATE’.",
+     "options": [
+      "excavate",
+      "exaggerate",
+      "worsen",
+      "improve"
+     ],
+     "answer": 3,
+     "explanation": "‘exacerbate’ means worsen; its opposite is ‘improve’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nGood sleep is essential for learning. While we sleep, the brain sorts and stores what we learned during the day. Students who stay up all night before an exam often remember less than those who sleep well, even if they studied for more hours. Regular sleep times, less screen use before bed and a dark, quiet room all improve sleep quality.\n\nWhat does the brain do during sleep, according to the passage?",
+     "options": [
+      "Forgets the day's events",
+      "Stops all activity",
+      "Plans the next day",
+      "Sorts and stores what was learned"
+     ],
+     "answer": 3,
+     "explanation": "The passage supports: Sorts and stores what was learned."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: There is ____ water left in the bottle.",
+     "options": [
+      "a few of",
+      "many",
+      "few",
+      "little"
+     ],
+     "answer": 3,
+     "explanation": "Correct: There is little water left in the bottle."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) The number of students (B) in the class (C) are increasing (D) every year.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 2,
+     "explanation": "Subject is ‘the number’: ‘is increasing’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘COGENT’.",
+     "options": [
+      "convincing",
+      "costly",
+      "cognate",
+      "collective"
+     ],
+     "answer": 0,
+     "explanation": "‘cogent’ means convincing."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word most nearly OPPOSITE in meaning to ‘BREVITY’.",
+     "options": [
+      "shortness",
+      "beauty",
+      "lengthiness",
+      "bravery"
+     ],
+     "answer": 2,
+     "explanation": "‘brevity’ means shortness; its opposite is ‘lengthiness’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nMany rivers in India are fed by Himalayan glaciers. As temperatures rise, these glaciers are shrinking. In the short term this can increase river flow and the risk of floods; in the long term, rivers may carry less water in dry months. Scientists stress the need to monitor glaciers and to plan water use carefully.\n\nScientists stress the need to",
+     "options": [
+      "build more glaciers",
+      "stop all farming",
+      "ignore river flow",
+      "monitor glaciers and plan water use"
+     ],
+     "answer": 3,
+     "explanation": "The passage supports: monitor glaciers and plan water use."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: Each of the students ____ given a prize.",
+     "options": [
+      "were",
+      "have been",
+      "are",
+      "was"
+     ],
+     "answer": 3,
+     "explanation": "Correct: Each of the students was given a prize."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) My brother (B) and I (C) am going (D) to the fair.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 2,
+     "explanation": "Compound subject: ‘are going’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘VALIANT’.",
+     "options": [
+      "valuable",
+      "vague",
+      "brave",
+      "vacant"
+     ],
+     "answer": 2,
+     "explanation": "‘valiant’ means brave."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word most nearly OPPOSITE in meaning to ‘PERTINENT’.",
+     "options": [
+      "irrelevant",
+      "persistent",
+      "pertinacious",
+      "relevant"
+     ],
+     "answer": 0,
+     "explanation": "‘pertinent’ means relevant; its opposite is ‘irrelevant’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nPlastic is cheap, light and durable, which is why it is everywhere. The same durability makes it a problem: most plastic takes hundreds of years to break down. Much of it ends up in rivers and oceans, where it harms animals that swallow it or get trapped. Recycling helps, but only a small share of plastic is actually recycled. Experts say the most effective step is to use less plastic in the first place.\n\nThe word ‘durable’ in the passage means",
+     "options": [
+      "cheap",
+      "dangerous",
+      "long-lasting",
+      "flexible"
+     ],
+     "answer": 2,
+     "explanation": "The passage supports: long-lasting."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: She has been working here ____ 2019.",
+     "options": [
+      "by",
+      "since",
+      "for",
+      "from"
+     ],
+     "answer": 1,
+     "explanation": "Correct: She has been working here since 2019."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) The doctor (B) advised him (C) to give up (D) smoking.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 4,
+     "explanation": "The sentence is correct."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘RESILIENT’.",
+     "options": [
+      "tough",
+      "reluctant",
+      "resident",
+      "relevant"
+     ],
+     "answer": 0,
+     "explanation": "‘resilient’ means tough."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word most nearly OPPOSITE in meaning to ‘SERENE’.",
+     "options": [
+      "sincere",
+      "calm",
+      "chaotic",
+      "severe"
+     ],
+     "answer": 2,
+     "explanation": "‘serene’ means calm; its opposite is ‘chaotic’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nOpen-source software is written by communities and shared freely. Anyone can read the code, suggest changes or report bugs. Because many people review it, problems are often found quickly. Companies use open-source tools to save costs and avoid being locked to one vendor, and many pay their engineers to contribute back.\n\nWhat is true of open-source software?",
+     "options": [
+      "Its code is secret",
+      "Only one company can change it",
+      "Anyone can read the code",
+      "It must be bought"
+     ],
+     "answer": 2,
+     "explanation": "The passage supports: Anyone can read the code."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: She objected ____ his rude remarks.",
+     "options": [
+      "against",
+      "at",
+      "on",
+      "to"
+     ],
+     "answer": 3,
+     "explanation": "Correct: She objected to his rude remarks."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) Between you (B) and I, (C) this plan (D) will fail.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "Object pronoun after a preposition: ‘and me’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘METICULOUS’.",
+     "options": [
+      "careful",
+      "hollow",
+      "angry",
+      "famous"
+     ],
+     "answer": 0,
+     "explanation": "‘meticulous’ means careful."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word most nearly OPPOSITE in meaning to ‘LAVISH’.",
+     "options": [
+      "lavender",
+      "lawful",
+      "meagre",
+      "luxurious"
+     ],
+     "answer": 2,
+     "explanation": "‘lavish’ means luxurious; its opposite is ‘meagre’."
+    }
+   ]
+  }
+ ]
+}

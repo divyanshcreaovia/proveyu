@@ -1,0 +1,753 @@
+{
+ "title": "HCLTech style · Aptitude + Computer basics",
+ "description": "Four equal sections including computer fundamentals. 60 MCQs in 60 minutes. Original practice questions modelled on the publicly reported test pattern. Not an official or past paper.",
+ "companyTag": "HCLTech",
+ "level": "EASY",
+ "order": 2,
+ "durationMinutes": 60,
+ "sections": [
+  {
+   "name": "Quantitative",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "If 6x + 21 = 99, what is x?",
+     "options": [
+      "14",
+      "11",
+      "12",
+      "13"
+     ],
+     "answer": 3,
+     "explanation": "6x = 78, so x = 13."
+    },
+    {
+     "type": "MCQ",
+     "text": "A can finish a work in 20 days and B in 40 days. In how many days will they finish it working together?",
+     "options": [
+      "30 days",
+      "77/6 days",
+      "43/3 days",
+      "40/3 days"
+     ],
+     "answer": 3,
+     "explanation": "Together per day: 1/20 + 1/40 = 3/40; time = 40/3 days."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the smaller angle between the hour and minute hands of a clock at 2:50?",
+     "options": [
+      "215°",
+      "145°",
+      "240°",
+      "150°"
+     ],
+     "answer": 1,
+     "explanation": "Angle = |30H − 5.5M| = |60 − 275| = 145°."
+    },
+    {
+     "type": "MCQ",
+     "text": "A train 120 m long passes a pole in 9 seconds. What is its speed in km/h?",
+     "options": [
+      "48 km/h",
+      "40/3 km/h",
+      "44 km/h",
+      "54 km/h"
+     ],
+     "answer": 0,
+     "explanation": "120/9 m/s × 18/5 = 48 km/h."
+    },
+    {
+     "type": "MCQ",
+     "text": "A rectangular field is 38 m long and 15 m wide. What is the cost of fencing it at Rs 15 per metre?",
+     "options": [
+      "Rs 1740",
+      "Rs 8550",
+      "Rs 1590",
+      "Rs 795"
+     ],
+     "answer": 2,
+     "explanation": "Perimeter = 2(38+15) = 106 m; cost = 106 × 15 = Rs 1590."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the smaller angle between the hour and minute hands of a clock at 8:20?",
+     "options": [
+      "135°",
+      "130°",
+      "120°",
+      "230°"
+     ],
+     "answer": 1,
+     "explanation": "Angle = |30H − 5.5M| = |240 − 110| = 130°."
+    },
+    {
+     "type": "MCQ",
+     "text": "3 bells ring at intervals of 18, 15 and 8 seconds. If they ring together now, after how many seconds will they next ring together?",
+     "options": [
+      "41 seconds",
+      "180 seconds",
+      "720 seconds",
+      "360 seconds"
+     ],
+     "answer": 3,
+     "explanation": "LCM(18, 15, 8) = 360 seconds."
+    },
+    {
+     "type": "MCQ",
+     "text": "Find the simple interest on Rs 10500 at 6% per annum for 4 years.",
+     "options": [
+      "Rs 2304",
+      "Rs 2369",
+      "Rs 2602",
+      "Rs 2520"
+     ],
+     "answer": 3,
+     "explanation": "SI = P × R × T / 100 = 10500 × 6 × 4 / 100 = Rs 2520."
+    },
+    {
+     "type": "MCQ",
+     "text": "3 bells ring at intervals of 6, 18 and 20 seconds. If they ring together now, after how many seconds will they next ring together?",
+     "options": [
+      "360 seconds",
+      "90 seconds",
+      "180 seconds",
+      "44 seconds"
+     ],
+     "answer": 2,
+     "explanation": "LCM(6, 18, 20) = 180 seconds."
+    },
+    {
+     "type": "MCQ",
+     "text": "In what ratio must rice at Rs 24/kg be mixed with rice at Rs 72/kg so that the mixture costs Rs 64/kg?",
+     "options": [
+      "1:5",
+      "2:5",
+      "24:72",
+      "5:1"
+     ],
+     "answer": 0,
+     "explanation": "Alligation: (cheaper : dearer) = (72 − 64) : (64 − 24) = 1:5."
+    },
+    {
+     "type": "MCQ",
+     "text": "The price of an item is first increased by 10% and then decreased by 20%. What is the net percentage change in its price?",
+     "options": [
+      "12% decrease",
+      "11% decrease",
+      "14% decrease",
+      "13% decrease"
+     ],
+     "answer": 0,
+     "explanation": "Net factor = (1 + 10/100)(1 - 20/100) = 22/25, so the change is -12%: a 12% decrease."
+    },
+    {
+     "type": "MCQ",
+     "text": "The present ages of A and B are in the ratio 7:5. After 4 years, the ratio will be 25:19. What is A's present age?",
+     "options": [
+      "15 years",
+      "25 years",
+      "19 years",
+      "21 years"
+     ],
+     "answer": 3,
+     "explanation": "Let ages be 7x and 5x. (7x+4)/(5x+4) = 25/19 gives x = 3; A = 21."
+    },
+    {
+     "type": "MCQ",
+     "text": "If 4x + 29 = 85, what is x?",
+     "options": [
+      "17",
+      "18",
+      "14",
+      "10"
+     ],
+     "answer": 2,
+     "explanation": "4x = 56, so x = 14."
+    },
+    {
+     "type": "MCQ",
+     "text": "Study the table and answer.\n\nYear | Produced (units) | Sold (units)\n2021 | 300 | 280\n2022 | 250 | 210\n2023 | 340 | 280\n2024 | 240 | 190\n2025 | 130 | 105\n\nIn 2023, what percentage of the units produced was sold? (to 2 decimal places)",
+     "options": [
+      "17.65%",
+      "84.85%",
+      "82.35%",
+      "80.6%"
+     ],
+     "answer": 2,
+     "explanation": "280/340 × 100 = 82.35%."
+    },
+    {
+     "type": "MCQ",
+     "text": "In how many ways can a committee of 2 be chosen from 6 people?",
+     "options": [
+      "12",
+      "30",
+      "21",
+      "15"
+     ],
+     "answer": 3,
+     "explanation": "C(6,2) = 15."
+    }
+   ]
+  },
+  {
+   "name": "Logical",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Asha is 17th from the left and 11th from the right in a row. How many people are in the row?",
+     "options": [
+      "28",
+      "27",
+      "26",
+      "29"
+     ],
+     "answer": 1,
+     "explanation": "Total = 17 + 11 − 1 = 27."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next: D, F, H, J, L, ?",
+     "options": [
+      "N",
+      "P",
+      "O",
+      "M"
+     ],
+     "answer": 0,
+     "explanation": "Each letter moves 2 places forward."
+    },
+    {
+     "type": "MCQ",
+     "text": "Bharat is taller than Kavya. Farhan is taller than Bharat. Jatin is taller than Asha. Kavya is taller than Jatin. Who is the shortest?",
+     "options": [
+      "Asha",
+      "Kavya",
+      "Farhan",
+      "Bharat"
+     ],
+     "answer": 0,
+     "explanation": "Chaining the clues: Farhan > Bharat > Kavya > Jatin > Asha. The shortest is Asha."
+    },
+    {
+     "type": "MCQ",
+     "text": "Asha is 21st from the left and 20th from the right in a row. How many people are in the row?",
+     "options": [
+      "41",
+      "39",
+      "42",
+      "40"
+     ],
+     "answer": 3,
+     "explanation": "Total = 21 + 20 − 1 = 40."
+    },
+    {
+     "type": "MCQ",
+     "text": "Yash walks 12 m towards the East, then turns right and walks 5 m, then turns right and walks 12 m. How far is Yash from the starting point?",
+     "options": [
+      "4 m",
+      "8 m",
+      "5 m",
+      "1 m"
+     ],
+     "answer": 2,
+     "explanation": "Net displacement: 0 m east and 5 m south; distance = √(0² + 5²) = 5 m."
+    },
+    {
+     "type": "MCQ",
+     "text": "Statements: Some cars are flowers. All flowers are phones.\nConclusion: All cars are phones.\nDoes the conclusion follow?",
+     "options": [
+      "The conclusion definitely follows",
+      "The conclusion does not follow",
+      "The data is contradictory",
+      "The conclusion is partly true"
+     ],
+     "answer": 1,
+     "explanation": "Draw the Venn diagram for the statements: the conclusion fails in at least one possible case."
+    },
+    {
+     "type": "MCQ",
+     "text": "Nikhil is 18th from the left and 17th from the right in a row. How many people are in the row?",
+     "options": [
+      "36",
+      "33",
+      "35",
+      "34"
+     ],
+     "answer": 3,
+     "explanation": "Total = 18 + 17 − 1 = 34."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which number is the odd one out: 31, 27, 1000, 125?",
+     "options": [
+      "27",
+      "31",
+      "1000",
+      "125"
+     ],
+     "answer": 1,
+     "explanation": "31 — all others are perfect cubes."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a class of 83 students, 50 like cricket, 44 like football and 23 like both. How many like neither?",
+     "options": [
+      "14",
+      "12",
+      "35",
+      "15"
+     ],
+     "answer": 1,
+     "explanation": "83 − (50 + 44 − 23) = 12."
+    },
+    {
+     "type": "MCQ",
+     "text": "Asha is 25th from the left and 24th from the right in a row. How many people are in the row?",
+     "options": [
+      "48",
+      "50",
+      "47",
+      "49"
+     ],
+     "answer": 0,
+     "explanation": "Total = 25 + 24 − 1 = 48."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next: F, J, N, R, V, ?",
+     "options": [
+      "B",
+      "Z",
+      "Y",
+      "A"
+     ],
+     "answer": 1,
+     "explanation": "Each letter moves 4 places forward."
+    },
+    {
+     "type": "MCQ",
+     "text": "Lokesh is 24th from the left and 16th from the right in a row. How many people are in the row?",
+     "options": [
+      "41",
+      "39",
+      "38",
+      "40"
+     ],
+     "answer": 1,
+     "explanation": "Total = 24 + 16 − 1 = 39."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which number is the odd one out: 8, 218, 216, 1000?",
+     "options": [
+      "218",
+      "8",
+      "1000",
+      "216"
+     ],
+     "answer": 0,
+     "explanation": "218 — all others are perfect cubes."
+    },
+    {
+     "type": "MCQ",
+     "text": "Statements: Some teachers are chairs. All chairs are birds.\nConclusion: All teachers are birds.\nDoes the conclusion follow?",
+     "options": [
+      "The conclusion definitely follows",
+      "The conclusion does not follow",
+      "The data is contradictory",
+      "The conclusion is partly true"
+     ],
+     "answer": 1,
+     "explanation": "Draw the Venn diagram for the statements: the conclusion fails in at least one possible case."
+    },
+    {
+     "type": "MCQ",
+     "text": "A man is facing North. He turns right, then turns left, then turns about. Which direction is he facing now?",
+     "options": [
+      "West",
+      "North",
+      "East",
+      "South"
+     ],
+     "answer": 3,
+     "explanation": "Right = 90° clockwise, left = 90° anticlockwise, about = 180°. Final direction: South."
+    }
+   ]
+  },
+  {
+   "name": "Verbal",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘VIVID’.",
+     "options": [
+      "bright",
+      "honest",
+      "rough",
+      "late"
+     ],
+     "answer": 0,
+     "explanation": "‘vivid’ means bright."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: The workers went ____ strike yesterday.",
+     "options": [
+      "at",
+      "in",
+      "for",
+      "on"
+     ],
+     "answer": 3,
+     "explanation": "Correct: The workers went on strike yesterday."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) Unless you (B) do not work hard, (C) you will not (D) succeed.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "‘Unless’ is already negative: ‘work hard’."
+    },
+    {
+     "type": "MCQ",
+     "text": "One word for: A speech made without preparation",
+     "options": [
+      "monologue",
+      "extempore",
+      "sermon",
+      "lecture"
+     ],
+     "answer": 1,
+     "explanation": "A speech made without preparation: extempore."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does the idiom ‘hit the nail on the head’ mean?",
+     "options": [
+      "make a loud noise",
+      "hurt someone badly",
+      "describe exactly what is causing a problem",
+      "work as a carpenter"
+     ],
+     "answer": 2,
+     "explanation": "‘hit the nail on the head’ means: describe exactly what is causing a problem."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘ENIGMATIC’.",
+     "options": [
+      "energetic",
+      "emphatic",
+      "mysterious",
+      "erratic"
+     ],
+     "answer": 2,
+     "explanation": "‘enigmatic’ means mysterious."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: She is capable ____ handling the pressure.",
+     "options": [
+      "of",
+      "for",
+      "at",
+      "to"
+     ],
+     "answer": 0,
+     "explanation": "Correct: She is capable of handling the pressure."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) Ten kilometres (B) are (C) a long distance (D) to walk.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "A distance as one amount: ‘is’."
+    },
+    {
+     "type": "MCQ",
+     "text": "One word for: A person who is easily deceived",
+     "options": [
+      "cynical",
+      "vigilant",
+      "sceptical",
+      "gullible"
+     ],
+     "answer": 3,
+     "explanation": "A person who is easily deceived: gullible."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does the idiom ‘cost an arm and a leg’ mean?",
+     "options": [
+      "need hard work",
+      "cause an injury",
+      "be cheap",
+      "be very expensive"
+     ],
+     "answer": 3,
+     "explanation": "‘cost an arm and a leg’ means: be very expensive."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘ALLEVIATE’.",
+     "options": [
+      "allocate",
+      "allude",
+      "relieve",
+      "alter"
+     ],
+     "answer": 2,
+     "explanation": "‘alleviate’ means relieve."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: No sooner did she arrive ____ the lights went out.",
+     "options": [
+      "that",
+      "than",
+      "when",
+      "then"
+     ],
+     "answer": 1,
+     "explanation": "Correct: No sooner did she arrive than the lights went out."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) She (B) has (C) a lot of (D) knowledges.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 3,
+     "explanation": "‘Knowledge’ is uncountable: ‘knowledge’."
+    },
+    {
+     "type": "MCQ",
+     "text": "One word for: A person who spends very little",
+     "options": [
+      "philanthropist",
+      "miser",
+      "spendthrift",
+      "donor"
+     ],
+     "answer": 1,
+     "explanation": "A person who spends very little: miser."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does the idiom ‘a drop in the ocean’ mean?",
+     "options": [
+      "a heavy rain",
+      "a sea voyage",
+      "a big mistake",
+      "a very small amount compared to what is needed"
+     ],
+     "answer": 3,
+     "explanation": "‘a drop in the ocean’ means: a very small amount compared to what is needed."
+    }
+   ]
+  },
+  {
+   "name": "Computer fundamentals",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "What does ‘len([1, [2, 3], 4])’ return in Python?",
+     "options": [
+      "Error",
+      "4",
+      "3",
+      "2"
+     ],
+     "answer": 2,
+     "explanation": "The nested list counts as one element."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which device forwards frames using MAC addresses?",
+     "options": [
+      "Router",
+      "Switch",
+      "Modem",
+      "Hub"
+     ],
+     "answer": 1,
+     "explanation": "Switches work at layer 2."
+    },
+    {
+     "type": "MCQ",
+     "text": "The difference between a process and a thread is that threads",
+     "options": [
+      "have separate address spaces",
+      "always run on different machines",
+      "share the memory of their process",
+      "cannot run in parallel"
+     ],
+     "answer": 2,
+     "explanation": "Threads of one process share its address space."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which scheduling algorithm can cause starvation of long jobs?",
+     "options": [
+      "First Come First Served",
+      "Round Robin",
+      "Shortest Job First",
+      "Multilevel with ageing"
+     ],
+     "answer": 2,
+     "explanation": "Short jobs keep jumping ahead."
+    },
+    {
+     "type": "MCQ",
+     "text": "Microservices architecture means",
+     "options": [
+      "an app built as small independently deployable services",
+      "a database type",
+      "only front-end code",
+      "one large deployable unit"
+     ],
+     "answer": 0,
+     "explanation": "Each service owns one capability."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which traversal uses a stack (explicitly or via recursion)?",
+     "options": [
+      "Depth-first search",
+      "Level-order traversal",
+      "Dijkstra with a queue",
+      "Breadth-first search"
+     ],
+     "answer": 0,
+     "explanation": "DFS goes deep first."
+    },
+    {
+     "type": "MCQ",
+     "text": "ACID properties of transactions are",
+     "options": [
+      "Atomicity, Consistency, Isolation, Durability",
+      "Accuracy, Concurrency, Integrity, Durability",
+      "Atomicity, Concurrency, Isolation, Dependency",
+      "Availability, Consistency, Isolation, Durability"
+     ],
+     "answer": 0,
+     "explanation": "Standard transaction guarantees."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which testing checks individual functions in isolation?",
+     "options": [
+      "System testing",
+      "Acceptance testing",
+      "Load testing",
+      "Unit testing"
+     ],
+     "answer": 3,
+     "explanation": "Smallest testable parts."
+    },
+    {
+     "type": "MCQ",
+     "text": "In MS Excel, which function adds a range of cells?",
+     "options": [
+      "TOTAL",
+      "ADD",
+      "SUM",
+      "COUNT"
+     ],
+     "answer": 2,
+     "explanation": "=SUM(A1:A10)."
+    },
+    {
+     "type": "MCQ",
+     "text": "Cloud model where you rent virtual machines and manage the OS yourself:",
+     "options": [
+      "SaaS",
+      "IaaS",
+      "PaaS",
+      "FaaS"
+     ],
+     "answer": 1,
+     "explanation": "Infrastructure as a Service."
+    },
+    {
+     "type": "MCQ",
+     "text": "Gmail is an example of",
+     "options": [
+      "On-premise software",
+      "SaaS",
+      "IaaS",
+      "PaaS"
+     ],
+     "answer": 1,
+     "explanation": "Software delivered over the internet."
+    },
+    {
+     "type": "MCQ",
+     "text": "In C, the size of ‘char’ is",
+     "options": [
+      "2 bytes",
+      "depends on the compiler always 8 bytes",
+      "4 bytes",
+      "1 byte"
+     ],
+     "answer": 3,
+     "explanation": "char is defined as one byte."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is a deadlock?",
+     "options": [
+      "Memory that cannot be freed",
+      "A crashed disk",
+      "A process that finishes early",
+      "Processes waiting forever for resources held by each other"
+     ],
+     "answer": 3,
+     "explanation": "Circular wait among processes."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which normal form removes partial dependencies on a composite key?",
+     "options": [
+      "2NF",
+      "BCNF",
+      "3NF",
+      "1NF"
+     ],
+     "answer": 0,
+     "explanation": "2NF requires full functional dependency on the whole key."
+    },
+    {
+     "type": "MCQ",
+     "text": "ARP is used to find",
+     "options": [
+      "the IP for a domain",
+      "open ports",
+      "the MAC address for an IP address",
+      "the fastest route"
+     ],
+     "answer": 2,
+     "explanation": "Address Resolution Protocol."
+    }
+   ]
+  }
+ ]
+}

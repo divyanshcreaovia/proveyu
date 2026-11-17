@@ -136,7 +136,7 @@ public class PaymentService {
         }
 
         boolean isValid;
-        if (mockMode || "mock_signature".equals(signature)) {
+        if (mockMode) { // test mode only: a magic signature must never pass when real payments are on
             isValid = true;
         } else {
             try {

@@ -6,8 +6,14 @@ import { AttemptView, LANGUAGE_LABELS, PrepAnswer, PrepLanguage, PrepService, Qu
 import { ThemeService } from '../../../services/theme.service';
 import { ToastService } from '../../../services/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
+import { StudentPortalService } from '../../../services/student-portal.service';
+import { enterFullscreen, exitFullscreen, fullscreenSupported, isFullscreen } from '../../../shared/fullscreen';
 
-/** Full-screen, timed mock test: MCQ options, coding editor with sample runs, question palette, autosave and auto-submit. */
+/**
+ * Full-screen, timed mock test: MCQ options, coding editor with sample runs, question palette, autosave and auto-submit.
+ * The test stays in browser full screen; leaving it pauses the screen until the student returns or exits. Questions carry
+ * a faint ProveYu watermark (and copied question text a ProveYu tag) so screenshots pasted into AI tools are traceable.
+ */
 @Component({
   selector: 'pm-test-player',
   imports: [FormsModule],
@@ -27,6 +33,7 @@ import { ConfirmService } from '../../../shared/ui/confirm-dialog';
             <i class="bi bi-stopwatch"></i> {{ clock() }}</div>
           <button class="tp-icon d-none d-sm-inline-grid" (click)="theme.toggle()" [attr.aria-label]="theme.dark() ? 'Light mode' : 'Dark mode'">
             <i class="bi" [class.bi-moon-stars]="!theme.dark()" [class.bi-sun]="theme.dark()"></i></button>
+          <button class="tp-exit" (click)="confirmExit()" [disabled]="submitting()" title="Leave the test (timer keeps running)"><i class="bi bi-box-arrow-left"></i><span class="d-none d-md-inline"> Exit</span></button>
           <button class="tp-submit" (click)="confirmSubmit()" [disabled]="submitting()">
             @if (submitting()) { <span class="spinner-border spinner-border-sm me-1"></span> } Submit test</button>
         </header>
@@ -35,7 +42,8 @@ import { ConfirmService } from '../../../shared/ui/confirm-dialog';
           <main class="tp-main" [class.tp-main-code]="cur().type === 'CODING'">
             @let q = cur();
             @if (q.type === 'MCQ') {
-              <section class="tp-card">
+              <section class="tp-card tp-wmk" (copy)="onCopy($event)">
+                <div class="tp-wm" aria-hidden="true" [style.background-image]="watermark()"></div>
                 <div class="tp-qhead"><span class="tp-qno">Question {{ idx() + 1 }} of {{ qs().length }}</span>
                   <span class="tp-tag">{{ q.section }}</span><span class="tp-tag">{{ q.marks }} mark{{ q.marks > 1 ? 's' : '' }}</span></div>
                 <p class="tp-qtext">{{ q.text }}</p>
@@ -46,9 +54,11 @@ import { ConfirmService } from '../../../shared/ui/confirm-dialog';
                       <span class="tp-letter">{{ letters[$index] }}</span><span class="tp-otext">{{ o }}</span></button>
                   }
                 </div>
+                <div class="tp-brand">© ProveYu mock test{{ roll() ? ' · ' + roll() : '' }}</div>
               </section>
             } @else {
-              <section class="tp-card tp-problem">
+              <section class="tp-card tp-problem tp-wmk" (copy)="onCopy($event)">
+                <div class="tp-wm" aria-hidden="true" [style.background-image]="watermark()"></div>
                 <div class="tp-qhead"><span class="tp-qno">Question {{ idx() + 1 }} of {{ qs().length }}</span>
                   <span class="tp-tag">{{ q.section }}</span><span class="tp-tag">{{ q.marks }} marks</span></div>
                 <h2 class="h5 st-h mb-2">{{ q.title }}</h2>
@@ -59,6 +69,7 @@ import { ConfirmService } from '../../../shared/ui/confirm-dialog';
                 }
                 <p class="small text-body-secondary mb-0">Read from standard input and print to standard output. Your code is also checked against hidden test cases when you submit.
                   @if (lang(q) === 'java') { In Java the class must be named <code>Main</code>. }</p>
+                <div class="tp-brand">© ProveYu mock test{{ roll() ? ' · ' + roll() : '' }}</div>
               </section>
               <section class="tp-card tp-editor-card">
                 <div class="tp-ed-bar">
@@ -119,6 +130,18 @@ import { ConfirmService } from '../../../shared/ui/confirm-dialog';
             </div>
           </aside>
         </div>
+        @if (locked()) {
+          <div class="tp-lock" role="dialog" aria-modal="true" aria-labelledby="tp-lock-title" aria-describedby="tp-lock-text">
+            <div class="tp-lock-card">
+              <div class="tp-lock-icon" aria-hidden="true"><i class="bi bi-arrows-fullscreen"></i></div>
+              <h2 id="tp-lock-title" class="h5 st-h mb-2">Return to full screen to continue</h2>
+              <p id="tp-lock-text" class="small mb-2">This test runs in full screen. The timer is still running ({{ clock() }} left) and your answers are saved.</p>
+              @if (exits()) { <p class="small text-danger mb-3">You left full screen {{ exits() }} time{{ exits() > 1 ? 's' : '' }} during this test.</p> }
+              <button class="btn btn-primary w-100 mb-2" (click)="returnToFullscreen()"><i class="bi bi-arrows-fullscreen me-1"></i> Return to full screen</button>
+              <button class="btn btn-link btn-sm text-body-secondary" (click)="confirmExit()">Leave the test</button>
+            </div>
+          </div>
+        }
       }
     </div>`,
   styles: [`
@@ -141,6 +164,19 @@ import { ConfirmService } from '../../../shared/ui/confirm-dialog';
     .tp-submit { all: unset; box-sizing: border-box; cursor: pointer; padding: .5rem 1.15rem; border-radius: 999px; font-weight: 700; font-size: .85rem;
       background: var(--pm-primary); color: var(--pm-primary-text); white-space: nowrap; display: inline-flex; align-items: center; }
     .tp-submit:hover { background: var(--pm-primary-hover); }
+    .tp-exit { all: unset; box-sizing: border-box; cursor: pointer; padding: .45rem .9rem; border-radius: 999px; font-weight: 600; font-size: .85rem;
+      border: 1.5px solid var(--pm-card-border); color: var(--pm-label); white-space: nowrap; flex-shrink: 0; }
+    .tp-exit:hover { border-color: var(--pm-link); color: var(--pm-heading); }
+    .tp-exit:focus-visible { outline: 2px solid var(--pm-focus); outline-offset: 2px; }
+    .tp-exit:disabled { opacity: .5; cursor: default; }
+    .tp-wmk { position: relative; overflow: hidden; }
+    .tp-wm { position: absolute; inset: 0; pointer-events: none; z-index: 1; background-repeat: repeat; }
+    .tp-brand { position: relative; z-index: 2; margin-top: .9rem; text-align: right; font-size: .68rem; font-weight: 600; letter-spacing: .03em; color: var(--pm-muted); }
+    .tp-lock { position: fixed; inset: 0; z-index: 1500; display: grid; place-items: center; padding: 16px; background: var(--pm-page-bg); }
+    .tp-lock-card { width: min(420px, 100%); text-align: center; background: var(--pm-card-bg); border: 1px solid var(--pm-card-border); border-radius: 18px;
+      padding: 1.75rem 1.5rem 1.25rem; box-shadow: var(--pm-card-shadow); color: var(--pm-text); }
+    .tp-lock-icon { width: 3.25rem; height: 3.25rem; margin: 0 auto .9rem; border-radius: 14px; display: grid; place-items: center; font-size: 1.4rem;
+      color: #fff; background: #0d6efd; }
     .tp-submit:disabled { opacity: .5; cursor: default; }
     .tp-body { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 1rem; padding: 1rem max(16px, env(safe-area-inset-right, 0px)) 1.5rem max(16px, env(safe-area-inset-left, 0px)); align-items: start; }
     @media (max-width: 991.98px) { .tp-body { grid-template-columns: minmax(0, 1fr); } }
@@ -204,6 +240,7 @@ export class TestPlayer implements OnInit {
   private confirm = inject(ConfirmService);
   private destroyRef = inject(DestroyRef);
   theme = inject(ThemeService);
+  private portal = inject(StudentPortalService);
   private codeEl = viewChild<ElementRef<HTMLTextAreaElement>>('code');
   private gutterEl = viewChild<ElementRef<HTMLElement>>('gutter');
 
@@ -224,6 +261,15 @@ export class TestPlayer implements OnInit {
   private dirty = new Set<string>();
   private saveTimer?: ReturnType<typeof setTimeout>;
   private clockOffset = 0;
+  /** Full screen: on browsers without support (iPhone Safari) the test simply runs without the lock. */
+  readonly fsSupported = fullscreenSupported();
+  isFull = signal(isFullscreen());
+  exits = signal(0);
+  private leaving = signal(false);
+  locked = computed(() => this.fsSupported && !this.isFull() && !!this.view() && !this.submitting() && !this.leaving());
+  roll = computed(() => this.portal.me()?.rollNumber ?? '');
+  /** Tiled "ProveYu" mark, faint enough to read through, visible to OCR / AI tools in a screenshot. */
+  watermark = computed(() => watermarkUrl(this.theme.dark()));
 
   qs = computed(() => this.view()?.questions ?? []);
   cur = computed(() => this.qs()[this.idx()]);
@@ -250,6 +296,7 @@ export class TestPlayer implements OnInit {
   });
 
   ngOnInit(): void {
+    this.destroyRef.onDestroy(() => exitFullscreen());
     this.prep.attempt(this.id()).subscribe({
       next: v => {
         this.clockOffset = new Date(v.serverNow).getTime() - Date.now();
@@ -259,12 +306,49 @@ export class TestPlayer implements OnInit {
         this.tick();
         const t = setInterval(() => this.tick(), 1000);
         this.destroyRef.onDestroy(() => { clearInterval(t); clearTimeout(this.saveTimer); });
+        if (!this.portal.me()) this.portal.profile().subscribe({ error: () => undefined }); // roll number for the watermark
       },
       error: (e: AppError) => {
         if (e.code === 'ATTEMPT_SUBMITTED') { this.router.navigate(['/student/prep/result', this.id()]); return; }
         this.error.set(e.message || 'Could not open this test.');
       },
     });
+  }
+
+  // ---------------------------------------------------------------- full screen
+  @HostListener('document:fullscreenchange')
+  onFullscreenChange(): void {
+    const full = isFullscreen();
+    if (this.isFull() && !full && !this.leaving() && !this.submitting()) {
+      this.exits.update(n => n + 1);
+      this.flush();
+    }
+    this.isFull.set(full);
+  }
+
+  async returnToFullscreen(): Promise<void> {
+    if (!(await enterFullscreen())) this.toast.error('Your browser did not allow full screen. Check its settings and try again.');
+  }
+
+  async confirmExit(): Promise<void> {
+    const r = await this.confirm.ask({
+      title: 'Leave the test?',
+      message: 'The timer keeps running. You can resume from Preparation before time is up; after that your saved answers are submitted.',
+      confirmText: 'Leave test', tone: 'danger',
+    });
+    if (!r.ok) return;
+    this.leaving.set(true);
+    this.flush();
+    exitFullscreen();
+    this.router.navigateByUrl('/student/prep');
+  }
+
+  /** Copied question text carries a ProveYu tag, so pasting it into an AI tool still shows where it came from. */
+  onCopy(e: ClipboardEvent): void {
+    const text = window.getSelection()?.toString() ?? '';
+    if (!text.trim() || !e.clipboardData) return;
+    e.preventDefault();
+    e.clipboardData.setData('text/plain', `${text}\n\n[ProveYu mock test question${this.roll() ? ' · ' + this.roll() : ''} · © ProveYu]`);
   }
 
   @HostListener('document:visibilitychange')
@@ -403,5 +487,12 @@ export class TestPlayer implements OnInit {
       error: () => this.submitting.set(false),
     });
   }
-  exit(): void { this.router.navigateByUrl('/student/prep'); }
+  exit(): void { exitFullscreen(); this.router.navigateByUrl('/student/prep'); }
+}
+
+function watermarkUrl(dark: boolean): string {
+  const fill = dark ? '#ffffff' : '#0b1220';
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='200' height='110'><text x='100' y='60' text-anchor='middle' transform='rotate(-22 100 55)' `
+    + `fill='${fill}' fill-opacity='0.085' font-family='Inter, Arial, sans-serif' font-size='15' font-weight='700' letter-spacing='1'>ProveYu</text></svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }

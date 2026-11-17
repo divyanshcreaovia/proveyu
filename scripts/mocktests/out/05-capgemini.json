@@ -1,0 +1,871 @@
+{
+ "title": "Capgemini style · Pseudocode, English, Quant",
+ "description": "Pseudocode-heavy pattern with English and quant. 70 MCQs in 75 minutes. Original practice questions modelled on the publicly reported test pattern. Not an official or past paper.",
+ "companyTag": "Capgemini",
+ "level": "EASY",
+ "order": 5,
+ "durationMinutes": 75,
+ "sections": [
+  {
+   "name": "Pseudocode",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "What is the output of this pseudocode?\n\ns = 0\nfor i = 5 to 9 step 2\n    s = s + i\nend for\nprint s",
+     "options": [
+      "22",
+      "21",
+      "18",
+      "24"
+     ],
+     "answer": 1,
+     "explanation": "The loop takes i = 5, 7, 9; the result is 21."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the value of 27 << 1 (bitwise, on integers)?",
+     "options": [
+      "62",
+      "55",
+      "54",
+      "50"
+     ],
+     "answer": 2,
+     "explanation": "27 = 11011₂, 1 = 1₂ → result 110110₂ = 54."
+    },
+    {
+     "type": "MCQ",
+     "text": "Given the function f(n) = 1 if n == 0 else 3 * f(n - 1), what is f(4)?",
+     "options": [
+      "85",
+      "81",
+      "90",
+      "72"
+     ],
+     "answer": 1,
+     "explanation": "Expanding the recursion gives f(4) = 81."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is printed?\n\ncount = 0\nfor i = 1 to 4\n    for j = i + 1 to 4\n        count = count + 1\n    end for\nend for\nprint count",
+     "options": [
+      "16",
+      "8",
+      "6",
+      "10"
+     ],
+     "answer": 2,
+     "explanation": "Counting the inner iterations gives 6."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is printed?\n\ncount = 0\nfor i = 1 to 3\n    for j = 1 to 3\n        count = count + 1\n    end for\nend for\nprint count",
+     "options": [
+      "9",
+      "6",
+      "12",
+      "3"
+     ],
+     "answer": 0,
+     "explanation": "Counting the inner iterations gives 9."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the value of 7 | 5 (bitwise, on integers)?",
+     "options": [
+      "7",
+      "4",
+      "10",
+      "9"
+     ],
+     "answer": 0,
+     "explanation": "7 = 111₂, 5 = 101₂ → result 111₂ = 7."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output of this pseudocode?\n\ns = 0\nfor i = 5 to 15 step 1\n    if i mod 2 == 0 then s = s + 1\nend for\nprint s",
+     "options": [
+      "4",
+      "5",
+      "8",
+      "6"
+     ],
+     "answer": 1,
+     "explanation": "The loop takes i = 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15; the result is 5."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output of this pseudocode?\n\ns = 0\nfor i = 1 to 11 step 2\n    s = s + i\nend for\nprint s",
+     "options": [
+      "32",
+      "38",
+      "36",
+      "33"
+     ],
+     "answer": 2,
+     "explanation": "The loop takes i = 1, 3, 5, 7, 9, 11; the result is 36."
+    },
+    {
+     "type": "MCQ",
+     "text": "Given the function f(n) = n if n < 2 else f(n - 1) + f(n - 2), what is f(6)?",
+     "options": [
+      "8",
+      "7",
+      "6",
+      "5"
+     ],
+     "answer": 0,
+     "explanation": "Expanding the recursion gives f(6) = 8."
+    },
+    {
+     "type": "MCQ",
+     "text": "Given the function f(n) = 1 if n <= 1 else n * f(n - 1), what is f(7)?",
+     "options": [
+      "5633",
+      "4946",
+      "5040",
+      "4753"
+     ],
+     "answer": 2,
+     "explanation": "Expanding the recursion gives f(7) = 5040."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output of this pseudocode?\n\ns = 0\nfor i = 5 to 11 step 3\n    if i mod 2 == 0 then s = s + 1\nend for\nprint s",
+     "options": [
+      "2",
+      "3",
+      "4",
+      "1"
+     ],
+     "answer": 3,
+     "explanation": "The loop takes i = 5, 8, 11; the result is 1."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the value of 55 ^ 26 (bitwise, on integers)?",
+     "options": [
+      "45",
+      "52",
+      "34",
+      "48"
+     ],
+     "answer": 0,
+     "explanation": "55 = 110111₂, 26 = 11010₂ → result 101101₂ = 45."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the value of 35 << 3 (bitwise, on integers)?",
+     "options": [
+      "219",
+      "280",
+      "346",
+      "260"
+     ],
+     "answer": 1,
+     "explanation": "35 = 100011₂, 3 = 11₂ → result 100011000₂ = 280."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output of this pseudocode?\n\ns = 0\nfor i = 1 to 9 step 3\n    s = s + i\nend for\nprint s",
+     "options": [
+      "13",
+      "15",
+      "9",
+      "12"
+     ],
+     "answer": 3,
+     "explanation": "The loop takes i = 1, 4, 7; the result is 12."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the value of 21 & 5 (bitwise, on integers)?",
+     "options": [
+      "8",
+      "4",
+      "5",
+      "2"
+     ],
+     "answer": 2,
+     "explanation": "21 = 10101₂, 5 = 101₂ → result 101₂ = 5."
+    },
+    {
+     "type": "MCQ",
+     "text": "Given the function f(n) = n if n < 2 else f(n - 1) + f(n - 2), what is f(7)?",
+     "options": [
+      "13",
+      "10",
+      "15",
+      "14"
+     ],
+     "answer": 0,
+     "explanation": "Expanding the recursion gives f(7) = 13."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is printed?\n\ncount = 0\nfor i = 1 to 6\n    for j = 1 to 6\n        count = count + 1\n    end for\nend for\nprint count",
+     "options": [
+      "36",
+      "42",
+      "15",
+      "21"
+     ],
+     "answer": 0,
+     "explanation": "Counting the inner iterations gives 36."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is printed?\n\ncount = 0\nfor i = 1 to 5\n    for j = 1 to i\n        count = count + 1\n    end for\nend for\nprint count",
+     "options": [
+      "25",
+      "20",
+      "15",
+      "10"
+     ],
+     "answer": 2,
+     "explanation": "Counting the inner iterations gives 15."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output of this pseudocode?\n\ns = 0\nfor i = 2 to 17 step 2\n    s = s + i\nend for\nprint s",
+     "options": [
+      "72",
+      "67",
+      "63",
+      "65"
+     ],
+     "answer": 0,
+     "explanation": "The loop takes i = 2, 4, 6, 8, 10, 12, 14, 16; the result is 72."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does this C code print?\n\nint a = 25, b = 3;\nprintf(\"%d %d\", a / b, a % b);",
+     "options": [
+      "8.3 1",
+      "9 1",
+      "8 1",
+      "1 8"
+     ],
+     "answer": 2,
+     "explanation": "Integer division: 25/3 = 8, remainder 1."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output? (div = integer division)\n\nn = 7285\nr = 0\nwhile n > 0\n    r = r * 10 + (n mod 10)\n    n = n div 10\nend while\nprint r",
+     "options": [
+      "5476",
+      "5447",
+      "6041",
+      "5827"
+     ],
+     "answer": 3,
+     "explanation": "Trace the loop digit by digit."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output of this pseudocode?\n\ns = 0\nfor i = 5 to 13 step 3\n    if i mod 2 == 0 then s = s + 1\nend for\nprint s",
+     "options": [
+      "4",
+      "1",
+      "3",
+      "2"
+     ],
+     "answer": 1,
+     "explanation": "The loop takes i = 5, 8, 11; the result is 1."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output? (div = integer division)\n\nn = 6217\nc = 0\nwhile n > 0\n    c = c + 1\n    n = n div 10\nend while\nprint c",
+     "options": [
+      "2",
+      "5",
+      "3",
+      "4"
+     ],
+     "answer": 3,
+     "explanation": "Trace the loop digit by digit."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does this C code print?\n\nint a = 37, b = 34;\nint m = (a > b) ? a : b;\nprintf(\"%d\", m * 2);",
+     "options": [
+      "68",
+      "74",
+      "71",
+      "37"
+     ],
+     "answer": 1,
+     "explanation": "m = max(37, 34) = 37; m * 2 = 74."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output? (div = integer division)\n\nn = 646\nr = 0\nwhile n > 0\n    r = r * 10 + (n mod 10)\n    n = n div 10\nend while\nprint r",
+     "options": [
+      "661",
+      "646",
+      "688",
+      "614"
+     ],
+     "answer": 1,
+     "explanation": "Trace the loop digit by digit."
+    }
+   ]
+  },
+  {
+   "name": "English communication",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nA good resume is short and specific. Recruiters spend less than a minute on a first look, so the most important facts must be easy to find. Instead of listing duties, strong resumes show results with numbers, such as ‘reduced page load time by 40%’. Spelling mistakes and long paragraphs create a poor impression.\n\nWhat creates a poor impression?",
+     "options": [
+      "Short sentences",
+      "Spelling mistakes",
+      "Clear headings",
+      "Numbers"
+     ],
+     "answer": 1,
+     "explanation": "The passage supports: Spelling mistakes."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: He has a ____ knowledge of finance.",
+     "options": [
+      "threw",
+      "thorough",
+      "though",
+      "through"
+     ],
+     "answer": 1,
+     "explanation": "Correct: He has a thorough knowledge of finance."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) The book (B) which I bought (C) yesterday (D) is very interesting.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 4,
+     "explanation": "The sentence is correct."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: She [suggested him to take] a break.",
+     "options": [
+      "suggested that he take",
+      "suggested him taking",
+      "suggest him take",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: She suggested that he take a break."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: The team missed the project deadline.\nQ: The team now confirms requirements before starting.\nR: The leader called a meeting to find the cause.\nS: Unclear requirements had led to rework.",
+     "options": [
+      "PQRS",
+      "PSRQ",
+      "RQPS",
+      "PRSQ"
+     ],
+     "answer": 3,
+     "explanation": "Correct order: The team missed the project deadline. The leader called a meeting to find the cause. Unclear requirements had led to rework. The team now confirms requirements before starting."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nPlastic is cheap, light and durable, which is why it is everywhere. The same durability makes it a problem: most plastic takes hundreds of years to break down. Much of it ends up in rivers and oceans, where it harms animals that swallow it or get trapped. Recycling helps, but only a small share of plastic is actually recycled. Experts say the most effective step is to use less plastic in the first place.\n\nWhat does the passage say about recycling?",
+     "options": [
+      "It is banned in most places",
+      "Only a small share of plastic is recycled",
+      "It makes plastic more durable",
+      "It solves the problem completely"
+     ],
+     "answer": 1,
+     "explanation": "The passage supports: Only a small share of plastic is recycled."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: I prefer tea ____ coffee.",
+     "options": [
+      "to",
+      "over",
+      "than",
+      "from"
+     ],
+     "answer": 0,
+     "explanation": "Correct: I prefer tea to coffee."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) The news (B) are (C) too good (D) to be true.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "‘News’ is singular: ‘is’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: The reason he failed [is because] he was lazy.",
+     "options": [
+      "is that",
+      "was because of",
+      "being",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: The reason he failed is that he was lazy."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: The vapour rises and cools in the air.\nQ: Water evaporates from oceans and lakes.\nR: When the droplets grow heavy, they fall as rain.\nS: It condenses into tiny droplets that form clouds.",
+     "options": [
+      "RSPQ",
+      "PSRQ",
+      "QSPR",
+      "QPSR"
+     ],
+     "answer": 3,
+     "explanation": "Correct order: Water evaporates from oceans and lakes. The vapour rises and cools in the air. It condenses into tiny droplets that form clouds. When the droplets grow heavy, they fall as rain."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nElectric vehicles are becoming more common in Indian cities. They produce no exhaust and are cheaper to run than petrol vehicles. Their main drawbacks are a higher purchase price and a shortage of charging stations. As battery prices fall and more chargers are installed, experts expect electric two-wheelers and buses to spread fastest.\n\nWhat will help electric vehicles spread?",
+     "options": [
+      "Fewer roads",
+      "Falling battery prices and more chargers",
+      "Rising battery prices",
+      "Higher petrol taxes only"
+     ],
+     "answer": 1,
+     "explanation": "The passage supports: Falling battery prices and more chargers."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: I am not used ____ such cold weather.",
+     "options": [
+      "at",
+      "for",
+      "to",
+      "with"
+     ],
+     "answer": 2,
+     "explanation": "Correct: I am not used to such cold weather."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) The scenery (B) of Kashmir (C) are (D) beautiful.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 2,
+     "explanation": "‘Scenery’ is singular: ‘is’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: He walked [very slow] to the door.",
+     "options": [
+      "very slowly",
+      "much slow",
+      "slower",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: He walked very slowly to the door."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: Engineers inspected it and declared it unsafe.\nQ: Traffic was diverted to another route.\nR: A new bridge was completed a year later.\nS: The old bridge had developed cracks.",
+     "options": [
+      "SQRP",
+      "SPQR",
+      "QSRP",
+      "RPQS"
+     ],
+     "answer": 1,
+     "explanation": "Correct order: The old bridge had developed cracks. Engineers inspected it and declared it unsafe. Traffic was diverted to another route. A new bridge was completed a year later."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nOpen-source software is written by communities and shared freely. Anyone can read the code, suggest changes or report bugs. Because many people review it, problems are often found quickly. Companies use open-source tools to save costs and avoid being locked to one vendor, and many pay their engineers to contribute back.\n\nWhy are problems often found quickly?",
+     "options": [
+      "It is never used",
+      "It has no bugs",
+      "Vendors fix them",
+      "Many people review the code"
+     ],
+     "answer": 3,
+     "explanation": "The passage supports: Many people review the code."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: The bridge was built ____ the river.",
+     "options": [
+      "along",
+      "across",
+      "into",
+      "through"
+     ],
+     "answer": 1,
+     "explanation": "Correct: The bridge was built across the river."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) Please (B) let him (C) to go (D) home.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 2,
+     "explanation": "After ‘let’ use the bare infinitive: ‘let him go’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: I [am knowing] him for years.",
+     "options": [
+      "have known",
+      "knew",
+      "know",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: I have known him for years."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: Several low-lying areas were flooded.\nQ: Heavy rain lashed the coast for two days.\nR: Rescue teams moved families to safer places.\nS: Once the water receded, cleaning work began.",
+     "options": [
+      "QPRS",
+      "QSRP",
+      "SPRQ",
+      "PRSQ"
+     ],
+     "answer": 0,
+     "explanation": "Correct order: Heavy rain lashed the coast for two days. Several low-lying areas were flooded. Rescue teams moved families to safer places. Once the water receded, cleaning work began."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nPlastic is cheap, light and durable, which is why it is everywhere. The same durability makes it a problem: most plastic takes hundreds of years to break down. Much of it ends up in rivers and oceans, where it harms animals that swallow it or get trapped. Recycling helps, but only a small share of plastic is actually recycled. Experts say the most effective step is to use less plastic in the first place.\n\nWhy is plastic widely used?",
+     "options": [
+      "It breaks down quickly",
+      "It is easy to recycle",
+      "It is good for animals",
+      "It is cheap, light and durable"
+     ],
+     "answer": 3,
+     "explanation": "The passage supports: It is cheap, light and durable."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: Her ____ to the plan surprised everyone.",
+     "options": [
+      "object",
+      "objecting",
+      "objective",
+      "objection"
+     ],
+     "answer": 3,
+     "explanation": "Correct: Her objection to the plan surprised everyone."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) I have (B) less friends (C) than (D) my sister.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "Countable noun: ‘fewer friends’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: They [have finished] the work last week.",
+     "options": [
+      "finished",
+      "had been finishing",
+      "have been finished",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: They finished the work last week."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: He placed the order during a festival sale.\nQ: He chose one with a good battery and keyboard.\nR: He compared models online for a week.\nS: Kiran wanted to buy a laptop.",
+     "options": [
+      "QSPR",
+      "QRPS",
+      "SRQP",
+      "RSQP"
+     ],
+     "answer": 2,
+     "explanation": "Correct order: Kiran wanted to buy a laptop. He compared models online for a week. He chose one with a good battery and keyboard. He placed the order during a festival sale."
+    },
+    {
+     "type": "MCQ",
+     "text": "Read the passage and answer.\n\nOpen-source software is written by communities and shared freely. Anyone can read the code, suggest changes or report bugs. Because many people review it, problems are often found quickly. Companies use open-source tools to save costs and avoid being locked to one vendor, and many pay their engineers to contribute back.\n\nCompanies use open-source tools to",
+     "options": [
+      "save costs and avoid vendor lock-in",
+      "stop hiring engineers",
+      "increase costs",
+      "hide their code"
+     ],
+     "answer": 0,
+     "explanation": "The passage supports: save costs and avoid vendor lock-in."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: He divided the cake ____ the four children.",
+     "options": [
+      "amid of",
+      "within",
+      "among",
+      "between"
+     ],
+     "answer": 2,
+     "explanation": "Correct: He divided the cake among the four children."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) He has (B) been working here (C) since (D) five years.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 2,
+     "explanation": "Duration takes ‘for’: ‘for five years’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: [If I was you], I would apologise.",
+     "options": [
+      "If I were you",
+      "If I am you",
+      "Were I am you",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: If I were you, I would apologise."
+    },
+    {
+     "type": "MCQ",
+     "text": "Arrange the sentences in the correct order:\nP: He watched a few simple recipe videos.\nQ: Then he bought the vegetables he needed.\nR: By evening he had made his first dal.\nS: Rahul wanted to learn to cook.",
+     "options": [
+      "QPSR",
+      "PRQS",
+      "SPQR",
+      "SRPQ"
+     ],
+     "answer": 2,
+     "explanation": "Correct order: Rahul wanted to learn to cook. He watched a few simple recipe videos. Then he bought the vegetables he needed. By evening he had made his first dal."
+    }
+   ]
+  },
+  {
+   "name": "Quantitative",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "A can do a job in 10 days and B in 5 days. They work together for 3 days, then B leaves. In how many more days will A finish the job?",
+     "options": [
+      "1 days",
+      "3 days",
+      "2 days",
+      "1/2 days"
+     ],
+     "answer": 0,
+     "explanation": "In 3 days they do 9/10 of the work; 1/10 is left, which A does in 1/10 × 10 = 1 days."
+    },
+    {
+     "type": "MCQ",
+     "text": "A sum of money amounts to Rs 13200 in 4 years at 5% per annum simple interest. What is the sum?",
+     "options": [
+      "Rs 11000",
+      "Rs 10500",
+      "Rs 11500",
+      "Rs 11250"
+     ],
+     "answer": 0,
+     "explanation": "Amount = P(1 + 5×4/100) = P × 6/5, so P = 13200 / 6/5 = Rs 11000."
+    },
+    {
+     "type": "MCQ",
+     "text": "Two trains of lengths 150 m and 300 m run at 36 km/h and 45 km/h in opposite directions. How long do they take to cross each other completely?",
+     "options": [
+      "19 s",
+      "22 s",
+      "20 s",
+      "-180 s"
+     ],
+     "answer": 2,
+     "explanation": "Relative speed = 81 km/h = 45/2 m/s; distance = 450 m; time = 20 s."
+    },
+    {
+     "type": "MCQ",
+     "text": "A trader marks his goods 50% above the cost price and then allows a discount of 25%. What is his gain or loss percent?",
+     "options": [
+      "35/2% gain",
+      "25/2% gain",
+      "29/2% gain",
+      "23/2% gain"
+     ],
+     "answer": 1,
+     "explanation": "SP as a fraction of CP = 3/2 × 3/4 = 9/8, so 25/2% gain."
+    },
+    {
+     "type": "MCQ",
+     "text": "Pipes A and B can fill a tank in 30 and 8 hours. Pipe C can empty it in 40 hours. If all three are opened together, how long will the tank take to fill?",
+     "options": [
+      "7 hours",
+      "15/2 hours",
+      "17/2 hours",
+      "8 hours"
+     ],
+     "answer": 1,
+     "explanation": "Net rate = 1/30 + 1/8 − 1/40 = 2/15 tank/hour, so 15/2 hours."
+    },
+    {
+     "type": "MCQ",
+     "text": "The average age of 12 students is 28 years. When the teacher's age is included, the average decreases by 2 years. What is the teacher's age?",
+     "options": [
+      "2",
+      "7",
+      "10",
+      "13"
+     ],
+     "answer": 0,
+     "explanation": "New total = 26 × 13 = 338; old total = 336; teacher = 2."
+    },
+    {
+     "type": "MCQ",
+     "text": "The present ages of A and B are in the ratio 4:3. After 8 years, the ratio will be 36:29. What is A's present age?",
+     "options": [
+      "36 years",
+      "28 years",
+      "21 years",
+      "26 years"
+     ],
+     "answer": 1,
+     "explanation": "Let ages be 4x and 3x. (4x+8)/(3x+8) = 36/29 gives x = 7; A = 28."
+    },
+    {
+     "type": "MCQ",
+     "text": "Pipes A and B can fill a tank in 30 and 20 hours. Pipe C can empty it in 60 hours. If all three are opened together, how long will the tank take to fill?",
+     "options": [
+      "29/2 hours",
+      "31/2 hours",
+      "15 hours",
+      "16 hours"
+     ],
+     "answer": 2,
+     "explanation": "Net rate = 1/30 + 1/20 − 1/60 = 1/15 tank/hour, so 15 hours."
+    },
+    {
+     "type": "MCQ",
+     "text": "A sum of money amounts to Rs 22440 in 3 years at 12% per annum simple interest. What is the sum?",
+     "options": [
+      "Rs 16000",
+      "Rs 16750",
+      "Rs 17000",
+      "Rs 16500"
+     ],
+     "answer": 3,
+     "explanation": "Amount = P(1 + 12×3/100) = P × 34/25, so P = 22440 / 34/25 = Rs 16500."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the area of a circle of radius 7 cm? (Use π = 22/7)",
+     "options": [
+      "44 cm²",
+      "154 cm²",
+      "308 cm²",
+      "165 cm²"
+     ],
+     "answer": 1,
+     "explanation": "πr² = 22/7 × 7² = 154 cm²."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is 24% of 600?",
+     "options": [
+      "149",
+      "144",
+      "132",
+      "151"
+     ],
+     "answer": 1,
+     "explanation": "24/100 × 600 = 144."
+    },
+    {
+     "type": "MCQ",
+     "text": "A sum of money amounts to Rs 20150 in 3 years at 10% per annum simple interest. What is the sum?",
+     "options": [
+      "Rs 15750",
+      "Rs 15500",
+      "Rs 15000",
+      "Rs 16000"
+     ],
+     "answer": 1,
+     "explanation": "Amount = P(1 + 10×3/100) = P × 13/10, so P = 20150 / 13/10 = Rs 15500."
+    },
+    {
+     "type": "MCQ",
+     "text": "A bag has 6 red, 4 blue and 5 green balls. Two balls are drawn at random. What is the probability that both are red?",
+     "options": [
+      "4/25",
+      "16/105",
+      "2/5",
+      "1/7"
+     ],
+     "answer": 3,
+     "explanation": "C(6,2)/C(15,2) = 15/105 = 1/7."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the compound interest on Rs 2000 at 5% per annum for 2 years, compounded annually?",
+     "options": [
+      "Rs 205",
+      "Rs 185",
+      "Rs 255",
+      "Rs 200"
+     ],
+     "answer": 0,
+     "explanation": "A = 2000(1 + 5/100)^2 = 2205; CI = A − P = Rs 205."
+    },
+    {
+     "type": "MCQ",
+     "text": "Rs 650 is divided among A, B and C in the ratio 5 : 3 : 5. What is C's share?",
+     "options": [
+      "Rs 200",
+      "Rs 250",
+      "Rs 150",
+      "Rs 300"
+     ],
+     "answer": 1,
+     "explanation": "One part = 650 / 13 = 50; C gets 5 × 50 = Rs 250."
+    }
+   ]
+  }
+ ]
+}

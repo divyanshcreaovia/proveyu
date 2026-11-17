@@ -24,10 +24,19 @@ public class PrepTest {
     @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(columnDefinition = "CHAR(36)")
     private UUID id;
+    /** The college whose placement team uploaded it (only its students see it); null = platform test for everyone. */
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(name = "college_id", columnDefinition = "CHAR(36)")
+    private UUID collegeId;
     private String title;
     private String description;
     @Column(name = "company_tag")
     private String companyTag;
+    /** EASY / MEDIUM / HARD; label only. */
+    private String level;
+    /** Position in the unlock ladder; null = always open. */
+    @Column(name = "level_order")
+    private Integer levelOrder;
     @Column(name = "duration_minutes")
     private int durationMinutes;
     @Column(name = "question_count")

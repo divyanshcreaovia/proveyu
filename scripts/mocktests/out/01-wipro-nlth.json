@@ -1,0 +1,653 @@
+{
+ "title": "Wipro NLTH style · Aptitude",
+ "description": "Logical, quantitative and verbal ability, as in Wipro's national hiring test. 52 MCQs in 48 minutes. Original practice questions modelled on the publicly reported test pattern. Not an official or past paper.",
+ "companyTag": "Wipro",
+ "level": "EASY",
+ "order": 1,
+ "durationMinutes": 48,
+ "sections": [
+  {
+   "name": "Logical ability",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Which number is the odd one out: 27, 8, 28, 729?",
+     "options": [
+      "27",
+      "28",
+      "8",
+      "729"
+     ],
+     "answer": 1,
+     "explanation": "28 — all others are perfect cubes."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next in the series: 13, 23, 33, 43, 53, ?",
+     "options": [
+      "63",
+      "56",
+      "58",
+      "60"
+     ],
+     "answer": 0,
+     "explanation": "Rule: add 10 each time. Next term = 63."
+    },
+    {
+     "type": "MCQ",
+     "text": "11 : 25 :: 7 : ?",
+     "options": [
+      "20",
+      "18",
+      "15",
+      "17"
+     ],
+     "answer": 3,
+     "explanation": "The rule is n → 2n + 3; for 7 it gives 17."
+    },
+    {
+     "type": "MCQ",
+     "text": "If 2 ⊕ 5 = 29; 6 ⊕ 5 = 61, then 9 ⊕ 5 = ?",
+     "options": [
+      "93",
+      "123",
+      "103",
+      "106"
+     ],
+     "answer": 3,
+     "explanation": "a ⊕ b = a² + b²; so 9 ⊕ 5 = 106."
+    },
+    {
+     "type": "MCQ",
+     "text": "Isha is 12th from the left and 8th from the right in a row. How many people are in the row?",
+     "options": [
+      "20",
+      "19",
+      "21",
+      "18"
+     ],
+     "answer": 1,
+     "explanation": "Total = 12 + 8 − 1 = 19."
+    },
+    {
+     "type": "MCQ",
+     "text": "Statements: Some phones are chairs. No chairs is pens.\nConclusion: Some phones are not pens.\nDoes the conclusion follow?",
+     "options": [
+      "The conclusion definitely follows",
+      "The conclusion does not follow",
+      "The data is contradictory",
+      "The conclusion is partly true"
+     ],
+     "answer": 0,
+     "explanation": "Draw the Venn diagram for the statements: the conclusion must hold in every possible case."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next in the series: 3, 13, 43, 133, 403, ?",
+     "options": [
+      "1076",
+      "1213",
+      "1285",
+      "1086"
+     ],
+     "answer": 1,
+     "explanation": "Rule: multiply by 3 and add 4. Next term = 1213."
+    },
+    {
+     "type": "MCQ",
+     "text": "Esha is the father of Yash. Yash is the sister of Kavya. How is Esha related to Kavya?",
+     "options": [
+      "Father",
+      "Grandfather",
+      "Brother",
+      "Uncle"
+     ],
+     "answer": 0,
+     "explanation": "Kavya is Yash's sibling, so Esha is Kavya's father too."
+    },
+    {
+     "type": "MCQ",
+     "text": "If 9 ⊕ 6 = 69; 3 ⊕ 8 = 35, then 9 ⊕ 5 = ?",
+     "options": [
+      "59",
+      "52",
+      "67",
+      "68"
+     ],
+     "answer": 0,
+     "explanation": "a ⊕ b = ab + a + b; so 9 ⊕ 5 = 59."
+    },
+    {
+     "type": "MCQ",
+     "text": "Gita is the mother of Chitra. Meera is the son of Chitra. How is Gita related to Meera?",
+     "options": [
+      "Grandmother",
+      "Mother",
+      "Sister",
+      "Aunt"
+     ],
+     "answer": 0,
+     "explanation": "Gita is the mother of Meera's parent."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next in the series: 3, 10, 24, 52, 108, ?",
+     "options": [
+      "215",
+      "218",
+      "220",
+      "241"
+     ],
+     "answer": 2,
+     "explanation": "Rule: multiply by 2 and add 4. Next term = 220."
+    },
+    {
+     "type": "MCQ",
+     "text": "Bharat is taller than Kavya. Kavya is taller than Rahul. Pooja is taller than Ojas. Rahul is taller than Pooja. Who is the shortest?",
+     "options": [
+      "Kavya",
+      "Bharat",
+      "Rahul",
+      "Ojas"
+     ],
+     "answer": 3,
+     "explanation": "Chaining the clues: Bharat > Kavya > Rahul > Pooja > Ojas. The shortest is Ojas."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next in the series: 5, 12, 26, 54, 110, ?",
+     "options": [
+      "225",
+      "198",
+      "222",
+      "227"
+     ],
+     "answer": 2,
+     "explanation": "Rule: multiply by 2 and add 2. Next term = 222."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next: H, K, N, Q, T, ?",
+     "options": [
+      "Y",
+      "V",
+      "X",
+      "W"
+     ],
+     "answer": 3,
+     "explanation": "Each letter moves 3 places forward."
+    }
+   ]
+  },
+  {
+   "name": "Quantitative ability",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "A train 300 m long passes a pole in 18 seconds. What is its speed in km/h?",
+     "options": [
+      "60 km/h",
+      "50/3 km/h",
+      "66 km/h",
+      "56 km/h"
+     ],
+     "answer": 0,
+     "explanation": "300/18 m/s × 18/5 = 60 km/h."
+    },
+    {
+     "type": "MCQ",
+     "text": "A can finish a work in 40 days and B in 10 days. In how many days will they finish it working together?",
+     "options": [
+      "8 days",
+      "15/2 days",
+      "9 days",
+      "25 days"
+     ],
+     "answer": 0,
+     "explanation": "Together per day: 1/40 + 1/10 = 1/8; time = 8 days."
+    },
+    {
+     "type": "MCQ",
+     "text": "The present ages of A and B are in the ratio 5:3. After 8 years, the ratio will be 7:5. What is A's present age?",
+     "options": [
+      "20 years",
+      "12 years",
+      "28 years",
+      "18 years"
+     ],
+     "answer": 0,
+     "explanation": "Let ages be 5x and 3x. (5x+8)/(3x+8) = 7/5 gives x = 4; A = 20."
+    },
+    {
+     "type": "MCQ",
+     "text": "A can finish a work in 24 days and B in 40 days. In how many days will they finish it working together?",
+     "options": [
+      "32 days",
+      "16 days",
+      "29/2 days",
+      "15 days"
+     ],
+     "answer": 3,
+     "explanation": "Together per day: 1/24 + 1/40 = 1/15; time = 15 days."
+    },
+    {
+     "type": "MCQ",
+     "text": "In what ratio must rice at Rs 30/kg be mixed with rice at Rs 54/kg so that the mixture costs Rs 35/kg?",
+     "options": [
+      "30:54",
+      "19:5",
+      "5:19",
+      "20:5"
+     ],
+     "answer": 1,
+     "explanation": "Alligation: (cheaper : dearer) = (54 − 35) : (35 − 30) = 19:5."
+    },
+    {
+     "type": "MCQ",
+     "text": "Two pipes can fill a tank in 8 hours and 24 hours. How long will they take to fill it together?",
+     "options": [
+      "6 hours",
+      "7 hours",
+      "11/2 hours",
+      "13/2 hours"
+     ],
+     "answer": 0,
+     "explanation": "Rate = 1/8 + 1/24 = 1/6; time = 6 hours."
+    },
+    {
+     "type": "MCQ",
+     "text": "In how many ways can a committee of 3 be chosen from 7 people?",
+     "options": [
+      "35",
+      "210",
+      "42",
+      "70"
+     ],
+     "answer": 0,
+     "explanation": "C(7,3) = 35."
+    },
+    {
+     "type": "MCQ",
+     "text": "If today is Wednesday, what day of the week will it be after 294 days?",
+     "options": [
+      "Thursday",
+      "Monday",
+      "Tuesday",
+      "Wednesday"
+     ],
+     "answer": 3,
+     "explanation": "294 mod 7 = 0; Wednesday + 0 days = Wednesday."
+    },
+    {
+     "type": "MCQ",
+     "text": "A starts a business with Rs 9000. After 6 months B joins with Rs 3000. At the end of the year the profit is Rs 1400. What is B's share?",
+     "options": [
+      "Rs 700",
+      "Rs 200",
+      "Rs 1200",
+      "Rs 350"
+     ],
+     "answer": 1,
+     "explanation": "Ratio = 9000×12 : 3000×6 = 108000:18000; B gets 1400 × 18000/126000 = Rs 200."
+    },
+    {
+     "type": "MCQ",
+     "text": "In how many ways can a committee of 3 be chosen from 8 people?",
+     "options": [
+      "112",
+      "64",
+      "56",
+      "336"
+     ],
+     "answer": 2,
+     "explanation": "C(8,3) = 56."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the compound interest on Rs 16000 at 20% per annum for 2 years, compounded annually?",
+     "options": [
+      "Rs 7090",
+      "Rs 6400",
+      "Rs 7040",
+      "Rs 7020"
+     ],
+     "answer": 2,
+     "explanation": "A = 16000(1 + 20/100)^2 = 23040; CI = A − P = Rs 7040."
+    },
+    {
+     "type": "MCQ",
+     "text": "Two pipes can fill a tank in 15 hours and 12 hours. How long will they take to fill it together?",
+     "options": [
+      "20/3 hours",
+      "23/3 hours",
+      "43/6 hours",
+      "37/6 hours"
+     ],
+     "answer": 0,
+     "explanation": "Rate = 1/15 + 1/12 = 3/20; time = 20/3 hours."
+    },
+    {
+     "type": "MCQ",
+     "text": "Study the table and answer.\n\nYear | Produced (units) | Sold (units)\n2021 | 320 | 245\n2022 | 280 | 220\n2023 | 190 | 180\n2024 | 130 | 85\n2025 | 120 | 105\n\nIn 2024, what percentage of the units produced was sold? (to 2 decimal places)",
+     "options": [
+      "34.62%",
+      "65.38%",
+      "67.88%",
+      "63.63%"
+     ],
+     "answer": 1,
+     "explanation": "85/130 × 100 = 65.38%."
+    },
+    {
+     "type": "MCQ",
+     "text": "A boat goes 26 km downstream in 2 hours and 14 km upstream in 2 hours. What is the speed of the boat in still water?",
+     "options": [
+      "13 km/h",
+      "3 km/h",
+      "10 km/h",
+      "7 km/h"
+     ],
+     "answer": 2,
+     "explanation": "Downstream 13 km/h, upstream 7 km/h; boat = average = 10 km/h."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is 20% of 400?",
+     "options": [
+      "80",
+      "75",
+      "71",
+      "87"
+     ],
+     "answer": 0,
+     "explanation": "20/100 × 400 = 80."
+    },
+    {
+     "type": "MCQ",
+     "text": "A shopkeeper buys an article for Rs 600 and sells it at a profit of 12%. What is the selling price?",
+     "options": [
+      "672",
+      "630",
+      "729",
+      "715"
+     ],
+     "answer": 0,
+     "explanation": "SP = 600 × (100 + 12)/100 = Rs 672."
+    }
+   ]
+  },
+  {
+   "name": "Verbal ability",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘LENIENT’.",
+     "options": [
+      "lean",
+      "tolerant",
+      "lethal",
+      "lengthy"
+     ],
+     "answer": 1,
+     "explanation": "‘lenient’ means tolerant."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word most nearly OPPOSITE in meaning to ‘HAMPER’.",
+     "options": [
+      "help",
+      "handle",
+      "hinder",
+      "hammer"
+     ],
+     "answer": 0,
+     "explanation": "‘hamper’ means hinder; its opposite is ‘help’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: You should ____ your doctor before taking this medicine.",
+     "options": [
+      "consult",
+      "insult",
+      "result",
+      "exult"
+     ],
+     "answer": 0,
+     "explanation": "Correct: You should consult your doctor before taking this medicine."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) She (B) prefers coffee (C) than (D) tea.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 2,
+     "explanation": "‘Prefer … to’."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does the idiom ‘let the cat out of the bag’ mean?",
+     "options": [
+      "reveal a secret",
+      "free an animal",
+      "make a mistake in shopping",
+      "go on a trip"
+     ],
+     "answer": 0,
+     "explanation": "‘let the cat out of the bag’ means: reveal a secret."
+    },
+    {
+     "type": "MCQ",
+     "text": "One word for: A person who has retired from work",
+     "options": [
+      "trainee",
+      "freelancer",
+      "pensioner",
+      "apprentice"
+     ],
+     "answer": 2,
+     "explanation": "A person who has retired from work: pensioner."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘IMMENSE’.",
+     "options": [
+      "innocent",
+      "huge",
+      "idle",
+      "intense"
+     ],
+     "answer": 1,
+     "explanation": "‘immense’ means huge."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word most nearly OPPOSITE in meaning to ‘LETHARGIC’.",
+     "options": [
+      "energetic",
+      "sluggish",
+      "lethal",
+      "legal"
+     ],
+     "answer": 0,
+     "explanation": "‘lethargic’ means sluggish; its opposite is ‘energetic’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: She is ____ honest woman.",
+     "options": [
+      "the",
+      "a",
+      "an",
+      "no article"
+     ],
+     "answer": 2,
+     "explanation": "Correct: She is an honest woman."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) He did not (B) knew the answer (C) to the last (D) question.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "After ‘did not’ use the base form: ‘know’."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does the idiom ‘under the weather’ mean?",
+     "options": [
+      "slightly ill",
+      "out in the rain",
+      "very happy",
+      "worried about the news"
+     ],
+     "answer": 0,
+     "explanation": "‘under the weather’ means: slightly ill."
+    },
+    {
+     "type": "MCQ",
+     "text": "One word for: An animal that eats only plants",
+     "options": [
+      "herbivore",
+      "insectivore",
+      "omnivore",
+      "carnivore"
+     ],
+     "answer": 0,
+     "explanation": "An animal that eats only plants: herbivore."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘CORDIAL’.",
+     "options": [
+      "warm",
+      "careful",
+      "central",
+      "cordless"
+     ],
+     "answer": 0,
+     "explanation": "‘cordial’ means warm."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word most nearly OPPOSITE in meaning to ‘EMINENT’.",
+     "options": [
+      "empty",
+      "unknown",
+      "imminent",
+      "distinguished"
+     ],
+     "answer": 1,
+     "explanation": "‘eminent’ means distinguished; its opposite is ‘unknown’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: He is senior ____ me by two years.",
+     "options": [
+      "than",
+      "over",
+      "from",
+      "to"
+     ],
+     "answer": 3,
+     "explanation": "Correct: He is senior to me by two years."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) I am (B) looking forward (C) to see you (D) soon.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 2,
+     "explanation": "‘Looking forward to seeing’."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does the idiom ‘keep your chin up’ mean?",
+     "options": [
+      "look at the sky",
+      "sit straight",
+      "stay positive in difficulty",
+      "be proud"
+     ],
+     "answer": 2,
+     "explanation": "‘keep your chin up’ means: stay positive in difficulty."
+    },
+    {
+     "type": "MCQ",
+     "text": "One word for: A person who does not believe in God",
+     "options": [
+      "pilgrim",
+      "atheist",
+      "priest",
+      "theist"
+     ],
+     "answer": 1,
+     "explanation": "A person who does not believe in God: atheist."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘LETHARGIC’.",
+     "options": [
+      "literal",
+      "sluggish",
+      "legal",
+      "lethal"
+     ],
+     "answer": 1,
+     "explanation": "‘lethargic’ means sluggish."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word most nearly OPPOSITE in meaning to ‘AUGMENT’.",
+     "options": [
+      "reduce",
+      "decorate",
+      "increase",
+      "observe"
+     ],
+     "answer": 0,
+     "explanation": "‘augment’ means increase; its opposite is ‘reduce’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: He apologised ____ being late.",
+     "options": [
+      "for",
+      "about",
+      "on",
+      "of"
+     ],
+     "answer": 0,
+     "explanation": "Correct: He apologised for being late."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) He is (B) an honest (C) and hardworking (D) man.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 4,
+     "explanation": "The sentence is correct."
+    }
+   ]
+  }
+ ]
+}

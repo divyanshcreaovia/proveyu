@@ -1,0 +1,929 @@
+{
+ "title": "Tech Mahindra style · Aptitude, Technical, English",
+ "description": "Three elimination-style sections. 75 MCQs in 75 minutes. Original practice questions modelled on the publicly reported test pattern. Not an official or past paper.",
+ "companyTag": "Tech Mahindra",
+ "level": "EASY",
+ "order": 4,
+ "durationMinutes": 75,
+ "sections": [
+  {
+   "name": "Aptitude",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Find the simple interest on Rs 15500 at 12% per annum for 4 years.",
+     "options": [
+      "Rs 7440",
+      "Rs 7261",
+      "Rs 7594",
+      "Rs 7387"
+     ],
+     "answer": 0,
+     "explanation": "SI = P × R × T / 100 = 15500 × 12 × 4 / 100 = Rs 7440."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the smaller angle between the hour and minute hands of a clock at 3:20?",
+     "options": [
+      "25°",
+      "20°",
+      "30°",
+      "340°"
+     ],
+     "answer": 1,
+     "explanation": "Angle = |30H − 5.5M| = |90 − 110| = 20°."
+    },
+    {
+     "type": "MCQ",
+     "text": "If 2x + 18 = 26, what is x?",
+     "options": [
+      "7",
+      "8",
+      "4",
+      "5"
+     ],
+     "answer": 2,
+     "explanation": "2x = 8, so x = 4."
+    },
+    {
+     "type": "MCQ",
+     "text": "In how many ways can a committee of 2 be chosen from 7 people?",
+     "options": [
+      "42",
+      "21",
+      "28",
+      "14"
+     ],
+     "answer": 1,
+     "explanation": "C(7,2) = 21."
+    },
+    {
+     "type": "MCQ",
+     "text": "Two pipes can fill a tank in 6 hours and 10 hours. How long will they take to fill it together?",
+     "options": [
+      "17/4 hours",
+      "19/4 hours",
+      "13/4 hours",
+      "15/4 hours"
+     ],
+     "answer": 3,
+     "explanation": "Rate = 1/6 + 1/10 = 4/15; time = 15/4 hours."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is 10% of 400?",
+     "options": [
+      "37",
+      "46",
+      "44",
+      "40"
+     ],
+     "answer": 3,
+     "explanation": "10/100 × 400 = 40."
+    },
+    {
+     "type": "MCQ",
+     "text": "Study the table and answer.\n\nYear | Produced (units) | Sold (units)\n2021 | 320 | 265\n2022 | 250 | 210\n2023 | 280 | 225\n2024 | 390 | 325\n2025 | 230 | 165\n\nWhat is the average number of units sold per year?",
+     "options": [
+      "232",
+      "238",
+      "294",
+      "248"
+     ],
+     "answer": 1,
+     "explanation": "Total sold = 1190; ÷ 5 = 238."
+    },
+    {
+     "type": "MCQ",
+     "text": "The average of 15 numbers is 59. If one more number, 43, is added, what is the new average?",
+     "options": [
+      "59",
+      "61",
+      "58",
+      "57"
+     ],
+     "answer": 2,
+     "explanation": "New sum = 59×15 + 43 = 928; ÷ 16 = 58."
+    },
+    {
+     "type": "MCQ",
+     "text": "Two pipes can fill a tank in 30 hours and 10 hours. How long will they take to fill it together?",
+     "options": [
+      "8 hours",
+      "7 hours",
+      "15/2 hours",
+      "17/2 hours"
+     ],
+     "answer": 2,
+     "explanation": "Rate = 1/30 + 1/10 = 2/15; time = 15/2 hours."
+    },
+    {
+     "type": "MCQ",
+     "text": "A rectangular field is 39 m long and 6 m wide. What is the cost of fencing it at Rs 15 per metre?",
+     "options": [
+      "Rs 675",
+      "Rs 3510",
+      "Rs 1500",
+      "Rs 1350"
+     ],
+     "answer": 3,
+     "explanation": "Perimeter = 2(39+6) = 90 m; cost = 90 × 15 = Rs 1350."
+    },
+    {
+     "type": "MCQ",
+     "text": "The average of 5 numbers is 59. If one more number, 65, is added, what is the new average?",
+     "options": [
+      "60",
+      "58",
+      "57",
+      "63"
+     ],
+     "answer": 0,
+     "explanation": "New sum = 59×5 + 65 = 360; ÷ 6 = 60."
+    },
+    {
+     "type": "MCQ",
+     "text": "Rs 2000 is divided among A and B in the ratio 3 : 5. What is A's share?",
+     "options": [
+      "Rs 1000",
+      "Rs 500",
+      "Rs 750",
+      "Rs 1250"
+     ],
+     "answer": 2,
+     "explanation": "One part = 2000 / 8 = 250; A gets 3 × 250 = Rs 750."
+    },
+    {
+     "type": "MCQ",
+     "text": "If 8x + 2 = 138, what is x?",
+     "options": [
+      "21",
+      "18",
+      "17",
+      "13"
+     ],
+     "answer": 2,
+     "explanation": "8x = 136, so x = 17."
+    },
+    {
+     "type": "MCQ",
+     "text": "If 6 ⊕ 2 = 40; 7 ⊕ 4 = 65, then 3 ⊕ 6 = ?",
+     "options": [
+      "50",
+      "42",
+      "41",
+      "45"
+     ],
+     "answer": 3,
+     "explanation": "a ⊕ b = a² + b²; so 3 ⊕ 6 = 45."
+    },
+    {
+     "type": "MCQ",
+     "text": "What comes next in the series: 17, 27, 37, 47, 57, ?",
+     "options": [
+      "65",
+      "74",
+      "72",
+      "67"
+     ],
+     "answer": 3,
+     "explanation": "Rule: add 10 each time. Next term = 67."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a certain code, LADDER is written as MBEEFS. How is ORANGE written in that code?",
+     "options": [
+      "QTCPIG",
+      "PSBOHF",
+      "ORANGE",
+      "RUDQJH"
+     ],
+     "answer": 1,
+     "explanation": "Each letter is shifted +1 place in the alphabet."
+    },
+    {
+     "type": "MCQ",
+     "text": "Zoya is the father of Nikhil. Nikhil is the sister of Asha. How is Zoya related to Asha?",
+     "options": [
+      "Grandfather",
+      "Father",
+      "Brother",
+      "Uncle"
+     ],
+     "answer": 1,
+     "explanation": "Asha is Nikhil's sibling, so Zoya is Asha's father too."
+    },
+    {
+     "type": "MCQ",
+     "text": "A cube painted on all faces is cut into 64 identical small cubes. How many small cubes have exactly two faces painted?",
+     "options": [
+      "8",
+      "24",
+      "30",
+      "28"
+     ],
+     "answer": 1,
+     "explanation": "For an n×n×n cube (n = 4): 3 faces: 8, 2 faces: 12(n−2), 1 face: 6(n−2)², none: (n−2)³ → 24."
+    },
+    {
+     "type": "MCQ",
+     "text": "A man is facing West. He turns left, then turns right, then turns right. Which direction is he facing now?",
+     "options": [
+      "East",
+      "North",
+      "West",
+      "South"
+     ],
+     "answer": 1,
+     "explanation": "Right = 90° clockwise, left = 90° anticlockwise, about = 180°. Final direction: North."
+    },
+    {
+     "type": "MCQ",
+     "text": "A man is facing South. He turns left, then turns left. Which direction is he facing now?",
+     "options": [
+      "West",
+      "South",
+      "North",
+      "East"
+     ],
+     "answer": 2,
+     "explanation": "Right = 90° clockwise, left = 90° anticlockwise, about = 180°. Final direction: North."
+    },
+    {
+     "type": "MCQ",
+     "text": "4 : 16 :: 11 : ?",
+     "options": [
+      "121",
+      "112",
+      "131",
+      "115"
+     ],
+     "answer": 0,
+     "explanation": "The rule is n → n²; for 11 it gives 121."
+    },
+    {
+     "type": "MCQ",
+     "text": "Harsh is the mother of Pooja. Jatin is the son of Pooja. How is Harsh related to Jatin?",
+     "options": [
+      "Mother",
+      "Aunt",
+      "Sister",
+      "Grandmother"
+     ],
+     "answer": 3,
+     "explanation": "Harsh is the mother of Jatin's parent."
+    },
+    {
+     "type": "MCQ",
+     "text": "In a certain code, MARKET is written as KYPICR. How is SILVER written in that code?",
+     "options": [
+      "PFISBO",
+      "RHKUDQ",
+      "QGJTCP",
+      "SILVER"
+     ],
+     "answer": 2,
+     "explanation": "Each letter is shifted -2 places in the alphabet."
+    },
+    {
+     "type": "MCQ",
+     "text": "Gita is taller than Asha. Isha is taller than Nikhil. Yash is taller than Gita. Asha is taller than Isha. Who is the tallest?",
+     "options": [
+      "Isha",
+      "Gita",
+      "Yash",
+      "Asha"
+     ],
+     "answer": 2,
+     "explanation": "Chaining the clues: Yash > Gita > Asha > Isha > Nikhil. The tallest is Yash."
+    },
+    {
+     "type": "MCQ",
+     "text": "A cube painted on all faces is cut into 125 identical small cubes. How many small cubes have exactly one face painted?",
+     "options": [
+      "54",
+      "8",
+      "36",
+      "27"
+     ],
+     "answer": 0,
+     "explanation": "For an n×n×n cube (n = 5): 3 faces: 8, 2 faces: 12(n−2), 1 face: 6(n−2)², none: (n−2)³ → 54."
+    }
+   ]
+  },
+  {
+   "name": "Technical",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "A PRIMARY KEY column",
+     "options": [
+      "can be null once",
+      "can contain duplicates",
+      "must be unique and not null",
+      "must be a number"
+     ],
+     "answer": 2,
+     "explanation": "Primary keys identify rows uniquely."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which language feature lets Python handle runtime errors gracefully?",
+     "options": [
+      "try / except",
+      "yield",
+      "for / else",
+      "lambda"
+     ],
+     "answer": 0,
+     "explanation": "Exceptions are caught with try/except."
+    },
+    {
+     "type": "MCQ",
+     "text": "Paging divides memory into",
+     "options": [
+      "files",
+      "variable-size segments",
+      "registers",
+      "fixed-size blocks"
+     ],
+     "answer": 3,
+     "explanation": "Pages and frames have a fixed size."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which data structure works on LIFO order?",
+     "options": [
+      "Queue",
+      "Heap",
+      "Stack",
+      "Linked list"
+     ],
+     "answer": 2,
+     "explanation": "Last in, first out."
+    },
+    {
+     "type": "MCQ",
+     "text": "Searching a balanced binary search tree takes",
+     "options": [
+      "O(1)",
+      "O(n²)",
+      "O(log n)",
+      "O(n)"
+     ],
+     "answer": 2,
+     "explanation": "Height of a balanced BST is log n."
+    },
+    {
+     "type": "MCQ",
+     "text": "CAP theorem says a distributed system cannot fully guarantee all three of",
+     "options": [
+      "Cost, Accuracy, Performance",
+      "Consistency, Availability, Partition tolerance",
+      "Caching, Atomicity, Persistence",
+      "Concurrency, Access, Privacy"
+     ],
+     "answer": 1,
+     "explanation": "During a partition, choose C or A."
+    },
+    {
+     "type": "MCQ",
+     "text": "Java code is compiled into",
+     "options": [
+      "Python scripts",
+      "bytecode that runs on the JVM",
+      "machine code for one CPU only",
+      "HTML"
+     ],
+     "answer": 1,
+     "explanation": "Write once, run anywhere."
+    },
+    {
+     "type": "MCQ",
+     "text": "Big-O notation describes",
+     "options": [
+      "how running time grows with input size",
+      "exact running time in seconds",
+      "memory address size",
+      "the number of programmers needed"
+     ],
+     "answer": 0,
+     "explanation": "Asymptotic growth."
+    },
+    {
+     "type": "MCQ",
+     "text": "Which is a DDL command?",
+     "options": [
+      "CREATE",
+      "INSERT",
+      "SELECT",
+      "UPDATE"
+     ],
+     "answer": 0,
+     "explanation": "DDL defines structure: CREATE, ALTER, DROP."
+    },
+    {
+     "type": "MCQ",
+     "text": "Dijkstra's algorithm does not work correctly with",
+     "options": [
+      "weighted graphs",
+      "negative edge weights",
+      "undirected graphs",
+      "cycles"
+     ],
+     "answer": 1,
+     "explanation": "It assumes non-negative weights."
+    },
+    {
+     "type": "MCQ",
+     "text": "Virtual memory allows",
+     "options": [
+      "faster CPU clock speed",
+      "unlimited disk space",
+      "more CPU cores",
+      "programs larger than physical RAM to run"
+     ],
+     "answer": 3,
+     "explanation": "Pages are moved between RAM and disk."
+    },
+    {
+     "type": "MCQ",
+     "text": "A constructor in Java",
+     "options": [
+      "is called only once per program",
+      "cannot take parameters",
+      "has the same name as the class and no return type",
+      "must return void"
+     ],
+     "answer": 2,
+     "explanation": "Constructors initialise new objects."
+    },
+    {
+     "type": "MCQ",
+     "text": "Keys 46, 33, 32, 28, 69, 81, 31 are inserted into an empty binary search tree. Which key is reached by always going left from the root?",
+     "options": [
+      "28",
+      "33",
+      "46",
+      "32"
+     ],
+     "answer": 0,
+     "explanation": "Always going left reaches the minimum key."
+    },
+    {
+     "type": "MCQ",
+     "text": "Given the function f(n) = 1 if n == 0 else 2 * f(n - 1), what is f(4)?",
+     "options": [
+      "14",
+      "16",
+      "18",
+      "15"
+     ],
+     "answer": 1,
+     "explanation": "Expanding the recursion gives f(4) = 16."
+    },
+    {
+     "type": "MCQ",
+     "text": "Starting with an empty stack, these operations run: push(28), pop(), push(2), pop(), push(11), push(6). What is at the top now?",
+     "options": [
+      "2",
+      "11",
+      "28",
+      "6"
+     ],
+     "answer": 3,
+     "explanation": "Simulating the operations, the top element is 6."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the value of 33 | 16 (bitwise, on integers)?",
+     "options": [
+      "45",
+      "59",
+      "50",
+      "49"
+     ],
+     "answer": 3,
+     "explanation": "33 = 100001₂, 16 = 10000₂ → result 110001₂ = 49."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output of this pseudocode?\n\ns = 0\nfor i = 4 to 10 step 1\n    s = s + i\nend for\nprint s",
+     "options": [
+      "51",
+      "47",
+      "49",
+      "46"
+     ],
+     "answer": 2,
+     "explanation": "The loop takes i = 4, 5, 6, 7, 8, 9, 10; the result is 49."
+    },
+    {
+     "type": "MCQ",
+     "text": "Table:\nEmployee(id, name, dept, salary)\n1 | Gaurav | IT | 90000\n2 | Irfan | IT | 85000\n3 | Hina | Sales | 35000\n4 | Faiz | HR | 50000\n5 | Divya | HR | 30000\n6 | Chetan | IT | 65000\n7 | Amit | Sales | 90000\n\nWhat does this query return?\nSELECT dept FROM Employee GROUP BY dept HAVING COUNT(*) >= 2;  -- how many rows does this return?",
+     "options": [
+      "3",
+      "1",
+      "0",
+      "2"
+     ],
+     "answer": 0,
+     "explanation": "Evaluate the query row by row on the table shown."
+    },
+    {
+     "type": "MCQ",
+     "text": "Given the function f(n) = 0 if n == 0 else n + f(n - 1), what is f(5)?",
+     "options": [
+      "16",
+      "18",
+      "15",
+      "17"
+     ],
+     "answer": 2,
+     "explanation": "Expanding the recursion gives f(5) = 15."
+    },
+    {
+     "type": "MCQ",
+     "text": "Starting with an empty stack, these operations run: push(42), pop(), push(27), pop(), push(15), pop(), push(24), push(20), push(19). What is at the top now?",
+     "options": [
+      "19",
+      "27",
+      "42",
+      "15"
+     ],
+     "answer": 0,
+     "explanation": "Simulating the operations, the top element is 19."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the output? (div = integer division)\n\nn = 5895\nr = 0\nwhile n > 0\n    r = r * 10 + (n mod 10)\n    n = n div 10\nend while\nprint r",
+     "options": [
+      "5985",
+      "5501",
+      "5956",
+      "5821"
+     ],
+     "answer": 0,
+     "explanation": "Trace the loop digit by digit."
+    },
+    {
+     "type": "MCQ",
+     "text": "What is the value of 55 >> 2 (bitwise, on integers)?",
+     "options": [
+      "15",
+      "13",
+      "14",
+      "11"
+     ],
+     "answer": 1,
+     "explanation": "55 = 110111₂, 2 = 10₂ → result 1101₂ = 13."
+    },
+    {
+     "type": "MCQ",
+     "text": "Table:\nEmployee(id, name, dept, salary)\n1 | Bina | HR | 40000\n2 | Chetan | HR | 30000\n3 | Hina | HR | 40000\n4 | Faiz | Sales | 90000\n5 | Gaurav | Sales | 55000\n6 | Irfan | Sales | 70000\n7 | Divya | Sales | 75000\n\nWhat does this query return?\nSELECT MAX(salary) FROM Employee WHERE dept = 'HR';",
+     "options": [
+      "30000",
+      "40000",
+      "110000",
+      "90000"
+     ],
+     "answer": 1,
+     "explanation": "Evaluate the query row by row on the table shown."
+    },
+    {
+     "type": "MCQ",
+     "text": "What does this C code print?\n\nint a = 27, b = 6;\nprintf(\"%d %d\", a / b, a % b);",
+     "options": [
+      "5 3",
+      "4.5 3",
+      "4 3",
+      "3 4"
+     ],
+     "answer": 2,
+     "explanation": "Integer division: 27/6 = 4, remainder 3."
+    },
+    {
+     "type": "MCQ",
+     "text": "Starting with an empty queue (push = enqueue, pop = dequeue), these operations run: push(21), pop(), push(19), push(37), push(8), push(20), push(27), pop(). What is at the front now?",
+     "options": [
+      "21",
+      "8",
+      "19",
+      "37"
+     ],
+     "answer": 3,
+     "explanation": "Simulating the operations, the front element is 37."
+    }
+   ]
+  },
+  {
+   "name": "English",
+   "questions": [
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘SUPERFICIAL’.",
+     "options": [
+      "surplus",
+      "shallow",
+      "supreme",
+      "superior"
+     ],
+     "answer": 1,
+     "explanation": "‘superficial’ means shallow."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word most nearly OPPOSITE in meaning to ‘ROBUST’.",
+     "options": [
+      "rapid",
+      "frail",
+      "rustic",
+      "sturdy"
+     ],
+     "answer": 1,
+     "explanation": "‘robust’ means sturdy; its opposite is ‘frail’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: He has been ill ____ two weeks.",
+     "options": [
+      "since",
+      "during",
+      "for",
+      "from"
+     ],
+     "answer": 2,
+     "explanation": "Correct: He has been ill for two weeks."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) The jury (B) was divided (C) in their (D) opinions.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "Members acting separately: ‘were divided’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: He [has went] to the market.",
+     "options": [
+      "has gone",
+      "had went",
+      "goes",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: He has gone to the market."
+    },
+    {
+     "type": "MCQ",
+     "text": "One word for: A person who can speak many languages",
+     "options": [
+      "philatelist",
+      "polyglot",
+      "orator",
+      "librarian"
+     ],
+     "answer": 1,
+     "explanation": "A person who can speak many languages: polyglot."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘AUDACIOUS’.",
+     "options": [
+      "average",
+      "austere",
+      "auditory",
+      "daring"
+     ],
+     "answer": 3,
+     "explanation": "‘audacious’ means daring."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word most nearly OPPOSITE in meaning to ‘FALLACY’.",
+     "options": [
+      "failure",
+      "misconception",
+      "truth",
+      "fable"
+     ],
+     "answer": 2,
+     "explanation": "‘fallacy’ means misconception; its opposite is ‘truth’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: The children ____ playing in the park since morning.",
+     "options": [
+      "were",
+      "are",
+      "have been",
+      "has been"
+     ],
+     "answer": 2,
+     "explanation": "Correct: The children have been playing in the park since morning."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) The manager (B) along with his team (C) have arrived (D) at the venue.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 2,
+     "explanation": "Subject is ‘the manager’: ‘has arrived’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: Please [return back] the book tomorrow.",
+     "options": [
+      "return",
+      "returned back",
+      "back return",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: Please return the book tomorrow."
+    },
+    {
+     "type": "MCQ",
+     "text": "One word for: A period of ten years",
+     "options": [
+      "jubilee",
+      "millennium",
+      "century",
+      "decade"
+     ],
+     "answer": 3,
+     "explanation": "A period of ten years: decade."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘OPTIMISTIC’.",
+     "options": [
+      "hopeful",
+      "optional",
+      "obvious",
+      "ornate"
+     ],
+     "answer": 0,
+     "explanation": "‘optimistic’ means hopeful."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word most nearly OPPOSITE in meaning to ‘OPTIMISTIC’.",
+     "options": [
+      "hopeful",
+      "pessimistic",
+      "optional",
+      "obvious"
+     ],
+     "answer": 1,
+     "explanation": "‘optimistic’ means hopeful; its opposite is ‘pessimistic’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: The ____ of the river was very strong.",
+     "options": [
+      "current",
+      "currant",
+      "curent",
+      "currency"
+     ],
+     "answer": 0,
+     "explanation": "Correct: The current of the river was very strong."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) We (B) reached (C) at the station (D) on time.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 2,
+     "explanation": "‘Reach’ takes no ‘at’: ‘reached the station’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: He [is used to work] late at night.",
+     "options": [
+      "is used to working",
+      "used to working",
+      "uses to work",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: He is used to working late at night."
+    },
+    {
+     "type": "MCQ",
+     "text": "One word for: Something that can be carried easily",
+     "options": [
+      "portable",
+      "potable",
+      "palpable",
+      "durable"
+     ],
+     "answer": 0,
+     "explanation": "Something that can be carried easily: portable."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘TRIVIAL’.",
+     "options": [
+      "typical",
+      "tribal",
+      "minor",
+      "tropical"
+     ],
+     "answer": 2,
+     "explanation": "‘trivial’ means minor."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word most nearly OPPOSITE in meaning to ‘MUNDANE’.",
+     "options": [
+      "muddy",
+      "extraordinary",
+      "ordinary",
+      "musical"
+     ],
+     "answer": 1,
+     "explanation": "‘mundane’ means ordinary; its opposite is ‘extraordinary’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Fill in the blank: Please ____ the form and submit it today.",
+     "options": [
+      "fill on",
+      "fill at",
+      "fill up of",
+      "fill in"
+     ],
+     "answer": 3,
+     "explanation": "Correct: Please fill in the form and submit it today."
+    },
+    {
+     "type": "MCQ",
+     "text": "Spot the part of the sentence that has an error:\n(A) She sings (B) very good (C) for a (D) beginner.",
+     "options": [
+      "Part A",
+      "Part B",
+      "Part C",
+      "Part D",
+      "No error"
+     ],
+     "answer": 1,
+     "explanation": "Adverb needed: ‘very well’."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the best replacement for the part in brackets: He [did not went] to school.",
+     "options": [
+      "did not go",
+      "does not went",
+      "not went",
+      "No improvement"
+     ],
+     "answer": 0,
+     "explanation": "Correct: He did not go to school."
+    },
+    {
+     "type": "MCQ",
+     "text": "One word for: A person who leaves his country to settle in another",
+     "options": [
+      "emigrant",
+      "native",
+      "tourist",
+      "immigrant"
+     ],
+     "answer": 0,
+     "explanation": "A person who leaves his country to settle in another: emigrant."
+    },
+    {
+     "type": "MCQ",
+     "text": "Choose the word closest in meaning to ‘PERTINENT’.",
+     "options": [
+      "petty",
+      "relevant",
+      "persistent",
+      "pertinacious"
+     ],
+     "answer": 1,
+     "explanation": "‘pertinent’ means relevant."
+    }
+   ]
+  }
+ ]
+}

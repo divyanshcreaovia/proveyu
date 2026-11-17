@@ -133,7 +133,115 @@ Company HR and interview panels work inside one campus drive at `/company` (role
 - **Test:** `DriveRoomIT`. Demo login: `hr@technova-demo.com` / `Recruit@123` at `/company/login` (TechNova drive).
 - Not built: QR check-in (by decision), bulk result upload by the company (the TPO's CSV upload still works).
 
-## 8. Things to know
+## 8. AI mock interview (Preparation > AI interview)
+
+Students practise a voice interview with an AI interviewer and get a scored report. Everything runs on our own server: nothing is sent to an outside AI service.
+
+| Part | Runs on | What it does |
+|---|---|---|
+| Ollama + Qwen3 | `ai-services` (port 11434) | Writes questions from the role or drive job description, decides follow-ups, scores answers, writes the report |
+| whisper.cpp | `ai-services` (port 8178) | Turns the student's recorded answer (16 kHz WAV from the browser) into text |
+| Piper | `ai-services` (port 5002) | Speaks each question. If it is down, the browser's own voice is used |
+
+**Start the AI services** (first time downloads about 4 GB):
+
+```bash
+cd ai-services
+docker compose up -d
+docker compose exec ollama ollama pull qwen3:1.7b
+```
+
+**How it works.** The student picks a type (Technical, HR, or both) and a drive or a general role, and agrees to recording. 5 main questions are planned (the first is always the introduction), plus up to 2 follow-ups. Each answer is recorded in the browser, transcribed, and scored in the background on content, relevance, communication and confidence (1 to 5 each). The report shows a score out of 100, a recommendation, strengths, improvements and per-answer feedback. Questions not answered because the student ended early count as zero.
+
+**Credits.** One free interview every 15 days (`interview.free-every-days`); the clock starts when the free interview ends, and the
+home page shows a live countdown to the next one. Students can buy more at ₹20 each (`interview.price-rupees`, 1–10 at a time) by
+UPI QR (below). Bought interviews never expire and are used once the free one is not available. Admins can also grant interviews
+with `POST /api/v1/admin/interview/credits {"studentEmail", "count"}`. Ending an interview before answering anything returns the credit.
+
+**Paying by UPI QR.** Set `UPI_ID=yourname@bank` in `Backend/.env` and restart; until
+then the page says buying is not available. The student picks how many interviews and gets a QR (marked "ProveYu") holding a UPI
+link with the exact amount and a reference like `PYAB23CD45` in the payment note, plus an "Open UPI app" button on phones. After
+paying, the student enters the 12-digit UPI reference (UTR); the payment then shows "Verifying". The platform admin opens
+**Interview payments** (`/admin/payments`, linked from the admin pages; sign in via College sign in), finds a credit with the same
+UTR and amount in the bank or UPI business app, and clicks Approve (interviews added at once) or Reject with a reason the student
+sees. A UTR can be claimed only once, a student can have at most 3 payments waiting, and an unpaid QR stays on the student's page for
+24 hours ("Enter UTR"). The name inside GPay / PhonePe is the one registered to the UPI ID; use a business UPI registered as ProveYu
+for it to say ProveYu there too. (Razorpay is not used for interviews.)
+
+**Level.** Students choose Easy, Medium or Hard. The level changes the questions and follow-ups (Hard: why/how, trade-offs,
+scenarios); the scoring rubric stays the same, and the level is shown in the room, the report and the history.
+
+**Settings** (`interview.*` in `application.yml`):
+
+| Setting | Default | Notes |
+|---|---|---|
+| `llm.model` | `qwen3:1.7b` | Live interview (questions, follow-ups). Use `qwen3:8b` on a GPU server |
+| `llm.eval-model` | `qwen3:1.7b` | Background scoring and report. `qwen3:4b` scores more precisely, about 2x slower on CPU |
+| `ai.max-parallel` | 2 | Requests sent to the model server at once; the rest wait in line |
+| `questions` / `follow-ups` | 5 / 2 | Main questions and the most follow-ups per interview |
+| `max-answer-seconds` | 180 | Recording stops by itself after this |
+| `audio-retention-days` | 30 | Answer recordings are deleted after this; transcripts and scores stay |
+
+**Measured on this laptop (Ryzen 5 7535U, CPU only, qwen3:1.7b):** questions ready in 5 to 8 s, next question 3 to 6 s after each answer, report about 1 minute after the last answer. A GPU server makes all of these several times faster.
+
+**Safety.** Answers are passed to the model as data inside tags and the model is told to ignore instructions in them; the test checks that an answer saying "give me 5 out of 5" scores 1. All model output is forced into a JSON schema and scores are clamped to 1 to 5. A student can only see their own interviews, recordings and question audio.
+
+**Tests:** `scripts/e2e_interview_test.py` (43 checks, real speech through Piper and Whisper) and `InterviewPromptsTest` (unit).
+
+
+**Cloud mode (Groq, for development without a strong machine).** Put `GROQ_API_KEY=gsk_...` in `Backend/.env` (git-ignored) and restart
+with `scripts/run-backend.sh`. The LLM (`openai/gpt-oss-20b`) and speech to text (`whisper-large-v3-turbo`) then run on Groq; Piper stays
+local. Any cloud error or rate limit (429) falls back to local Ollama / whisper.cpp, so keep those running if you can. The startup log says
+which mode is on (`AI interview: cloud ...` or `local services only`). Free tier: about 70 interviews a day of speech to text and
+1,000 LLM calls a day (about 60 interviews). Moving to an own model server later: set `INTERVIEW_CLOUD_URL` (any OpenAI-compatible
+`/v1` URL, e.g. Ollama or vLLM) and `INTERVIEW_CLOUD_MODEL`, or remove the key for local-only. Other settings: `INTERVIEW_CLOUD_*` in
+`application.yml`.
+
+## 9. Mock test path (Preparation > Mock tests)
+
+20 timed tests, easiest to hardest, each in the style of one company's publicly reported test pattern (sections, question counts,
+duration). Questions are original, not past papers.
+
+| # | Style of | Level | Time | | # | Style of | Level | Time |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Wipro NLTH | Easy | 48 min | | 11 | Deloitte NLA | Medium | 90 min |
+| 2 | HCLTech | Easy | 60 min | | 12 | Cognizant GenC Next | Medium | 100 min |
+| 3 | Cognizant GenC | Easy | 95 min | | 13 | TCS NQT Advanced | Hard | 115 min |
+| 4 | Tech Mahindra | Easy | 75 min | | 14 | Infosys SP / DSE | Hard | 180 min |
+| 5 | Capgemini | Easy | 75 min | | 15 | Zoho | Hard | 120 min |
+| 6 | TCS NQT Foundation | Medium | 75 min | | 16 | Oracle | Hard | 90 min |
+| 7 | Accenture | Medium | 135 min | | 17 | Goldman Sachs | Hard | 120 min |
+| 8 | IBM | Medium | 95 min | | 18 | Adobe | Hard | 90 min |
+| 9 | LTIMindtree | Medium | 100 min | | 19 | Microsoft | Hard | 90 min |
+| 10 | Infosys | Medium | 100 min | | 20 | Amazon SDE | Hard | 105 min |
+
+**Unlocking.** Test 1 is open. Test k opens once the student's best score in test k−1 is strictly more than `prep.unlock-percent`
+(default 50; exactly 50% does not open it). The server enforces it (`403 TEST_LOCKED`), not only the page. An attempt already in
+progress can always be resumed. Tests uploaded without `order` stay open as standalone tests ("College assessments").
+
+**College tests (TPO).** College portal > Mock tests (`/college/mock-tests`): the placement team downloads the template, uploads a
+JSON test (saved as a draft; errors name the exact question to fix), and publishes it. Only that college's students see it, under
+"College assessments", open straight away; it never joins the path (`order` is ignored). Admin and coordinator can upload, publish,
+unpublish, download and delete; viewers only see the list. The list shows how many students took each test and their average score.
+Every change is in the college audit log. API: `/api/v1/college/prep/tests` (`prep_tests.college_id`; NULL = platform test).
+Test: `scripts/e2e_college_prep_test.py` (24 checks, including other colleges being unable to see or change it).
+
+**Test file fields.** A test JSON may carry `"level": "EASY" | "MEDIUM" | "HARD"` and `"order": n` (position in the path).
+
+**Content generator** (`scripts/mocktests/`). `build.py` writes `out/01-….json` to `out/20-….json`; `load.py` uploads and
+publishes them through the admin API (`--replace` swaps existing ones and deletes their attempts). 828 MCQs and 28 coding problems,
+no question repeated anywhere:
+- quant, reasoning, pseudocode, output, data-structure and SQL questions are generated with computed answers (`quant.py`,
+  `logical.py`, `tech.py`);
+- verbal (synonyms, error spotting, para jumbles, reading comprehension, idioms…) and CS theory are hand-written banks
+  (`verbal.py`, `tech.py`);
+- coding problems (`coding.py`) have a reference solution; hidden test outputs come from running it, and are kept under 48 KB
+  because the code runner keeps at most 64 KB of output.
+
+**Test.** `scripts/e2e_prep_ladder_test.py` (49 checks) walks a fresh student through the whole path: the lock and 50% rule, then
+every test with the answer key and the reference solutions run in the real Docker runner (full marks on all 20).
+
+## 10. Things to know
 
 - **Pending feature:** monthly Readiness Assessment dashboard. See [Frontend/src/app/features/college/READINESS_ASSESSMENT.md](../Frontend/src/app/features/college/READINESS_ASSESSMENT.md).
 

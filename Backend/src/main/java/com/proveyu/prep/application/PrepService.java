@@ -36,11 +36,21 @@ public class PrepService {
     private final PrepAttemptRepository attemptRepository;
     private final DockerCodeRunner runner;
     private final ObjectMapper json;
+    private final com.proveyu.college.infrastructure.CollegeStudentRepository students;
+
+    /** A ladder test opens once the best score in the test before it is MORE than this percentage. */
+    @org.springframework.beans.factory.annotation.Value("${prep.unlock-percent:50}")
+    private int unlockPercent = 50;
 
     // ================================================================== admin
 
     @Transactional
     public AdminTestSummary upload(UUID adminId, String rawJson) {
+        return create(rawJson, adminId, null);
+    }
+
+    /** Uploaded by a college's placement team: only its students see it, and it is never part of the unlock path. */
+    private AdminTestSummary create(String rawJson, UUID createdBy, UUID collegeId) {
         TestDefinition def = parse(rawJson);
         TestDefinition clean = validate(def);
         int q = 0, coding = 0, marks = 0;
@@ -50,8 +60,9 @@ public class PrepService {
             marks += x.marksOrDefault();
         }
         PrepTest t = testRepository.save(PrepTest.builder().title(clean.title().trim()).description(clean.description())
-                .companyTag(blankToNull(clean.companyTag())).durationMinutes(clean.durationMinutes()).questionCount(q).codingCount(coding)
-                .totalMarks(marks).definitionJson(write(clean)).published(false).createdBy(adminId).build());
+                .collegeId(collegeId).companyTag(blankToNull(clean.companyTag())).level(clean.level())
+                .levelOrder(collegeId == null ? clean.order() : null).durationMinutes(clean.durationMinutes()).questionCount(q).codingCount(coding)
+                .totalMarks(marks).definitionJson(write(clean)).published(false).createdBy(createdBy).build());
         return summary(t, 0);
     }
 
@@ -59,7 +70,43 @@ public class PrepService {
     public List<AdminTestSummary> adminList() {
         Map<UUID, Long> counts = new HashMap<>();
         attemptRepository.countByTest().forEach(r -> counts.put((UUID) r[0], (Long) r[1]));
-        return testRepository.findAllByOrderByCreatedAtDesc().stream().map(t -> summary(t, counts.getOrDefault(t.getId(), 0L))).toList();
+        return testRepository.findAllByCollegeIdIsNullOrderByCreatedAtDesc().stream().map(t -> summary(t, counts.getOrDefault(t.getId(), 0L))).toList();
+    }
+
+    // ================================================================== college placement team (TPO)
+
+    public List<AdminTestSummary> collegeList(UUID collegeId) {
+        List<PrepTest> tests = testRepository.findAllByCollegeIdOrderByCreatedAtDesc(collegeId);
+        Map<UUID, Object[]> stats = new HashMap<>();
+        if (!tests.isEmpty()) attemptRepository.statsByTest(tests.stream().map(PrepTest::getId).toList()).forEach(r -> stats.put((UUID) r[0], r));
+        return tests.stream().map(t -> {
+            Object[] r = stats.get(t.getId());
+            if (r == null) return summary(t, 0);
+            return summary(t, (Long) r[1], (Long) r[2], r[3] == null ? null : (int) Math.round(((Number) r[3]).doubleValue()));
+        }).toList();
+    }
+
+    @Transactional
+    public AdminTestSummary collegeUpload(UUID collegeId, UUID userId, String rawJson) {
+        return create(rawJson, userId, collegeId);
+    }
+
+    @Transactional
+    public AdminTestSummary collegeSetPublished(UUID collegeId, UUID id, boolean published) {
+        PrepTest t = collegeTest(collegeId, id);
+        t.setPublished(published);
+        return summary(testRepository.save(t), 0);
+    }
+
+    @Transactional
+    public PrepTest collegeDelete(UUID collegeId, UUID id) {
+        PrepTest t = collegeTest(collegeId, id);
+        testRepository.delete(t);
+        return t;
+    }
+
+    public PrepTest collegeTest(UUID collegeId, UUID id) {
+        return testRepository.findByIdAndCollegeId(id, collegeId).orElseThrow(() -> notFound("Test"));
     }
 
     @Transactional
@@ -86,26 +133,82 @@ public class PrepService {
         Map<UUID, List<PrepAttempt>> mine = attemptRepository.findAllByUserIdOrderByStartedAtDesc(userId).stream()
                 .peek(this::autoSubmitIfExpired)
                 .collect(Collectors.groupingBy(PrepAttempt::getTestId, LinkedHashMap::new, Collectors.toList()));
-        return testRepository.findAllByPublishedTrueOrderByCreatedAtDesc().stream().map(t -> {
+        UUID college = collegeOf(userId);
+        List<PrepTest> tests = new ArrayList<>(testRepository.findAllByPublishedTrueOrderByCreatedAtDesc().stream()
+                .filter(t -> visibleTo(t, college)).toList());
+        // Ladder tests first, easiest to hardest; then the standalone tests, newest first.
+        tests.sort(Comparator.comparing((PrepTest t) -> t.getLevelOrder() == null ? Integer.MAX_VALUE : t.getLevelOrder()));
+        Map<UUID, String> lockedBy = lockedTests(tests, mine);
+        return tests.stream().map(t -> {
             List<PrepAttempt> a = mine.getOrDefault(t.getId(), List.of());
             BigDecimal best = a.stream().map(PrepAttempt::getScore).filter(Objects::nonNull).max(Comparator.naturalOrder()).orElse(null);
             UUID open = a.stream().filter(x -> x.getSubmittedAt() == null).map(PrepAttempt::getId).findFirst().orElse(null);
             UUID last = a.stream().filter(x -> x.getSubmittedAt() != null).map(PrepAttempt::getId).findFirst().orElse(null);
             List<String> sections = definition(t).sections().stream().map(Section::name).toList();
             return new TestCard(t.getId(), t.getTitle(), t.getDescription(), t.getCompanyTag(), t.getDurationMinutes(), t.getQuestionCount(),
-                    t.getCodingCount(), t.getTotalMarks(), sections, (int) a.stream().filter(x -> x.getSubmittedAt() != null).count(), best, open, last);
+                    t.getCodingCount(), t.getTotalMarks(), sections, (int) a.stream().filter(x -> x.getSubmittedAt() != null).count(), best, open, last,
+                    t.getLevel(), t.getLevelOrder(), bestPercent(a), lockedBy.containsKey(t.getId()) && open == null, lockedBy.get(t.getId()), unlockPercent, passed(a));
         }).toList();
+    }
+
+    /**
+     * Ladder tests the student cannot start yet, mapped to the title of the test they must pass first. The first ladder test is
+     * always open; test k opens when the best score in test k-1 is more than {@link #unlockPercent}.
+     */
+    private Map<UUID, String> lockedTests(List<PrepTest> published, Map<UUID, List<PrepAttempt>> mine) {
+        Map<UUID, String> locked = new HashMap<>();
+        PrepTest previous = null;
+        for (PrepTest t : published) {
+            if (t.getLevelOrder() == null) continue;
+            if (previous != null) {
+                if (locked.containsKey(previous.getId()) || !passed(mine.getOrDefault(previous.getId(), List.of()))) locked.put(t.getId(), previous.getTitle());
+            }
+            previous = t;
+        }
+        return locked;
+    }
+
+    /** The student's college, or null for a candidate not linked to a college. */
+    private UUID collegeOf(UUID userId) {
+        return students.findFirstByUserIdAndDeletedAtIsNull(userId).map(com.proveyu.college.domain.CollegeStudent::getCollegeId).orElse(null);
+    }
+
+    /** Platform tests are for everyone; a college's own tests only for its students. */
+    private static boolean visibleTo(PrepTest t, UUID studentCollege) {
+        return t.getCollegeId() == null || t.getCollegeId().equals(studentCollege);
+    }
+
+    /** Some submitted attempt scored strictly more than unlockPercent of its maximum (exact, no rounding). */
+    private boolean passed(List<PrepAttempt> attempts) {
+        return attempts.stream().anyMatch(x -> x.getSubmittedAt() != null && x.getScore() != null && x.getMaxScore() > 0
+                && x.getScore().multiply(BigDecimal.valueOf(100)).compareTo(BigDecimal.valueOf((long) unlockPercent * x.getMaxScore())) > 0);
+    }
+
+    /** Best score of the submitted attempts, in percent of the attempt's maximum (floor), or null if none. */
+    private static Integer bestPercent(List<PrepAttempt> attempts) {
+        return attempts.stream().filter(x -> x.getSubmittedAt() != null && x.getScore() != null && x.getMaxScore() > 0)
+                .map(x -> x.getScore().multiply(BigDecimal.valueOf(100)).divide(BigDecimal.valueOf(x.getMaxScore()), 0, java.math.RoundingMode.FLOOR).intValue())
+                .max(Integer::compare).orElse(null);
     }
 
     /** Resumes the open attempt for this test, or starts a new one. */
     @Transactional
     public AttemptView start(UUID userId, UUID testId) {
         PrepTest t = test(testId);
-        if (!t.isPublished()) throw notFound("Test");
+        if (!t.isPublished() || !visibleTo(t, collegeOf(userId))) throw notFound("Test");
         PrepAttempt open = attemptRepository.findAllByUserIdOrderByStartedAtDesc(userId).stream()
                 .filter(a -> a.getTestId().equals(testId) && a.getSubmittedAt() == null)
                 .peek(this::autoSubmitIfExpired).filter(a -> a.getSubmittedAt() == null).findFirst().orElse(null);
         if (open == null) {
+            if (t.getLevelOrder() != null) {
+                Map<UUID, List<PrepAttempt>> mine = attemptRepository.findAllByUserIdOrderByStartedAtDesc(userId).stream()
+                        .collect(Collectors.groupingBy(PrepAttempt::getTestId));
+                String after = lockedTests(testRepository.findAllByPublishedTrueAndLevelOrderNotNullOrderByLevelOrderAsc(), mine).get(t.getId());
+                if (after != null) {
+                    throw new DomainException("This test is locked. Score more than " + unlockPercent + "% in \"" + after + "\" to unlock it.",
+                            HttpStatus.FORBIDDEN, "TEST_LOCKED");
+                }
+            }
             Instant now = Instant.now();
             open = attemptRepository.save(PrepAttempt.builder().testId(testId).userId(userId).startedAt(now)
                     .deadlineAt(now.plus(Duration.ofMinutes(t.getDurationMinutes()))).maxScore(t.getTotalMarks()).answersJson("{}").build());
@@ -302,7 +405,14 @@ public class PrepService {
             throw new DomainException("The test file has problems: " + String.join("; ", errors.subList(0, Math.min(errors.size(), 8)))
                     + (errors.size() > 8 ? " (+" + (errors.size() - 8) + " more)" : ""), HttpStatus.BAD_REQUEST, "INVALID_TEST");
         }
-        return new TestDefinition(d.title(), d.description(), d.companyTag(), d.durationMinutes(), sections);
+        String level = d.level() == null || d.level().isBlank() ? null : d.level().trim().toUpperCase(Locale.ROOT);
+        if (level != null && !List.of("EASY", "MEDIUM", "HARD").contains(level)) {
+            throw new DomainException("The test file has problems: level must be EASY, MEDIUM or HARD", HttpStatus.BAD_REQUEST, "INVALID_TEST");
+        }
+        if (d.order() != null && (d.order() < 1 || d.order() > 1000)) {
+            throw new DomainException("The test file has problems: order must be 1-1000", HttpStatus.BAD_REQUEST, "INVALID_TEST");
+        }
+        return new TestDefinition(d.title(), d.description(), d.companyTag(), level, d.order(), d.durationMinutes(), sections);
     }
 
     private TestDefinition parse(String raw) {
@@ -352,8 +462,13 @@ public class PrepService {
     }
 
     private AdminTestSummary summary(PrepTest t, long attempts) {
+        return summary(t, attempts, 0, null);
+    }
+
+    private AdminTestSummary summary(PrepTest t, long attempts, long students, Integer averagePercent) {
         return new AdminTestSummary(t.getId(), t.getTitle(), t.getDescription(), t.getCompanyTag(), t.getDurationMinutes(), t.getQuestionCount(),
-                t.getCodingCount(), t.getTotalMarks(), t.isPublished(), attempts, t.getCreatedAt());
+                t.getCodingCount(), t.getTotalMarks(), t.isPublished(), attempts, t.getCreatedAt(), t.getLevel(), t.getLevelOrder(), students,
+                averagePercent);
     }
 
     private String write(Object o) {

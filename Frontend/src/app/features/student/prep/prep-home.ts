@@ -5,8 +5,12 @@ import { forkJoin } from 'rxjs';
 import { AttemptHistory, PrepService, TestCard } from '../../../services/prep.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
 import { EmptyState, Skeleton } from '../../../shared/ui/states';
+import { enterFullscreen, exitFullscreen } from '../../../shared/fullscreen';
 
-/** Preparation tab: mock tests to practise before a drive, and past attempts. */
+/**
+ * Preparation tab: the mock test ladder (easy service-company patterns up to hard product-company ones; each opens after
+ * scoring more than the unlock percentage in the one before), other standalone tests, and past attempts.
+ */
 @Component({
   selector: 'pm-prep-home',
   imports: [DatePipe, DecimalPipe, RouterLink, EmptyState, Skeleton],
@@ -26,8 +30,66 @@ import { EmptyState, Skeleton } from '../../../shared/ui/states';
     </section>
 
     @if (loading()) { <pm-skeleton [rows]="6" /> } @else {
+      @if (ladder().length) {
+        <section class="mb-4" aria-labelledby="lad-title">
+          <div class="d-flex align-items-end justify-content-between gap-2 flex-wrap mb-2">
+            <div>
+              <h2 id="lad-title" class="h6 st-h mb-0">Placement test path</h2>
+              <p class="small st-muted mb-0">From mass-hiring patterns to product companies. Score more than {{ ladder()[0].unlockPercent }}% in a test to open the next one.</p>
+            </div>
+            <div class="lad-progress small" aria-label="Progress">
+              <strong class="st-h">{{ unlockedCount() }}</strong><span class="st-muted"> of {{ ladder().length }} open</span>
+              <div class="lad-bar" aria-hidden="true"><span [style.width.%]="unlockedCount() * 100 / ladder().length"></span></div>
+            </div>
+          </div>
+          @for (g of levels(); track g.level) {
+            <h3 class="lad-level" [attr.data-level]="g.level">{{ levelLabel[g.level] }}</h3>
+            <ol class="lad-list">
+              @for (t of g.tests; track t.id) {
+                <li class="lad-step" [class.locked]="t.locked" [class.done]="passed(t)" [class.current]="!t.locked && !passed(t)" [attr.data-order]="t.order">
+                  <span class="lad-num" aria-hidden="true">
+                    @if (t.locked) { <i class="bi bi-lock-fill"></i> } @else if (passed(t)) { <i class="bi bi-check-lg"></i> } @else { {{ t.order }} }
+                  </span>
+                  <div class="lad-body min-w-0">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <span class="fw-semibold st-h">{{ t.order }}. {{ t.title }}</span>
+                      @if (t.companyTag) { <span class="st-chip">{{ t.companyTag }}</span> }
+                    </div>
+                    <div class="prep-meta mt-1">
+                      <span><i class="bi bi-clock"></i> {{ t.durationMinutes }} min</span>
+                      @if (t.questionCount - t.codingCount) { <span><i class="bi bi-ui-checks"></i> {{ t.questionCount - t.codingCount }} MCQ</span> }
+                      @if (t.codingCount) { <span><i class="bi bi-code-slash"></i> {{ t.codingCount }} coding</span> }
+                      <span class="d-none d-sm-inline">{{ t.sections.join(' · ') }}</span>
+                    </div>
+                    @if (t.locked) {
+                      <div class="small lad-hint mt-1"><i class="bi bi-lock"></i> Score more than {{ t.unlockPercent }}% in "{{ t.unlockAfter }}" to unlock</div>
+                    }
+                  </div>
+                  <div class="lad-actions">
+                    @if (t.bestPercent !== null && t.bestPercent !== undefined) {
+                      <span class="lad-best" [class.good]="t.passed">{{ t.bestPercent }}%</span>
+                    }
+                    @if (t.lastAttemptId) { <a class="btn btn-sm btn-outline-secondary d-none d-md-inline-block" [routerLink]="['/student/prep/result', t.lastAttemptId]">Result</a> }
+                    @if (t.inProgressAttemptId) {
+                      <button class="btn btn-sm btn-primary" (click)="open(t, true)"><i class="bi bi-play-fill"></i> Resume</button>
+                    } @else if (t.locked) {
+                      <button class="btn btn-sm btn-outline-secondary" disabled [attr.aria-label]="'Locked: ' + t.title"><i class="bi bi-lock-fill"></i> Locked</button>
+                    } @else {
+                      <button class="btn btn-sm btn-primary" (click)="open(t, false)">{{ t.attempts ? 'Retake' : 'Start' }}</button>
+                    }
+                  </div>
+                </li>
+              }
+            </ol>
+          }
+        </section>
+        @if (others().length) {
+          <h2 class="h6 st-h mb-0">College assessments</h2>
+          <p class="small st-muted mb-2">Tests shared by your placement cell, open to take any time.</p>
+        }
+      }
       <div class="row g-3">
-        @for (t of tests(); track t.id) {
+        @for (t of others(); track t.id) {
           <div class="col-md-6 col-xl-4"><article class="st-card h-100 d-flex flex-column prep-card">
             <div class="d-flex justify-content-between gap-2 align-items-start">
               <h3 class="h6 st-h mb-1">{{ t.title }}</h3>
@@ -54,7 +116,9 @@ import { EmptyState, Skeleton } from '../../../shared/ui/states';
             </div>
           </article></div>
         } @empty {
-          <div class="col-12"><pm-empty-state icon="bi-journal-code" title="No mock tests yet" text="New practice tests will appear here as soon as they are published." /></div>
+          @if (!ladder().length) {
+            <div class="col-12"><pm-empty-state icon="bi-journal-code" title="No mock tests yet" text="New practice tests will appear here as soon as they are published." /></div>
+          }
         }
       </div>
 
@@ -87,6 +151,26 @@ import { EmptyState, Skeleton } from '../../../shared/ui/states';
     .prep-hist:hover { border-color: var(--pm-link); }
     .prep-score { font-weight: 800; font-variant-numeric: tabular-nums; color: #e11d48; min-width: 3rem; text-align: right; }
     .prep-score.mid { color: #d97706; } .prep-score.good { color: #16a34a; }
+    .lad-progress { min-width: 9rem; text-align: right; }
+    .lad-bar { height: 6px; border-radius: 99px; background: var(--pm-soft); margin-top: .25rem; overflow: hidden; }
+    .lad-bar span { display: block; height: 100%; background: linear-gradient(90deg, #16a34a, #0b5cff); border-radius: 99px; }
+    .lad-level { font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; margin: 1rem 0 .4rem; }
+    .lad-level[data-level='EASY'] { color: #16a34a; } .lad-level[data-level='MEDIUM'] { color: #d97706; } .lad-level[data-level='HARD'] { color: #e11d48; }
+    .lad-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
+    .lad-step { display: flex; gap: .85rem; align-items: center; padding: .75rem .9rem; border-radius: 12px; border: 1px solid var(--pm-card-border);
+      background: var(--pm-card-bg); }
+    .lad-step.current { border-color: var(--pm-link); box-shadow: 0 0 0 3px rgba(11,92,255,.08); }
+    .lad-step.locked { opacity: .72; }
+    .lad-num { width: 2.1rem; height: 2.1rem; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; font-weight: 800; font-size: .85rem;
+      background: var(--pm-soft); color: var(--pm-label); }
+    .lad-step.current .lad-num { background: #0b5cff; color: #fff; }
+    .lad-step.done .lad-num { background: #16a34a; color: #fff; }
+    .lad-body { flex: 1 1 auto; }
+    .lad-hint { color: var(--pm-muted); }
+    .lad-actions { display: flex; align-items: center; gap: .5rem; flex-shrink: 0; }
+    .lad-best { font-weight: 800; font-variant-numeric: tabular-nums; color: #d97706; }
+    .lad-best.good { color: #16a34a; }
+    @media (max-width: 575px) { .lad-step { flex-wrap: wrap; } .lad-actions { width: 100%; justify-content: flex-end; } }
   `],
 })
 export class PrepHome implements OnInit {
@@ -96,6 +180,20 @@ export class PrepHome implements OnInit {
   loading = signal(true);
   tests = signal<TestCard[]>([]);
   history = signal<AttemptHistory[]>([]);
+  readonly levelLabel: Record<string, string> = { EASY: 'Easy · mass hiring', MEDIUM: 'Medium', HARD: 'Hard · product companies' };
+  ladder = computed(() => this.tests().filter(t => t.order != null));
+  others = computed(() => this.tests().filter(t => t.order == null));
+  unlockedCount = computed(() => this.ladder().filter(t => !t.locked).length);
+  /** Ladder tests grouped by level, keeping the path order. */
+  levels = computed(() => {
+    const out: { level: string; tests: TestCard[] }[] = [];
+    for (const t of this.ladder()) {
+      const level = t.level ?? 'MEDIUM';
+      if (out.at(-1)?.level !== level) out.push({ level, tests: [] });
+      out.at(-1)!.tests.push(t);
+    }
+    return out;
+  });
   avg = computed(() => {
     const h = this.history();
     return h.length ? Math.round(h.reduce((s, x) => s + this.pct(x), 0) / h.length) : null;
@@ -108,17 +206,24 @@ export class PrepHome implements OnInit {
     });
   }
 
+  passed(t: TestCard): boolean { return t.passed; }
+
   pct(h: AttemptHistory): number { return h.maxScore ? Math.round(h.score * 100 / h.maxScore) : 0; }
 
   async open(t: TestCard, resume: boolean): Promise<void> {
     if (!resume) {
       const r = await this.confirm.ask({
         title: `Start "${t.title}"?`,
-        message: `The ${t.durationMinutes}-minute timer starts now and keeps running even if you close the page. Answers save automatically, and the test submits itself when time is up.`,
+        message: `The test opens in full screen and the ${t.durationMinutes}-minute timer starts now. It keeps running even if you close the page. Answers save automatically, and the test submits itself when time is up.`,
         confirmText: 'Start test',
       });
       if (!r.ok) return;
     }
-    this.prep.start(t.id).subscribe(a => this.router.navigate(['/student/test', a.attemptId]));
+    // Must run inside the click: browsers only allow full screen right after a user action.
+    void enterFullscreen();
+    this.prep.start(t.id).subscribe({
+      next: a => this.router.navigate(['/student/test', a.attemptId]),
+      error: () => exitFullscreen(),
+    });
   }
 }

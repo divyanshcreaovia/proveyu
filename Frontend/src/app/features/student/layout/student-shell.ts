@@ -23,6 +23,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
   ] },
   { section: 'Preparation', items: [
     { label: 'Mock tests', icon: 'bi-journal-code', route: '/student/prep' },
+    { label: 'AI interview', icon: 'bi-mic', route: '/student/ai-interview' },
   ] },
   { section: 'College', items: [
     { label: 'Announcements', icon: 'bi-megaphone', route: '/student/announcements', badge: 'announcements' },

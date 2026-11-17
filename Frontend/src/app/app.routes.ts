@@ -62,6 +62,10 @@ export const routes: Routes = [
     path: 'admin/prep', title: 'Mock tests', canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] },
     loadComponent: () => import('./features/admin/admin-prep').then(m => m.AdminPrep),
   },
+  {
+    path: 'admin/payments', title: 'Interview payments', canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] },
+    loadComponent: () => import('./features/admin/admin-payments').then(m => m.AdminPayments),
+  },
 
   // ---------------------------------------------------------------- student portal (college students, CANDIDATE role)
   { path: 'student/login', canActivate: [guestGuard], loadComponent: () => import('./features/student/auth/student-login').then(m => m.StudentLogin) },
@@ -74,6 +78,11 @@ export const routes: Routes = [
     // full-screen test player (outside the sidebar layout, like a real exam)
     path: 'student/test/:id', title: 'Mock test', canActivate: [authGuard, roleGuard], data: { roles: ['CANDIDATE'] },
     loadComponent: () => import('./features/student/prep/test-player').then(m => m.TestPlayer),
+  },
+  {
+    // full-screen AI interview room
+    path: 'student/interview-room/:id', title: 'AI interview', canActivate: [authGuard, roleGuard], data: { roles: ['CANDIDATE'] },
+    loadComponent: () => import('./features/student/interview/interview-room').then(m => m.InterviewRoom),
   },
   {
     path: 'student',
@@ -92,6 +101,8 @@ export const routes: Routes = [
       { path: 'profile', title: 'My profile', loadComponent: () => import('./features/student/profile').then(m => m.StudentProfile) },
       { path: 'prep', title: 'Preparation', loadComponent: () => import('./features/student/prep/prep-home').then(m => m.PrepHome) },
       { path: 'prep/result/:id', title: 'Test result', loadComponent: () => import('./features/student/prep/prep-result').then(m => m.PrepResult) },
+      { path: 'ai-interview', title: 'AI interview', loadComponent: () => import('./features/student/interview/interview-home').then(m => m.InterviewHome) },
+      { path: 'ai-interview/report/:id', title: 'Interview report', loadComponent: () => import('./features/student/interview/interview-report').then(m => m.InterviewReport) },
     ],
   },
 
@@ -153,6 +164,7 @@ export const routes: Routes = [
       { path: 'team', title: 'Team & roles', loadComponent: () => import('./features/college/team/team').then(m => m.Team) },
       { path: 'communication', title: 'Communication', loadComponent: () => import('./features/college/communication/communication').then(m => m.Communication) },
       { path: 'reports', title: 'Reports & analytics', loadComponent: () => import('./features/college/reports/reports').then(m => m.Reports) },
+      { path: 'mock-tests', title: 'Mock tests', loadComponent: () => import('./features/college/prep/college-mock-tests').then(m => m.CollegeMockTests) },
       {
         path: 'audit', title: 'Audit log', canActivate: [roleGuard], data: { roles: COLLEGE_ADMIN },
         loadComponent: () => import('./features/college/audit/audit-log').then(m => m.AuditLog),
