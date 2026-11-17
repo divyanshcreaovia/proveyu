@@ -82,15 +82,24 @@ public class InterviewEvaluator {
         InterviewSession s = sessions.findById(a.getSessionId()).orElseThrow();
         InterviewPrompts.Score score;
         String model = ai.evalModel();
+        List<String> stack = AiInterviewService.focus(s);
         if (InterviewPrompts.words(a.getTranscript()) == 0) {
-            score = InterviewPrompts.emptyAnswerScore();
+            // Skipped: 0 by rule. The model only writes what a good answer would include, so the report still teaches something.
+            String better = null;
+            try {
+                better = InterviewPrompts.readModelAnswer(ai.evalJson(InterviewPrompts.scoreSystem(),
+                        InterviewPrompts.modelAnswerUser(s.getRoleTitle(), stack, q.getQuestionText()), 0.2, InterviewPrompts.MODEL_ANSWER_SCHEMA));
+            } catch (RuntimeException e) {
+                log.info("No model answer for skipped question {}: {}", q.getId(), e.getMessage());
+            }
+            score = InterviewPrompts.skippedScore(better);
             model = "rule";
         } else {
             score = null;
             for (int attempt = 0; attempt < 2 && score == null; attempt++) {
                 try {
                     score = InterviewPrompts.readScore(ai.evalJson(InterviewPrompts.scoreSystem(),
-                            InterviewPrompts.scoreUser(s.getRoleTitle(), q.getQuestionText(), a.getTranscript(),
+                            InterviewPrompts.scoreUser(s.getRoleTitle(), stack, q.getQuestionText(), a.getTranscript(),
                                     a.getWordsPerMinute() == null ? 0 : a.getWordsPerMinute(), InterviewPrompts.fillerCount(a.getTranscript())), 0.1, InterviewPrompts.SCORE_SCHEMA));
                 } catch (RuntimeException e) {
                     log.warn("Scoring answer {} failed (attempt {}): {}", answerId, attempt + 1, e.getMessage());
@@ -127,8 +136,10 @@ public class InterviewEvaluator {
                 .collect(Collectors.toMap(AnswerEvaluation::getAnswerId, Function.identity()));
         List<InterviewAnswer> ordered = list.stream().sorted(Comparator.comparingInt(a -> qs.get(a.getQuestionId()).getSeq())).toList();
 
-        long mainAnswered = ordered.stream().filter(a -> qs.get(a.getQuestionId()).getParentQuestionId() == null).count();
-        int skippedMain = (int) Math.max(0, s.getPlannedQuestions() - mainAnswered); // ended early: unasked questions count as zero
+        // Every planned question counts: skipped ones score 0 by rule, unreached ones (ended early) count as 0 too.
+        int notReached = Math.max(0, s.getPlannedQuestions() - ordered.size());
+        int skipped = (int) ordered.stream().filter(a -> InterviewPrompts.words(a.getTranscript()) == 0).count();
+        int answered = ordered.size() - skipped;
         double sum = 0;
         StringBuilder perQuestion = new StringBuilder();
         int n = 0;
@@ -140,20 +151,24 @@ public class InterviewEvaluator {
                     .append(", relevance ").append(e.getRelevance()).append(", communication ").append(e.getCommunication()).append(", confidence ")
                     .append(e.getConfidence()).append(". ").append(e.getFeedback() == null ? "" : e.getFeedback()).append('\n');
         }
-        if (skippedMain > 0) perQuestion.append(skippedMain).append(" planned question(s) were not answered because the interview was ended early.\n");
-        int denominator = ordered.size() + skippedMain;
+        if (notReached > 0) perQuestion.append(notReached).append(" question(s) were not reached because the interview was ended early (0 each).\n");
+        int denominator = ordered.size() + notReached;
         BigDecimal overall = BigDecimal.valueOf(denominator == 0 ? 0 : sum / denominator).setScale(2, RoundingMode.HALF_UP);
         Recommendation rec = overall.doubleValue() >= 75 ? Recommendation.READY : overall.doubleValue() >= 55 ? Recommendation.ALMOST_READY : Recommendation.NEEDS_PRACTICE;
 
         InterviewPrompts.Summary summary;
         try {
             summary = InterviewPrompts.readSummary(ai.evalJson(InterviewPrompts.summarySystem(),
-                    InterviewPrompts.summaryUser(s.getRoleTitle(), overall.intValue(), perQuestion.toString()), 0.3, InterviewPrompts.SUMMARY_SCHEMA));
+                    InterviewPrompts.summaryUser(s.getRoleTitle(), overall.intValue(), denominator, answered, skipped, notReached, perQuestion.toString()),
+                    0.3, InterviewPrompts.SUMMARY_SCHEMA));
         } catch (RuntimeException e) {
             log.warn("Summary for {} failed, using the plain one: {}", sessionId, e.getMessage());
             summary = new InterviewPrompts.Summary(null, List.of(), List.of());
         }
-        if (summary.summary() == null) summary = new InterviewPrompts.Summary(plainSummary(overall.intValue(), rec, ordered.size()), summary.strengths(), summary.improvements());
+        if (summary.summary() == null || summary.improvements().isEmpty()) {
+            summary = new InterviewPrompts.Summary(summary.summary() == null ? plainSummary(overall.intValue(), rec, denominator, answered, skipped, notReached) : summary.summary(),
+                    summary.strengths(), summary.improvements().isEmpty() ? plainImprovements(skipped, notReached, evals.values()) : summary.improvements());
+        }
         InterviewPrompts.Summary sm = summary;
         tx.executeWithoutResult(st -> {
             if (reports.findBySessionId(sessionId).isEmpty()) {
@@ -168,19 +183,37 @@ public class InterviewEvaluator {
         });
     }
 
-    /** One answer as 0..100 from its four 1..5 scores. */
+    /**
+     * One answer as 0..100 from its four 0..5 scores. No real answer (content or relevance 0: skipped, "I don't know", off-topic, or
+     * asking for marks) is 0, however fluent it sounded.
+     */
     static double answerPercent(AnswerEvaluation e) {
+        if (e.getContent() == 0 || e.getRelevance() == 0) return 0;
         double w = W_CONTENT * e.getContent() + W_RELEVANCE * e.getRelevance() + W_COMMUNICATION * e.getCommunication() + W_CONFIDENCE * e.getConfidence();
-        return (w - 1) / 4 * 100;
+        return w / 5 * 100;
     }
 
-    private static String plainSummary(int overall, Recommendation rec, int answered) {
+    /** Used when the AI summary could not be written: concrete points from the scores themselves. */
+    static List<String> plainImprovements(int skipped, int notReached, Collection<AnswerEvaluation> evals) {
+        List<String> out = new ArrayList<>();
+        if (skipped > 0) out.add("Attempt every question: a skipped question scores 0, while even a short, honest answer earns marks.");
+        if (notReached > 0) out.add("Finish the whole interview; questions you do not reach count as 0.");
+        double content = evals.stream().filter(e -> e.getContent() > 0).mapToInt(AnswerEvaluation::getContent).average().orElse(0);
+        double comm = evals.stream().filter(e -> e.getCommunication() > 0).mapToInt(AnswerEvaluation::getCommunication).average().orElse(0);
+        if (content > 0 && content < 4) out.add("Make answers more concrete: give a definition, then one real example from your project or studies.");
+        if (comm > 0 && comm < 4) out.add("Structure each answer: the main point first, then how or why, then a one-line wrap-up.");
+        if (out.size() < 2) out.add("Read the strong-answer points under each question and practise saying them out loud.");
+        return out.subList(0, Math.min(3, out.size()));
+    }
+
+    private static String plainSummary(int overall, Recommendation rec, int total, int answered, int skipped, int notReached) {
         String verdict = switch (rec) {
             case READY -> "You are interview-ready for this role.";
             case ALMOST_READY -> "You are close; a little more practice will make a clear difference.";
             case NEEDS_PRACTICE -> "You need more practice before the real interview.";
         };
-        return "You answered " + answered + " question(s) and scored " + overall + " out of 100. " + verdict
+        return "You answered " + answered + " of " + total + " questions" + (skipped > 0 ? ", skipped " + skipped : "")
+                + (notReached > 0 ? ", and did not reach " + notReached : "") + ", and scored " + overall + " out of 100. " + verdict
                 + " Read the feedback under each answer and try again.";
     }
 

@@ -37,18 +37,26 @@ export interface Overview {
 }
 export interface AskedQuestion { id: string; number: number; followUp: boolean; text: string; topic?: string; transcript?: string; }
 export interface SessionView {
-  id: string; type: InterviewType; difficulty: Difficulty; roleTitle: string; companyName?: string; status: SessionStatus; plannedQuestions: number; mainAnswered: number;
+  id: string; type: InterviewType; difficulty: Difficulty; roleTitle: string; companyName?: string; status: SessionStatus; plannedQuestions: number; answered: number;
   startedAt: string; done: AskedQuestion[]; current?: AskedQuestion; speechAvailable: boolean; maxAnswerSeconds: number;
+  /** Technologies the questions are limited to (empty = general fundamentals). */
+  focus: string[];
 }
+/** ANSWERED, SKIPPED by the student (0), or NOT_REACHED because the interview was ended early (0). */
+export type AnswerStatus = 'ANSWERED' | 'SKIPPED' | 'NOT_REACHED';
+/** One question in the report. Scores 0-5; percent = the answer's score out of 100. answerId is missing when NOT_REACHED. */
 export interface AnswerReview {
-  questionId: string; number: number; followUp: boolean; question: string; topic?: string; transcript: string; inputMode: 'VOICE' | 'TEXT';
-  durationSeconds?: number; wordsPerMinute?: number; hasAudio: boolean; answerId: string;
-  content?: number; communication?: number; confidence?: number; relevance?: number; feedback?: string; betterAnswer?: string;
+  questionId: string; number: number; followUp: boolean; question: string; topic?: string; status: AnswerStatus; transcript?: string;
+  inputMode?: 'VOICE' | 'TEXT'; durationSeconds?: number; wordsPerMinute?: number; hasAudio: boolean; answerId?: string;
+  content?: number; communication?: number; confidence?: number; relevance?: number; percent?: number; feedback?: string; betterAnswer?: string;
 }
+/** Average of each criterion over all planned questions, 0-5. */
+export interface Criteria { content: number; relevance: number; communication: number; confidence: number; }
 export interface ReportView {
   sessionId: string; type: InterviewType; difficulty: Difficulty; roleTitle: string; companyName?: string; status: SessionStatus; startedAt: string; endedAt?: string;
-  evaluated: number; total: number; overallScore?: number; recommendation?: Recommendation; summary?: string; strengths: string[];
-  improvements: string[]; answers: AnswerReview[]; errorMessage?: string;
+  durationSeconds?: number; evaluated: number; total: number; plannedQuestions: number; answeredCount: number; skippedCount: number; notReachedCount: number;
+  focus: string[]; ownJobDescription: boolean; overallScore?: number; recommendation?: Recommendation; criteria: Criteria; summary?: string;
+  strengths: string[]; improvements: string[]; answers: AnswerReview[]; errorMessage?: string;
 }
 
 export const TYPE_LABELS: Record<InterviewType, string> = { TECHNICAL: 'Technical', HR: 'HR', MIXED: 'Technical + HR' };
@@ -80,7 +88,7 @@ export class InterviewService {
   private files = inject(FileService);
 
   overview(): Observable<Overview> { return this.http.get<ApiResponse<Overview>>(api(B)).pipe(map(r => r.data)); }
-  start(b: { type: InterviewType; difficulty: Difficulty; driveId?: string | null; roleTitle?: string; consent: boolean }): Observable<SessionView> {
+  start(b: { type: InterviewType; difficulty: Difficulty; driveId?: string | null; roleTitle?: string; jobDescription?: string; consent: boolean }): Observable<SessionView> {
     return this.http.post<ApiResponse<SessionView>>(api(`${B}/sessions`), b).pipe(map(r => r.data));
   }
   session(id: string): Observable<SessionView> { return this.http.get<ApiResponse<SessionView>>(api(`${B}/sessions/${id}`)).pipe(map(r => r.data)); }

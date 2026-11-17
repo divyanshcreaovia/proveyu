@@ -28,7 +28,7 @@ class AiGatewayTest {
         }
         JsonNode score = noCloud.strictSchema(InterviewPrompts.SCORE_SCHEMA);
         assertThat(score.path("required").size()).isEqualTo(score.path("properties").size()).isEqualTo(7);
-        assertThat(score.path("properties").path("content").path("enum").size()).isEqualTo(5);
+        assertThat(score.path("properties").path("content").path("enum").size()).isEqualTo(6); // 0..5
     }
 
     @Test

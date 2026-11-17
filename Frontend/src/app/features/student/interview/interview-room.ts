@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, OnInit, computed, inject, input, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy, OnInit, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AppError } from '../../../core/api';
@@ -8,11 +8,16 @@ import { ToastService } from '../../../services/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
 import { WavRecorder } from './wav-recorder';
 
-type Phase = 'loading' | 'check' | 'asking' | 'ready' | 'recording' | 'processing' | 'error';
+type Phase = 'loading' | 'check' | 'asking' | 'countdown' | 'ready' | 'recording' | 'processing' | 'error';
+
+/** Thinking time after each question; recording then starts on its own. */
+const PREP_SECONDS = 10;
 
 /**
- * Full-screen AI interview: the interviewer speaks each question (Piper, or the browser voice as a fallback), the student
- * answers by voice (recorded as WAV and transcribed on the server) or by typing, and follow-ups arrive as the AI decides.
+ * Full-screen AI interview: the interviewer speaks each question (Piper, or the browser voice as a fallback), then a 10-second
+ * countdown runs and recording starts by itself; the student only presses Submit, or Skip (a skipped question scores 0). Answers are recorded as WAV and transcribed on the
+ * server, or typed. The camera must stay on for the whole interview ("Monitoring on"); video is shown only to the student and is
+ * never recorded or uploaded.
  */
 @Component({
   selector: 'pm-interview-room',
@@ -30,11 +35,12 @@ type Phase = 'loading' | 'check' | 'asking' | 'ready' | 'recording' | 'processin
           <img src="images/proveyu-mark.png" alt="" class="ir-mark" />
           <div class="ir-head">
             <div class="ir-title text-truncate">{{ typeLabels[v.type] }} interview · {{ levelLabels[v.difficulty] }} · {{ v.companyName ? v.companyName + ' · ' : '' }}{{ v.roleTitle }}</div>
-            <div class="ir-sub">Question {{ Math.min(v.mainAnswered + 1, v.plannedQuestions) }} of {{ v.plannedQuestions }}@if (v.current?.followUp) { · follow-up }</div>
+            <div class="ir-sub">Question {{ Math.min(v.answered + 1, v.plannedQuestions) }} of {{ v.plannedQuestions }}@if (v.current?.followUp) { · follow-up }@if (v.focus.length) { <span class="d-none d-md-inline"> · Focus: {{ v.focus.join(', ') }}</span> }</div>
           </div>
           <div class="ir-progress d-none d-sm-flex" aria-hidden="true">
-            @for (i of steps(); track i) { <span [class.done]="i < v.mainAnswered" [class.now]="i === v.mainAnswered"></span> }
+            @for (i of steps(); track i) { <span [class.done]="i < v.answered" [class.now]="i === v.answered"></span> }
           </div>
+          @if (camOn()) { <span class="ir-mon" role="status"><span class="ir-mon-dot" aria-hidden="true"></span>Monitoring on</span> }
           <button class="ir-icon" (click)="theme.toggle()" [attr.aria-label]="theme.dark() ? 'Light mode' : 'Dark mode'">
             <i class="bi" [class.bi-moon-stars]="!theme.dark()" [class.bi-sun]="theme.dark()"></i></button>
           <button class="ir-end" (click)="endInterview()" [disabled]="phase() === 'processing'">End interview</button>
@@ -42,10 +48,21 @@ type Phase = 'loading' | 'check' | 'asking' | 'ready' | 'recording' | 'processin
 
         <div class="ir-body pm-shell-content">
           <main class="ir-stage">
+            @if (camLost() && phase() !== 'check') {
+              <div class="alert alert-warning d-flex align-items-center gap-2 flex-wrap mb-0" role="alert">
+                <i class="bi bi-camera-video-off-fill"></i><span class="flex-grow-1">Your camera turned off. Keep it on during the interview.</span>
+                <button class="btn btn-sm btn-warning" (click)="enableCamera()">Turn camera on</button>
+              </div>
+            }
             @if (phase() === 'check') {
               <section class="ir-card ir-check">
                 <h1 class="h4 st-h mb-1">Before you start</h1>
-                <p class="st-muted mb-3">Sit somewhere quiet, allow the microphone, and say something to check that the bar moves.</p>
+                <p class="st-muted mb-3">Sit somewhere quiet with your face clearly visible. Allow the <strong>camera and microphone</strong>, then say something to
+                  check that the bar moves. The camera stays on during the whole interview for monitoring; it is not recorded or saved.</p>
+                <p class="small mb-2" [class.text-success]="camOn()" [class.st-muted]="!camOn()">
+                  @if (camError()) { <span class="text-danger">{{ camError() }}</span> }
+                  @else if (camOn()) { <i class="bi bi-camera-video-fill"></i> Camera is on }
+                  @else { <i class="bi bi-camera-video-off"></i> Camera not on yet }</p>
                 <div class="ir-meter mb-2" role="meter" aria-label="Microphone level" [attr.aria-valuenow]="Math.round(level() * 100)" aria-valuemin="0" aria-valuemax="100">
                   <div [style.width.%]="level() * 100"></div></div>
                 <p class="small mb-3" [class.text-success]="micOk()" [class.st-muted]="!micOk()">
@@ -54,9 +71,9 @@ type Phase = 'loading' | 'check' | 'asking' | 'ready' | 'recording' | 'processin
                   @else if (micReady()) { Say "hello" to test your microphone }
                   @else { Microphone not connected yet }</p>
                 <div class="d-flex gap-2 flex-wrap">
-                  @if (!micReady()) { <button class="btn btn-outline-primary" (click)="enableMic()"><i class="bi bi-mic"></i> Allow microphone</button> }
-                  <button class="btn btn-primary" (click)="begin(false)" [disabled]="!micReady()"><i class="bi bi-play-fill"></i> {{ v.done.length ? 'Continue interview' : 'Start interview' }}</button>
-                  <button class="btn btn-link" (click)="begin(true)">I will type my answers</button>
+                  @if (!micReady() || !camOn()) { <button class="btn btn-outline-primary" (click)="enableDevices()"><i class="bi bi-camera-video"></i> Allow camera and microphone</button> }
+                  <button class="btn btn-primary" (click)="begin(false)" [disabled]="!micReady() || !camOn()"><i class="bi bi-play-fill"></i> {{ v.done.length ? 'Continue interview' : 'Start interview' }}</button>
+                  <button class="btn btn-link" (click)="begin(true)" [disabled]="!camOn()">I will type my answers</button>
                 </div>
               </section>
             } @else if (v.current; as q) {
@@ -71,19 +88,32 @@ type Phase = 'loading' | 'check' | 'asking' | 'ready' | 'recording' | 'processin
               <section class="ir-card ir-answer">
                 @switch (phase()) {
                   @case ('asking') { <p class="st-muted mb-0 text-center"><i class="bi bi-soundwave"></i> The interviewer is asking the question…</p>
-                    <button class="btn btn-sm btn-link d-block mx-auto" (click)="skipAudio()">Skip to answer</button> }
+                    <div class="text-center"><button class="btn btn-sm btn-link" (click)="skipAudio()">Skip to answer</button>
+                      <button class="btn btn-sm btn-link text-body-secondary" (click)="skip()"><i class="bi bi-skip-forward"></i> Skip question</button></div> }
                   @case ('processing') {
                     <div class="text-center py-2" aria-live="polite"><span class="spinner-border spinner-border-sm text-primary me-2"></span><span class="st-h">{{ processingLabel() }}</span></div>
                   }
+                  @case ('countdown') {
+                    <div class="text-center ir-count" aria-live="polite">
+                      @if (hint()) { <p class="small text-danger mb-2" role="alert">{{ hint() }}</p> }
+                      <div class="ir-count-num" role="timer" [attr.aria-label]="'Recording starts in ' + countdown() + ' seconds'">{{ countdown() }}</div>
+                      <p class="st-h fw-semibold mb-0">Think about your answer. Recording starts in {{ countdown() }} second{{ countdown() === 1 ? '' : 's' }}.</p>
+                      <p class="small st-muted mb-2">Then just speak, and press Submit when you finish.</p>
+                      <button class="btn btn-sm btn-link" (click)="startNow()">I'm ready, start now</button>
+                      <button class="btn btn-sm btn-link" (click)="useTyping()"><i class="bi bi-keyboard"></i> Type instead</button>
+                      <button class="btn btn-sm btn-link text-body-secondary" (click)="skip()"><i class="bi bi-skip-forward"></i> Skip question</button>
+                    </div>
+                  }
                   @case ('recording') {
+                    <p class="text-center st-h fw-semibold mb-2"><i class="bi bi-record-circle text-danger"></i> Recording, speak your answer</p>
                     <div class="ir-rec">
                       <span class="ir-dot" aria-hidden="true"></span>
                       <span class="ir-clock" role="timer">{{ clock(recSeconds()) }} <span class="st-muted">/ {{ clock(v.maxAnswerSeconds) }}</span></span>
                       <div class="ir-meter flex-grow-1" aria-hidden="true"><div [style.width.%]="level() * 100"></div></div>
                     </div>
-                    <div class="d-flex gap-2 justify-content-center mt-3">
-                      <button class="btn btn-outline-secondary" (click)="cancelRecording()">Re-record</button>
-                      <button class="btn btn-primary px-4" (click)="finishRecording()"><i class="bi bi-stop-fill"></i> Done answering</button>
+                    <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap mt-3">
+                      <button class="btn btn-primary px-4" (click)="finishRecording()"><i class="bi bi-send-fill"></i> Submit answer</button>
+                      <button class="btn btn-link text-body-secondary" (click)="skip()"><i class="bi bi-skip-forward"></i> Skip question</button>
                     </div>
                   }
                   @default {
@@ -98,8 +128,8 @@ type Phase = 'loading' | 'check' | 'asking' | 'ready' | 'recording' | 'processin
                     } @else {
                       <div class="text-center">
                         <button class="ir-mic" (click)="startRecording()" aria-label="Start answering"><i class="bi bi-mic-fill"></i></button>
-                        <p class="st-h fw-semibold mt-2 mb-0">Tap to start answering</p>
-                        <p class="small st-muted mb-2">Speak clearly. Tap "Done answering" when you finish.</p>
+                        <p class="st-h fw-semibold mt-2 mb-0">Tap to answer</p>
+                        <p class="small st-muted mb-2">Speak clearly and press Submit when you finish.</p>
                         @if (hint()) { <p class="small text-danger mb-2" role="alert">{{ hint() }}</p> }
                         <button class="btn btn-sm btn-link" (click)="useTyping()"><i class="bi bi-keyboard"></i> Type instead</button>
                         <button class="btn btn-sm btn-link text-body-secondary" (click)="skip()">Skip question</button>
@@ -111,6 +141,12 @@ type Phase = 'loading' | 'check' | 'asking' | 'ready' | 'recording' | 'processin
             }
           </main>
 
+          @if (camOn()) {
+            <div class="ir-cam" aria-label="Your camera (monitoring on, not recorded)">
+              <video #selfView autoplay muted playsinline></video>
+              <span class="ir-cam-tag"><span class="ir-mon-dot" aria-hidden="true"></span>Live</span>
+            </div>
+          }
           <aside class="ir-card ir-log" aria-label="Interview so far">
             <div class="ir-label">Interview so far</div>
             @for (d of v.done; track d.id) {
@@ -172,6 +208,16 @@ type Phase = 'loading' | 'check' | 'asking' | 'ready' | 'recording' | 'processin
     .ir-clock { font-weight: 800; font-variant-numeric: tabular-nums; color: var(--pm-heading); white-space: nowrap; }
     .ir-meter { height: .5rem; border-radius: 999px; background: var(--pm-soft); overflow: hidden; }
     .ir-meter > div { height: 100%; background: linear-gradient(90deg, #16a34a, #84cc16); transition: width .08s linear; }
+    .ir-mon { display: inline-flex; align-items: center; gap: .35rem; padding: .3rem .7rem; border-radius: 999px; font-size: .75rem; font-weight: 700;
+      color: #b91c1c; background: rgba(225,29,72,.1); white-space: nowrap; flex-shrink: 0; }
+    .ir-mon-dot { width: .5rem; height: .5rem; border-radius: 50%; background: #e11d48; animation: ir-breathe 1.2s infinite; }
+    .ir-cam { position: fixed; right: 16px; bottom: 16px; z-index: 30; width: 168px; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden;
+      background: #000; box-shadow: 0 8px 24px rgba(0,0,0,.35); border: 2px solid rgba(225,29,72,.6); }
+    .ir-cam video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block; }
+    .ir-cam-tag { position: absolute; left: 6px; top: 6px; display: inline-flex; align-items: center; gap: .3rem; padding: .1rem .45rem; border-radius: 999px;
+      font-size: .65rem; font-weight: 700; color: #fff; background: rgba(0,0,0,.55); }
+    @media (max-width: 575.98px) { .ir-cam { width: 96px; right: 10px; bottom: 10px; } .ir-mon { padding: .25rem .5rem; font-size: .68rem; } }
+    .ir-count-num { font-size: 3rem; font-weight: 800; line-height: 1; color: var(--pm-link); font-variant-numeric: tabular-nums; margin-bottom: .5rem; }
     .ir-log { position: sticky; top: 76px; max-height: calc(100vh - 100px); overflow-y: auto; display: grid; gap: .75rem; align-content: start; }
     .ir-label { font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--pm-muted); }
     .ir-turn { display: grid; gap: .35rem; }
@@ -191,6 +237,7 @@ export class InterviewRoom implements OnInit, OnDestroy {
   private toast = inject(ToastService);
   private confirm = inject(ConfirmService);
   private textBox = viewChild<ElementRef<HTMLTextAreaElement>>('textBox');
+  private selfView = viewChild<ElementRef<HTMLVideoElement>>('selfView');
 
   view = signal<SessionView | null>(null);
   phase = signal<Phase>('loading');
@@ -202,9 +249,16 @@ export class InterviewRoom implements OnInit, OnDestroy {
   typing = signal(false);
   hint = signal('');
   recSeconds = signal(0);
+  countdown = signal(PREP_SECONDS);
+  /** Camera for monitoring: kept on and shown to the student only; never recorded or uploaded. */
+  private camStream = signal<MediaStream | null>(null);
+  camOn = computed(() => !!this.camStream());
+  camError = signal('');
+  camLost = signal(false);
   processingLabel = signal('');
   steps = computed(() => Array.from({ length: this.view()?.plannedQuestions ?? 0 }, (_, i) => i));
   draft = '';
+  private skipping = false;
   recorder = new WavRecorder(l => {
     this.level.set(l);
     if (l > 0.12 && !this.micOk()) this.micOk.set(true);
@@ -212,7 +266,17 @@ export class InterviewRoom implements OnInit, OnDestroy {
   private audioEl?: HTMLAudioElement;
   private audioUrl?: string;
   private timer?: ReturnType<typeof setInterval>;
+  private prepTimer?: ReturnType<typeof setInterval>;
   private labelTimer?: ReturnType<typeof setTimeout>;
+
+  constructor() {
+    // The <video> appears once the camera is on; attach the stream whenever either changes.
+    effect(() => {
+      const el = this.selfView()?.nativeElement;
+      const s = this.camStream();
+      if (el && s && el.srcObject !== s) { el.srcObject = s; el.play().catch(() => undefined); }
+    });
+  }
 
   ngOnInit(): void {
     this.api.session(this.id()).subscribe({
@@ -228,6 +292,8 @@ export class InterviewRoom implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.stopAudio();
     this.stopTimer();
+    this.stopCountdown();
+    this.stopCamera();
     clearTimeout(this.labelTimer);
     this.recorder.close();
   }
@@ -239,6 +305,12 @@ export class InterviewRoom implements OnInit, OnDestroy {
 
   // ------------------------------------------------------------------ set-up
 
+  /** Camera and microphone together, from the "Before you start" step. */
+  async enableDevices(): Promise<void> {
+    await this.enableCamera();
+    if (!this.micReady()) await this.enableMic();
+  }
+
   async enableMic(): Promise<void> {
     this.micError.set('');
     try {
@@ -249,7 +321,28 @@ export class InterviewRoom implements OnInit, OnDestroy {
     }
   }
 
+  async enableCamera(): Promise<void> {
+    this.camError.set('');
+    if (this.camStream()) return;
+    try {
+      const s = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' }, audio: false });
+      // If the camera is unplugged or blocked mid-interview, ask the student to turn it back on.
+      s.getVideoTracks().forEach(t => t.addEventListener('ended', () => { this.camStream.set(null); this.camLost.set(true); }));
+      this.camStream.set(s);
+      this.camLost.set(false);
+    } catch (e) {
+      this.camError.set(cameraProblem(e));
+      if (this.phase() !== 'check') this.toast.error(cameraProblem(e));
+    }
+  }
+
+  private stopCamera(): void {
+    this.camStream()?.getTracks().forEach(t => t.stop());
+    this.camStream.set(null);
+  }
+
   begin(typeOnly: boolean): void {
+    if (!this.camOn()) { this.camError.set('Turn on your camera to start the interview.'); return; }
     this.typing.set(typeOnly || !this.micReady());
     const q = this.view()?.current;
     if (q) this.playQuestion(q);
@@ -259,9 +352,10 @@ export class InterviewRoom implements OnInit, OnDestroy {
 
   playQuestion(q: AskedQuestion): void {
     this.stopAudio();
+    this.stopCountdown();
     this.hint.set('');
     this.phase.set('asking');
-    const done = () => { if (this.phase() === 'asking') { this.phase.set('ready'); this.focusText(); } };
+    const done = () => { if (this.phase() === 'asking') this.afterQuestion(); };
     this.api.questionSpeech(q.id).subscribe({
       next: url => {
         this.audioUrl = url;
@@ -274,7 +368,27 @@ export class InterviewRoom implements OnInit, OnDestroy {
     });
   }
 
-  skipAudio(): void { this.stopAudio(); this.phase.set('ready'); this.focusText(); }
+  skipAudio(): void { this.stopAudio(); this.afterQuestion(); }
+
+  /** After the question: typed answers wait for the text box; voice answers get the countdown, then recording starts by itself. */
+  private afterQuestion(): void {
+    if (this.typing()) { this.phase.set('ready'); this.focusText(); return; }
+    this.startCountdown();
+  }
+
+  private startCountdown(): void {
+    this.stopCountdown();
+    this.countdown.set(PREP_SECONDS);
+    this.phase.set('countdown');
+    this.prepTimer = setInterval(() => {
+      this.countdown.update(n => n - 1);
+      if (this.countdown() <= 0) { this.stopCountdown(); void this.startRecording(); }
+    }, 1000);
+  }
+
+  startNow(): void { this.stopCountdown(); void this.startRecording(); }
+
+  private stopCountdown(): void { if (this.prepTimer) { clearInterval(this.prepTimer); this.prepTimer = undefined; } }
 
   /** Piper is offline: the browser's own voice reads the question. */
   private browserVoice(text: string, done: () => void): void {
@@ -297,6 +411,7 @@ export class InterviewRoom implements OnInit, OnDestroy {
   // ------------------------------------------------------------------ answering
 
   async startRecording(): Promise<void> {
+    if (this.phase() === 'recording' || this.phase() === 'processing') return;
     this.hint.set('');
     try {
       await this.recorder.start();
@@ -314,12 +429,6 @@ export class InterviewRoom implements OnInit, OnDestroy {
     }, 1000);
   }
 
-  cancelRecording(): void {
-    this.stopTimer();
-    this.recorder.cancel();
-    this.phase.set('ready');
-  }
-
   finishRecording(): void {
     if (this.phase() !== 'recording') return;
     this.stopTimer();
@@ -333,18 +442,25 @@ export class InterviewRoom implements OnInit, OnDestroy {
     this.submit(this.api.answerText(v.id, v.current!.id, this.draft.trim()), false);
   }
 
+  /** Skip: scores 0. Recording (if any) keeps going while the student decides, and is thrown away on Skip. */
   async skip(): Promise<void> {
-    const r = await this.confirm.ask({ title: 'Skip this question?', message: 'A skipped question scores zero. Even a short attempt is better.', confirmText: 'Skip' });
-    if (!r.ok) return;
-    const v = this.view()!;
-    this.submit(this.api.answerText(v.id, v.current!.id, ''), false);
+    if (this.phase() === 'processing' || this.skipping) return;
+    this.skipping = true;
+    const r = await this.confirm.ask({ title: 'Skip this question?', message: 'A skipped question scores 0. Even a short attempt earns marks.', confirmText: 'Skip question' });
+    this.skipping = false;
+    const v = this.view();
+    if (!r.ok || !v?.current || this.phase() === 'processing') return;
+    this.stopAudio();
+    this.stopCountdown();
+    if (this.phase() === 'recording') { this.stopTimer(); this.recorder.cancel(); }
+    this.submit(this.api.answerText(v.id, v.current.id, ''), false);
   }
 
-  useTyping(): void { this.typing.set(true); this.focusText(); }
+  useTyping(): void { this.stopCountdown(); this.typing.set(true); this.phase.set('ready'); this.focusText(); }
 
   private submit(call: ReturnType<InterviewService['answerText']>, voice: boolean): void {
     this.phase.set('processing');
-    this.processingLabel.set(voice ? 'Listening to your answer…' : 'Reading your answer…');
+    this.processingLabel.set(voice ? 'Listening to your answer…' : 'Next question…');
     clearTimeout(this.labelTimer);
     this.labelTimer = setTimeout(() => this.processingLabel.set('The interviewer is thinking…'), voice ? 2500 : 800);
     call.subscribe({
@@ -359,8 +475,14 @@ export class InterviewRoom implements OnInit, OnDestroy {
         clearTimeout(this.labelTimer);
         this.phase.set('ready');
         if (e.code === 'ALREADY_ANSWERED' || e.code === 'INTERVIEW_ENDED') { this.reload(); return; }
+        if (voice && e.code === 'NO_SPEECH' && !this.typing()) {
+          // Nothing was heard: say so and give a fresh countdown, no click needed.
+          this.startCountdown();
+          this.hint.set(e.message);
+          return;
+        }
         this.hint.set(e.message);
-        if (!voice || e.code !== 'NO_SPEECH') this.toast.error(e.message);
+        this.toast.error(e.message);
       },
     });
   }
@@ -376,6 +498,7 @@ export class InterviewRoom implements OnInit, OnDestroy {
     });
     if (!r.ok) return;
     this.stopAudio();
+    this.stopCountdown();
     this.recorder.cancel();
     this.api.end(v.id).subscribe({
       next: res => { if (res) this.toReport(); else { this.toast.success('Interview cancelled. Your credit was returned.'); this.exit(); } },
@@ -391,6 +514,24 @@ export class InterviewRoom implements OnInit, OnDestroy {
   private reload(): void { this.api.session(this.id()).subscribe(v => { this.view.set(v); if (v.status !== 'IN_PROGRESS' || !v.current) this.toReport(); else this.playQuestion(v.current); }); }
   private stopTimer(): void { if (this.timer) { clearInterval(this.timer); this.timer = undefined; } }
   private focusText(): void { if (this.typing()) setTimeout(() => this.textBox()?.nativeElement.focus(), 0); }
+}
+
+/** Same idea for the camera. */
+function cameraProblem(e: unknown): string {
+  const name = (e as { name?: string })?.name ?? '';
+  switch (name) {
+    case 'NotAllowedError':
+    case 'SecurityError':
+      return 'Camera permission is blocked. Click the lock or camera icon in the address bar, set Camera to Allow, then reload the page.';
+    case 'NotFoundError':
+    case 'OverconstrainedError':
+      return 'No camera was found. Use a laptop or phone with a working camera for the interview.';
+    case 'NotReadableError':
+    case 'AbortError':
+      return 'Your camera is being used by another app (Zoom, Teams, another tab). Close it and try again.';
+    default:
+      return 'The camera could not be started. Check your browser and system camera settings, then try again.';
+  }
 }
 
 /** Tells the student what is actually wrong with the microphone, since each cause has a different fix. */

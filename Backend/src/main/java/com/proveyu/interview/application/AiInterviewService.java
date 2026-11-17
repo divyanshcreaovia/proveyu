@@ -64,6 +64,7 @@ public class AiInterviewService {
     private final int maxFollowUps;
     private final int maxAnswerSeconds;
     private final int audioRetentionDays;
+    static final int MAX_JD_CHARS = 5000, MIN_JD_CHARS = 40;
 
     public AiInterviewService(InterviewSessionRepository sessions, InterviewQuestionRepository questions, InterviewAnswerRepository answers,
                             AnswerEvaluationRepository evaluations, InterviewReportRepository reports, InterviewCreditRepository credits,
@@ -71,8 +72,8 @@ public class AiInterviewService {
                             StudentPortalService portal, AiGateway ai, InterviewEvaluator evaluator, InterviewAudioStore audio, ObjectMapper json,
                             PlatformTransactionManager txm, InterviewPurchaseService purchases,
                             @Value("${interview.free-every-days:15}") int freeEveryDays,
-                            @Value("${interview.questions:5}") int questionCount,
-                            @Value("${interview.follow-ups:2}") int maxFollowUps,
+                            @Value("${interview.questions:6}") int questionCount,
+                            @Value("${interview.follow-ups:1}") int maxFollowUps,
                             @Value("${interview.max-answer-seconds:180}") int maxAnswerSeconds,
                             @Value("${interview.audio-retention-days:30}") int audioRetentionDays) {
         this.sessions = sessions;
@@ -134,16 +135,21 @@ public class AiInterviewService {
                     HttpStatus.PAYMENT_REQUIRED, "NO_INTERVIEW_CREDITS");
         }
         Difficulty difficulty = req.difficulty() == null ? Difficulty.MEDIUM : req.difficulty();
+        String pastedJd = req.driveId() != null || req.jobDescription() == null || req.jobDescription().isBlank() ? null : req.jobDescription().trim();
+        if (pastedJd != null && pastedJd.length() > MAX_JD_CHARS) throw bad("The job description is too long. Paste up to " + MAX_JD_CHARS + " characters.", "JD_TOO_LONG");
+        if (pastedJd != null && pastedJd.length() < MIN_JD_CHARS) {
+            throw bad("Paste the full job description (a few lines with the skills), or leave it empty and just type the role.", "JD_TOO_SHORT");
+        }
 
-        InterviewPrompts.Context ctx = context(s, req, difficulty);
+        InterviewPrompts.Context ctx = context(s, req, difficulty, pastedJd);
         List<InterviewPrompts.PlannedQuestion> plan;
         try {
             plan = InterviewPrompts.readPlan(ai.chatJson(InterviewPrompts.planSystem(), InterviewPrompts.planUser(ctx, questionCount - 1), 0.7,
                     InterviewPrompts.planSchema(questionCount - 1)),
-                    req.type(), questionCount);
+                    req.type(), questionCount, ctx.stack());
         } catch (DomainException e) {
             if (!"AI_BAD_REPLY".equals(e.getErrorCode())) throw e; // service down: do not charge, do not start
-            plan = InterviewPrompts.readPlan(null, req.type(), questionCount);
+            plan = InterviewPrompts.readPlan(null, req.type(), questionCount, ctx.stack());
         }
         final List<InterviewPrompts.PlannedQuestion> finalPlan = plan;
         try {
@@ -153,7 +159,8 @@ public class AiInterviewService {
                 Instant now = Instant.now();
                 InterviewSession x = sessions.save(InterviewSession.builder().collegeId(s.getCollegeId()).studentId(s.getId()).userId(userId)
                         .driveId(req.driveId()).interviewType(req.type()).difficulty(difficulty).roleTitle(ctx.roleTitle()).status(SessionStatus.IN_PROGRESS)
-                        .plannedQuestions(finalPlan.size()).creditSource(source).consentAt(now).startedAt(now).build());
+                        .plannedQuestions(finalPlan.size()).jobDescription(pastedJd).focusSkills(blankToNull(InterviewPrompts.cut(String.join(", ", ctx.stack()), 480)))
+                        .creditSource(source).consentAt(now).startedAt(now).build());
                 for (int i = 0; i < finalPlan.size(); i++) {
                     questions.save(InterviewQuestion.builder().sessionId(x.getId()).seq((i + 1) * 100).questionText(finalPlan.get(i).text())
                             .topic(blankToNull(finalPlan.get(i).topic())).askedAt(i == 0 ? now : null).build());
@@ -211,26 +218,57 @@ public class AiInterviewService {
 
     public ReportView report(UUID userId, UUID sessionId) {
         InterviewSession s = own(userId, sessionId);
+        boolean ended = s.getStatus() != SessionStatus.IN_PROGRESS;
         List<InterviewQuestion> qs = questions.findAllBySessionIdOrderBySeq(s.getId());
         Map<UUID, InterviewAnswer> byQuestion = answers.findAllBySessionId(s.getId()).stream()
                 .collect(Collectors.toMap(InterviewAnswer::getQuestionId, Function.identity()));
         Map<UUID, AnswerEvaluation> evals = evaluations.findAllByAnswerIdIn(byQuestion.values().stream().map(InterviewAnswer::getId).toList()).stream()
                 .collect(Collectors.toMap(AnswerEvaluation::getAnswerId, Function.identity()));
         List<AnswerReview> rows = new ArrayList<>();
-        int n = 0;
+        int n = 0, answeredCount = 0, skippedCount = 0, notReached = 0;
+        double[] sums = new double[4];
         for (InterviewQuestion q : qs) {
             InterviewAnswer a = byQuestion.get(q.getId());
-            if (a == null) continue;
+            if (a == null) {
+                // Not answered: after the end it is listed as not reached (0); while the interview runs, upcoming questions stay hidden.
+                if (!ended) continue;
+                notReached++;
+                rows.add(new AnswerReview(q.getId(), ++n, q.getParentQuestionId() != null, q.getQuestionText(), q.getTopic(), AnswerStatus.NOT_REACHED,
+                        null, null, null, null, false, null, 0, 0, 0, 0, 0, "Not reached: the interview was ended before this question, so it scores 0.", null));
+                continue;
+            }
+            boolean skipped = InterviewPrompts.words(a.getTranscript()) == 0;
+            if (skipped) skippedCount++; else answeredCount++;
             AnswerEvaluation e = evals.get(a.getId());
-            rows.add(new AnswerReview(q.getId(), ++n, q.getParentQuestionId() != null, q.getQuestionText(), q.getTopic(), a.getTranscript(),
+            if (e != null) {
+                sums[0] += e.getContent(); sums[1] += e.getRelevance(); sums[2] += e.getCommunication(); sums[3] += e.getConfidence();
+            }
+            rows.add(new AnswerReview(q.getId(), ++n, q.getParentQuestionId() != null, q.getQuestionText(), q.getTopic(),
+                    skipped ? AnswerStatus.SKIPPED : AnswerStatus.ANSWERED, a.getTranscript(),
                     a.getInputMode(), a.getDurationSeconds(), a.getWordsPerMinute(), a.getAudioPath() != null, a.getId(),
                     e == null ? null : e.getContent(), e == null ? null : e.getCommunication(), e == null ? null : e.getConfidence(),
-                    e == null ? null : e.getRelevance(), e == null ? null : e.getFeedback(), e == null ? null : e.getBetterAnswer()));
+                    e == null ? null : e.getRelevance(), e == null ? null : (int) Math.round(InterviewEvaluator.answerPercent(e)),
+                    e == null ? null : e.getFeedback(), e == null ? null : e.getBetterAnswer()));
         }
+        int planned = ended ? Math.max(s.getPlannedQuestions(), rows.size()) : s.getPlannedQuestions();
+        Criteria criteria = planned == 0 ? new Criteria(0, 0, 0, 0)
+                : new Criteria(round1(sums[0] / planned), round1(sums[1] / planned), round1(sums[2] / planned), round1(sums[3] / planned));
+        Long duration = s.getEndedAt() == null ? null : Duration.between(s.getStartedAt(), s.getEndedAt()).getSeconds();
         InterviewReport r = reports.findBySessionId(s.getId()).orElse(null);
         return new ReportView(s.getId(), s.getInterviewType(), level(s), s.getRoleTitle(), companyName(s), s.getStatus(), s.getStartedAt(), s.getEndedAt(),
-                evals.size(), rows.size(), r == null ? null : r.getOverallScore(), r == null ? null : r.getRecommendation(), r == null ? null : r.getSummary(),
+                duration, evals.size(), byQuestion.size(), planned, answeredCount, skippedCount, notReached, focus(s), s.getJobDescription() != null,
+                r == null ? null : r.getOverallScore(), r == null ? null : r.getRecommendation(), criteria, r == null ? null : r.getSummary(),
                 r == null ? List.of() : readList(r.getStrengthsJson()), r == null ? List.of() : readList(r.getImprovementsJson()), rows, s.getErrorMessage());
+    }
+
+    private static double round1(double v) {
+        return Math.round(v * 10) / 10.0;
+    }
+
+    /** The technologies the interview's questions were limited to. */
+    static List<String> focus(InterviewSession s) {
+        if (s.getFocusSkills() == null || s.getFocusSkills().isBlank()) return List.of();
+        return Arrays.stream(s.getFocusSkills().split(",")).map(String::trim).filter(x -> !x.isEmpty()).toList();
     }
 
     /** Scoring failed earlier (model was down): try again. */
@@ -323,20 +361,31 @@ public class AiInterviewService {
             throw new DomainException("This question was already answered", HttpStatus.CONFLICT, "ALREADY_ANSWERED");
         }
 
+        // The total number of questions is fixed when the interview starts ("Question 3 of 6" never changes): the follow-up takes the
+        // place of the last main question not yet asked. It comes after the first real answer to a question other than the
+        // introduction, while at least two main questions are still waiting, so the next topic is kept.
         String followUp = null;
         List<InterviewQuestion> all = questions.findAllBySessionIdOrderBySeq(s.getId());
         long followUpsSoFar = all.stream().filter(x -> x.getParentQuestionId() != null).count();
-        if (q.getParentQuestionId() == null && followUpsSoFar < maxFollowUps && InterviewPrompts.words(transcript) >= 3) {
+        long mainsWaiting = all.stream().filter(x -> x.getParentQuestionId() == null && x.getAskedAt() == null).count();
+        boolean intro = all.stream().filter(x -> x.getParentQuestionId() == null).findFirst().map(x -> x.getId().equals(q.getId())).orElse(false);
+        if (q.getParentQuestionId() == null && !intro && followUpsSoFar < maxFollowUps && mainsWaiting >= 2 && InterviewPrompts.words(transcript) >= 3) {
+            List<String> stack = focus(s);
             try {
                 followUp = InterviewPrompts.readFollowUp(ai.chatJson(InterviewPrompts.followUpSystem(),
-                        InterviewPrompts.followUpUser(s.getRoleTitle(), level(s), q.getQuestionText(), transcript), 0.5, InterviewPrompts.FOLLOW_UP_SCHEMA), q.getQuestionText());
+                        InterviewPrompts.followUpUser(s.getRoleTitle(), level(s), stack, q.getQuestionText(), transcript), 0.5, InterviewPrompts.FOLLOW_UP_SCHEMA),
+                        q.getQuestionText(), stack);
             } catch (DomainException e) {
-                log.info("No follow-up for {}: {}", q.getId(), e.getMessage()); // the interview simply moves on
+                log.info("Follow-up for {} from the model failed: {}", q.getId(), e.getMessage());
             }
+            if (followUp == null) followUp = InterviewPrompts.GENERIC_FOLLOW_UP; // every interview gets its one follow-up
         }
         final String fu = followUp;
         boolean finished = Boolean.TRUE.equals(tx.execute(st -> {
             if (fu != null) {
+                questions.findAllBySessionIdOrderBySeq(s.getId()).stream()
+                        .filter(x -> x.getParentQuestionId() == null && x.getAskedAt() == null)
+                        .reduce((a, b) -> b).ifPresent(questions::delete); // its slot goes to the follow-up
                 questions.save(InterviewQuestion.builder().sessionId(s.getId()).seq(q.getSeq() + 1).questionText(fu).topic(q.getTopic())
                         .parentQuestionId(q.getId()).build());
             }
@@ -369,18 +418,17 @@ public class AiInterviewService {
                 .collect(Collectors.toMap(InterviewAnswer::getQuestionId, Function.identity()));
         List<AskedQuestion> done = new ArrayList<>();
         AskedQuestion current = null;
-        int n = 0, mainAnswered = 0;
+        int n = 0;
         for (InterviewQuestion q : qs) {
             InterviewAnswer a = byQuestion.get(q.getId());
             if (a != null) {
                 done.add(asked(q, ++n, a.getTranscript()));
-                if (q.getParentQuestionId() == null) mainAnswered++;
             } else if (current == null && s.getStatus() == SessionStatus.IN_PROGRESS && q.getAskedAt() != null) {
                 current = asked(q, ++n, null);
             }
         }
-        return new SessionView(s.getId(), s.getInterviewType(), level(s), s.getRoleTitle(), companyName(s), s.getStatus(), s.getPlannedQuestions(), mainAnswered,
-                s.getStartedAt(), done, current, true, maxAnswerSeconds);
+        return new SessionView(s.getId(), s.getInterviewType(), level(s), s.getRoleTitle(), companyName(s), s.getStatus(), s.getPlannedQuestions(), done.size(),
+                s.getStartedAt(), done, current, true, maxAnswerSeconds, focus(s));
     }
 
     private static AskedQuestion asked(InterviewQuestion q, int number, String transcript) {
@@ -405,18 +453,30 @@ public class AiInterviewService {
         return s.getDifficulty() == null ? Difficulty.MEDIUM : s.getDifficulty();
     }
 
-    private InterviewPrompts.Context context(CollegeStudent s, StartRequest req, Difficulty difficulty) {
+    /**
+     * What the questions are about. The technologies come from the drive (role, job description, skills) or, for a general role,
+     * from the role and the pasted job description. With none of those naming a technology, the student's own skills are used, so a
+     * student who knows Java is not asked about Python; with nothing at all, the questions stay on general fundamentals.
+     */
+    private InterviewPrompts.Context context(CollegeStudent s, StartRequest req, Difficulty difficulty, String pastedJd) {
         CollegeBranch b = s.getBranchId() == null ? null : directory.branches(s.getCollegeId()).get(s.getBranchId());
         List<String> studentSkills = StudentService.splitSkills(s.getSkills());
         if (req.driveId() != null) {
             CollegeDrive d = driveRepository.findByIdAndCollegeId(req.driveId(), s.getCollegeId()).filter(x -> x.getDeletedAt() == null)
                     .orElseThrow(() -> notFound("Drive"));
             CollegeCompany c = directory.companies(s.getCollegeId(), Set.of(d.getCompanyId())).get(d.getCompanyId());
-            return new InterviewPrompts.Context(req.type(), difficulty, nz(d.getRoleTitle(), d.getTitle()), c == null ? null : c.getName(), d.getJobDescription(),
-                    StudentService.splitSkills(d.getSkills()), s.getDegree(), b == null ? null : b.getName(), studentSkills);
+            String role = nz(d.getRoleTitle(), d.getTitle());
+            List<String> driveSkills = StudentService.splitSkills(d.getSkills());
+            List<String> stack = TechStack.detect(role, d.getJobDescription(), String.join(", ", driveSkills));
+            if (stack.isEmpty() && (d.getJobDescription() == null || d.getJobDescription().isBlank())) stack = TechStack.detect(String.join(", ", studentSkills));
+            return new InterviewPrompts.Context(req.type(), difficulty, role, c == null ? null : c.getName(), d.getJobDescription(),
+                    driveSkills, s.getDegree(), b == null ? null : b.getName(), studentSkills, stack);
         }
         String role = req.roleTitle() == null || req.roleTitle().isBlank() ? "Software Engineer (fresher)" : InterviewPrompts.clean(req.roleTitle(), 120);
-        return new InterviewPrompts.Context(req.type(), difficulty, role, null, null, List.of(), s.getDegree(), b == null ? null : b.getName(), studentSkills);
+        List<String> stack = TechStack.detect(req.roleTitle(), pastedJd);
+        if (stack.isEmpty() && pastedJd == null) stack = TechStack.detect(String.join(", ", studentSkills));
+        return new InterviewPrompts.Context(req.type(), difficulty, role, null, pastedJd, List.of(), s.getDegree(), b == null ? null : b.getName(),
+                studentSkills, stack);
     }
 
     /**

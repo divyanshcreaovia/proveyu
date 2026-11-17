@@ -44,6 +44,12 @@ public class InterviewSession {
     private InterviewModel.SessionStatus status;
     @Column(name = "planned_questions")
     private int plannedQuestions;
+    /** Pasted by the student for a general role (null for a drive, which has its own). */
+    @Column(name = "job_description", columnDefinition = "TEXT")
+    private String jobDescription;
+    /** The technologies the questions are limited to, comma-separated (empty = general fundamentals). */
+    @Column(name = "focus_skills")
+    private String focusSkills;
     @Enumerated(EnumType.STRING)
     @Column(name = "credit_source")
     private InterviewModel.CreditSource creditSource;

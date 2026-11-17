@@ -157,8 +157,8 @@ interview:
   upi:
     id: ${UPI_ID:}                                    # e.g. proveyu@okaxis (Backend/.env). Blank = buying is switched off
     name: ${UPI_PAYEE_NAME:ProveYu}                   # name shown on the QR and in the payment app
-  questions: ${INTERVIEW_QUESTIONS:5}
-  follow-ups: ${INTERVIEW_FOLLOW_UPS:2}
+  questions: ${INTERVIEW_QUESTIONS:6}              # total per interview, follow-ups included
+  follow-ups: ${INTERVIEW_FOLLOW_UPS:1}            # how many of those are follow-ups on an answer
   max-answer-seconds: ${INTERVIEW_MAX_ANSWER_SECONDS:180}
 
 springdoc:

@@ -17,9 +17,12 @@ public final class InterviewModel {
     public enum CreditSource { FREE, PAID }
     public enum InputMode { VOICE, TEXT }
     public enum Recommendation { READY, ALMOST_READY, NEEDS_PRACTICE }
+    /** In the report: answered, skipped by the student (scores 0), or never reached because the interview was ended early (scores 0). */
+    public enum AnswerStatus { ANSWERED, SKIPPED, NOT_REACHED }
 
     // ---------------------------------------------------------------- requests
-    public record StartRequest(InterviewType type, Difficulty difficulty, UUID driveId, String roleTitle, boolean consent) {}
+    /** jobDescription: optional, for a general role (a drive brings its own); the questions stay on its technologies. */
+    public record StartRequest(InterviewType type, Difficulty difficulty, UUID driveId, String roleTitle, String jobDescription, boolean consent) {}
     public record PurchaseRequest(int quantity) {}
     public record UtrRequest(String utr) {}
     public record ReviewRequest(String note) {}
@@ -51,15 +54,25 @@ public final class InterviewModel {
 
     public record AskedQuestion(UUID id, int number, boolean followUp, String text, String topic, String transcript) {}
     public record SessionView(UUID id, InterviewType type, Difficulty difficulty, String roleTitle, String companyName, SessionStatus status, int plannedQuestions,
-                              int mainAnswered, Instant startedAt, List<AskedQuestion> done, AskedQuestion current, boolean speechAvailable,
-                              int maxAnswerSeconds) {}
+                              int answered, Instant startedAt, List<AskedQuestion> done, AskedQuestion current, boolean speechAvailable,
+                              int maxAnswerSeconds, List<String> focus) {}
 
-    public record AnswerReview(UUID questionId, int number, boolean followUp, String question, String topic, String transcript, InputMode inputMode,
-                               Integer durationSeconds, Integer wordsPerMinute, boolean hasAudio, UUID answerId,
-                               Integer content, Integer communication, Integer confidence, Integer relevance, String feedback, String betterAnswer) {}
+    /** One question in the report. Scores are 0 to 5; percent is the answer's weighted score out of 100 (0 when skipped or not reached). */
+    public record AnswerReview(UUID questionId, int number, boolean followUp, String question, String topic, AnswerStatus status, String transcript,
+                               InputMode inputMode, Integer durationSeconds, Integer wordsPerMinute, boolean hasAudio, UUID answerId,
+                               Integer content, Integer communication, Integer confidence, Integer relevance, Integer percent,
+                               String feedback, String betterAnswer) {}
+    /** Average of each criterion over all planned questions (0 to 5; skipped and unreached ones count as 0). */
+    public record Criteria(double content, double relevance, double communication, double confidence) {}
+    /**
+     * evaluated / total: answers scored so far, for the progress bar. plannedQuestions = answered + skipped + notReached.
+     * focus: the technologies the questions were limited to. answers lists every planned question once the interview has ended.
+     */
     public record ReportView(UUID sessionId, InterviewType type, Difficulty difficulty, String roleTitle, String companyName, SessionStatus status, Instant startedAt,
-                             Instant endedAt, int evaluated, int total, BigDecimal overallScore, Recommendation recommendation, String summary,
-                             List<String> strengths, List<String> improvements, List<AnswerReview> answers, String errorMessage) {}
+                             Instant endedAt, Long durationSeconds, int evaluated, int total, int plannedQuestions, int answeredCount, int skippedCount,
+                             int notReachedCount, List<String> focus, boolean ownJobDescription, BigDecimal overallScore, Recommendation recommendation,
+                             Criteria criteria, String summary, List<String> strengths, List<String> improvements, List<AnswerReview> answers,
+                             String errorMessage) {}
 
     public record GrantResult(String studentName, int paidBalance) {}
 

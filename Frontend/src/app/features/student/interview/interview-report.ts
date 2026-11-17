@@ -6,7 +6,10 @@ import { AnswerReview, InterviewService, RECOMMENDATION_LABELS, ReportView, TYPE
 import { ToastService } from '../../../services/toast.service';
 import { Skeleton } from '../../../shared/ui/states';
 
-/** Report of one AI interview: overall score, coach summary, strengths / improvements, and every answer with its scores and tips. */
+/**
+ * Report of one AI interview: overall score, coach summary, counts (answered / skipped / not reached), criteria averages, the
+ * technologies covered, strengths and improvements, and every planned question with its answer, scores and a model answer.
+ */
 @Component({
   selector: 'pm-interview-report',
   imports: [DatePipe, DecimalPipe, RouterLink, Skeleton],
@@ -42,9 +45,31 @@ import { Skeleton } from '../../../shared/ui/states';
           <div class="min-w-0 flex-grow-1">
             <span class="rp-rec" [class.mid]="tone(rep) === 'mid'" [class.good]="tone(rep) === 'good'">{{ recLabels[rep.recommendation!] }}</span>
             <h2 class="h4 st-h mt-2 mb-1">{{ typeLabels[rep.type] }} interview · {{ levelLabels[rep.difficulty] }} · {{ rep.companyName ? rep.companyName + ' · ' : '' }}{{ rep.roleTitle }}</h2>
-            <p class="st-muted small mb-2">{{ rep.startedAt | date: 'medium' }} · {{ rep.answers.length }} answers</p>
+            <p class="st-muted small mb-2">{{ rep.startedAt | date: 'medium' }}@if (rep.durationSeconds) { · {{ duration(rep.durationSeconds) }} }</p>
             @if (rep.summary) { <p class="mb-0">{{ rep.summary }}</p> }
           </div>
+        </section>
+
+        <section class="st-card mb-3" aria-label="Interview details">
+          <div class="rp-stats">
+            <div><span class="rp-stat">{{ rep.plannedQuestions }}</span><span class="small st-muted">Questions</span></div>
+            <div><span class="rp-stat text-success">{{ rep.answeredCount }}</span><span class="small st-muted">Answered</span></div>
+            <div><span class="rp-stat" [class.text-danger]="rep.skippedCount">{{ rep.skippedCount }}</span><span class="small st-muted">Skipped (0 each)</span></div>
+            <div><span class="rp-stat" [class.text-danger]="rep.notReachedCount">{{ rep.notReachedCount }}</span><span class="small st-muted">Not reached (0 each)</span></div>
+          </div>
+          <div class="rp-scores mt-3">
+            @for (s of criteriaRows(rep); track s.label) {
+              <div><span class="small st-muted">{{ s.label }}</span>
+                <div class="rp-bar"><div [style.width.%]="s.value * 20" [class.mid]="s.value >= 2.5 && s.value < 3.5" [class.good]="s.value >= 3.5"></div></div>
+                <span class="small fw-semibold">{{ s.value | number: '1.1-1' }}/5</span></div>
+            }
+          </div>
+          <p class="small st-muted mt-3 mb-0">
+            @if (rep.focus.length) { Questions were limited to: @for (f of rep.focus; track f) { <span class="st-chip ms-1">{{ f }}</span> } }
+            @else { Questions covered general fundamentals (no specific technology). }
+            @if (rep.ownJobDescription) { <span class="ms-1">· Based on the job description you pasted.</span> }
+            <br>Scores are 0 to 5 per criterion and based only on what you said; a skipped or unanswered question is 0.
+          </p>
         </section>
 
         @if (rep.strengths.length || rep.improvements.length) {
@@ -62,35 +87,41 @@ import { Skeleton } from '../../../shared/ui/states';
       }
 
       @if (rep.answers.length) {
-        <h2 class="h6 st-h mb-2">Answer by answer</h2>
-        @for (a of rep.answers; track a.answerId) {
-          <article class="st-card rp-q mb-2">
+        <h2 class="h6 st-h mb-2">Question by question</h2>
+        @for (a of rep.answers; track a.questionId) {
+          <article class="st-card rp-q mb-2" [class.rp-miss]="a.status !== 'ANSWERED'">
             <div class="d-flex gap-2 align-items-center flex-wrap mb-2">
               <span class="rp-num">Q{{ a.number }}</span>
               @if (a.followUp) { <span class="st-chip">Follow-up</span> }
               @if (a.topic) { <span class="st-chip">{{ a.topic }}</span> }
-              @if (a.content != null) { <span class="ms-auto rp-mini" [class.mid]="avg(a) >= 2.75 && avg(a) < 3.75" [class.good]="avg(a) >= 3.75">{{ avg(a) | number: '1.1-1' }}/5</span> }
+              @if (a.status === 'SKIPPED') { <span class="rp-flag">Skipped</span> }
+              @if (a.status === 'NOT_REACHED') { <span class="rp-flag">Not reached</span> }
+              @if (a.percent != null) { <span class="ms-auto rp-mini" [class.mid]="a.percent >= 50 && a.percent < 75" [class.good]="a.percent >= 75">{{ a.percent }}/100</span> }
             </div>
             <p class="fw-semibold st-h mb-2">{{ a.question }}</p>
-            <div class="rp-said small mb-2">
-              <div class="rp-label">You said @if (a.inputMode === 'TEXT') { (typed) } @if (a.wordsPerMinute) { · {{ a.wordsPerMinute }} words/min }</div>
-              @if (a.transcript) { {{ a.transcript }} } @else { <em class="st-muted">Skipped</em> }
-              @if (a.hasAudio) {
-                <div class="mt-1">@if (audio()[a.answerId]; as url) { <audio [src]="url" controls class="rp-audio"></audio> }
-                  @else { <button class="btn btn-sm btn-link p-0" (click)="loadAudio(a)"><i class="bi bi-play-circle"></i> Play my recording</button> }</div>
-              }
-            </div>
-            @if (a.content != null) {
-              <div class="rp-scores mb-2">
-                @for (s of scoreRows(a); track s.label) {
-                  <div><span class="small st-muted">{{ s.label }}</span>
-                    <div class="rp-bar"><div [style.width.%]="s.value * 20" [class.mid]="s.value === 3" [class.good]="s.value >= 4"></div></div>
-                    <span class="small fw-semibold">{{ s.value }}/5</span></div>
+            @if (a.status !== 'NOT_REACHED') {
+              <div class="rp-said small mb-2">
+                <div class="rp-label">You said @if (a.inputMode === 'TEXT' && a.transcript) { (typed) } @if (a.wordsPerMinute) { · {{ a.wordsPerMinute }} words/min }</div>
+                @if (a.transcript) { {{ a.transcript }} } @else { <em class="st-muted">Skipped, no answer given</em> }
+                @if (a.hasAudio && a.answerId) {
+                  <div class="mt-1">@if (audio()[a.answerId]; as url) { <audio [src]="url" controls class="rp-audio"></audio> }
+                    @else { <button class="btn btn-sm btn-link p-0" (click)="loadAudio(a)"><i class="bi bi-play-circle"></i> Play my recording</button> }</div>
                 }
               </div>
+            }
+            @if (a.content != null) {
+              @if (a.status === 'ANSWERED') {
+                <div class="rp-scores mb-2">
+                  @for (s of scoreRows(a); track s.label) {
+                    <div><span class="small st-muted">{{ s.label }}</span>
+                      <div class="rp-bar"><div [style.width.%]="s.value * 20" [class.mid]="s.value === 3" [class.good]="s.value >= 4"></div></div>
+                      <span class="small fw-semibold">{{ s.value }}/5</span></div>
+                  }
+                </div>
+              }
               @if (a.feedback) { <p class="small mb-2"><i class="bi bi-chat-left-quote text-primary me-1"></i>{{ a.feedback }}</p> }
               @if (a.betterAnswer) {
-                <details class="small"><summary class="fw-semibold">What a strong answer includes</summary><p class="mt-2 mb-0 st-muted">{{ a.betterAnswer }}</p></details>
+                <details class="small" [open]="a.status === 'SKIPPED'"><summary class="fw-semibold">What a strong answer includes</summary><p class="mt-2 mb-0 st-muted">{{ a.betterAnswer }}</p></details>
               }
             } @else { <p class="small st-muted mb-0">Scoring…</p> }
           </article>
@@ -119,7 +150,12 @@ import { Skeleton } from '../../../shared/ui/states';
     .rp-bar { height: .45rem; border-radius: 999px; background: var(--pm-soft); overflow: hidden; max-width: 320px; }
     .rp-bar > div { height: 100%; background: #e11d48; border-radius: 999px; }
     .rp-bar > div.mid { background: #d97706; } .rp-bar > div.good { background: #16a34a; }
-    section .rp-bar > div { background: var(--pm-link); }
+    .rp-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: .75rem; }
+    .rp-stats > div { display: grid; gap: .1rem; }
+    .rp-stat { font-size: 1.6rem; font-weight: 800; line-height: 1; color: var(--pm-heading); font-variant-numeric: tabular-nums; }
+    .rp-flag { font-size: .7rem; font-weight: 700; padding: .12rem .55rem; border-radius: 999px; background: rgba(225,29,72,.12); color: #be123c; }
+    .rp-miss { border-left: 3px solid rgba(225,29,72,.5); }
+    section.text-center .rp-bar > div { background: var(--pm-link); }
   `],
 })
 export class InterviewReport implements OnInit {
@@ -160,8 +196,10 @@ export class InterviewReport implements OnInit {
   }
 
   loadAudio(a: AnswerReview): void {
-    this.api.answerAudio(a.answerId).subscribe({
-      next: url => this.audio.update(m => ({ ...m, [a.answerId]: url })),
+    const id = a.answerId;
+    if (!id) return;
+    this.api.answerAudio(id).subscribe({
+      next: url => this.audio.update(m => ({ ...m, [id]: url })),
       error: (e: AppError) => this.toast.error(e.message),
     });
   }
@@ -170,7 +208,12 @@ export class InterviewReport implements OnInit {
     const s = r.overallScore ?? 0;
     return s >= 75 ? 'good' : s >= 55 ? 'mid' : 'low';
   }
-  avg(a: AnswerReview): number { return ((a.content ?? 0) + (a.relevance ?? 0) + (a.communication ?? 0) + (a.confidence ?? 0)) / 4; }
+  duration(sec: number): string { const m = Math.floor(sec / 60); return m ? `${m} min ${sec % 60} s` : `${sec} s`; }
+  criteriaRows(r: ReportView): { label: string; value: number }[] {
+    const c = r.criteria;
+    return [{ label: 'Content', value: c.content }, { label: 'Relevance', value: c.relevance },
+      { label: 'Communication', value: c.communication }, { label: 'Confidence', value: c.confidence }];
+  }
   scoreRows(a: AnswerReview): { label: string; value: number }[] {
     return [{ label: 'Content', value: a.content ?? 0 }, { label: 'Relevance', value: a.relevance ?? 0 },
       { label: 'Communication', value: a.communication ?? 0 }, { label: 'Confidence', value: a.confidence ?? 0 }];
