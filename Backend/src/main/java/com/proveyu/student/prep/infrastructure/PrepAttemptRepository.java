@@ -10,6 +10,13 @@ import java.util.UUID;
 public interface PrepAttemptRepository extends JpaRepository<PrepAttempt, UUID> {
     List<PrepAttempt> findAllByUserIdOrderByStartedAtDesc(UUID userId);
 
+    List<PrepAttempt> findAllByUserIdInOrderByStartedAtDesc(java.util.Collection<UUID> userIds);
+
+    /** Row lock, so two switch reports arriving together get consecutive numbers. */
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("select a from PrepAttempt a where a.id = :id")
+    java.util.Optional<PrepAttempt> lockById(@org.springframework.data.repository.query.Param("id") UUID id);
+
     @Query("select a.testId, count(a) from PrepAttempt a group by a.testId")
     List<Object[]> countByTest();
 

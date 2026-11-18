@@ -118,6 +118,7 @@ public final class InterviewControllers {
     public static class AdminInterviewController {
         private final AiInterviewService service;
         private final InterviewPurchaseService purchases;
+        private final org.springframework.context.ApplicationEventPublisher events;
 
         /** UPI payments to check against the bank statement (default: the ones waiting). */
         @GetMapping("/purchases")
@@ -127,17 +128,25 @@ public final class InterviewControllers {
 
         @PostMapping("/purchases/{id}/approve")
         public ApiResponse<AdminPurchase> approve(Authentication auth, @PathVariable UUID id) {
-            return ApiResponse.success(purchases.approve(uid(auth), id), "Approved. The interviews were added.");
+            AdminPurchase p = purchases.approve(uid(auth), id);
+            events.publishEvent(new com.proveyu.shared.audit.AdminActionEvent(uid(auth), "PAYMENT_APPROVED", "PURCHASE", id.toString(),
+                    "Approved UPI payment " + p.reference() + " of " + p.studentName() + " (Rs " + p.amountRupees() + ", " + p.quantity() + " interview(s))"));
+            return ApiResponse.success(p, "Approved. The interviews were added.");
         }
 
         @PostMapping("/purchases/{id}/reject")
         public ApiResponse<AdminPurchase> reject(Authentication auth, @PathVariable UUID id, @RequestBody ReviewRequest body) {
-            return ApiResponse.success(purchases.reject(uid(auth), id, body == null ? null : body.note()), "Rejected");
+            AdminPurchase p = purchases.reject(uid(auth), id, body == null ? null : body.note());
+            events.publishEvent(new com.proveyu.shared.audit.AdminActionEvent(uid(auth), "PAYMENT_REJECTED", "PURCHASE", id.toString(),
+                    "Rejected UPI payment " + p.reference() + " of " + p.studentName() + (body == null || body.note() == null ? "" : ": " + body.note())));
+            return ApiResponse.success(p, "Rejected");
         }
 
         @PostMapping("/credits")
-        public ApiResponse<GrantResult> grant(@RequestBody GrantRequest body) {
+        public ApiResponse<GrantResult> grant(Authentication auth, @RequestBody GrantRequest body) {
             GrantResult r = service.grant(body);
+            events.publishEvent(new com.proveyu.shared.audit.AdminActionEvent(uid(auth), "CREDITS_GRANTED", "STUDENT", body.studentEmail(),
+                    "Gave " + body.count() + " AI interview(s) to " + r.studentName() + " (" + body.studentEmail() + ")"));
             return ApiResponse.success(r, r.studentName() + " now has " + r.paidBalance() + " paid interview(s)");
         }
     }

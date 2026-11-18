@@ -9,7 +9,8 @@ export class BrandTitleStrategy extends TitleStrategy {
 
   override updateTitle(state: RouterStateSnapshot): void {
     const page = this.buildTitle(state);
-    const product = state.url.startsWith('/student') ? 'ProveYu Student' : state.url.startsWith('/college') ? 'ProveYu Campus' : 'ProveYu';
+    const product = state.url.startsWith('/student') ? 'ProveYu Student' : state.url.startsWith('/college') ? 'ProveYu Campus'
+      : state.url.startsWith('/admin') ? 'ProveYu Admin' : 'ProveYu';
     this.title.setTitle(page ? `${page} · ${product}` : product);
   }
 }

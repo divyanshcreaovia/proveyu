@@ -125,10 +125,12 @@ public class AiGateway {
             try {
                 return cloudChat(eval ? cloud.evalModel() : cloud.model(), system, user, temperature, jsonSchema);
             } catch (DomainException e) {
+                AiUsage.cloudFailure();
                 if (!fallbackLocal) throw e;
                 log.warn("Cloud LLM failed ({}), using the local model", e.getMessage());
             }
         }
+        AiUsage.localCall();
         return localChat(eval ? evalModel : model, system, user, temperature, jsonSchema);
     }
 
@@ -150,6 +152,7 @@ public class AiGateway {
             JsonNode reply = json.readTree(r.body());
             JsonNode usage = reply.path("usage");
             log.info("Cloud LLM {}: {} prompt + {} completion tokens", useModel, usage.path("prompt_tokens").asInt(), usage.path("completion_tokens").asInt());
+            AiUsage.cloudCall(usage.path("prompt_tokens").asLong() + usage.path("completion_tokens").asLong());
             JsonNode choice = reply.path("choices").path(0);
             if ("length".equals(choice.path("finish_reason").asText())) throw badReply();
             return choice.path("message").path("content").asText("");
@@ -214,12 +217,16 @@ public class AiGateway {
         if (isSilent(wav)) return "";
         if (cloud.sttOn()) {
             try {
-                return cloudTranscribe(wav);
+                String text = cloudTranscribe(wav);
+                AiUsage.cloudTranscription();
+                return text;
             } catch (DomainException e) {
+                AiUsage.cloudFailure();
                 if (!fallbackLocal) throw e;
                 log.warn("Cloud speech-to-text failed ({}), using local whisper", e.getMessage());
             }
         }
+        AiUsage.localTranscription();
         return localTranscribe(wav);
     }
 

@@ -25,6 +25,7 @@ public class AdminCollegeController {
     public record DecisionRequest(@NotNull ApprovalStatus status, @Size(max = 500) String note) {}
 
     private final CollegeAdminService adminService;
+    private final org.springframework.context.ApplicationEventPublisher events;
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -35,6 +36,10 @@ public class AdminCollegeController {
     @PostMapping("/{collegeId}/decision")
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<CollegeSummary> decide(Authentication auth, @PathVariable UUID collegeId, @Valid @RequestBody DecisionRequest r) {
-        return ApiResponse.success(adminService.decide(UUID.fromString(auth.getName()), collegeId, r.status(), r.note()), "College " + r.status().name().toLowerCase());
+        UUID admin = UUID.fromString(auth.getName());
+        CollegeSummary c = adminService.decide(admin, collegeId, r.status(), r.note());
+        events.publishEvent(new com.proveyu.shared.audit.AdminActionEvent(admin, "COLLEGE_" + r.status().name(), "COLLEGE", collegeId.toString(),
+                "College " + c.collegeName() + ": " + r.status().name().toLowerCase() + (r.note() == null || r.note().isBlank() ? "" : " (" + r.note() + ")")));
+        return ApiResponse.success(c, "College " + r.status().name().toLowerCase());
     }
 }

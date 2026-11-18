@@ -40,8 +40,12 @@ public class CollegeAdminService {
 
     @Transactional
     public CollegeSummary decide(UUID adminId, UUID collegeId, ApprovalStatus status, String note) {
-        if (status == ApprovalStatus.PENDING) throw new DomainException("Choose APPROVED or REJECTED", HttpStatus.BAD_REQUEST, "BAD_DECISION");
+        if (status == ApprovalStatus.PENDING) throw new DomainException("Choose APPROVED, REJECTED or SUSPENDED", HttpStatus.BAD_REQUEST, "BAD_DECISION");
         CollegeProfile p = profileRepository.findById(collegeId).orElseThrow(() -> CollegeDirectory.notFound("College"));
+        if (status == ApprovalStatus.SUSPENDED && p.getApprovalStatus() != ApprovalStatus.APPROVED) {
+            throw new DomainException("Only an approved college can be suspended", HttpStatus.BAD_REQUEST, "BAD_DECISION");
+        }
+        boolean reactivated = status == ApprovalStatus.APPROVED && p.getApprovalStatus() == ApprovalStatus.SUSPENDED;
         p.setApprovalStatus(status);
         p.setApprovalNote(note);
         profileRepository.save(p);
@@ -49,9 +53,12 @@ public class CollegeAdminService {
         String admin = userRepository.findById(adminId).map(u -> u.getFullName()).orElse("PROVEYU admin");
         auditService.log(collegeId, adminId, admin, "COLLEGE_" + status, "COLLEGE", collegeId, "College " + status.name().toLowerCase(), note);
         if (p.getTpoEmail() != null) {
-            emailService.sendHtml(p.getTpoEmail(), "Your college registration was " + status.name().toLowerCase(),
-                    "<p>Hello " + HtmlUtils.htmlEscape(p.getTpoName()) + ",</p><p>Your registration for <b>" + HtmlUtils.htmlEscape(p.getCollegeName())
-                            + "</b> has been <b>" + status.name().toLowerCase() + "</b>.</p>" + (note == null ? "" : "<p>Note: " + HtmlUtils.htmlEscape(note) + "</p>"));
+            String what = status == ApprovalStatus.SUSPENDED ? "suspended" : reactivated ? "reactivated" : status.name().toLowerCase();
+            String subject = status == ApprovalStatus.SUSPENDED || reactivated ? "Your college account was " + what : "Your college registration was " + what;
+            emailService.sendHtml(p.getTpoEmail(), subject,
+                    "<p>Hello " + HtmlUtils.htmlEscape(p.getTpoName()) + ",</p><p>" + (status == ApprovalStatus.SUSPENDED || reactivated ? "The ProveYu account of" : "Your registration for")
+                            + " <b>" + HtmlUtils.htmlEscape(p.getCollegeName()) + "</b> has been <b>" + what + "</b>.</p>"
+                            + (note == null ? "" : "<p>Note: " + HtmlUtils.htmlEscape(note) + "</p>"));
         }
         return toSummary(p);
     }

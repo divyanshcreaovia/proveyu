@@ -70,6 +70,9 @@ public class CollegeContextResolver implements HandlerMethodArgumentResolver {
         if (!allowPending) {
             CollegeProfile profile = profileRepository.findById(member.getCollegeId())
                     .orElseThrow(() -> new DomainException("College profile not found", HttpStatus.FORBIDDEN, "COLLEGE_NOT_FOUND"));
+            if (profile.getApprovalStatus() == ApprovalStatus.SUSPENDED) {
+                throw new DomainException("Your college account is suspended by the PROVEYU team. Contact support.", HttpStatus.FORBIDDEN, "COLLEGE_SUSPENDED");
+            }
             if (profile.getApprovalStatus() != ApprovalStatus.APPROVED) {
                 throw new DomainException("Your college is awaiting approval by the PROVEYU team", HttpStatus.FORBIDDEN,
                         profile.getApprovalStatus() == ApprovalStatus.REJECTED ? "COLLEGE_REJECTED" : "COLLEGE_PENDING_APPROVAL");

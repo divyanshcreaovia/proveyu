@@ -298,8 +298,12 @@ def main():
     ov = r["data"]
     check("overview loads", s == 200, r)
     check("all three AI services reported up", ov["services"] == {"llm": True, "speechToText": True, "textToSpeech": True}, ov["services"])
-    drive = next((d for d in ov["drives"] if d["companyName"] == "Infinite Analytics"), None)
-    check("applied Infinite Analytics drive offered for practice", drive is not None and drive["applied"], [d["companyName"] for d in ov["drives"]])
+    # Prefer the seeded Infinite Analytics drive; fall back to any drive the student applied to (the demo drive may have been run to the end by hand).
+    applied = [d for d in ov["drives"] if d["applied"]]
+    drive = next((d for d in applied if d["companyName"] == "Infinite Analytics"), applied[0] if applied else None)
+    check("an applied drive is offered for practice", drive is not None, [d["companyName"] for d in ov["drives"]])
+    if drive is None:
+        raise SystemExit("No applied drive for the student: run scripts/seed_drive_room_demo.py.")
     if ov.get("openSessionId"):
         call("POST", f"{B}/sessions/{ov['openSessionId']}/end", token=t)
 
@@ -326,7 +330,7 @@ def main():
     v = r["data"]
     sid = v["id"]
     print(f"        questions planned in {plan_secs:.1f}s; focus {v['focus']}")
-    check("6 questions in total, role and company from the drive", v["plannedQuestions"] == 6 and v["companyName"] == "Infinite Analytics", v)
+    check("6 questions in total, role and company from the drive", v["plannedQuestions"] == 6 and v["companyName"] == drive["companyName"], v)
     check("chosen level (HARD) saved on the interview", v.get("difficulty") == "HARD", v.get("difficulty"))
     check("first question is the introduction", "introduce yourself" in v["current"]["text"].lower(), v["current"])
     s, r = call("POST", f"{B}/sessions", {"type": "HR", "consent": True}, token=t)

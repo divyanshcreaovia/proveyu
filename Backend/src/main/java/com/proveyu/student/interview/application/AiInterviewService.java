@@ -59,7 +59,12 @@ public class AiInterviewService {
     private final ObjectMapper json;
     private final TransactionTemplate tx;
     private final InterviewPurchaseService purchases;
-    private final int freeEveryDays;
+    /** Days between free interviews: application.yml default, changeable by the platform admin. */
+    private final com.proveyu.shared.settings.PlatformSettings settings;
+
+    private int freeEveryDays() {
+        return Math.max(1, settings.number(com.proveyu.shared.settings.PlatformSettings.INTERVIEW_FREE_EVERY_DAYS));
+    }
     private final int questionCount;
     private final int maxFollowUps;
     private final int maxAnswerSeconds;
@@ -71,7 +76,7 @@ public class AiInterviewService {
                             CollegeStudentRepository studentRepository, CollegeDriveRepository driveRepository, CollegeDirectory directory,
                             StudentPortalService portal, AiGateway ai, InterviewEvaluator evaluator, InterviewAudioStore audio, ObjectMapper json,
                             PlatformTransactionManager txm, InterviewPurchaseService purchases,
-                            @Value("${interview.free-every-days:15}") int freeEveryDays,
+                            com.proveyu.shared.settings.PlatformSettings settings,
                             @Value("${interview.questions:6}") int questionCount,
                             @Value("${interview.follow-ups:1}") int maxFollowUps,
                             @Value("${interview.max-answer-seconds:180}") int maxAnswerSeconds,
@@ -92,7 +97,7 @@ public class AiInterviewService {
         this.json = json;
         this.tx = new TransactionTemplate(txm);
         this.purchases = purchases;
-        this.freeEveryDays = Math.max(1, freeEveryDays);
+        this.settings = settings;
         this.questionCount = Math.max(2, Math.min(10, questionCount));
         this.maxFollowUps = maxFollowUps;
         this.maxAnswerSeconds = maxAnswerSeconds;
@@ -480,7 +485,7 @@ public class AiInterviewService {
     }
 
     /**
-     * One free interview every {@code freeEveryDays} days. The clock starts when the last free interview ended (or, while it is
+     * One free interview every {@code freeEveryDays()} days. The clock starts when the last free interview ended (or, while it is
      * still being scored, when it started); an interview cancelled with no answers is deleted and does not count. Bought or
      * granted interviews are used once the free one is not available.
      */
@@ -489,7 +494,7 @@ public class AiInterviewService {
         Instant nextFree = nextFreeAt(s.getId());
         boolean freeNow = nextFree != null && !nextFree.isAfter(Instant.now());
         int paid = c == null ? 0 : c.getPaidBalance();
-        return new Credits(freeNow ? 1 : 0, paid, freeNow || paid > 0, freeNow ? null : nextFree, freeEveryDays,
+        return new Credits(freeNow ? 1 : 0, paid, freeNow || paid > 0, freeNow ? null : nextFree, freeEveryDays(),
                 purchases.priceRupees(), purchases.maxPerPurchase(), purchases.ready());
     }
 
@@ -499,7 +504,7 @@ public class AiInterviewService {
         InterviewSession last = sessions.findFirstByStudentIdAndCreditSourceOrderByStartedAtDesc(studentId, CreditSource.FREE).orElse(null);
         if (last == null) return Instant.EPOCH;
         if (last.getStatus() == SessionStatus.IN_PROGRESS) return null;
-        return (last.getEndedAt() != null ? last.getEndedAt() : last.getStartedAt()).plus(Duration.ofDays(freeEveryDays));
+        return (last.getEndedAt() != null ? last.getEndedAt() : last.getStartedAt()).plus(Duration.ofDays(freeEveryDays()));
     }
 
     private CreditSource spend(CollegeStudent s) {

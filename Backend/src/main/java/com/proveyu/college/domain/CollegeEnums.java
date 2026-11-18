@@ -3,7 +3,7 @@ package com.proveyu.college.domain;
 public final class CollegeEnums {
     private CollegeEnums() {}
 
-    public enum ApprovalStatus { PENDING, APPROVED, REJECTED }
+    public enum ApprovalStatus { PENDING, APPROVED, REJECTED, SUSPENDED }
     public enum PolicyMode { OPEN, ONE_OFFER, TIER_UPGRADE }
     public enum MemberRole { COLLEGE_ADMIN, COLLEGE_COORDINATOR, COLLEGE_VIEWER }
     public enum MemberStatus { ACTIVE, REVOKED }

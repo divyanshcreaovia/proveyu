@@ -24,18 +24,27 @@ export const routes: Routes = [
   // old candidate portal URL (the student portal replaced it)
   { path: 'candidate/campus-drives', redirectTo: '/student/drives' },
 
-  // ---------------------------------------------------------------- platform admin
+  // ---------------------------------------------------------------- platform admin (no sign-up: admins are created by an admin)
+  { path: 'admin/login', title: 'Admin sign in', canActivate: [guestGuard], loadComponent: () => import('./features/admin/auth/admin-login').then(m => m.AdminLogin) },
   {
-    path: 'admin/colleges', canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] },
-    loadComponent: () => import('./features/admin/admin-colleges').then(m => m.AdminColleges),
-  },
-  {
-    path: 'admin/prep', title: 'Mock tests', canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] },
-    loadComponent: () => import('./features/admin/admin-prep').then(m => m.AdminPrep),
-  },
-  {
-    path: 'admin/payments', title: 'Interview payments', canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] },
-    loadComponent: () => import('./features/admin/admin-payments').then(m => m.AdminPayments),
+    path: 'admin',
+    canActivate: [authGuard, roleGuard], data: { roles: ['ADMIN'] },
+    loadComponent: () => import('./features/admin/layout/admin-shell').then(m => m.AdminShell),
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', title: 'Dashboard', loadComponent: () => import('./features/admin/pages/dashboard').then(m => m.AdminDashboardPage) },
+      { path: 'colleges', title: 'Colleges', loadComponent: () => import('./features/admin/pages/colleges').then(m => m.AdminCollegesPage) },
+      { path: 'users', title: 'Users', loadComponent: () => import('./features/admin/pages/users').then(m => m.AdminUsersPage) },
+      { path: 'admins', title: 'Admins', loadComponent: () => import('./features/admin/pages/admins').then(m => m.AdminAdminsPage) },
+      { path: 'payments', title: 'Interview payments', loadComponent: () => import('./features/admin/pages/payments').then(m => m.AdminPaymentsPage) },
+      { path: 'mock-tests', title: 'Mock tests', loadComponent: () => import('./features/admin/pages/mock-tests').then(m => m.AdminMockTestsPage) },
+      { path: 'prep', redirectTo: 'mock-tests' },
+      { path: 'proctoring', title: 'Proctoring', loadComponent: () => import('./features/admin/pages/proctoring').then(m => m.AdminProctoringPage) },
+      { path: 'support', title: 'Support', loadComponent: () => import('./features/admin/pages/support').then(m => m.AdminSupportPage) },
+      { path: 'broadcast', title: 'Broadcast', loadComponent: () => import('./features/admin/pages/broadcast').then(m => m.AdminBroadcastPage) },
+      { path: 'settings', title: 'Settings', loadComponent: () => import('./features/admin/pages/settings').then(m => m.AdminSettingsPage) },
+      { path: 'audit', title: 'Audit log', loadComponent: () => import('./features/admin/pages/audit').then(m => m.AdminAuditPage) },
+    ],
   },
 
   // ---------------------------------------------------------------- student portal (college students, CANDIDATE role)

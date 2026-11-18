@@ -6,6 +6,8 @@ import { AttemptHistory, PrepService, TestCard } from '../services/prep.service'
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
 import { EmptyState, Skeleton } from '../../../shared/ui/states';
 import { enterFullscreen, exitFullscreen } from '../../../shared/fullscreen';
+import { ScreenProctor, SHARE_PROBLEM_TEXT, ShareProblem } from './screen-proctor';
+import { ToastService } from '../../../core/services/toast.service';
 
 /**
  * Preparation tab: the mock test ladder (easy service-company patterns up to hard product-company ones; each opens after
@@ -28,6 +30,15 @@ import { enterFullscreen, exitFullscreen } from '../../../shared/fullscreen';
         <div><span class="prep-num">{{ avg() === null ? '-' : avg() + '%' }}</span><span class="st-muted small">average</span></div>
       </div>
     </section>
+    @if (!desktop) {
+      <div class="alert alert-warning small d-flex gap-2 align-items-start mb-3" role="status">
+        <i class="bi bi-laptop mt-1" aria-hidden="true"></i>
+        <span>Mock tests need a <strong>laptop or desktop</strong> (Chrome, Edge or Firefox): you share your screen during the test, and phones and tablets cannot do that. You can still see your past results here.</span>
+      </div>
+    } @else {
+      <p class="small st-muted mb-3"><i class="bi bi-shield-check me-1" aria-hidden="true"></i>Tests are proctored: you share your entire screen, and every time you leave the
+        test a screenshot is saved with the time. Two warnings, then the test is submitted automatically.</p>
+    }
 
     @if (loading()) { <pm-skeleton [rows]="6" /> } @else {
       @if (ladder().length) {
@@ -126,7 +137,9 @@ import { enterFullscreen, exitFullscreen } from '../../../shared/fullscreen';
         <h2 class="h6 st-h mt-4 mb-2">My attempts</h2>
         @for (h of history(); track h.attemptId) {
           <a class="st-row text-decoration-none prep-hist" [routerLink]="['/student/prep/result', h.attemptId]">
-            <span class="flex-grow-1 small"><strong class="st-h">{{ h.title }}</strong><br><span class="st-muted">{{ h.submittedAt | date: 'medium' }}</span></span>
+            <span class="flex-grow-1 small"><strong class="st-h">{{ h.title }}</strong><br><span class="st-muted">{{ h.submittedAt | date: 'medium' }}</span>
+              @if (h.autoSubmitReason === 'TAB_SWITCH') { <span class="st-chip text-danger ms-1"><i class="bi bi-exclamation-octagon"></i> Auto-submitted: left the test</span> }
+              @else if (h.tabSwitches) { <span class="st-chip ms-1" style="color:#b45309"><i class="bi bi-exclamation-triangle"></i> {{ h.tabSwitches }} warning{{ h.tabSwitches === 1 ? '' : 's' }}</span> }</span>
             <span class="prep-score" [class.good]="pct(h) >= 70" [class.mid]="pct(h) >= 40 && pct(h) < 70">{{ pct(h) }}%</span>
             <span class="small st-muted">{{ h.score | number: '1.0-1' }}/{{ h.maxScore }}</span>
             <i class="bi bi-chevron-right st-muted"></i>
@@ -177,6 +190,10 @@ export class PrepHome implements OnInit {
   private prep = inject(PrepService);
   private router = inject(Router);
   private confirm = inject(ConfirmService);
+  private screen = inject(ScreenProctor);
+  private toast = inject(ToastService);
+  /** Screen sharing (and so a mock test) needs a laptop or desktop browser. */
+  readonly desktop = ScreenProctor.supported();
   loading = signal(true);
   tests = signal<TestCard[]>([]);
   history = signal<AttemptHistory[]>([]);
@@ -211,19 +228,28 @@ export class PrepHome implements OnInit {
   pct(h: AttemptHistory): number { return h.maxScore ? Math.round(h.score * 100 / h.maxScore) : 0; }
 
   async open(t: TestCard, resume: boolean): Promise<void> {
+    if (!this.desktop) { this.toast.error(SHARE_PROBLEM_TEXT.UNSUPPORTED); return; }
     if (!resume) {
       const r = await this.confirm.ask({
         title: `Start "${t.title}"?`,
-        message: `The test opens in full screen and the ${t.durationMinutes}-minute timer starts now. It keeps running even if you close the page. Answers save automatically, and the test submits itself when time is up.`,
-        confirmText: 'Start test',
+        message: `You will share your ENTIRE screen, then the test opens in full screen and the ${t.durationMinutes}-minute timer starts. `
+          + `Do not leave the test: each time you switch tab or app a screenshot is saved with the time. Two warnings, and the third time `
+          + `the test is submitted automatically. Answers save automatically, and the test submits itself when time is up.`,
+        confirmText: 'Share screen and start',
       });
       if (!r.ok) return;
     }
-    // Must run inside the click: browsers only allow full screen right after a user action.
+    // Share before the attempt starts, so a refused share does not start the timer. Must run inside the click.
+    try {
+      await this.screen.start();
+    } catch (p) {
+      this.toast.error(SHARE_PROBLEM_TEXT[p as ShareProblem] ?? SHARE_PROBLEM_TEXT.DENIED);
+      return;
+    }
     void enterFullscreen();
     this.prep.start(t.id).subscribe({
       next: a => this.router.navigate(['/student/test', a.attemptId]),
-      error: () => exitFullscreen(),
+      error: () => { exitFullscreen(); this.screen.stop(); },
     });
   }
 }

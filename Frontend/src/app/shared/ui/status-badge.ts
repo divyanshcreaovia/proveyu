@@ -6,7 +6,8 @@ const TONES: Record<string, string> = {
   APPLIED: 'blue', SHORTLISTED: 'violet', WAITLISTED: 'amber', IN_PROCESS: 'amber', SELECTED: 'green', REJECTED: 'rose', WITHDRAWN: 'slate',
   PENDING: 'slate', PASS: 'green', FAIL: 'rose', ABSENT: 'slate', HOLD: 'amber',
   SCHEDULED: 'blue', NO_SHOW: 'rose', OFFERED: 'violet', ACCEPTED: 'green', DECLINED: 'slate', JOINED: 'green', REVOKED: 'rose',
-  VERIFIED: 'green', APPROVED: 'green', SIGNED: 'green', IN_PROGRESS: 'amber', EXPIRED: 'rose', NONE: 'slate',
+  VERIFIED: 'green', APPROVED: 'green', SIGNED: 'green', IN_PROGRESS: 'amber', EXPIRED: 'rose', NONE: 'slate', SUSPENDED: 'rose',
+  OPEN: 'amber', ANSWERED: 'blue', CLOSED: 'slate',
 };
 
 /** Colour-coded pill for any enum status. */

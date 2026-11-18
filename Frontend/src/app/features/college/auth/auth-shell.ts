@@ -31,6 +31,17 @@ import { RouterLink } from '@angular/router';
             </ul>
           </div>
           <small class="opacity-75">© ProveYu Recruiter · Drive Room for campus hiring</small>
+        } @else if (variant() === 'admin') {
+          <a routerLink="/" class="pm-auth-logo"><img src="images/proveyu-mark.png" alt="" /><span>ProveYu</span><em>Admin</em></a>
+          <div>
+            <h2 class="fw-bold mb-3">Run the whole platform from one place.</h2>
+            <ul class="list-unstyled pm-auth-points">
+              <li><i class="bi bi-check2-circle"></i> Approve, suspend and support colleges</li>
+              <li><i class="bi bi-check2-circle"></i> Users, payments, mock tests and proctoring</li>
+              <li><i class="bi bi-check2-circle"></i> Settings, broadcasts and a full audit log</li>
+            </ul>
+          </div>
+          <small class="opacity-75">© ProveYu Admin · For the ProveYu team only</small>
         } @else {
           <a routerLink="/" class="pm-auth-logo"><img src="images/proveyu-mark.png" alt="" /><span>ProveYu</span><em>Campus</em></a>
           <div>
@@ -48,7 +59,7 @@ import { RouterLink } from '@angular/router';
         <a routerLink="/" class="pm-auth-back"><i class="bi bi-arrow-left me-1"></i>Back to website</a>
         <div class="pm-auth-card" [class.pm-auth-wide]="wide()">
           <div class="pm-auth-cardbrand d-lg-none"><img src="images/proveyu-mark.png" alt="" /><span>ProveYu</span>
-            <em>{{ variant() === 'student' ? 'Student' : variant() === 'company' ? 'Recruiter' : 'Campus' }}</em></div>
+            <em>{{ variant() === 'student' ? 'Student' : variant() === 'company' ? 'Recruiter' : variant() === 'admin' ? 'Admin' : 'Campus' }}</em></div>
           <h1 class="h4 fw-bold mb-1">{{ heading() }}</h1>
           @if (sub()) { <p class="text-body-secondary small mb-4">{{ sub() }}</p> }
           <ng-content />
@@ -83,5 +94,5 @@ export class AuthShell {
   sub = input('');
   wide = input(false);
   /** 'student' switches the brand panel to the student portal copy. */
-  variant = input<'college' | 'student' | 'company'>('college');
+  variant = input<'college' | 'student' | 'company' | 'admin'>('college');
 }

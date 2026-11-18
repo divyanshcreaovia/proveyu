@@ -3,7 +3,7 @@
 export type Role = 'CANDIDATE' | 'RECRUITER' | 'ORGANIZATION' | 'ADMIN' | 'COLLEGE_ADMIN' | 'COLLEGE_COORDINATOR' | 'COLLEGE_VIEWER';
 export type MemberRole = 'COLLEGE_ADMIN' | 'COLLEGE_COORDINATOR' | 'COLLEGE_VIEWER';
 export type MemberStatus = 'ACTIVE' | 'REVOKED';
-export type ApprovalStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+export type ApprovalStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'SUSPENDED';
 export type PolicyMode = 'OPEN' | 'ONE_OFFER' | 'TIER_UPGRADE';
 export type StudentStatus = 'ACTIVE' | 'PLACED' | 'DEBARRED' | 'OPTED_OUT';
 export type DocType = 'RESUME' | 'MARKSHEET_10' | 'MARKSHEET_12' | 'MARKSHEET_SEM' | 'ID_PROOF' | 'OTHER'

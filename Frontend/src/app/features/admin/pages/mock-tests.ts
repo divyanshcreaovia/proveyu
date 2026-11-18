@@ -1,30 +1,19 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { AdminTest, PrepService } from '../student/services/prep.service';
-import { AuthService } from '../../core/services/auth.service';
-import { ToastService } from '../../core/services/toast.service';
-import { ConfirmService } from '../../shared/ui/confirm-dialog';
-import { FileUpload } from '../../shared/ui/file-upload';
-import { EmptyState } from '../../shared/ui/states';
-import { AppError } from '../../core/api';
+import { AdminTest, PrepService } from '../../student/services/prep.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../shared/ui/confirm-dialog';
+import { FileUpload } from '../../../shared/ui/file-upload';
+import { EmptyState } from '../../../shared/ui/states';
+import { AppError } from '../../../core/api';
 
 /** Platform ADMIN: upload mock tests (JSON) and publish them to every student's Preparation tab. */
 @Component({
   selector: 'pm-admin-prep',
-  imports: [DatePipe, RouterLink, FileUpload, EmptyState],
+  imports: [DatePipe, FileUpload, EmptyState],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="container py-4">
-      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <div class="d-flex align-items-center gap-3">
-          <h1 class="h4 fw-bold m-0">Mock tests</h1>
-          <a routerLink="/admin/colleges" class="small">College registrations</a>
-          <a routerLink="/admin/payments" class="small">Interview payments</a>
-        </div>
-        <button class="btn btn-sm btn-outline-secondary" (click)="auth.logout()">Sign out</button>
-      </div>
-
+    <div>
       <div class="row g-3 mb-3">
         <div class="col-lg-5">
           <div class="bg-body border rounded-3 p-3 h-100">
@@ -74,9 +63,8 @@ import { AppError } from '../../core/api';
       </div>
     </div>`,
 })
-export class AdminPrep implements OnInit {
+export class AdminMockTestsPage implements OnInit {
   private prep = inject(PrepService);
-  auth = inject(AuthService);
   private toast = inject(ToastService);
   private confirm = inject(ConfirmService);
   rows = signal<AdminTest[]>([]);

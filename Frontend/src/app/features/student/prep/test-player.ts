@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, HostListener, OnInit, computed, inject, input, signal, viewChild } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AppError } from '../../../core/api';
-import { AttemptView, LANGUAGE_LABELS, PrepAnswer, PrepLanguage, PrepService, QuestionView, RunResponse } from '../services/prep.service';
+import { AttemptView, LANGUAGE_LABELS, PrepAnswer, PrepLanguage, PrepService, ProctorStatus, QuestionView, RunResponse, SWITCH_LABELS, SwitchKind } from '../services/prep.service';
+import { ScreenProctor, SHARE_PROBLEM_TEXT, ShareProblem } from './screen-proctor';
 import { ThemeService } from '../../../core/services/theme.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
@@ -13,10 +15,12 @@ import { enterFullscreen, exitFullscreen, fullscreenSupported, isFullscreen } fr
  * Full-screen, timed mock test: MCQ options, coding editor with sample runs, question palette, autosave and auto-submit.
  * The test stays in browser full screen; leaving it pauses the screen until the student returns or exits. Questions carry
  * a faint ProveYu watermark (and copied question text a ProveYu tag) so screenshots pasted into AI tools are traceable.
+ * Proctoring: the student shares the entire screen; leaving the test (another tab or app, or stopping the share) saves a screenshot
+ * with the time. The server counts: two warnings, the third time the test is submitted.
  */
 @Component({
   selector: 'pm-test-player',
-  imports: [FormsModule],
+  imports: [FormsModule, DatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: '../../college/layout/college-theme.scss',
   template: `
@@ -31,6 +35,11 @@ import { enterFullscreen, exitFullscreen, fullscreenSupported, isFullscreen } fr
             <div class="tp-sub">{{ answeredCount() }} of {{ qs().length }} answered · <span [class.text-danger]="saveState() === 'error'">{{ saveLabel() }}</span></div></div>
           <div class="tp-timer" [class.warn]="remaining() <= 300" [class.crit]="remaining() <= 60" role="timer" [attr.aria-label]="'Time left ' + clock()">
             <i class="bi bi-stopwatch"></i> {{ clock() }}</div>
+          @if (switches()) {
+            <button class="tp-warn-chip" (click)="showLog.set(true)" [class.last]="switches() >= maxWarnings()"
+              [attr.aria-label]="switches() + ' of ' + maxWarnings() + ' warnings used. Show details'" title="Times you left the test">
+              <i class="bi bi-exclamation-triangle-fill"></i> {{ switches() }}/{{ maxWarnings() }}</button>
+          }
           <button class="tp-icon d-none d-sm-inline-grid" (click)="theme.toggle()" [attr.aria-label]="theme.dark() ? 'Light mode' : 'Dark mode'">
             <i class="bi" [class.bi-moon-stars]="!theme.dark()" [class.bi-sun]="theme.dark()"></i></button>
           <button class="tp-exit" (click)="confirmExit()" [disabled]="submitting()" title="Leave the test (timer keeps running)"><i class="bi bi-box-arrow-left"></i><span class="d-none d-md-inline"> Exit</span></button>
@@ -142,6 +151,59 @@ import { enterFullscreen, exitFullscreen, fullscreenSupported, isFullscreen } fr
             </div>
           </div>
         }
+        @if (shareGate()) {
+          <div class="tp-lock" role="dialog" aria-modal="true" aria-labelledby="tp-share-title">
+            <div class="tp-lock-card">
+              <div class="tp-lock-icon" aria-hidden="true"><i class="bi bi-display"></i></div>
+              @if (!proctorOk) {
+                <h2 id="tp-share-title" class="h5 st-h mb-2">Use a laptop or desktop</h2>
+                <p class="small mb-3">{{ shareText.UNSUPPORTED }}</p>
+                <button class="btn btn-primary w-100" (click)="exit()">Back to Preparation</button>
+              } @else {
+                <h2 id="tp-share-title" class="h5 st-h mb-2">Share your entire screen to continue</h2>
+                <p class="small mb-2">This test is proctored. In the dialog choose <strong>Entire screen</strong>. Each time you leave the test, a
+                  screenshot is saved with the time: {{ maxWarnings() }} warnings, then the test is submitted. The timer is running ({{ clock() }} left).</p>
+                <p class="small text-body-secondary mb-2">Chrome shows a "sharing your screen" bar: click <strong>Hide</strong> on it. Clicking anything outside the test counts as leaving it.</p>
+                @if (switches()) { <p class="small text-danger mb-2">Warnings used: {{ switches() }} of {{ maxWarnings() }}.</p> }
+                @if (shareMsg()) { <p class="small text-danger mb-2" role="alert">{{ shareMsg() }}</p> }
+                <button class="btn btn-primary w-100 mb-2" (click)="share()" [disabled]="sharingNow()">
+                  @if (sharingNow()) { <span class="spinner-border spinner-border-sm me-1"></span> } <i class="bi bi-display me-1"></i> Share entire screen</button>
+                <button class="btn btn-link btn-sm text-body-secondary" (click)="confirmExit()">Leave the test</button>
+              }
+            </div>
+          </div>
+        }
+        @if (warning(); as w) {
+          <div class="tp-lock" role="alertdialog" aria-modal="true" aria-labelledby="tp-w-title" aria-describedby="tp-w-text">
+            <div class="tp-lock-card tp-w-card">
+              <div class="tp-lock-icon tp-w-icon" aria-hidden="true"><i class="bi bi-exclamation-triangle-fill"></i></div>
+              <h2 id="tp-w-title" class="h5 st-h mb-1">You left the test</h2>
+              <div class="tp-w-meta">Warning {{ w.seq }} of {{ maxWarnings() }} · {{ w.at | date: 'h:mm:ss a' }} · {{ labels[w.kind] }}</div>
+              @if (w.img) { <img [src]="w.img" class="tp-shot" alt="Your screen when you left the test" /> }
+              @else { <div class="tp-noshot"><i class="bi bi-image me-1"></i> No screenshot: screen sharing had stopped</div> }
+              <p id="tp-w-text" class="small mb-3">
+                @if (w.left) { This screenshot is saved for your placement cell. You have <strong>{{ w.left }} warning{{ w.left === 1 ? '' : 's' }}</strong> left; after that, leaving the test submits it. }
+                @else { <span class="text-danger fw-semibold">This was your last warning.</span> If you leave the test once more, it is submitted automatically. }</p>
+              <button class="btn btn-primary w-100" (click)="dismissWarning()">I understand, continue the test</button>
+            </div>
+          </div>
+        }
+        @if (showLog()) {
+          <div class="tp-lock" role="dialog" aria-modal="true" aria-labelledby="tp-log-title" (keydown.escape)="showLog.set(false)">
+            <div class="tp-lock-card tp-w-card text-start">
+              <div class="d-flex align-items-center mb-2"><h2 id="tp-log-title" class="h6 st-h mb-0 flex-grow-1">Times you left this test</h2>
+                <button class="btn-close" (click)="showLog.set(false)" aria-label="Close"></button></div>
+              <p class="small text-body-secondary mb-2">{{ switches() }} of {{ maxWarnings() }} warnings used. One more after the last warning submits the test.</p>
+              <ul class="tp-log list-unstyled mb-0">
+                @for (e of switchLog(); track e.seq) {
+                  <li><span class="tp-log-n">{{ e.seq }}</span>
+                    <span class="flex-grow-1 small"><strong>{{ e.at | date: 'h:mm:ss a' }}</strong><br><span class="text-body-secondary">{{ labels[e.kind] }}</span></span>
+                    @if (e.img) { <img [src]="e.img" alt="Screenshot" class="tp-log-img" /> } @else { <span class="small text-body-secondary">No screenshot</span> }</li>
+                }
+              </ul>
+            </div>
+          </div>
+        }
       }
     </div>`,
   styles: [`
@@ -178,6 +240,21 @@ import { enterFullscreen, exitFullscreen, fullscreenSupported, isFullscreen } fr
     .tp-lock-icon { width: 3.25rem; height: 3.25rem; margin: 0 auto .9rem; border-radius: 14px; display: grid; place-items: center; font-size: 1.4rem;
       color: #fff; background: #0d6efd; }
     .tp-submit:disabled { opacity: .5; cursor: default; }
+    .tp-warn-chip { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; gap: .35rem; align-items: center; padding: .35rem .75rem;
+      border-radius: 999px; font-weight: 800; font-size: .85rem; background: rgba(217,119,6,.15); color: #b45309; white-space: nowrap; }
+    .tp-warn-chip.last { background: rgba(225,29,72,.15); color: #be123c; }
+    .tp-warn-chip:focus-visible { outline: 2px solid var(--pm-focus); outline-offset: 2px; }
+    .tp-w-card { width: min(560px, 100%); }
+    .tp-w-icon { background: #e11d48; }
+    .tp-w-meta { font-size: .8rem; font-weight: 600; color: #be123c; margin-bottom: .75rem; }
+    .tp-shot { display: block; width: 100%; max-height: 300px; object-fit: contain; border-radius: 10px; border: 1px solid var(--pm-card-border);
+      background: #0b1220; margin-bottom: .75rem; }
+    .tp-noshot { padding: 1.25rem; border-radius: 10px; background: var(--pm-soft); color: var(--pm-muted); font-size: .85rem; margin-bottom: .75rem; }
+    .tp-log { display: grid; gap: .5rem; max-height: 60vh; overflow-y: auto; }
+    .tp-log li { display: flex; gap: .75rem; align-items: center; padding: .5rem; border: 1px solid var(--pm-card-border); border-radius: 10px; }
+    .tp-log-n { width: 1.8rem; height: 1.8rem; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: .8rem;
+      background: rgba(225,29,72,.12); color: #be123c; flex-shrink: 0; }
+    .tp-log-img { width: 120px; height: 68px; object-fit: cover; border-radius: 6px; border: 1px solid var(--pm-card-border); flex-shrink: 0; }
     .tp-body { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 1rem; padding: 1rem max(16px, env(safe-area-inset-right, 0px)) 1.5rem max(16px, env(safe-area-inset-left, 0px)); align-items: start; }
     @media (max-width: 991.98px) { .tp-body { grid-template-columns: minmax(0, 1fr); } }
     .tp-main { display: grid; gap: 1rem; min-width: 0; }
@@ -266,7 +343,24 @@ export class TestPlayer implements OnInit {
   isFull = signal(isFullscreen());
   exits = signal(0);
   private leaving = signal(false);
-  locked = computed(() => this.fsSupported && !this.isFull() && !!this.view() && !this.submitting() && !this.leaving());
+  locked = computed(() => this.fsSupported && !this.isFull() && !!this.view() && !this.submitting() && !this.leaving() && this.screen.sharing());
+
+  // ---- proctoring
+  private screen = inject(ScreenProctor);
+  readonly proctorOk = ScreenProctor.supported();
+  readonly shareText = SHARE_PROBLEM_TEXT;
+  readonly labels = SWITCH_LABELS;
+  /** Blocks the test until the entire screen is shared (after a reload, or when the student stopped sharing). */
+  shareGate = computed(() => !!this.view() && !this.screen.sharing() && !this.submitting() && !this.leaving());
+  shareMsg = signal('');
+  sharingNow = signal(false);
+  switches = signal(0);
+  maxWarnings = signal(2);
+  switchLog = signal<SwitchEntry[]>([]);
+  warning = signal<(SwitchEntry & { left: number }) | null>(null);
+  showLog = signal(false);
+  private lastSwitchAt = 0;
+  private objectUrls: string[] = [];
   roll = computed(() => this.portal.me()?.rollNumber ?? '');
   /** Tiled "ProveYu" mark, faint enough to read through, visible to OCR / AI tools in a screenshot. */
   watermark = computed(() => watermarkUrl(this.theme.dark()));
@@ -296,13 +390,22 @@ export class TestPlayer implements OnInit {
   });
 
   ngOnInit(): void {
-    this.destroyRef.onDestroy(() => exitFullscreen());
+    this.destroyRef.onDestroy(() => {
+      exitFullscreen();
+      this.screen.onEnded(null);
+      this.screen.stop();
+      this.objectUrls.forEach(u => URL.revokeObjectURL(u));
+    });
+    this.screen.onEnded(() => this.left('SHARE_STOPPED'));
     this.prep.attempt(this.id()).subscribe({
       next: v => {
         this.clockOffset = new Date(v.serverNow).getTime() - Date.now();
         this.answers.set(v.answers ?? {});
         for (const [qid, a] of Object.entries(v.answers ?? {})) if (a.language && a.code !== undefined) this.drafts[qid] = { [a.language]: a.code };
         this.view.set(v);
+        this.switches.set(v.tabSwitches ?? 0);
+        this.maxWarnings.set(v.maxWarnings ?? 2);
+        if (v.tabSwitches) this.loadLog();
         this.tick();
         const t = setInterval(() => this.tick(), 1000);
         this.destroyRef.onDestroy(() => { clearInterval(t); clearTimeout(this.saveTimer); });
@@ -339,6 +442,7 @@ export class TestPlayer implements OnInit {
     if (!r.ok) return;
     this.leaving.set(true);
     this.flush();
+    this.screen.stop();
     exitFullscreen();
     this.router.navigateByUrl('/student/prep');
   }
@@ -352,7 +456,86 @@ export class TestPlayer implements OnInit {
   }
 
   @HostListener('document:visibilitychange')
-  onHide(): void { if (document.hidden) this.flush(); }
+  onHide(): void {
+    if (!document.hidden) return;
+    this.flush();
+    this.left('TAB_HIDDEN');
+  }
+
+  /** Another app or window took the focus while this tab stayed visible (e.g. a second monitor or Alt+Tab). */
+  @HostListener('window:blur')
+  onBlur(): void {
+    // A tab switch fires blur first and visibilitychange just after: wait a moment, so that one is recorded as a tab switch.
+    setTimeout(() => { if (!document.hidden) this.left('WINDOW_BLUR'); }, 400);
+  }
+
+  // ---------------------------------------------------------------- proctoring
+  async share(): Promise<void> {
+    this.shareMsg.set('');
+    this.sharingNow.set(true);
+    try {
+      await this.screen.start();
+      void enterFullscreen();
+    } catch (p) {
+      this.shareMsg.set(SHARE_PROBLEM_TEXT[p as ShareProblem] ?? SHARE_PROBLEM_TEXT.DENIED);
+    } finally {
+      this.sharingNow.set(false);
+    }
+  }
+
+  /** The student left the test: wait a moment so the shared screen shows where they went, capture it and report it. */
+  private async left(kind: SwitchKind): Promise<void> {
+    if (!this.view() || this.submitting() || this.leaving()) return;
+    if (kind !== 'SHARE_STOPPED' && !this.screen.sharing()) return; // not proctored yet (share dialog open, or share gate shown)
+    const now = Date.now();
+    if (now - this.lastSwitchAt < 3000) return; // blur + hidden of the same switch
+    this.lastSwitchAt = now;
+    const at = new Date(now);
+    if (kind !== 'SHARE_STOPPED') await new Promise(r => setTimeout(r, 700));
+    const shot = await this.screen.capture();
+    const img = shot ? this.track(URL.createObjectURL(shot)) : null;
+    this.prep.reportSwitch(this.id(), kind, at, shot).subscribe({
+      next: st => this.afterSwitch(st, kind, at, img),
+      error: () => this.toast.error('Could not record that you left the test. Stay on this page.'),
+    });
+  }
+
+  private afterSwitch(st: ProctorStatus, kind: SwitchKind, at: Date, img: string | null): void {
+    this.switches.set(st.tabSwitches);
+    this.maxWarnings.set(st.maxWarnings);
+    const seq = st.event?.seq ?? st.tabSwitches;
+    const isNew = !this.switchLog().some(e => e.seq === seq);
+    if (isNew) {
+      const entry: SwitchEntry = { seq, kind: (st.event?.kind as SwitchKind) ?? kind, at: st.event ? new Date(st.event.occurredAt) : at, img };
+      this.switchLog.update(l => [...l, entry].sort((a, b) => a.seq - b.seq));
+      if (!st.autoSubmitted) this.warning.set({ ...entry, left: st.warningsLeft });
+    }
+    if (st.autoSubmitted) {
+      this.submitting.set(true);
+      this.dirty.clear();
+      this.screen.stop();
+      exitFullscreen();
+      this.toast.error(`Your test was submitted: you left it ${st.tabSwitches} times.`);
+      this.router.navigate(['/student/prep/result', this.id()], { replaceUrl: true });
+    }
+  }
+
+  dismissWarning(): void {
+    this.warning.set(null);
+    if (this.fsSupported && !isFullscreen()) void enterFullscreen();
+  }
+
+  /** Switches saved before a reload, with their screenshots. */
+  private loadLog(): void {
+    this.prep.proctorLog(this.id()).subscribe(log => {
+      this.switchLog.set(log.events.map(e => ({ seq: e.seq, kind: e.kind, at: new Date(e.occurredAt), img: null })));
+      for (const e of log.events.filter(x => x.hasScreenshot)) {
+        this.prep.screenshotUrl(e.id).subscribe(u => this.switchLog.update(l => l.map(x => x.seq === e.seq ? { ...x, img: this.track(u) } : x)));
+      }
+    });
+  }
+
+  private track(url: string): string { this.objectUrls.push(url); return url; }
 
   @HostListener('window:beforeunload', ['$event'])
   beforeUnload(e: BeforeUnloadEvent): void { if (this.dirty.size) e.preventDefault(); }
@@ -483,12 +666,15 @@ export class TestPlayer implements OnInit {
     clearTimeout(this.saveTimer);
     if (auto) this.toast.info('Time is up. Submitting your test…');
     this.prep.submit(this.id(), this.answers()).subscribe({
-      next: () => { this.dirty.clear(); this.router.navigate(['/student/prep/result', this.id()], { replaceUrl: true }); },
+      next: () => { this.dirty.clear(); this.screen.stop(); this.router.navigate(['/student/prep/result', this.id()], { replaceUrl: true }); },
       error: () => this.submitting.set(false),
     });
   }
-  exit(): void { exitFullscreen(); this.router.navigateByUrl('/student/prep'); }
+  exit(): void { exitFullscreen(); this.screen.stop(); this.router.navigateByUrl('/student/prep'); }
 }
+
+/** One time the student left the test, as shown in the warning and the log. img: object URL of the screenshot. */
+interface SwitchEntry { seq: number; kind: SwitchKind; at: Date; img: string | null; }
 
 function watermarkUrl(dark: boolean): string {
   const fill = dark ? '#ffffff' : '#0b1220';

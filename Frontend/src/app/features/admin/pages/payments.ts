@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { AdminPurchase, InterviewPaymentsAdminService, PurchaseStatus } from '../student/services/interview.service';
-import { AuthService } from '../../core/services/auth.service';
-import { ToastService } from '../../core/services/toast.service';
-import { ConfirmService } from '../../shared/ui/confirm-dialog';
-import { EmptyState } from '../../shared/ui/states';
-import { AppError } from '../../core/api';
+import { AdminPurchase, InterviewPaymentsAdminService, PurchaseStatus } from '../../student/services/interview.service';
+import { AdminService } from '../services/admin.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { ConfirmService } from '../../../shared/ui/confirm-dialog';
+import { EmptyState } from '../../../shared/ui/states';
+import { AppError } from '../../../core/api';
 
 /**
  * Platform ADMIN: students who bought AI interviews by UPI QR. For each one, find the credit in the bank / UPI app by its
@@ -14,17 +13,14 @@ import { AppError } from '../../core/api';
  */
 @Component({
   selector: 'pm-admin-payments',
-  imports: [DatePipe, RouterLink, EmptyState],
+  imports: [DatePipe, EmptyState],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="container py-4">
-      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <div class="d-flex align-items-center gap-3 flex-wrap">
-          <h1 class="h4 fw-bold m-0">Interview payments</h1>
-          <a routerLink="/admin/colleges" class="small">College registrations</a>
-          <a routerLink="/admin/prep" class="small">Mock tests</a>
-        </div>
-        <button class="btn btn-sm btn-outline-secondary" (click)="auth.logout()">Sign out</button>
+    <div>
+      <div class="d-flex flex-wrap justify-content-end gap-2 mb-2">
+        <span class="small text-body-secondary align-self-center me-auto">Approve or reject UPI payments; download all payments for accounts.</span>
+        <button class="btn btn-sm btn-outline-secondary" (click)="exportAll('xlsx')"><i class="bi bi-file-earmark-excel me-1"></i>Export Excel</button>
+        <button class="btn btn-sm btn-outline-secondary" (click)="exportAll('csv')"><i class="bi bi-filetype-csv me-1"></i>CSV</button>
       </div>
 
       <div class="alert alert-info small d-flex gap-2 align-items-start">
@@ -92,8 +88,8 @@ import { AppError } from '../../core/api';
     }
   `],
 })
-export class AdminPayments implements OnInit {
-  readonly auth = inject(AuthService);
+export class AdminPaymentsPage implements OnInit {
+  private adminApi = inject(AdminService);
   private api = inject(InterviewPaymentsAdminService);
   private toast = inject(ToastService);
   private confirm = inject(ConfirmService);
@@ -147,4 +143,7 @@ export class AdminPayments implements OnInit {
     if (!text) return;
     navigator.clipboard?.writeText(text).then(() => this.toast.info('UTR copied'), () => undefined);
   }
+
+  /** All payments of every status as a file (the list above shows one status at a time). */
+  exportAll(format: 'xlsx' | 'csv'): void { this.adminApi.exportPayments(null, format).subscribe(); }
 }

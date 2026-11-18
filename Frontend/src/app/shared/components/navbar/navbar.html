@@ -1,11 +1,15 @@
-@if (showBanner()) {
+@if (showBanner() && banner(); as b) {
   <div class="text-white text-center py-2 fs-7 announce-bar">
     <div class="container-custom d-flex justify-content-center align-items-center gap-2">
       <span class="badge bg-warning text-dark rounded-pill px-2 py-1" style="font-size: 0.7rem;">New</span>
-      <span class="fw-medium d-none d-md-inline">AI mock interviews are live for students: speak your answers, get a scored report in minutes.</span>
-      <span class="fw-medium d-md-none">AI mock interviews are live.</span>
-      <a routerLink="/for-students" fragment="ai-interview"
-        class="text-white ms-2 text-decoration-none border-bottom border-white fw-semibold text-nowrap">See how &rarr;</a>
+      <span class="fw-medium announce-text">{{ b.text }}</span>
+      @if (b.link) {
+        @if (external(b.link)) {
+          <a [href]="b.link" target="_blank" rel="noopener" class="text-white ms-2 text-decoration-none border-bottom border-white fw-semibold text-nowrap">See how &rarr;</a>
+        } @else {
+          <a [routerLink]="path(b.link)" [fragment]="fragment(b.link)" class="text-white ms-2 text-decoration-none border-bottom border-white fw-semibold text-nowrap">See how &rarr;</a>
+        }
+      }
       <button type="button" class="btn-close btn-close-white ms-auto" style="font-size: 0.6rem;" aria-label="Close announcement"
         (click)="showBanner.set(false)"></button>
     </div>

@@ -1,6 +1,8 @@
 package com.proveyu.student.prep.web;
 
 import com.proveyu.student.prep.application.PrepService;
+import com.proveyu.student.prep.application.ProctorService;
+import com.proveyu.student.prep.domain.PrepProctorEvent;
 import com.proveyu.student.prep.domain.PrepModel.*;
 import com.proveyu.shared.error.DomainException;
 import com.proveyu.shared.response.ApiResponse;
@@ -17,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -28,6 +31,12 @@ public final class PrepControllers {
         return UUID.fromString(a.getName());
     }
 
+    /** A proctoring screenshot: never cached, never sniffed as anything but an image. */
+    private static ResponseEntity<byte[]> image(ProctorService.Screenshot s) {
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(s.contentType()))
+                .header(HttpHeaders.CACHE_CONTROL, "private, no-store").header("X-Content-Type-Options", "nosniff").body(s.bytes());
+    }
+
     /** Platform admin uploads and publishes mock tests. */
     @Tag(name = "Admin - Mock tests")
     @RestController
@@ -36,6 +45,7 @@ public final class PrepControllers {
     @RequiredArgsConstructor
     public static class AdminPrepController {
         private final PrepService service;
+        private final org.springframework.context.ApplicationEventPublisher events;
 
         @GetMapping
         public ApiResponse<List<AdminTestSummary>> list() {
@@ -47,18 +57,24 @@ public final class PrepControllers {
             if (file.isEmpty() || file.getSize() > 2_000_000) {
                 throw new DomainException("Upload a JSON file up to 2 MB", HttpStatus.BAD_REQUEST, "INVALID_TEST");
             }
-            return ApiResponse.success(service.upload(uid(auth), new String(file.getBytes(), StandardCharsets.UTF_8)), "Test uploaded as a draft");
+            AdminTestSummary t = service.upload(uid(auth), new String(file.getBytes(), StandardCharsets.UTF_8));
+            events.publishEvent(new com.proveyu.shared.audit.AdminActionEvent(uid(auth), "MOCK_TEST_UPLOADED", "PREP_TEST", t.id().toString(), "Uploaded mock test \"" + t.title() + "\" (draft)"));
+            return ApiResponse.success(t, "Test uploaded as a draft");
         }
 
         @PatchMapping("/{id}/publish")
-        public ApiResponse<AdminTestSummary> publish(@PathVariable UUID id, @RequestBody Map<String, Boolean> body) {
+        public ApiResponse<AdminTestSummary> publish(Authentication auth, @PathVariable UUID id, @RequestBody Map<String, Boolean> body) {
             boolean published = Boolean.TRUE.equals(body.get("published"));
-            return ApiResponse.success(service.setPublished(id, published), published ? "Test published to students" : "Test hidden from students");
+            AdminTestSummary t = service.setPublished(id, published);
+            events.publishEvent(new com.proveyu.shared.audit.AdminActionEvent(uid(auth), published ? "MOCK_TEST_PUBLISHED" : "MOCK_TEST_UNPUBLISHED", "PREP_TEST", id.toString(),
+                    (published ? "Published" : "Unpublished") + " mock test \"" + t.title() + "\""));
+            return ApiResponse.success(t, published ? "Test published to students" : "Test hidden from students");
         }
 
         @DeleteMapping("/{id}")
-        public ApiResponse<Void> delete(@PathVariable UUID id) {
+        public ApiResponse<Void> delete(Authentication auth, @PathVariable UUID id) {
             service.delete(id);
+            events.publishEvent(new com.proveyu.shared.audit.AdminActionEvent(uid(auth), "MOCK_TEST_DELETED", "PREP_TEST", id.toString(), "Deleted mock test " + id));
             return ApiResponse.success(null, "Test deleted");
         }
 
@@ -77,6 +93,7 @@ public final class PrepControllers {
     @RequiredArgsConstructor
     public static class StudentPrepController {
         private final PrepService service;
+        private final ProctorService proctor;
 
         @GetMapping("/tests")
         public ApiResponse<List<TestCard>> tests(Authentication auth) {
@@ -117,6 +134,55 @@ public final class PrepControllers {
         @GetMapping("/attempts/{id}/result")
         public ApiResponse<AttemptResult> result(Authentication auth, @PathVariable UUID id) {
             return ApiResponse.success(service.result(uid(auth), id));
+        }
+
+        /**
+         * The student left the running test (kind TAB_HIDDEN, WINDOW_BLUR or SHARE_STOPPED), with a screenshot of the shared screen.
+         * After the allowed warnings, the next switch submits the test (autoSubmitted = true).
+         */
+        @PostMapping(value = "/attempts/{id}/proctor", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        public ApiResponse<ProctorStatus> reportSwitch(Authentication auth, @PathVariable UUID id, @RequestParam("kind") PrepProctorEvent.Kind kind,
+                                                       @RequestParam(value = "clientAt", required = false) Instant clientAt,
+                                                       @RequestPart(value = "screenshot", required = false) MultipartFile screenshot) throws IOException {
+            byte[] image = screenshot == null || screenshot.isEmpty() ? null : screenshot.getBytes();
+            ProctorStatus st = proctor.reportSwitch(uid(auth), id, kind, clientAt, image);
+            return ApiResponse.success(st, st.autoSubmitted() ? "Test submitted after leaving it too many times" : "Switch recorded");
+        }
+
+        @GetMapping("/attempts/{id}/proctor")
+        public ApiResponse<ProctorLog> proctorLog(Authentication auth, @PathVariable UUID id) {
+            return ApiResponse.success(proctor.log(uid(auth), id));
+        }
+
+        @GetMapping("/proctor/{eventId}/screenshot")
+        public ResponseEntity<byte[]> screenshot(Authentication auth, @PathVariable UUID eventId) {
+            return image(proctor.screenshot(uid(auth), eventId));
+        }
+    }
+
+    /** The placement cell sees its students' mock test attempts and, as proof, every time a student left a test. */
+    @Tag(name = "College - Mock test attempts")
+    @RestController
+    @RequestMapping("/api/v1/college/prep")
+    @PreAuthorize(com.proveyu.college.security.CollegeAccess.READ)
+    @RequiredArgsConstructor
+    public static class CollegeProctorController {
+        private final ProctorService proctor;
+
+        @GetMapping("/attempts")
+        public ApiResponse<List<CollegeAttemptRow>> attempts(com.proveyu.college.security.CollegeContext ctx,
+                                                             @RequestParam(defaultValue = "false") boolean flagged) {
+            return ApiResponse.success(proctor.collegeAttempts(ctx, flagged));
+        }
+
+        @GetMapping("/attempts/{id}/proctor")
+        public ApiResponse<ProctorLog> proctorLog(com.proveyu.college.security.CollegeContext ctx, @PathVariable UUID id) {
+            return ApiResponse.success(proctor.collegeLog(ctx, id));
+        }
+
+        @GetMapping("/proctor/{eventId}/screenshot")
+        public ResponseEntity<byte[]> screenshot(com.proveyu.college.security.CollegeContext ctx, @PathVariable UUID eventId) {
+            return image(proctor.collegeScreenshot(ctx, eventId));
         }
     }
 

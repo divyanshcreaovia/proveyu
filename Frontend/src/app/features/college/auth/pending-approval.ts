@@ -11,12 +11,17 @@ import { AuthShell } from './auth-shell';
   imports: [AuthShell],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <pm-auth-shell [heading]="me()?.approvalStatus === 'REJECTED' ? 'Registration not approved' : 'Awaiting approval'">
+    <pm-auth-shell [heading]="heading()">
       @if (me(); as m) {
         @if (m.approvalStatus === 'REJECTED') {
           <div class="alert alert-danger">Your registration for <strong>{{ m.collegeName }}</strong> was not approved.
             @if (m.approvalNote) { <br>Reason: {{ m.approvalNote }} }</div>
           <p class="small text-body-secondary">Contact support&#64;proveyu.com to appeal.</p>
+        } @else if (m.approvalStatus === 'SUSPENDED') {
+          <div class="alert alert-danger"><strong>{{ m.collegeName }}</strong> is suspended by the ProveYu team. Your team and students
+            cannot use the portal until it is reactivated.
+            @if (m.approvalNote) { <br>Reason: {{ m.approvalNote }} }</div>
+          <p class="small text-body-secondary">Write to <a href="mailto:support&#64;proveyu.com">support&#64;proveyu.com</a> to get it reactivated.</p>
         } @else {
           <div class="text-center mb-3"><i class="bi bi-hourglass-split text-warning" style="font-size:3rem"></i></div>
           <p><strong>{{ m.collegeName }}</strong> is being reviewed by the ProveYu team. You'll get an e-mail as soon as it is approved
@@ -35,6 +40,11 @@ export class PendingApproval implements OnInit {
   private storage = inject(TokenStorageService);
   private router = inject(Router);
   me = signal<Me | null>(null);
+
+  heading(): string {
+    const s = this.me()?.approvalStatus;
+    return s === 'REJECTED' ? 'Registration not approved' : s === 'SUSPENDED' ? 'College account suspended' : 'Awaiting approval';
+  }
 
   ngOnInit(): void { this.check(); }
 

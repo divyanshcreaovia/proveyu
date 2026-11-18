@@ -1,5 +1,6 @@
 package com.proveyu.student.interview.application;
 
+import com.proveyu.shared.settings.PlatformSettings;
 import com.proveyu.college.application.CollegeDirectory;
 import com.proveyu.student.application.StudentPortalService;
 import com.proveyu.college.domain.CollegeProfile;
@@ -16,7 +17,6 @@ import com.proveyu.student.interview.infrastructure.InterviewCreditRepository;
 import com.proveyu.student.interview.infrastructure.InterviewPurchaseRepository;
 import com.proveyu.shared.error.DomainException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -55,52 +55,54 @@ public class InterviewPurchaseService {
     private final CollegeStudentRepository students;
     private final CollegeProfileRepository colleges;
     private final TransactionTemplate tx;
-    private final int priceRupees;
-    private final int maxPerPurchase;
-    private final String upiId;
-    private final String upiName;
+    /** Price, purchase limit and UPI details: application.yml defaults, changeable by the platform admin without a restart. */
+    private final PlatformSettings settings;
 
     public InterviewPurchaseService(InterviewPurchaseRepository purchases, InterviewCreditRepository credits, StudentPortalService portal,
                                     CollegeStudentRepository students, CollegeProfileRepository colleges, PlatformTransactionManager txm,
-                                    @Value("${interview.price-rupees:20}") int priceRupees,
-                                    @Value("${interview.max-per-purchase:10}") int maxPerPurchase,
-                                    @Value("${interview.upi.id:}") String upiId,
-                                    @Value("${interview.upi.name:ProveYu}") String upiName) {
+                                    PlatformSettings settings) {
         this.purchases = purchases;
         this.credits = credits;
         this.portal = portal;
         this.students = students;
         this.colleges = colleges;
         this.tx = new TransactionTemplate(txm);
-        this.priceRupees = priceRupees;
-        this.maxPerPurchase = maxPerPurchase;
-        this.upiId = upiId == null ? "" : upiId.trim();
-        this.upiName = upiName == null || upiName.isBlank() ? "ProveYu" : upiName.trim();
+        this.settings = settings;
         if (!ready()) log.warn("AI interview payments: UPI_ID is not set, buying is off");
     }
 
     public int priceRupees() {
-        return priceRupees;
+        return settings.number(PlatformSettings.INTERVIEW_PRICE);
     }
 
     public int maxPerPurchase() {
-        return maxPerPurchase;
+        return settings.number(PlatformSettings.INTERVIEW_MAX_PER_PURCHASE);
+    }
+
+    private String upiId() {
+        return settings.text(PlatformSettings.INTERVIEW_UPI_ID).trim();
+    }
+
+    private String upiName() {
+        String n = settings.text(PlatformSettings.INTERVIEW_UPI_NAME).trim();
+        return n.isEmpty() ? "ProveYu" : n;
     }
 
     /** False until a UPI ID is configured; the page then says buying is not available yet. */
     public boolean ready() {
-        return upiId.contains("@");
+        return upiId().contains("@");
     }
 
     // ================================================================== student
 
     public PurchaseOrder createOrder(UUID userId, int quantity) {
+        int maxPerPurchase = maxPerPurchase();
         if (quantity < 1 || quantity > maxPerPurchase) {
             throw new DomainException("You can buy 1 to " + maxPerPurchase + " interviews at a time", HttpStatus.BAD_REQUEST, "INVALID_QUANTITY");
         }
         if (!ready()) throw new DomainException("Payments are not available yet. Please try again later.", HttpStatus.SERVICE_UNAVAILABLE, "PAYMENTS_UNAVAILABLE");
         CollegeStudent s = portal.me(userId);
-        int amountPaise = quantity * priceRupees * 100;
+        int amountPaise = quantity * priceRupees() * 100;
         long waiting = purchases.countByUserIdAndStatus(userId, PurchaseStatus.SUBMITTED);
         if (waiting >= MAX_WAITING) {
             throw new DomainException("You have " + waiting + " payments waiting for verification. Please wait until they are checked.",
@@ -110,7 +112,7 @@ public class InterviewPurchaseService {
         InterviewPurchase p = openRequest(userId).filter(x -> x.getQuantity() == quantity && x.getAmountPaise() == amountPaise)
                 .orElseGet(() -> purchases.save(InterviewPurchase.builder().collegeId(s.getCollegeId()).studentId(s.getId()).userId(userId)
                         .quantity(quantity).amountPaise(amountPaise).status(PurchaseStatus.PENDING).reference(reference()).build()));
-        return new PurchaseOrder(p.getId(), p.getReference(), quantity, amountPaise / 100, upiUri(amountPaise, p.getReference()), upiName, upiId);
+        return new PurchaseOrder(p.getId(), p.getReference(), quantity, amountPaise / 100, upiUri(amountPaise, p.getReference()), upiName(), upiId());
     }
 
     /** The student has paid and types the 12-digit UPI reference. The purchase then waits for an admin. */
@@ -232,8 +234,8 @@ public class InterviewPurchaseService {
 
     /** UPI deep link (NPCI format). The QR on the page encodes exactly this, so any UPI app opens it with the amount filled in. */
     String upiUri(int amountPaise, String reference) {
-        return "upi://pay?pa=" + enc(upiId) + "&pn=" + enc(upiName) + "&am=" + String.format(Locale.ROOT, "%d.%02d", amountPaise / 100, amountPaise % 100)
-                + "&cu=INR&tn=" + enc(upiName + " " + reference);
+        return "upi://pay?pa=" + enc(upiId()) + "&pn=" + enc(upiName()) + "&am=" + String.format(Locale.ROOT, "%d.%02d", amountPaise / 100, amountPaise % 100)
+                + "&cu=INR&tn=" + enc(upiName() + " " + reference);
     }
 
     private static String enc(String s) {
@@ -244,6 +246,6 @@ public class InterviewPurchaseService {
         boolean open = p.getStatus() == PurchaseStatus.PENDING;
         return new StudentPurchase(p.getId(), p.getReference(), p.getQuantity(), p.getAmountPaise() / 100, p.getStatus(), p.getUtr(),
                 p.getCreatedAt(), p.getSubmittedAt(), p.getReviewedAt(), p.getReviewNote(),
-                open ? upiUri(p.getAmountPaise(), p.getReference()) : null, open ? upiName : null, open ? upiId : null);
+                open ? upiUri(p.getAmountPaise(), p.getReference()) : null, open ? upiName() : null, open ? upiId() : null);
     }
 }

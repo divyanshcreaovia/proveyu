@@ -23,6 +23,13 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor {
     public static final String USER_ID_ATTR = "userId";
 
     private final JwtTokenProvider jwtTokenProvider;
+    /** Users blocked by a platform admin cannot open a chat connection (optional, so tests can build the interceptor alone). */
+    private com.proveyu.shared.security.UserBlockList blockList;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    void setBlockList(com.proveyu.shared.security.UserBlockList blockList) {
+        this.blockList = blockList;
+    }
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request,
@@ -34,6 +41,10 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor {
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             try {
                 String userIdStr = jwtTokenProvider.getUserIdFromToken(token);
+                if (blockList != null && blockList.isBlocked(userIdStr)) {
+                    response.setStatusCode(HttpStatus.FORBIDDEN);
+                    return false;
+                }
                 UUID userId = UUID.fromString(userIdStr);
                 attributes.put(USER_ID_ATTR, userId);
                 log.info("[WEBSOCKET AUTH SUCCESS] Client authenticated for userId=[{}]", userId);

@@ -58,9 +58,29 @@ public final class PrepModel {
     public record QuestionView(String id, String type, String section, String title, String text, List<String> options, int marks,
                                Map<String, String> starterCode, List<IoCase> samples) {}
 
+    /** tabSwitches: times the student already left this attempt; maxWarnings: switches allowed before the next one submits it. */
     public record AttemptView(UUID attemptId, UUID testId, String title, String companyTag, int durationMinutes, Instant startedAt,
                               Instant deadlineAt, Instant serverNow, List<String> languages, List<QuestionView> questions,
-                              Map<String, Answer> answers) {}
+                              Map<String, Answer> answers, int tabSwitches, int maxWarnings) {}
+
+    // ---------------------------------------------------------------- proctoring (leaving the test)
+    /** One time the student left the test. seq 1..maxWarnings were warnings; seq maxWarnings + 1 submitted the test. */
+    public record ProctorEventView(UUID id, String kind, int seq, Instant occurredAt, boolean hasScreenshot) {}
+
+    /** Reply to a reported switch. autoSubmitted: this switch went over the limit and the test is now submitted. */
+    public record ProctorStatus(int tabSwitches, int maxWarnings, int warningsLeft, boolean autoSubmitted, ProctorEventView event) {}
+
+    /** All switches of one attempt, for the result page and the placement cell. */
+    public record ProctorLog(UUID attemptId, String autoSubmitReason, int maxWarnings, List<ProctorEventView> events) {}
+
+    /** One attempt with switches, across all colleges, for the platform admin. */
+    public record AdminAttemptRow(UUID attemptId, String collegeName, String studentName, String rollNumber, String testTitle, Instant startedAt,
+                                  Instant submittedAt, BigDecimal score, int maxScore, int tabSwitches, String autoSubmitReason) {}
+
+    /** One attempt by a student of the college, for the placement cell. */
+    public record CollegeAttemptRow(UUID attemptId, UUID studentId, String studentName, String rollNumber, String branchName,
+                                    String testTitle, Instant startedAt, Instant submittedAt, BigDecimal score, int maxScore,
+                                    int tabSwitches, String autoSubmitReason) {}
 
     /** MCQ answer = option index; coding answer = language + code. */
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -87,5 +107,5 @@ public final class PrepModel {
                                 List<QuestionResult> questions) {}
 
     public record AttemptHistory(UUID attemptId, UUID testId, String title, Instant startedAt, Instant submittedAt, BigDecimal score,
-                                 int maxScore) {}
+                                 int maxScore, int tabSwitches, String autoSubmitReason) {}
 }

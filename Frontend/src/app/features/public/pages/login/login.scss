@@ -28,3 +28,5 @@ button[type="submit"].btn-primary-custom:hover:disabled {
 .portal-title { font-size: 1.05rem; font-weight: 800; }
 .portal-text { font-size: .82rem; color: #64748b; flex: 1; }
 .portal-cta { font-size: .85rem; font-weight: 700; color: #273247; margin-top: .5rem; }
+.portal-admin:hover, .portal-admin:focus-visible { border-color: #7c3aed; }
+.portal-admin .portal-icon { background: #ede9fe; color: #6d28d9; }

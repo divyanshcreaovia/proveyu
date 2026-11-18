@@ -151,6 +151,25 @@ interview:
   follow-ups: ${INTERVIEW_FOLLOW_UPS:1}            # how many of those are follow-ups on an answer
   max-answer-seconds: ${INTERVIEW_MAX_ANSWER_SECONDS:180}
 
+# First platform admin of a new installation (only used while no admin exists; remove after the first start)
+support:
+  # Optional: every new Help & support request is also e-mailed here (e.g. support@proveyu.com). Empty = admin portal only.
+  inbox-email: ${SUPPORT_INBOX_EMAIL:}
+
+admin:
+  bootstrap:
+    email: ${ADMIN_BOOTSTRAP_EMAIL:}
+    password: ${ADMIN_BOOTSTRAP_PASSWORD:}
+    name: ${ADMIN_BOOTSTRAP_NAME:Platform admin}
+
+# Mock tests (Preparation > Mock tests)
+prep:
+  unlock-percent: ${PREP_UNLOCK_PERCENT:50}                    # next ladder test opens above this best score
+  max-tab-switch-warnings: ${PREP_MAX_TAB_SWITCH_WARNINGS:2}   # leaving the test this many times = warnings; the next time submits it
+  proctor-dir: ${PREP_PROCTOR_DIR:uploads/proctor}             # screenshots taken when a student leaves a test (proof)
+  proctor-retention-days: ${PREP_PROCTOR_RETENTION_DAYS:0}     # delete screenshots older than this every night; 0 = keep
+# Price, free days, UPI, warnings, unlock score, retention and the website banner can also be changed in Admin > Settings.
+
 springdoc:
   api-docs:
     enabled: ${SPRINGDOC_ENABLED:true}

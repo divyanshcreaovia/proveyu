@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { AttemptResult, LANGUAGE_LABELS, PrepService, QuestionResult } from '../services/prep.service';
+import { AttemptResult, LANGUAGE_LABELS, PrepService, ProctorLog, QuestionResult } from '../services/prep.service';
+import { ProctorLogView } from './proctor-log';
 import { Skeleton } from '../../../shared/ui/states';
 
 type Filter = 'all' | 'wrong' | 'right';
@@ -9,7 +10,7 @@ type Filter = 'all' | 'wrong' | 'right';
 /** Result of a mock test: score ring, section breakdown and question-by-question review with explanations. */
 @Component({
   selector: 'pm-prep-result',
-  imports: [DatePipe, DecimalPipe, RouterLink, Skeleton],
+  imports: [DatePipe, DecimalPipe, RouterLink, Skeleton, ProctorLogView],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: '../student-pages.scss',
   template: `
@@ -30,6 +31,14 @@ type Filter = 'all' | 'wrong' | 'right';
           <p class="mb-0 rs-msg">{{ message() }}</p>
         </div>
       </section>
+
+      @if (proctor(); as pl) {
+        <section class="st-card mb-3" aria-labelledby="rs-proctor">
+          <h2 id="rs-proctor" class="h6 st-h mb-2"><i class="bi bi-shield-check me-1" aria-hidden="true"></i>Proctoring
+            @if (pl.events.length) { <span class="st-chip ms-1" [class.text-danger]="pl.autoSubmitReason === 'TAB_SWITCH'">{{ pl.events.length }} time{{ pl.events.length === 1 ? '' : 's' }} left the test</span> }</h2>
+          <pm-proctor-log [log]="pl" [image]="screenshot" />
+        </section>
+      }
 
       <div class="row g-3 mb-3">
         @for (s of res.sections; track s.name) {
@@ -118,6 +127,9 @@ export class PrepResult implements OnInit {
   readonly langLabels = LANGUAGE_LABELS;
   readonly filters: { key: Filter; label: string }[] = [{ key: 'all', label: 'All' }, { key: 'wrong', label: 'Mistakes' }, { key: 'right', label: 'Correct' }];
   r = signal<AttemptResult | null>(null);
+  /** Times the student left the test, with screenshots (also seen by the placement cell). */
+  proctor = signal<ProctorLog | null>(null);
+  readonly screenshot = (eventId: string) => this.prep.screenshotUrl(eventId);
   filter = signal<Filter>('all');
   shown = computed(() => (this.r()?.questions ?? []).filter(q => this.filter() === 'all' || (this.filter() === 'right') === this.full(q)));
   message = computed(() => {
@@ -128,7 +140,10 @@ export class PrepResult implements OnInit {
     return `Keep practising. Start with ${weak?.name ?? 'the basics'}: read the explanations below and retake the test.`;
   });
 
-  ngOnInit(): void { this.prep.result(this.id()).subscribe(r => this.r.set(r)); }
+  ngOnInit(): void {
+    this.prep.result(this.id()).subscribe(r => this.r.set(r));
+    this.prep.proctorLog(this.id()).subscribe({ next: l => this.proctor.set(l), error: () => undefined });
+  }
   full(q: QuestionResult): boolean { return Number(q.marksAwarded) >= q.marks; }
   number(q: QuestionResult): number { return (this.r()?.questions.indexOf(q) ?? 0) + 1; }
   pct(score: number, max: number): number { return max ? Math.round(score * 100 / max) : 0; }

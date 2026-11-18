@@ -7,6 +7,7 @@ import { ConfirmService } from '../../../shared/ui/confirm-dialog';
 import { FileUpload } from '../../../shared/ui/file-upload';
 import { EmptyState } from '../../../shared/ui/states';
 import { AppError } from '../../../core/api';
+import { CollegeTestAttempts } from './college-test-attempts';
 
 const EXAMPLE = `{
   "title": "Infosys drive practice - 12 Dec",
@@ -49,9 +50,16 @@ const EXAMPLE = `{
  */
 @Component({
   selector: 'pm-college-mock-tests',
-  imports: [DatePipe, FileUpload, EmptyState],
+  imports: [DatePipe, FileUpload, EmptyState, CollegeTestAttempts],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    <ul class="nav nav-tabs mb-3" role="tablist">
+      <li class="nav-item" role="presentation"><button class="nav-link" role="tab" [class.active]="tab() === 'tests'" [attr.aria-selected]="tab() === 'tests'"
+        (click)="tab.set('tests')"><i class="bi bi-journal-code me-1"></i>Tests</button></li>
+      <li class="nav-item" role="presentation"><button class="nav-link" role="tab" [class.active]="tab() === 'attempts'" [attr.aria-selected]="tab() === 'attempts'"
+        (click)="tab.set('attempts')"><i class="bi bi-shield-check me-1"></i>Student attempts &amp; proctoring</button></li>
+    </ul>
+    @if (tab() === 'attempts') { <pm-college-test-attempts /> } @else {
     <section class="bg-body border rounded-3 p-3 mb-3">
       <h2 class="h5 fw-bold mb-1">Mock tests for your students</h2>
       <p class="small text-body-secondary mb-3">Upload practice tests, for example in the pattern of a company visiting next week. Once published, they appear for
@@ -142,7 +150,8 @@ const EXAMPLE = `{
           }
         </tbody>
       </table>
-    </div>`,
+    </div>
+    }`,
   styles: [`
     .mt-steps { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; font-size: .85rem; }
     .mt-steps li { display: flex; align-items: center; gap: .4rem; }
@@ -161,6 +170,8 @@ export class CollegeMockTests implements OnInit {
   private toast = inject(ToastService);
   private confirm = inject(ConfirmService);
   readonly example = EXAMPLE;
+  /** Tests (upload / publish) or Student attempts (scores and proof of leaving a test). */
+  tab = signal<'tests' | 'attempts'>('tests');
   rows = signal<AdminTest[]>([]);
   busy = signal(false);
   error = signal('');

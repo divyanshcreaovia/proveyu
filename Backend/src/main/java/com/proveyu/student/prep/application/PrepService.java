@@ -37,10 +37,20 @@ public class PrepService {
     private final DockerCodeRunner runner;
     private final ObjectMapper json;
     private final com.proveyu.college.infrastructure.CollegeStudentRepository students;
+    private final com.proveyu.student.prep.infrastructure.PrepProctorEventRepository proctorEvents;
+
+    /** Unlock score and leave-the-test warnings: application.yml defaults, changeable by the platform admin. */
+    private final com.proveyu.shared.settings.PlatformSettings settings;
 
     /** A ladder test opens once the best score in the test before it is MORE than this percentage. */
-    @org.springframework.beans.factory.annotation.Value("${prep.unlock-percent:50}")
-    private int unlockPercent = 50;
+    private int unlockPercent() {
+        return settings.number(com.proveyu.shared.settings.PlatformSettings.PREP_UNLOCK_PERCENT);
+    }
+
+    /** Times a student may leave a running test with only a warning; the next time submits the test. */
+    int maxTabSwitchWarnings() {
+        return settings.number(com.proveyu.shared.settings.PlatformSettings.PREP_MAX_WARNINGS);
+    }
 
     // ================================================================== admin
 
@@ -147,13 +157,13 @@ public class PrepService {
             List<String> sections = definition(t).sections().stream().map(Section::name).toList();
             return new TestCard(t.getId(), t.getTitle(), t.getDescription(), t.getCompanyTag(), t.getDurationMinutes(), t.getQuestionCount(),
                     t.getCodingCount(), t.getTotalMarks(), sections, (int) a.stream().filter(x -> x.getSubmittedAt() != null).count(), best, open, last,
-                    t.getLevel(), t.getLevelOrder(), bestPercent(a), lockedBy.containsKey(t.getId()) && open == null, lockedBy.get(t.getId()), unlockPercent, passed(a));
+                    t.getLevel(), t.getLevelOrder(), bestPercent(a), lockedBy.containsKey(t.getId()) && open == null, lockedBy.get(t.getId()), unlockPercent(), passed(a));
         }).toList();
     }
 
     /**
      * Ladder tests the student cannot start yet, mapped to the title of the test they must pass first. The first ladder test is
-     * always open; test k opens when the best score in test k-1 is more than {@link #unlockPercent}.
+     * always open; test k opens when the best score in test k-1 is more than {@link #unlockPercent()}.
      */
     private Map<UUID, String> lockedTests(List<PrepTest> published, Map<UUID, List<PrepAttempt>> mine) {
         Map<UUID, String> locked = new HashMap<>();
@@ -178,10 +188,10 @@ public class PrepService {
         return t.getCollegeId() == null || t.getCollegeId().equals(studentCollege);
     }
 
-    /** Some submitted attempt scored strictly more than unlockPercent of its maximum (exact, no rounding). */
+    /** Some submitted attempt scored strictly more than unlockPercent() of its maximum (exact, no rounding). */
     private boolean passed(List<PrepAttempt> attempts) {
         return attempts.stream().anyMatch(x -> x.getSubmittedAt() != null && x.getScore() != null && x.getMaxScore() > 0
-                && x.getScore().multiply(BigDecimal.valueOf(100)).compareTo(BigDecimal.valueOf((long) unlockPercent * x.getMaxScore())) > 0);
+                && x.getScore().multiply(BigDecimal.valueOf(100)).compareTo(BigDecimal.valueOf((long) unlockPercent() * x.getMaxScore())) > 0);
     }
 
     /** Best score of the submitted attempts, in percent of the attempt's maximum (floor), or null if none. */
@@ -205,7 +215,7 @@ public class PrepService {
                         .collect(Collectors.groupingBy(PrepAttempt::getTestId));
                 String after = lockedTests(testRepository.findAllByPublishedTrueAndLevelOrderNotNullOrderByLevelOrderAsc(), mine).get(t.getId());
                 if (after != null) {
-                    throw new DomainException("This test is locked. Score more than " + unlockPercent + "% in \"" + after + "\" to unlock it.",
+                    throw new DomainException("This test is locked. Score more than " + unlockPercent() + "% in \"" + after + "\" to unlock it.",
                             HttpStatus.FORBIDDEN, "TEST_LOCKED");
                 }
             }
@@ -270,12 +280,29 @@ public class PrepService {
     @Transactional(readOnly = true)
     public List<AttemptHistory> history(UUID userId) {
         Map<UUID, String> titles = testRepository.findAll().stream().collect(Collectors.toMap(PrepTest::getId, PrepTest::getTitle));
-        return attemptRepository.findAllByUserIdOrderByStartedAtDesc(userId).stream().filter(a -> a.getSubmittedAt() != null)
+        List<PrepAttempt> done = attemptRepository.findAllByUserIdOrderByStartedAtDesc(userId).stream().filter(a -> a.getSubmittedAt() != null).toList();
+        Map<UUID, Integer> switches = switchCounts(done.stream().map(PrepAttempt::getId).toList());
+        return done.stream()
                 .map(a -> new AttemptHistory(a.getId(), a.getTestId(), titles.getOrDefault(a.getTestId(), "Deleted test"), a.getStartedAt(),
-                        a.getSubmittedAt(), a.getScore(), a.getMaxScore())).toList();
+                        a.getSubmittedAt(), a.getScore(), a.getMaxScore(), switches.getOrDefault(a.getId(), 0), a.getAutoSubmitReason())).toList();
+    }
+
+    /** Number of times each attempt was left (tab or app switch). */
+    Map<UUID, Integer> switchCounts(Collection<UUID> attemptIds) {
+        if (attemptIds.isEmpty()) return Map.of();
+        Map<UUID, Integer> out = new HashMap<>();
+        for (Object[] r : proctorEvents.countByAttempt(attemptIds)) out.put((UUID) r[0], ((Number) r[1]).intValue());
+        return out;
     }
 
     // ================================================================== grading
+
+    /** Submits a running attempt for the student, with the reason (e.g. TAB_SWITCH); grading is the same as a normal submit. */
+    void autoSubmit(PrepAttempt a, String reason) {
+        if (a.getSubmittedAt() != null) return;
+        a.setAutoSubmitReason(reason);
+        grade(a);
+    }
 
     private void autoSubmitIfExpired(PrepAttempt a) {
         if (a.getSubmittedAt() == null && Instant.now().isAfter(a.getDeadlineAt().plus(GRACE))) grade(a);
@@ -366,7 +393,7 @@ public class PrepService {
                     CODING.equals(q.type()) ? q.starterCode() : null, CODING.equals(q.type()) ? q.samples() : null));
         }
         return new AttemptView(a.getId(), t.getId(), t.getTitle(), t.getCompanyTag(), t.getDurationMinutes(), a.getStartedAt(), a.getDeadlineAt(),
-                Instant.now(), PrepModel.LANGUAGES, qs, answers(a));
+                Instant.now(), PrepModel.LANGUAGES, qs, answers(a), switchCounts(List.of(a.getId())).getOrDefault(a.getId(), 0), maxTabSwitchWarnings());
     }
 
     private TestDefinition validate(TestDefinition d) {
@@ -444,20 +471,20 @@ public class PrepService {
         }
     }
 
-    private PrepAttempt own(UUID userId, UUID attemptId) {
+    PrepAttempt own(UUID userId, UUID attemptId) {
         PrepAttempt a = attemptRepository.findById(attemptId).orElseThrow(() -> notFound("Attempt"));
         if (!a.getUserId().equals(userId)) throw notFound("Attempt");
         return a;
     }
 
-    private PrepAttempt openAttempt(UUID userId, UUID attemptId) {
+    PrepAttempt openAttempt(UUID userId, UUID attemptId) {
         PrepAttempt a = own(userId, attemptId);
         if (a.getSubmittedAt() != null) throw new DomainException("This attempt is already submitted", HttpStatus.CONFLICT, "ATTEMPT_SUBMITTED");
         if (Instant.now().isAfter(a.getDeadlineAt().plus(GRACE))) throw new DomainException("Time is up for this attempt", HttpStatus.CONFLICT, "ATTEMPT_EXPIRED");
         return a;
     }
 
-    private PrepTest test(UUID id) {
+    PrepTest test(UUID id) {
         return testRepository.findById(id).orElseThrow(() -> notFound("Test"));
     }
 

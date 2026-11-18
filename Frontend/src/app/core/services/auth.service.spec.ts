@@ -23,7 +23,7 @@ describe('AuthService', () => {
     expect(AuthService.homeFor('ORGANIZATION')).toBe('/college/dashboard');
     expect(AuthService.homeFor('CANDIDATE')).toBe('/student/dashboard');
     expect(AuthService.homeFor('RECRUITER')).toBe('/company/drives');
-    expect(AuthService.homeFor('ADMIN')).toBe('/admin/colleges');
+    expect(AuthService.homeFor('ADMIN')).toBe('/admin/dashboard');
     expect(AuthService.homeFor(null)).toBe('/login');
   });
 

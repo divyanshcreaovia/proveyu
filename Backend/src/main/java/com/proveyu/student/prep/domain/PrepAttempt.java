@@ -35,6 +35,9 @@ public class PrepAttempt {
     private Instant deadlineAt;
     @Column(name = "submitted_at")
     private Instant submittedAt;
+    /** Why the test was submitted for the student (TAB_SWITCH), or null when the student or the timer submitted it. */
+    @Column(name = "auto_submit_reason")
+    private String autoSubmitReason;
     private BigDecimal score;
     @Column(name = "max_score")
     private int maxScore;

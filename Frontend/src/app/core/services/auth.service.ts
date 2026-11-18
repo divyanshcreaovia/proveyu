@@ -34,7 +34,7 @@ export class AuthService {
         return approval && approval !== 'APPROVED' ? '/college/pending-approval' : '/college/dashboard';
       case 'ORGANIZATION': return '/college/dashboard';
       case 'RECRUITER': return '/company/drives'; // company HR / panels work in the Drive Room
-      case 'ADMIN': return '/admin/colleges';
+      case 'ADMIN': return '/admin/dashboard';
       case 'CANDIDATE': return '/student/dashboard'; // students use the student portal (the old candidate portal has no sign-up)
       default: return '/login';
     }
@@ -44,6 +44,7 @@ export class AuthService {
   static loginFor(url: string, wasCollege = false): string {
     if (url.startsWith('/student')) return '/student/login';
     if (url.startsWith('/company')) return '/company/login';
+    if (url.startsWith('/admin')) return '/admin/login';
     return wasCollege || url.startsWith('/college') ? '/college/login' : '/login';
   }
 

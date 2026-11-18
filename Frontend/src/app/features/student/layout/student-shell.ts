@@ -1,3 +1,4 @@
+import { SupportDialog } from '../../support/support-dialog';
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet, ActivatedRoute } from '@angular/router';
 import { filter } from 'rxjs';
@@ -38,7 +39,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
 /** Student portal layout: same look and theme tokens as the college shell. */
 @Component({
   selector: 'pm-student-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, NotificationPanel, EmptyState],
+  imports: [SupportDialog, RouterOutlet, RouterLink, RouterLinkActive, NotificationPanel, EmptyState],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: '../../college/layout/college-theme.scss',
   template: `
@@ -59,6 +60,10 @@ const NAV: { section: string; items: NavItem[] }[] = [
             </a>
           }
         }
+        @if (!collapsed()) { <div class="pm-shell-section">Support</div> }
+        <button type="button" class="pm-shell-link pm-shell-link-btn" (click)="support.set(true); mobileOpen.set(false)" [attr.title]="collapsed() ? 'Help & support: support@proveyu.com' : null">
+          <i class="bi bi-life-preserver" aria-hidden="true"></i>@if (!collapsed()) { <span class="flex-grow-1 d-flex flex-column lh-sm">Help &amp; support<small class="opacity-75" style="font-size:.72rem">support&#64;proveyu.com</small></span> }
+        </button>
         <button type="button" class="pm-shell-collapse d-none d-lg-flex" (click)="collapsed.set(!collapsed())" [attr.aria-label]="collapsed() ? 'Expand menu' : 'Collapse menu'">
           <i class="bi" [class.bi-chevron-double-left]="!collapsed()" [class.bi-chevron-double-right]="collapsed()"></i>
         </button>
@@ -111,6 +116,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
           } @else if (portal.me()) { <router-outlet /> } @else { <div class="text-center py-5"><span class="spinner-border"></span></div> }
         </main>
       </div>
+      <pm-support-dialog [open]="support()" (closed)="support.set(false)" />
     </div>`,
   styles: [`
     :host { display: block; }
@@ -133,6 +139,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
     .pm-shell-section { font-size: .65rem; text-transform: uppercase; letter-spacing: .08em; color: var(--bs-secondary-color); font-weight: 700; padding: .9rem .6rem .35rem; }
     .pm-shell-link { display: flex; align-items: center; gap: .7rem; padding: .5rem .65rem; border-radius: .5rem; color: var(--bs-body-color);
       text-decoration: none; font-size: .875rem; white-space: nowrap; }
+    .pm-shell-link-btn { border: 0; background: transparent; width: 100%; text-align: left; font: inherit; }
     .pm-shell-link:hover { background: var(--bs-secondary-bg); }
     .pm-shell-link:focus-visible { outline: 2px solid #2563eb; }
     .pm-shell-active { background: rgba(37,99,235,.12); color: #2563eb; font-weight: 600; }
@@ -143,6 +150,16 @@ const NAV: { section: string; items: NavItem[] }[] = [
     .pm-nav-badge-chat { background: #22c55e; }
     .pm-nav-badge-dot { position: absolute; top: .3rem; right: .55rem; min-width: .6rem; width: .6rem; height: .6rem; padding: 0; }
     .pm-shell-collapse { margin-top: auto; align-self: flex-end; border: 0; background: transparent; color: var(--bs-secondary-color); padding: .4rem; }
+    /* Collapsed rail: every icon is a centred 44px square under the logo. */
+    @media (min-width: 992px) {
+      .pm-shell-collapsed .pm-shell-side { align-items: center; padding: .75rem 0; }
+      .pm-shell-collapsed .pm-shell-brand { padding: .35rem 0 .75rem; }
+      .pm-shell-collapsed .pm-shell-link { width: 44px; height: 44px; padding: 0; gap: 0; justify-content: center; margin-bottom: .2rem; flex-shrink: 0; }
+      .pm-shell-collapsed .pm-shell-link > i { font-size: 1.05rem; line-height: 1; }
+      .pm-shell-collapsed .pm-nav-badge-dot { top: .45rem; right: .45rem; }
+      .pm-shell-collapsed .pm-shell-collapse { align-self: center; width: 44px; height: 44px; justify-content: center; align-items: center; border-radius: .5rem; }
+      .pm-shell-collapsed .pm-shell-collapse:hover { background: var(--bs-secondary-bg); }
+    }
     .pm-shell-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
     .pm-shell-top { display: flex; align-items: center; gap: .75rem; padding: 1.1rem 1rem .9rem; background: transparent; }
     @media (min-width: 768px) { .pm-shell-top { padding: 1.25rem 1.5rem 1rem; } }
@@ -190,6 +207,8 @@ export class StudentShell implements OnInit {
   private route = inject(ActivatedRoute);
   nav = NAV;
   collapsed = signal(false);
+  /** Help & support popup. */
+  support = signal(false);
   mobileOpen = signal(false);
   menu = signal(false);
   bell = signal(false);

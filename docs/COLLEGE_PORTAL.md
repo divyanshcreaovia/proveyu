@@ -285,3 +285,62 @@ The student module calls the college services (eligibility, applications, offers
 always apply the same rules. URLs did not change with the move. Tests follow the same layout: `college/integration`,
 `student/integration`, `student/interview`, with the shared Testcontainers base in `support/IntegrationTestBase`.
 
+
+## 13. Mock test proctoring (leaving the test)
+
+- **Start:** on the Preparation page the student shares the **entire screen** (a tab or window is refused) inside the Start click,
+  before the attempt and its timer start. Phones and tablets cannot share the screen from a browser, so they cannot start a mock test.
+- **During the test:** switching tab or minimising (`visibilitychange`), moving to another app or window (`blur`, 400 ms later, so a
+  tab switch is not counted twice) or stopping the share counts as leaving. The page waits 0.7 s, takes a JPEG of the shared screen
+  and sends it with the time to `POST /api/v1/college/student/prep/attempts/{id}/proctor`. On return the student sees the
+  screenshot, the time and "Warning n of 2"; a chip in the header lists every switch. After a reload or a stopped share the test is
+  blocked until the screen is shared again.
+- **Server rules** (`ProctorService`): the count lives on the server; `prep.max-tab-switch-warnings` (default 2) switches are
+  warnings, the next one submits the attempt (`prep_attempts.auto_submit_reason = TAB_SWITCH`). Two reports within 3 s count once.
+  Screenshots must be real JPEG/PNG files up to 2 MB and are kept under `prep.proctor-dir` (default `uploads/proctor`).
+- **Who sees the proof:** the student on the result page, and the placement cell (TPO, coordinators within their branch scope,
+  viewers) under Mock tests > Student attempts & proctoring. Another student or college gets 404.
+- **DB:** `V32__prep_tab_switch_proctoring.sql` (table `prep_proctor_events`, column `prep_attempts.auto_submit_reason`).
+- **Tests:** `ProctoringIT` (server rules and access). A headless-Chrome run of the whole flow uses a fake screen stream, because
+  headless Chrome has no screen picker; check the real picker once by hand in Chrome or Edge.
+- **Limits:** only the shared screen is captured (a second monitor that is not shared is not), clicking Chrome's "sharing your
+  screen" bar counts as leaving, and a second device (a phone next to the laptop) cannot be detected. Screenshots are not deleted
+  automatically yet.
+
+## 14. Platform admin portal (`/admin`)
+
+Sign in at `/admin/login` (also linked from the Sign in page). **There is no admin sign-up**: the first admin of a new
+installation comes from `ADMIN_BOOTSTRAP_EMAIL` / `ADMIN_BOOTSTRAP_PASSWORD` (created at start only while no admin exists; remove
+them afterwards), and every further admin is created by an admin under Admins.
+
+| Page | What the admin does |
+|------|---------------------|
+| Dashboard | Colleges by status, users by role, students, placed, drives, offers, mock tests (flagged / auto-submitted), AI interviews, revenue, AI usage since start (Groq calls, tokens, failures, local fallbacks), pending colleges, recent admin actions |
+| Colleges | Approve / reject registrations, **suspend / reactivate** approved colleges (staff are stopped with `COLLEGE_SUSPENDED`), college numbers and team, message the college |
+| Users | Search every account (name, e-mail, phone, roll number), block / unblock (open sessions stop at once, also the chat socket), send a password reset, give AI interviews to a student |
+| Admins | List and create platform admins; at least one admin stays active and nobody can block themselves |
+| Payments | Approve / reject UPI payments (as before) and export all payments to Excel / CSV |
+| Mock tests | Upload and publish platform mock tests (as before) |
+| Proctoring | Attempts in which a student left a test, across all colleges, with screenshots |
+| Broadcast | In-app notification (and optional e-mail) to everyone, all students, all placement cells or one college |
+| Settings | AI interview price, purchase limit, free-interview days, UPI ID and name, mock test warnings, unlock score, screenshot retention, website banner. Applied at once; each can be reset to its application.yml default |
+| Audit log | Every admin action, also the ones done through the older admin endpoints |
+
+- **Backend:** module `com.proveyu.admin` (domain, infrastructure, application, web). Settings: `shared.settings.PlatformSettings`
+  (read by the interview and prep modules). Audit from other modules: `shared.audit.AdminActionEvent`. Blocked users:
+  `shared.security.UserBlockList`, checked by the JWT filter and the chat handshake. Public banner: `GET /api/v1/public/banner`.
+- **Frontend:** `features/admin` (auth, layout, pages, services) with the same shell as the college and student portals.
+- **DB:** `V33__admin_portal.sql` (`platform_settings`, `admin_audit_logs`, `SUSPENDED` approval status).
+- **Tests:** `AdminPortalIT` (access, admins, block, settings, suspend, broadcast, export, audit) and `InterviewPurchaseServiceTest`
+  (settings override the defaults).
+
+## 15. Help & support
+
+- **College and student portals:** side menu → *Help & support* opens a mail-style popup (To: ProveYu support, topic, subject,
+  message). *My requests* shows each request with its status (Open / Answered / Closed) and the team's answer.
+- **Admin portal:** *Support* (badge = open requests, also on the dashboard). Filter by status, search, open a request in the
+  drawer, answer (optionally by e-mail, optionally close), close or reopen. Answers and status changes go to the audit log.
+- The user gets a bell notification when answered; every admin gets one for a new request. Limit: 10 requests per user per day.
+- `SUPPORT_INBOX_EMAIL` (optional): every new request is also e-mailed there (e.g. support@proveyu.com).
+- Backend: `com.proveyu.support` (`/api/v1/support/tickets`, `/api/v1/admin/support`), table `support_tickets` (V34).
+- Test: `python3 scripts/e2e_support_test.py <run-id>` after `scripts/e2e_three_colleges_test.py`.
