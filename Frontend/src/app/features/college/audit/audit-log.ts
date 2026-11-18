@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuditLogService } from '../../../services/audit-log.service';
+import { AuditLogService } from '../services/audit-log.service';
 import { AuditEntry } from '../../../core/models/college.models';
 import { Column, DataTable } from '../../../shared/ui/data-table';
 

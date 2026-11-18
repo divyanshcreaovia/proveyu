@@ -2,7 +2,7 @@ import { HttpContextToken, HttpErrorResponse, HttpInterceptorFn } from '@angular
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { AppError } from '../api';
-import { ToastService } from '../../services/toast.service';
+import { ToastService } from '../services/toast.service';
 
 /** Set to true on a request to suppress the global error toast (the caller shows its own message). */
 export const SILENT_ERRORS = new HttpContextToken<boolean>(() => false);

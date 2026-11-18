@@ -2,11 +2,11 @@ import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, HostListene
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AppError } from '../../../core/api';
-import { AttemptView, LANGUAGE_LABELS, PrepAnswer, PrepLanguage, PrepService, QuestionView, RunResponse } from '../../../services/prep.service';
-import { ThemeService } from '../../../services/theme.service';
-import { ToastService } from '../../../services/toast.service';
+import { AttemptView, LANGUAGE_LABELS, PrepAnswer, PrepLanguage, PrepService, QuestionView, RunResponse } from '../services/prep.service';
+import { ThemeService } from '../../../core/services/theme.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
-import { StudentPortalService } from '../../../services/student-portal.service';
+import { StudentPortalService } from '../services/student-portal.service';
 import { enterFullscreen, exitFullscreen, fullscreenSupported, isFullscreen } from '../../../shared/fullscreen';
 
 /**

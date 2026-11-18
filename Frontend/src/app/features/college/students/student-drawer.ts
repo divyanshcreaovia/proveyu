@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, effect, inject, input, output, sign
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { StudentService } from '../../../services/student.service';
-import { CollegeService } from '../../../services/college.service';
-import { ToastService } from '../../../services/toast.service';
+import { StudentService } from '../services/student.service';
+import { CollegeService } from '../services/college.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
 import { DOC_TYPE_LABELS, DocType, StudentDetail, StudentStatus } from '../../../core/models/college.models';
 import { Modal } from '../../../shared/ui/modal';

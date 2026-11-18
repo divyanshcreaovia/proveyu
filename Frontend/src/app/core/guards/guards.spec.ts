@@ -5,7 +5,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { authGuard } from './auth.guard';
 import { roleGuard } from './role.guard';
 import { guestGuard } from './guest.guard';
-import { TokenStorageService } from '../../services/token-storage.service';
+import { TokenStorageService } from '../services/token-storage.service';
 import { fakeJwt } from '../../testing/jwt';
 
 const run = (guard: typeof authGuard, data: Record<string, unknown> = {}, url = '/college/students') =>
@@ -48,7 +48,7 @@ describe('route guards', () => {
     login('COLLEGE_COORDINATOR');
     expect(path(run(guestGuard))).toBe('/college/dashboard');
     login('CANDIDATE');
-    expect(path(run(guestGuard))).toBe('/candidate/dashboard');
+    expect(path(run(guestGuard))).toBe('/student/dashboard');
     expect(path(run(guestGuard, {}, '/student/login'))).toBe('/student/dashboard');
   });
 });

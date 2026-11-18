@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-End-to-end test of the AI mock interview against the running backend and the local AI services (Ollama, Whisper, Piper).
+End-to-end test of the AI mock interview against the running backend (AI on Groq) and Piper, which speaks the
+voice answers.
 Voice answers are real speech: Piper speaks a prepared answer, it is converted to 16 kHz WAV, uploaded, and Whisper
 transcribes it on the server. Needs seed_demo.py + seed_student_portal.py + seed_drive_room_demo.py.
 
@@ -11,6 +12,7 @@ import json
 import os
 import sys
 import time
+import urllib.error
 import urllib.request
 import wave
 
@@ -19,7 +21,7 @@ from smoke_test import call, check, BASE  # noqa: E402
 import smoke_test  # noqa: E402
 
 PIPER = os.environ.get("PIPER_URL", "http://localhost:5002")
-OLLAMA = os.environ.get("OLLAMA_URL", "http://localhost:11434")
+GROQ_URL = os.environ.get("GROQ_URL", "https://api.groq.com/openai/v1")
 STUDENT = ("saanvi.das13@demo-college.edu.in", "Student@123")
 OTHER = ("arjun.menon5@demo-college.edu.in", "Student@123")
 ADMIN = ("admin@proveyu.local", "Admin@1234")
@@ -137,17 +139,41 @@ def buy_by_upi(t, other, admin, cr):
           and r["data"]["credits"]["paidBalance"] == bal0 + 2, rej)
 
 
+def groq_key():
+    """GROQ_API_KEY from the environment, else from Backend/.env (the key the backend uses). Never printed."""
+    key = os.environ.get("GROQ_API_KEY", "").strip()
+    if not key:
+        env = os.path.join(os.path.dirname(__file__), "..", "Backend", ".env")
+        if os.path.exists(env):
+            for line in open(env):
+                if line.startswith("GROQ_API_KEY="):
+                    key = line.split("=", 1)[1].strip().strip("'\"")
+    if not key:
+        raise SystemExit("GROQ_API_KEY is not set (environment or Backend/.env): the test writes its correct answers with Groq.")
+    return key
+
+
 def good_answer(question):
-    """A correct, on-topic fresher answer to the question actually asked, written by the LOCAL model (no cloud tokens)."""
-    body = {"model": os.environ.get("ANSWER_MODEL", "qwen3:4b"), "stream": False, "think": True, "options": {"temperature": 0.2},
+    """A correct, on-topic fresher answer to the question actually asked, written by Groq (same cloud as the backend)."""
+    body = {"model": os.environ.get("ANSWER_MODEL", "openai/gpt-oss-20b"), "temperature": 0.2, "reasoning_effort": "low",
+            "max_completion_tokens": 600,
             "messages": [{"role": "user", "content": "You are a strong final-year engineering student in a job interview. Answer this interview "
-                          "question correctly in 3 to 4 spoken sentences with one concrete example. Plain text only.\nQuestion: " + question}]}
-    # think=True: with think=False this Ollama build puts qwen3's reasoning into the answer text; this way it goes to "thinking".
-    req = urllib.request.Request(OLLAMA + "/api/chat", json.dumps(body).encode(), {"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=300) as r:
-        text = json.load(r)["message"]["content"]
-    import re
-    return re.sub(r"<think>.*?</think>", "", text, flags=re.S).strip()[:1500]
+                          "question correctly in 3 to 4 spoken sentences with one concrete example. Plain text only, written exactly as you "
+                          "would say it out loud: no symbols such as / or (), no code, no abbreviations like e.g., no lists.\nQuestion: " + question}]}
+    # Speakable text matters: the answer is spoken by Piper and transcribed again, so "RDD/DataFrame" would be heard as "slash".
+    req = urllib.request.Request(GROQ_URL + "/chat/completions", json.dumps(body).encode(),
+                                 {"Content-Type": "application/json", "Authorization": "Bearer " + groq_key(), "User-Agent": "proveyu-e2e"})
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                text = json.load(r)["choices"][0]["message"]["content"] or ""
+            if text.strip():
+                return text.strip()[:1500]
+        except urllib.error.HTTPError as e:
+            if e.code != 429 or attempt == 2:
+                raise
+        time.sleep(5)  # rate limit or empty reply: wait and try again
+    raise SystemExit("Groq gave no answer text")
 
 
 # Programming languages a question must not drift into (each with the names that belong to it).

@@ -3,8 +3,8 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { environment } from '../environments/environment';
-import { AuthService, COLLEGE_ROLES } from '../../services/auth.service';
-import { TokenStorageService } from '../../services/token-storage.service';
+import { AuthService, COLLEGE_ROLES } from '../services/auth.service';
+import { TokenStorageService } from '../services/token-storage.service';
 
 /**
  * Attaches the JWT to API calls, logs out + redirects on 401 and sends 403 to /forbidden.

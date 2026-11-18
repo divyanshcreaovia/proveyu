@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { DriveRoomService, RoomDriveCard } from '../../services/drive-room.service';
+import { DriveRoomService, RoomDriveCard } from './services/drive-room.service';
 import { StatusBadge } from '../../shared/ui/status-badge';
 import { EmptyState, Skeleton } from '../../shared/ui/states';
 

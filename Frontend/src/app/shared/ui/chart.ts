@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { HighchartsChartComponent } from 'highcharts-angular';
 import type { Options } from 'highcharts';
-import { ThemeService } from '../../services/theme.service';
+import { ThemeService } from '../../core/services/theme.service';
 
 /** Candidate-portal palette: navy first, teal second (navy is swapped for indigo in dark mode). */
 const PALETTE = ['#16122b', '#06b6d4', '#16a34a', '#f59e0b', '#7c3aed', '#e11d48', '#64748b', '#ea580c'];

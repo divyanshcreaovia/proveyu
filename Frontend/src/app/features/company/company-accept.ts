@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { DriveRoomService, RecruiterInviteInfo } from '../../services/drive-room.service';
+import { DriveRoomService, RecruiterInviteInfo } from './services/drive-room.service';
 import { AppError } from '../../core/api';
 import { AuthShell } from '../college/auth/auth-shell';
 

@@ -10,48 +10,19 @@ const COLLEGE_ADMIN = ['COLLEGE_ADMIN'];
 export const routes: Routes = [
   // ---------------------------------------------------------------- public site
   { path: '', loadComponent: () => import('./features/public/pages/home/home').then(m => m.Home) },
-  { path: 'how-it-works', loadComponent: () => import('./features/public/pages/how-it-works/how-it-works').then(m => m.HowItWorks) },
-  { path: 'why-in-person', loadComponent: () => import('./features/public/pages/why-in-person/why-in-person').then(m => m.WhyInPerson) },
-  { path: 'fresher-model', loadComponent: () => import('./features/public/pages/fresher-model/fresher-model').then(m => m.FresherModel) },
-  { path: 'select-role', canActivate: [guestGuard], loadComponent: () => import('./features/public/pages/select-role/select-role').then(m => m.SelectRole) },
-  { path: 'login', canActivate: [guestGuard], loadComponent: () => import('./features/public/pages/login/login').then(m => m.Login) },
+  { path: 'for-colleges', title: 'For colleges', loadComponent: () => import('./features/public/pages/for-colleges/for-colleges').then(m => m.ForColleges) },
+  { path: 'for-students', title: 'For students', loadComponent: () => import('./features/public/pages/for-students/for-students').then(m => m.ForStudents) },
+  { path: 'how-it-works', title: 'How it works', loadComponent: () => import('./features/public/pages/how-it-works/how-it-works').then(m => m.HowItWorks) },
+  // old pages of the in-person assessment model: keep old links working
+  { path: 'why-in-person', redirectTo: 'how-it-works' },
+  { path: 'fresher-model', redirectTo: 'for-students' },
+  // portal choosers (no form): open for everyone, also when signed in; each portal's own login page keeps guestGuard
+  { path: 'select-role', loadComponent: () => import('./features/public/pages/select-role/select-role').then(m => m.SelectRole) },
+  { path: 'login', loadComponent: () => import('./features/public/pages/login/login').then(m => m.Login) },
   { path: 'forbidden', loadComponent: () => import('./shared/pages/forbidden').then(m => m.Forbidden) },
 
-  // ---------------------------------------------------------------- candidate portal
-  {
-    path: 'candidate',
-    canActivate: [authGuard, roleGuard], data: { roles: ['CANDIDATE'] },
-    loadComponent: () => import('./features/candidate/layout/candidate-layout/candidate-layout').then(m => m.CandidateLayout),
-    children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', loadComponent: () => import('./features/candidate/pages/dashboard/dashboard').then(m => m.Dashboard) },
-      { path: 'profile', loadComponent: () => import('./features/candidate/pages/profile/profile').then(m => m.Profile) },
-      { path: 'book-slot', loadComponent: () => import('./features/candidate/pages/book-slot/book-slot').then(m => m.BookSlot) },
-      { path: 'my-passport', loadComponent: () => import('./features/candidate/pages/my-passport/my-passport').then(m => m.MyPassport) },
-      { path: 'campus-drives', redirectTo: '/student/drives' },
-      { path: 'interview-invites', loadComponent: () => import('./features/candidate/pages/interview-invites/interview-invites').then(m => m.InterviewInvites) },
-      { path: 'settings', loadComponent: () => import('./features/candidate/pages/settings/settings').then(m => m.Settings) },
-      { path: 'support', loadComponent: () => import('./features/candidate/pages/support/support').then(m => m.Support) },
-    ],
-  },
-
-  // ---------------------------------------------------------------- recruiter portal
-  {
-    path: 'recruiter',
-    canActivate: [authGuard, roleGuard], data: { roles: ['RECRUITER'] },
-    loadComponent: () => import('./features/recruiter/layout/recruiter-layout/recruiter-layout').then(m => m.RecruiterLayout),
-    children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', loadComponent: () => import('./features/recruiter/pages/dashboard/dashboard').then(m => m.Dashboard) },
-      { path: 'manage-hiring', loadComponent: () => import('./features/recruiter/pages/manage-hiring/manage-hiring').then(m => m.ManageHiring) },
-      { path: 'post-requirement', loadComponent: () => import('./features/recruiter/pages/post-requirement/post-requirement').then(m => m.PostRequirement) },
-      { path: 'profile', loadComponent: () => import('./features/recruiter/pages/profile/profile').then(m => m.Profile) },
-      { path: 'candidate-detail', loadComponent: () => import('./features/recruiter/pages/candidate-detail/candidate-detail').then(m => m.CandidateDetail) },
-      { path: 'chat', loadComponent: () => import('./features/recruiter/pages/chat/chat').then(m => m.Chat) },
-      { path: 'settings', loadComponent: () => import('./features/recruiter/pages/settings/settings').then(m => m.Settings) },
-      { path: 'support', loadComponent: () => import('./features/recruiter/pages/support/support').then(m => m.Support) },
-    ],
-  },
+  // old candidate portal URL (the student portal replaced it)
+  { path: 'candidate/campus-drives', redirectTo: '/student/drives' },
 
   // ---------------------------------------------------------------- platform admin
   {
@@ -90,15 +61,15 @@ export const routes: Routes = [
     loadComponent: () => import('./features/student/layout/student-shell').then(m => m.StudentShell),
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', title: 'Dashboard', loadComponent: () => import('./features/student/dashboard').then(m => m.StudentDashboard) },
-      { path: 'drives', title: 'Campus drives', loadComponent: () => import('./features/student/drives').then(m => m.StudentDrives) },
-      { path: 'applications', title: 'My applications', loadComponent: () => import('./features/student/applications').then(m => m.StudentApplications) },
-      { path: 'interviews', title: 'Interviews', loadComponent: () => import('./features/student/interviews').then(m => m.StudentInterviews) },
-      { path: 'offers', title: 'Offers', loadComponent: () => import('./features/student/offers').then(m => m.StudentOffers) },
-      { path: 'announcements', title: 'Announcements', loadComponent: () => import('./features/student/announcements').then(m => m.StudentAnnouncements) },
-      { path: 'chat', title: 'Chat with placement cell', loadComponent: () => import('./features/student/chat').then(m => m.StudentChat) },
-      { path: 'documents', title: 'Document locker', loadComponent: () => import('./features/student/documents').then(m => m.StudentDocuments) },
-      { path: 'profile', title: 'My profile', loadComponent: () => import('./features/student/profile').then(m => m.StudentProfile) },
+      { path: 'dashboard', title: 'Dashboard', loadComponent: () => import('./features/student/portal/dashboard').then(m => m.StudentDashboard) },
+      { path: 'drives', title: 'Campus drives', loadComponent: () => import('./features/student/portal/drives').then(m => m.StudentDrives) },
+      { path: 'applications', title: 'My applications', loadComponent: () => import('./features/student/portal/applications').then(m => m.StudentApplications) },
+      { path: 'interviews', title: 'Interviews', loadComponent: () => import('./features/student/portal/interviews').then(m => m.StudentInterviews) },
+      { path: 'offers', title: 'Offers', loadComponent: () => import('./features/student/portal/offers').then(m => m.StudentOffers) },
+      { path: 'announcements', title: 'Announcements', loadComponent: () => import('./features/student/portal/announcements').then(m => m.StudentAnnouncements) },
+      { path: 'chat', title: 'Chat with placement cell', loadComponent: () => import('./features/student/portal/chat').then(m => m.StudentChat) },
+      { path: 'documents', title: 'Document locker', loadComponent: () => import('./features/student/portal/documents').then(m => m.StudentDocuments) },
+      { path: 'profile', title: 'My profile', loadComponent: () => import('./features/student/portal/profile').then(m => m.StudentProfile) },
       { path: 'prep', title: 'Preparation', loadComponent: () => import('./features/student/prep/prep-home').then(m => m.PrepHome) },
       { path: 'prep/result/:id', title: 'Test result', loadComponent: () => import('./features/student/prep/prep-result').then(m => m.PrepResult) },
       { path: 'ai-interview', title: 'AI interview', loadComponent: () => import('./features/student/interview/interview-home').then(m => m.InterviewHome) },

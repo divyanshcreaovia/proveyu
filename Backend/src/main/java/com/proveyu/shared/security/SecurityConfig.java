@@ -68,11 +68,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/v1/college/auth/register", "/api/v1/college/auth/accept-invite",
                         "/api/v1/college/auth/student-signup", "/api/v1/college/auth/recruiter-accept").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/college/auth/invite/**", "/api/v1/college/auth/recruiter-invite/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/domains/**").permitAll()
-                .requestMatchers("/api/v1/candidates/resume/download/**").permitAll()
-                .requestMatchers("/api/v1/admit-cards/download/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/v1/exams/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/payments/webhook").permitAll()
                 .requestMatchers("/actuator/health", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 // WebSocket handshake authenticates itself via WebSocketAuthInterceptor (?token=)
                 .requestMatchers("/ws/**").permitAll()
@@ -80,12 +75,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/college/student/**").hasRole("CANDIDATE")
                 .requestMatchers("/api/v1/college/**").hasAnyRole(COLLEGE_ROLES)
-                // candidates read / answer their own job invitations through the recruiter jobs API
-                .requestMatchers("/api/v1/recruiter/jobs/candidate/**").hasRole("CANDIDATE")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/recruiter/jobs/invitations/*/accept",
-                        "/api/v1/recruiter/jobs/invitations/*/decline").hasRole("CANDIDATE")
-                .requestMatchers("/api/v1/recruiter/**", "/api/v1/recruiters/**").hasAnyRole("RECRUITER", "ADMIN")
-                .requestMatchers("/api/v1/test/**").hasRole("ADMIN")
+                // company Drive Room (/api/v1/recruiter/campus/**)
+                .requestMatchers("/api/v1/recruiter/**").hasAnyRole("RECRUITER", "ADMIN")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)

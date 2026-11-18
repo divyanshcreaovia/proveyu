@@ -2,10 +2,10 @@ import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, inje
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NotificationService } from '../../../services/notification.service';
-import { ChatMessage, ChatService } from '../../../services/chat.service';
-import { CollegeService } from '../../../services/college.service';
-import { ToastService } from '../../../services/toast.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { ChatMessage, ChatService } from '../../../core/services/chat.service';
+import { CollegeService } from '../services/college.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { Announcement, AudienceFilter, ChatContact, StudentStatus } from '../../../core/models/college.models';
 import { EmptyState } from '../../../shared/ui/states';
 

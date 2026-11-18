@@ -1,29 +1,9 @@
 <div class="select-role-wrapper py-4 d-flex align-items-center justify-content-center position-relative overflow-hidden"
   style="min-height: calc(100vh - 80px); background: radial-gradient(circle at 70% 20%, rgba(0, 87, 255, 0.08) 0%, transparent 60%), radial-gradient(circle at 20% 80%, rgba(10, 27, 63, 0.04) 0%, transparent 50%);">
 
-  <!-- Floating Toast Notification (Top Right) -->
-  <div class="position-fixed top-0 end-0 p-4" style="z-index: 10050; pointer-events: none;" *ngIf="toastMessage">
-    <div class="toast show align-items-center text-white border-0 shadow-lg rounded-4 p-3 d-flex gap-3"
-         [ngClass]="toastType === 'success' ? 'bg-success' : 'bg-danger'"
-         role="alert" aria-live="assertive" aria-atomic="true"
-         style="min-width: 320px; max-width: 440px; pointer-events: auto; animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);">
-      <div class="rounded-circle bg-white d-flex align-items-center justify-content-center flex-shrink-0"
-           [ngClass]="toastType === 'success' ? 'text-success' : 'text-danger'"
-           style="width: 36px; height: 36px; font-size: 1.25rem;">
-        <i class="bi" [class.bi-check-lg]="toastType === 'success'" [class.bi-exclamation-triangle-fill]="toastType === 'error'"></i>
-      </div>
-      <div class="d-flex flex-column flex-grow-1">
-        <strong class="fs-6 fw-bold">{{ toastType === 'success' ? 'Success' : 'Registration Alert' }}</strong>
-        <span class="fs-7 opacity-90">{{ toastMessage }}</span>
-      </div>
-      <button type="button" class="btn-close btn-close-white ms-auto" (click)="toastMessage = ''" aria-label="Close"></button>
-    </div>
-  </div>
-
-
   <!-- Top-Right Decorative Thread Line -->
   <svg class="position-absolute top-0 end-0 d-none d-lg-block pe-none" width="230" height="230" viewBox="0 0 230 230"
-    fill="none" style="z-index: 10;">
+    fill="none" style="z-index: 10;" aria-hidden="true">
     <path d="M 215 15 Q 135 25 105 105 T 20 180" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none"
       opacity="0.4" />
     <polygon points="27,170 16,183 31,184" fill="#0057ff" opacity="0.75" />
@@ -31,289 +11,68 @@
 
   <div class="container-custom py-2 position-relative" style="z-index: 1;">
 
-    <!-- VIEW STATE 1: DUAL ROLE CHOICE CARDS (Matching Login Look & Feel) -->
-    <div *ngIf="viewState === 'choose'">
-
-      <!-- Header Banner -->
-      <div class="text-center mb-4">
-        <a routerLink="/" class="d-inline-block mb-2">
-          <img src="images/logo1.png" alt="ProveYu Logo" style="height: 48px; width: auto;">
-        </a>
-        <h1 class="h3 fw-bold text-navy mb-2">Create your account</h1>
-        <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 640px;">
-          Are you a college placement cell or a student? Pick one to get started.
-        </p>
-      </div>
-
-      <!-- Extended Width Triple Role Cards -->
-      <div class="row g-4 justify-content-center mx-auto" style="max-width: 880px;">
-
-        <!-- Candidate and Recruiter cards are disabled for now. Restore by removing this comment.
-        
-        <div class="col-md-4">
-          <div
-            class="card card-shadow border-0 h-100 p-4 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
-            (click)="selectRole('candidate')">
-
-            <span class="point-pill-btn point-pill-primary mx-auto mb-3">FOR JOB SEEKERS & FRESHERS</span>
-
-            <h2 class="h5 fw-bold text-navy mb-3">I'm a Candidate — Get Verified</h2>
-            <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
-              Get your skills invigilated and verified at a partner exam centre. Earn a multi-dimensional Skill Passport
-              and get hired on merit.
-            </p>
-
-            <button class="btn btn-primary-custom w-100 py-2.5 fw-bold text-white shadow mt-auto">
-              Start Candidate Verification &rarr;
-            </button>
-          </div>
-        </div>
-
-        
-        <div class="col-md-4">
-          <div
-            class="card card-shadow border border-primary border-opacity-25 h-100 p-4 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
-            (click)="selectRole('recruiter')">
-
-            <span class="point-pill-btn point-pill-success mx-auto mb-3">FOR RECRUITERS & AGENCIES</span>
-
-            <h2 class="h5 fw-bold text-navy mb-3">I'm Hiring — Access Verified Talent</h2>
-            <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
-              Access pre-verified candidate passports with zero remote proctoring cheating or resume inflation. Hire 2x
-              faster.
-            </p>
-
-            <button class="btn btn-outline-custom w-100 py-2.5 fw-bold text-navy mt-auto">
-              Continue as Recruiter / Agency &rarr;
-            </button>
-          </div>
-        </div>
-
-        -->
-
-        <!-- College TPO Card -->
-        <div class="col-md-6">
-          <div
-            class="card card-shadow border border-warning border-opacity-50 h-100 p-4 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
-            routerLink="/college/register">
-
-            <span class="point-pill-btn bg-warning-subtle text-dark border border-warning-subtle mx-auto mb-3">FOR
-              COLLEGES & UNIVERSITIES</span>
-
-            <h2 class="h5 fw-bold text-navy mb-3">College Placement Portal</h2>
-            <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
-              Register your Training & Placement cell. Manage students, companies, drives, rounds, interviews, offers
-              and reports in one place.
-            </p>
-
-            <button class="btn btn-warning w-100 py-2.5 fw-bold text-dark mt-auto shadow-sm">
-              Register your college &rarr;
-            </button>
-          </div>
-        </div>
-
-
-        <!-- Student Card -->
-        <div class="col-md-6">
-          <div
-            class="card card-shadow border border-primary border-opacity-25 h-100 p-4 bg-white rounded-4 cursor-pointer hover-lift text-center d-flex flex-column"
-            routerLink="/student/signup">
-
-            <span class="point-pill-btn point-pill-primary mx-auto mb-3">FOR STUDENTS & CANDIDATES</span>
-
-            <h2 class="h5 fw-bold text-navy mb-3">Student Placement Portal</h2>
-            <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
-              Activate your account with your college e-mail and roll number. Apply to campus drives, track rounds,
-              interviews and offers, and keep your documents safe.
-            </p>
-
-            <button class="btn btn-primary-custom w-100 py-2.5 fw-bold text-white shadow mt-auto">
-              Create student account &rarr;
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sign In Footer Link -->
-      <div class="text-center mt-4 pt-2 fs-7 text-muted-custom">
-        Already have an account? <a routerLink="/login" class="text-primary fw-bold text-decoration-none">Sign In Here
-          &rarr;</a>
-      </div>
-    </div>
-
-
-    <!-- VIEW STATE 2: CANDIDATE REGISTRATION WIZARD (Extended Width) -->
-    <div *ngIf="viewState === 'candidate_wizard'" class="mx-auto" style="max-width: 860px;">
-
-      <!-- Back to role choice button -->
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fs-8 fw-semibold"
-          (click)="viewState = 'choose'">
-          &larr; Back to Role Choice
-        </button>
-      </div>
-
-      <div class="card card-shadow border-0 p-4 p-md-5 bg-white rounded-4">
-
-        <!-- Header -->
-        <div class="text-center mb-4">
-          <a routerLink="/" class="d-inline-block mb-2">
-            <img src="images/logo1.png" alt="ProveYu Logo" style="height: 44px; width: auto;">
-          </a>
-          <h1 class="h4 fw-extrabold text-navy mb-0">ProveYu Registration</h1>
-        </div>
-
-        <div class="mb-4 text-start">
-          <h2 class="h5 fw-bold text-navy mb-1">Create an Account</h2>
-          <p class="text-muted-custom fs-7 mb-0">Fill in your details below to register.</p>
-        </div>
-
-        <!-- Inline Error Alert Banner -->
-        <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center gap-2 mb-4 py-2.5 px-3 rounded-3 shadow-sm border border-danger bg-danger bg-opacity-10 text-danger">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="flex-shrink-0">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-          <div class="fs-7 fw-medium flex-grow-1">{{ errorMessage }}</div>
-          <button type="button" class="btn-close ms-auto" aria-label="Close" (click)="errorMessage = ''"></button>
-        </div>
-
-        <div>
-          <div class="row g-3 text-start">
-            <div class="col-md-12">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">I am registering as a</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                  </svg>
-                </span>
-                <select class="form-select border-start-0 py-2.5 px-3 fs-7 text-navy fw-medium"
-                  [(ngModel)]="formData.role">
-                  <option value="CANDIDATE">Candidate (Job Seeker / Fresher)</option>
-                  <option value="RECRUITER">Recruiter (Agency / Company)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Full Name</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                </span>
-                <input type="text" class="form-control border-start-0 py-2.5 px-3 fs-7" [(ngModel)]="formData.fullName"
-                  placeholder="Rahul Sharma" autocomplete="new-password" required>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Email Address</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                    <polyline points="22,6 12,13 2,6" />
-                  </svg>
-                </span>
-                <input type="email" class="form-control border-start-0 py-2.5 px-3 fs-7" [(ngModel)]="formData.email" (input)="clearErrors()"
-                  [class.is-invalid]="errorField === 'email'"
-                  placeholder="rahul.sharma@example.com" autocomplete="new-password" required>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Phone Number</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path
-                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                  </svg>
-                </span>
-                <input type="tel" class="form-control border-start-0 py-2.5 px-3 fs-7" [(ngModel)]="formData.phone" (input)="clearErrors()"
-                  [class.is-invalid]="errorField === 'phone'"
-                  placeholder="+91 98765 43210" autocomplete="new-password" required>
-              </div>
-            </div>
-
-            <div class="col-md-6 d-none d-md-block">
-              <!-- Spacer for alignment -->
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Password</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                  </svg>
-                </span>
-                <input type="password" class="form-control border-start-0 py-2.5 px-3 fs-7" [(ngModel)]="formData.password" (input)="clearErrors()"
-                  [class.is-invalid]="errorField === 'password'"
-                  placeholder="Create a password" autocomplete="new-password" required>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label text-navy fw-semibold fs-7 mb-1.5">Confirm Password</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 text-muted fs-7">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                  </svg>
-                </span>
-                <input type="password" class="form-control border-start-0 py-2.5 px-3 fs-7" [(ngModel)]="formData.confirmPassword" (input)="clearErrors()"
-                  [class.is-invalid]="errorField === 'confirmPassword'"
-                  placeholder="Confirm password" autocomplete="new-password" required>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="d-flex justify-content-end align-items-center pt-4 border-top mt-4">
-          <button type="button" class="btn btn-success px-5 py-2.5 rounded-pill text-white fw-bold shadow d-flex align-items-center gap-2"
-            (click)="submitRegistration()" [disabled]="isSubmitting">
-            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            <span>{{ isSubmitting ? 'Registering...' : 'Submit Registration →' }}</span>
-          </button>
-        </div>
-
-      </div>
-
-      <div class="text-center pt-3 fs-7 text-muted-custom mt-2">
-        Already have an account? <a routerLink="/login" class="text-primary fw-bold text-decoration-none">Sign In Here
-          &rarr;</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- SUBMISSION CONFIRMATION MODAL OVERLAY -->
-  <div *ngIf="isSubmitted"
-    class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50"
-    style="z-index: 1050; backdrop-filter: blur(4px);">
-    <div class="card card-shadow border-0 p-5 bg-white rounded-4 text-center shadow-lg" style="max-width: 460px;">
-      <div
-        class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mx-auto mb-3 shadow"
-        style="width: 64px; height: 64px; font-size: 28px;">
-        ✓
-      </div>
-      <h3 class="h4 fw-bold text-navy mb-2">Registration Submitted!</h3>
-      <p class="text-muted-custom fs-7 mb-4">
-        Your account has been created. Redirecting to login page...
+    <!-- Header Banner -->
+    <div class="text-center mb-4">
+      <a routerLink="/" class="d-inline-block mb-2">
+        <img src="images/logo1.png" alt="ProveYu home" style="height: 48px; width: auto;">
+      </a>
+      <h1 class="h3 fw-bold text-navy mb-2">Create your account</h1>
+      <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 640px;">
+        Are you a college placement cell or a student? Pick one to get started.
       </p>
-      <div class="spinner-border text-primary mx-auto" role="status">
-        <span class="visually-hidden">Loading...</span>
+    </div>
+
+    <div class="row g-4 justify-content-center mx-auto" style="max-width: 880px;">
+
+      <!-- College TPO Card -->
+      <div class="col-md-6">
+        <a class="card card-shadow border border-warning border-opacity-50 h-100 p-4 bg-white rounded-4 hover-lift text-center d-flex flex-column text-decoration-none"
+          routerLink="/college/register">
+
+          <span class="point-pill-btn bg-warning-subtle text-dark border border-warning-subtle mx-auto mb-3">FOR
+            COLLEGES & UNIVERSITIES</span>
+
+          <h2 class="h5 fw-bold text-navy mb-3">College Placement Portal</h2>
+          <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
+            Register your Training & Placement cell. Manage students, companies, drives, rounds, interviews, offers
+            and reports in one place.
+          </p>
+
+          <span class="btn btn-warning w-100 py-2.5 fw-bold text-dark mt-auto shadow-sm">
+            Register your college &rarr;
+          </span>
+        </a>
       </div>
+
+      <!-- Student Card -->
+      <div class="col-md-6">
+        <a class="card card-shadow border border-primary border-opacity-25 h-100 p-4 bg-white rounded-4 hover-lift text-center d-flex flex-column text-decoration-none"
+          routerLink="/student/signup">
+
+          <span class="point-pill-btn point-pill-primary mx-auto mb-3">FOR STUDENTS</span>
+
+          <h2 class="h5 fw-bold text-navy mb-3">Student Placement Portal</h2>
+          <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
+            Activate your account with your college e-mail and roll number. Apply to campus drives, track rounds,
+            interviews and offers, and practise with mock tests and AI interviews.
+          </p>
+
+          <span class="btn btn-primary-custom w-100 py-2.5 fw-bold text-white shadow mt-auto">
+            Create student account &rarr;
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Recruiters join by invitation -->
+    <p class="text-center mt-4 mb-0 fs-7 text-muted-custom mx-auto" style="max-width: 640px;">
+      <i class="bi bi-briefcase me-1" aria-hidden="true"></i>Recruiting for a campus drive? Companies join by invitation from the
+      placement cell. <a routerLink="/company/login" class="text-primary fw-semibold text-decoration-none">Company sign in &rarr;</a>
+    </p>
+
+    <!-- Sign In Footer Link -->
+    <div class="text-center mt-3 pt-2 fs-7 text-muted-custom">
+      Already have an account? <a routerLink="/login" class="text-primary fw-bold text-decoration-none">Sign In Here &rarr;</a>
     </div>
   </div>
 </div>

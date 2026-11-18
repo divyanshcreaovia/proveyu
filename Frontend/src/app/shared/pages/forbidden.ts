@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { TokenStorageService } from '../../services/token-storage.service';
+import { AuthService } from '../../core/services/auth.service';
+import { TokenStorageService } from '../../core/services/token-storage.service';
 
 @Component({
   selector: 'pm-forbidden',

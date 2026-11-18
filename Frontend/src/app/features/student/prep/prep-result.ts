@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { AttemptResult, LANGUAGE_LABELS, PrepService, QuestionResult } from '../../../services/prep.service';
+import { AttemptResult, LANGUAGE_LABELS, PrepService, QuestionResult } from '../services/prep.service';
 import { Skeleton } from '../../../shared/ui/states';
 
 type Filter = 'all' | 'wrong' | 'right';

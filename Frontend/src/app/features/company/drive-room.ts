@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, si
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
-import { DriveRoomService, ResultValue, RoomApplicant, RoomRound, RoomSummary, Scorecard } from '../../services/drive-room.service';
-import { ToastService } from '../../services/toast.service';
+import { DriveRoomService, ResultValue, RoomApplicant, RoomRound, RoomSummary, Scorecard } from './services/drive-room.service';
+import { ToastService } from '../../core/services/toast.service';
 import { ConfirmService } from '../../shared/ui/confirm-dialog';
 import { Offer, RoundResultRow } from '../../core/models/college.models';
 import { AppError } from '../../core/api';

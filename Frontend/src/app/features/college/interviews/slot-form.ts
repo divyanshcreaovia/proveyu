@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { InterviewScheduleService } from '../../../services/interview-schedule.service';
-import { ToastService } from '../../../services/toast.service';
+import { InterviewScheduleService } from '../services/interview-schedule.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { AppError } from '../../../core/api';
 import { Application, Conflict, Round, Slot } from '../../../core/models/college.models';
 import { Modal } from '../../../shared/ui/modal';

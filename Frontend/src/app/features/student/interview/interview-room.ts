@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AppError } from '../../../core/api';
-import { AskedQuestion, InterviewService, SessionView, TYPE_LABELS, DIFFICULTY_LABELS } from '../../../services/interview.service';
-import { ThemeService } from '../../../services/theme.service';
-import { ToastService } from '../../../services/toast.service';
+import { AskedQuestion, InterviewService, SessionView, TYPE_LABELS, DIFFICULTY_LABELS } from '../services/interview.service';
+import { ThemeService } from '../../../core/services/theme.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
 import { WavRecorder } from './wav-recorder';
 

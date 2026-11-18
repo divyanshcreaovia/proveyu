@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { SettingsService } from '../../../services/settings.service';
-import { CollegeService } from '../../../services/college.service';
-import { ToastService } from '../../../services/toast.service';
+import { SettingsService } from '../services/settings.service';
+import { CollegeService } from '../services/college.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
 import { Batch, Branch, CollegeProfile, EmailTemplate, Policy, Tier } from '../../../core/models/college.models';
 import { FileUpload } from '../../../shared/ui/file-upload';

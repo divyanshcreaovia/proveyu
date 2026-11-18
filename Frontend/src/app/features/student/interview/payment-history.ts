@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, afterNextRender, computed, input, output, viewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { PurchaseStatus, StudentPurchase } from '../../../services/interview.service';
+import { PurchaseStatus, StudentPurchase } from '../services/interview.service';
 
 /** The student's interview purchases, newest first, in a dialog: amount, interviews, UPI reference, status and the reason for a rejection. */
 @Component({

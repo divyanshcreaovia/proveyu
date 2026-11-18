@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CollegeService } from '../../../services/college.service';
-import { StudentService } from '../../../services/student.service';
+import { CollegeService } from '../services/college.service';
+import { StudentService } from '../services/student.service';
 import { AppError } from '../../../core/api';
 import { Student } from '../../../core/models/college.models';
 import { Modal } from '../../../shared/ui/modal';

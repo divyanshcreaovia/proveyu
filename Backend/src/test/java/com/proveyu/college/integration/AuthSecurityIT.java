@@ -1,5 +1,6 @@
 package com.proveyu.college.integration;
 
+import com.proveyu.support.IntegrationTestBase;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -67,16 +68,14 @@ class AuthSecurityIT extends IntegrationTestBase {
     @Test
     void routesAreLockedByRole() throws Exception {
         assertThat(get("/api/v1/college/students", null).status()).isEqualTo(401);
-        assertThat(get("/api/v1/recruiter/jobs", null).status()).as("recruiter API no longer public").isEqualTo(401);
-        assertThat(get("/api/v1/test/" + java.util.UUID.randomUUID(), null).status()).isEqualTo(401);
+        assertThat(get("/api/v1/recruiter/campus/drives", null).status()).as("Drive Room needs a sign-in").isEqualTo(401);
 
         String email = uid() + "@cand.in";
         String candidate = post("/api/v1/auth/register", null, Map.of("email", email, "password", "Secret123", "fullName", "C", "role", "CANDIDATE"))
                 .data().get("token").asText();
         assertThat(get("/api/v1/college/students", candidate).status()).isEqualTo(403);
-        assertThat(get("/api/v1/recruiter/jobs", candidate).status()).isEqualTo(403);
+        assertThat(get("/api/v1/recruiter/campus/drives", candidate).status()).as("students cannot open the Drive Room").isEqualTo(403);
         assertThat(get("/api/v1/admin/colleges", candidate).status()).isEqualTo(403);
-        assertThat(get("/api/v1/recruiter/jobs/candidate/invitations", candidate).status()).as("candidates keep their invitation API").isEqualTo(200);
 
         String tpo = registerCollege("r");
         assertThat(get("/api/v1/college/student/drives", tpo).status()).as("staff cannot use student portal").isEqualTo(403);

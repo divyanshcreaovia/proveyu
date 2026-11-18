@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, OnInit, inject, input, 
 import { FormsModule } from '@angular/forms';
 import { toDataURL } from 'qrcode';
 import { AppError } from '../../../core/api';
-import { InterviewService, StudentPurchase } from '../../../services/interview.service';
+import { InterviewService, StudentPurchase } from '../services/interview.service';
 
 /** What the dialog needs: one open UPI purchase (from a new order or from the student's list). */
 export interface UpiPayment { purchaseId: string; reference: string; quantity: number; amountRupees: number; upiUri: string; payeeName: string; upiId: string; }

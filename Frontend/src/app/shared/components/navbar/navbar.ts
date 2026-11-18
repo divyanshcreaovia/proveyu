@@ -1,27 +1,16 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { Component, signal } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
+/** Public site header. Shown only outside the portals (see App.isPortalRoute). */
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [RouterModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
 export class Navbar {
-  isCandidatePortal = false;
-  
-  constructor(private router: Router) {
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe((event: any) => {
-      this.isCandidatePortal = event.urlAfterRedirects.includes('/candidate');
-    });
-    
-    // Initial check
-    this.isCandidatePortal = this.router.url.includes('/candidate');
-  }
+  /** Mobile menu (Bootstrap's JS is not loaded, so the collapse is toggled here). */
+  open = signal(false);
+  showBanner = signal(true);
 }
-

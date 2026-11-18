@@ -2,12 +2,12 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet, ActivatedRoute } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthService } from '../../../services/auth.service';
-import { NotificationService } from '../../../services/notification.service';
-import { ThemeService } from '../../../services/theme.service';
-import { ChatService } from '../../../services/chat.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { ThemeService } from '../../../core/services/theme.service';
+import { ChatService } from '../../../core/services/chat.service';
 import { NotificationPanel } from '../../../shared/ui/notification-panel';
-import { StudentPortalService } from '../../../services/student-portal.service';
+import { StudentPortalService } from '../services/student-portal.service';
 import { AppError } from '../../../core/api';
 import { EmptyState } from '../../../shared/ui/states';
 

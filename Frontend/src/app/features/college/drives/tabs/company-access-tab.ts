@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CollegeService } from '../../../../services/college.service';
-import { DriveRoomService, RecruiterAccess, Scorecard } from '../../../../services/drive-room.service';
-import { RoundService } from '../../../../services/round.service';
-import { ToastService } from '../../../../services/toast.service';
+import { CollegeService } from '../../services/college.service';
+import { DriveRoomService, RecruiterAccess, Scorecard } from '../../../company/services/drive-room.service';
+import { RoundService } from '../../services/round.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmService } from '../../../../shared/ui/confirm-dialog';
 import { Drive, Round } from '../../../../core/models/college.models';
 import { StatusBadge } from '../../../../shared/ui/status-badge';

@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 public class CollegeAuthController {
 
     private final CollegeOnboardingService onboardingService;
-    private final com.proveyu.college.application.StudentPortalService studentPortalService;
     private final com.proveyu.college.application.DriveRoomService driveRoomService;
 
     @Operation(summary = "Look up a company Drive Room invitation (public)")
@@ -36,17 +35,6 @@ public class CollegeAuthController {
     public ApiResponse<com.proveyu.auth.web.dto.AuthDto.AuthResponse> recruiterAccept(
             @Valid @RequestBody com.proveyu.college.application.dto.DriveRoomDtos.RecruiterAcceptRequest request) {
         return ApiResponse.success(driveRoomService.accept(request), "Welcome to the Drive Room");
-    }
-
-    public record StudentActivationRequest(@jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Email String email,
-                                           @jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Size(max = 50) String rollNumber) {}
-
-    @Operation(summary = "Student sign-up (public): matches e-mail + roll number to a college student record and e-mails a 6-digit code. "
-            + "The student then sets a password with POST /api/v1/auth/reset-password.")
-    @PostMapping("/auth/student-signup")
-    public ApiResponse<com.proveyu.auth.web.dto.AuthDto.ForgotPasswordResponse> studentSignup(@Valid @RequestBody StudentActivationRequest request) {
-        var r = studentPortalService.startActivation(request.email(), request.rollNumber());
-        return ApiResponse.success(r, r.getMessage());
     }
 
     @Operation(summary = "Register a college (public). Creates the TPO account and sends an e-mail verification link.")

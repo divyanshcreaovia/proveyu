@@ -1,165 +1,130 @@
 <div class="bg-white">
-  <!-- HERO SECTION FROM REFERENCE -->
+  <!-- HERO -->
   <section class="hero-section">
     <div class="container-custom">
       <div class="hero-container">
 
-        <!-- Left Text Column -->
         <div class="hero-text-col">
           <div class="pill-badge">
-            <span>100% In-Person Assessment Infrastructure</span>
+            <span class="badge-dot"></span>
+            <span>Campus placement platform</span>
           </div>
 
           <h1 class="hero-title">
-            Proof Over Resumes.<br>
-            <span class="gradient-text">Hire on Proven Ability.</span>
+            Run Placement Season<br>
+            <span class="gradient-text">on One Platform.</span>
           </h1>
 
           <p class="hero-subtitle">
-            ProveYu replaces unverified resume claims with invigilated, in-person skill assessments at partner exam
-            centres. Candidates get a multi-dimensional Skill Passport; recruiters get un-cheatable merit signal.
+            ProveYu gives your Training &amp; Placement cell one place for students, companies, drives, rounds, interviews
+            and offers. Students apply, prepare with mock tests and AI interviews, and track every result. Companies
+            evaluate inside their own Drive Room.
           </p>
 
-          <!-- Dual Primary CTAs -->
           <div class="d-flex flex-wrap gap-3 mb-4">
-            <a routerLink="/select-role"
+            <a routerLink="/college/register"
               class="btn btn-primary-custom d-flex align-items-center gap-2 px-4 py-3 text-decoration-none shadow">
-              <span>I'm a Candidate — Get Verified</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <span>Register your college</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </a>
-            <a routerLink="/select-role"
+            <a routerLink="/student/signup"
               class="btn btn-outline-custom d-flex align-items-center gap-2 px-4 py-3 bg-white text-decoration-none">
-              <span>I'm Hiring — Access Verified Talent</span>
+              <span>I'm a student: activate my account</span>
             </a>
           </div>
 
-          <!-- Hero Trust Stats Row -->
           <div class="hero-trust-row">
             <div class="trust-stat">
-              <span class="stat-num">100%</span>
-              <span class="stat-lbl">In-Person Supervision</span>
+              <span class="stat-num">End to end</span>
+              <span class="stat-lbl">From drive to offer letter</span>
             </div>
             <div class="trust-divider"></div>
             <div class="trust-stat">
-              <span class="stat-num">Air-Gapped</span>
-              <span class="stat-lbl">Terminal Lockdown</span>
+              <span class="stat-num">20 + AI</span>
+              <span class="stat-lbl">Mock tests &amp; AI interviews</span>
             </div>
             <div class="trust-divider"></div>
             <div class="trust-stat">
-              <span class="stat-num">0%</span>
-              <span class="stat-lbl">Proxy Cheating Vulnerability</span>
+              <span class="stat-num">Audited</span>
+              <span class="stat-lbl">Role-based access &amp; full log</span>
             </div>
           </div>
         </div>
 
-        <!-- Right Hero Passport & Candidate Showcase Flip Card -->
+        <!-- Flip card: placement cell dashboard (front) / student side (back) -->
         <div class="hero-visual-col">
-          <div class="hero-flip-container" [class.flipped]="isHeroCardFlipped" (click)="toggleHeroFlip()">
+          <div class="hero-flip-container" [class.flipped]="isHeroCardFlipped" (click)="toggleHeroFlip()"
+            (keydown.enter)="toggleHeroFlip()" tabindex="0" role="button"
+            [attr.aria-label]="isHeroCardFlipped ? 'Show the placement cell dashboard' : 'Show the student portal'">
             <div class="hero-flip-inner">
 
-              <!-- FRONT SIDE: ProveYu Skill Passport Card -->
               <div class="hero-flip-front">
                 <div class="passport-preview-card h-100">
                   <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-dashed">
                     <div class="d-flex align-items-center gap-2 fw-extrabold text-primary fs-7 tracking-wide">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.5">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                      </svg>
-                      <span>PROVEYU SKILL PASSPORT</span>
+                      <i class="bi bi-building fs-6" aria-hidden="true"></i>
+                      <span>PLACEMENT CELL DASHBOARD</span>
                     </div>
-                    <span class="badge bg-warning text-dark rounded-pill px-3 py-1 fs-8 fw-bold">Top 3% Verified</span>
+                    <span class="badge bg-light text-muted border rounded-pill px-3 py-1 fs-8 fw-semibold">Sample data</span>
                   </div>
 
-                  <div class="d-flex align-items-center gap-3 mb-4">
-                    <div
-                      class="rounded-circle text-white d-flex align-items-center justify-content-center fw-extrabold fs-4 shadow"
-                      style="width: 58px; height: 58px; flex-shrink: 0; background: linear-gradient(135deg, #0057ff 0%, #0a1b3f 100%);">
-                      RS
+                  <div class="row g-2 mb-4 text-center">
+                    <div class="col-4">
+                      <div class="kpi-tile"><span class="kpi-num">1,240</span><span class="kpi-lbl">Students</span></div>
                     </div>
-                    <div>
-                      <h3 class="h5 fw-bold text-navy mb-0">Rahul Sharma</h3>
-                      <span class="fs-7 text-primary fw-semibold d-block">Universal Fresher Competency</span>
-                      <span class="fs-8 text-muted d-block">TCS iON Center, Koramangala</span>
+                    <div class="col-4">
+                      <div class="kpi-tile"><span class="kpi-num">18</span><span class="kpi-lbl">Live drives</span></div>
                     </div>
-                    <div
-                      class="ms-auto rounded-circle text-white d-flex flex-column align-items-center justify-content-center text-center p-2 shadow"
-                      style="width: 62px; height: 62px; flex-shrink: 0; background: linear-gradient(135deg, #0057ff 0%, #0044cc 100%);">
-                      <span class="fw-extrabold fs-5 lh-1">92</span>
-                      <span class="fs-8 fw-bold lh-1 mt-1" style="font-size: 0.55rem !important;">SCORE</span>
+                    <div class="col-4">
+                      <div class="kpi-tile"><span class="kpi-num text-success">412</span><span class="kpi-lbl">Placed</span></div>
                     </div>
                   </div>
 
+                  <div class="fs-8 fw-bold text-uppercase tracking-wide text-muted mb-2">Drive funnel · Infinite Analytics</div>
                   <div class="d-flex flex-column gap-3 mb-4">
-                    <div class="row align-items-center g-2 fs-7 fw-semibold text-navy">
-                      <div class="col-5">Core Logic & Algorithms</div>
-                      <div class="col-5">
-                        <div class="progress" style="height: 8px;">
-                          <div class="progress-bar bg-primary" style="width: 95%"></div>
+                    @for (f of funnel; track f.label) {
+                      <div class="row align-items-center g-2 fs-7 fw-semibold text-navy">
+                        <div class="col-4">{{ f.label }}</div>
+                        <div class="col-6">
+                          <div class="progress" style="height: 8px;">
+                            <div class="progress-bar" [class]="f.bar" [style.width.%]="f.pct"></div>
+                          </div>
                         </div>
+                        <div class="col-2 text-end text-primary fw-bold">{{ f.count }}</div>
                       </div>
-                      <div class="col-2 text-end text-primary fw-bold">95%</div>
-                    </div>
-
-                    <div class="row align-items-center g-2 fs-7 fw-semibold text-navy">
-                      <div class="col-5">QA & Test Automation</div>
-                      <div class="col-5">
-                        <div class="progress" style="height: 8px;">
-                          <div class="progress-bar bg-primary" style="width: 94%"></div>
-                        </div>
-                      </div>
-                      <div class="col-2 text-end text-primary fw-bold">94%</div>
-                    </div>
-
-                    <div class="row align-items-center g-2 fs-7 fw-semibold text-navy">
-                      <div class="col-5">Java Backend Development</div>
-                      <div class="col-5">
-                        <div class="progress" style="height: 8px;">
-                          <div class="progress-bar bg-primary" style="width: 88%"></div>
-                        </div>
-                      </div>
-                      <div class="col-2 text-end text-primary fw-bold">88%</div>
-                    </div>
+                    }
                   </div>
 
                   <div class="p-3 bg-light-blue rounded-3 border border-primary border-opacity-25 mb-3 fs-7 text-navy">
-                    <strong>Primary Fit:</strong> QA / Automation Engineer | <strong>Secondary:</strong> Java
-                    Microservices
+                    <strong>Next:</strong> Technical round · Tue 10:00 · 42 interviews scheduled, 0 clashes
                   </div>
 
-                  <div class="d-flex align-items-center justify-content-between text-primary fs-7 fw-bold">
-                    <div class="d-flex align-items-center gap-2">
-                      <span
-                        class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center p-1"
-                        style="width: 20px; height: 20px; font-size: 11px;">✓</span>
-                      <span>Invigilator Supervision Log #TCS-BLR-04 Confirmed</span>
-                    </div>
+                  <div class="d-flex align-items-center gap-2 text-primary fs-7 fw-bold">
+                    <span class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center p-1"
+                      style="width: 20px; height: 20px; font-size: 11px;" aria-hidden="true">✓</span>
+                    <span>Eligibility checked for every student · reminders sent 24 h ahead</span>
                   </div>
+                  <div class="flip-hint fs-8 text-muted mt-3"><i class="bi bi-arrow-repeat me-1" aria-hidden="true"></i>Tap to see the student side</div>
                 </div>
               </div>
 
-              <!-- BACK SIDE: Candidate Showcase Image (hero-woman-v3.png) -->
               <div class="hero-flip-back">
                 <div class="passport-preview-card h-100 p-0 overflow-hidden d-flex flex-column position-relative">
-                  <div
-                    class="position-absolute top-0 start-0 w-100 p-3 d-flex justify-content-between align-items-center"
+                  <div class="position-absolute top-0 start-0 w-100 p-3 d-flex justify-content-between align-items-center"
                     style="z-index: 5; background: linear-gradient(180deg, rgba(10,27,63,0.85) 0%, transparent 100%);">
-                    <span class="badge bg-success rounded-pill px-3 py-1 fs-8 fw-bold">100% In-Person Verified</span>
-                    <span class="badge bg-white text-navy rounded-pill px-3 py-1 fs-8 fw-bold">Proof of Merit</span>
+                    <span class="badge bg-success rounded-pill px-3 py-1 fs-8 fw-bold">Student portal</span>
+                    <span class="badge bg-white text-navy rounded-pill px-3 py-1 fs-8 fw-bold">Apply · Prepare · Get placed</span>
                   </div>
 
-                  <img src="images/hero-woman-v3.png" alt="ProveYu Verified Candidate"
+                  <img src="images/hero-woman-v3.png" alt="A student using the ProveYu student portal"
                     class="w-100 h-100 object-fit-cover" style="border-radius: 18px; object-position: top center;">
 
-                  <div
-                    class="position-absolute bottom-0 start-0 w-100 p-3 text-white d-flex justify-content-between align-items-center"
+                  <div class="position-absolute bottom-0 start-0 w-100 p-3 text-white"
                     style="z-index: 5; background: linear-gradient(0deg, rgba(10,27,63,0.92) 0%, transparent 100%);">
-                    <div>
-                      <div class="fw-bold fs-6 mb-0">Verified Candidate Profile</div>
-                      <div class="fs-8 opacity-75">Air-Gapped Lab Exam Centre Audit</div>
-                    </div>
+                    <div class="fw-bold fs-6 mb-1">Eligible drives, one-click apply, AI interview practice</div>
+                    <div class="fs-8 opacity-75">Round-by-round results, interview slots and offer letters in one place</div>
                   </div>
                 </div>
               </div>
@@ -172,93 +137,96 @@
     </div>
   </section>
 
-  <!-- SECTION 2: 3 Interactive Feature Cards with Image Hover -->
+  <!-- THREE PRODUCTS -->
   <section class="py-5 bg-light-blue position-relative overflow-hidden">
-    <!-- Top-Right Decorative Thread Line -->
     <svg class="position-absolute top-0 end-0 d-none d-lg-block pe-none" width="220" height="220" viewBox="0 0 220 220"
-      fill="none" style="z-index: 10; margin-top: 10px; margin-right: 10px;">
-      <path d="M 205 15 Q 120 25 90 95 T 15 160" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none"
-        opacity="0.45" />
+      fill="none" style="z-index: 10; margin-top: 10px; margin-right: 10px;" aria-hidden="true">
+      <path d="M 205 15 Q 120 25 90 95 T 15 160" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none" opacity="0.45" />
       <polygon points="23,150 10,165 26,166" fill="#0057ff" opacity="0.75" />
     </svg>
 
     <div class="container-custom py-4 position-relative" style="z-index: 1;">
       <div class="text-center mb-5">
         <div class="section-header-banner mx-auto">
-          <h2 class="h2 fw-bold text-navy mb-2">How ProveYu Eliminates Hiring Risk</h2>
+          <h2 class="h2 fw-bold text-navy mb-2">One Platform, Three Connected Workspaces</h2>
           <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
-            Replacing unverified resume claims with 3-stage physical invigilation, air-gapped coding labs, and
-            tamper-proof skill passports.
+            The placement cell, its students and visiting companies all work on the same live data, so nobody chases
+            spreadsheets, e-mails or WhatsApp groups again.
           </p>
         </div>
       </div>
 
       <div class="row g-4">
-        <!-- Card 1 -->
-        <div class="col-lg-4">
-          <div class="card card-shadow border-0 h-100 p-4 bg-white arch-card-hover">
-            <h3 class="h5 fw-bold text-navy mb-3 text-center">Biometric & Physical Check-In</h3>
+        @for (p of products; track p.title) {
+          <div class="col-lg-4">
+            <div class="card card-shadow border-0 h-100 p-4 bg-white arch-card-hover d-flex flex-column">
+              <span class="feature-icon mb-3" [class]="p.tone" aria-hidden="true"><i class="bi" [class]="p.icon"></i></span>
+              <span class="point-pill-btn point-pill-primary me-auto mb-2">{{ p.tag }}</span>
+              <h3 class="h5 fw-bold text-navy mb-2">{{ p.title }}</h3>
+              <p class="text-muted-custom fs-7 mb-3">{{ p.text }}</p>
+              <ul class="check-list mb-4">
+                @for (b of p.points; track b) { <li>{{ b }}</li> }
+              </ul>
+              <a [routerLink]="p.link" [fragment]="p.fragment" class="btn btn-outline-custom mt-auto text-decoration-none text-center">{{ p.cta }} &rarr;</a>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
 
-            <div class="arch-img-container shadow-sm">
-              <!-- Default Image -->
-              <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=600"
-                alt="Identity Verification"
-                class="w-100 h-100 object-fit-cover arch-img-default position-absolute top-0 start-0">
-              <!-- Hover Image -->
-              <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=600"
-                alt="Biometric Audit Gate"
-                class="w-100 h-100 object-fit-cover arch-img-hover position-absolute top-0 start-0 opacity-0">
+  <!-- BEFORE / AFTER -->
+  <section class="py-5 bg-white position-relative overflow-hidden">
+    <div class="container-custom py-4 position-relative" style="z-index: 1;">
+      <div class="text-center mb-5">
+        <div class="section-header-banner mx-auto">
+          <h2 class="h2 fw-bold text-navy mb-3">Placement Season Without the Chaos</h2>
+          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
+            Most placement cells still run drives on Excel sheets, mail threads and group chats. Here is what changes
+            when the whole season runs on ProveYu.
+          </p>
+        </div>
+      </div>
 
-              <div
-                class="position-absolute bottom-0 start-0 w-100 p-2 text-center text-white bg-dark bg-opacity-50 fs-8 fw-semibold backdrop-blur">
-                Stage 1: Photo & Biometric Gate
-              </div>
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="comparison-card card-shadow border rounded-4 bg-light p-3 p-md-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h3 class="h5 fw-bold text-navy mb-0">The usual way</h3>
+              <span class="text-uppercase tracking-wide fs-8 fw-bold text-muted">Spreadsheets &amp; group chats</span>
+            </div>
+            <p class="text-muted-custom fs-7 mb-3 pb-2 border-bottom">Hours of manual work for the TPO, and students who find out too late.</p>
+            <div class="d-flex flex-column gap-2">
+              @for (b of before; track b.title; let i = $index) {
+                <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-white border">
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="point-pill-btn point-pill-danger">0{{ i + 1 }}</span>
+                    <h4 class="fs-7 fw-bold text-navy mb-0">{{ b.title }}</h4>
+                  </div>
+                  <p class="text-muted-custom fs-8 mb-0 ps-1">{{ b.text }}</p>
+                </div>
+              }
             </div>
           </div>
         </div>
 
-        <!-- Card 2 -->
-        <div class="col-lg-4">
-          <div class="card card-shadow border-0 h-100 p-4 bg-white arch-card-hover">
-            <h3 class="h5 fw-bold text-navy mb-3 text-center">Air-Gapped Assessment Terminals</h3>
-
-            <div class="arch-img-container shadow-sm">
-              <!-- Default Image -->
-              <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=600"
-                alt="Assessment Lab Terminal"
-                class="w-100 h-100 object-fit-cover arch-img-default position-absolute top-0 start-0">
-              <!-- Hover Image -->
-              <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=600"
-                alt="Lockdown Terminal Hub"
-                class="w-100 h-100 object-fit-cover arch-img-hover position-absolute top-0 start-0 opacity-0">
-
-              <div
-                class="position-absolute bottom-0 start-0 w-100 p-2 text-center text-white bg-dark bg-opacity-50 fs-8 fw-semibold backdrop-blur">
-                Stage 2: Air-Gapped Terminal
-              </div>
+        <div class="col-lg-6">
+          <div class="comparison-card card-shadow border rounded-4 bg-white p-3 p-md-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h3 class="h5 fw-bold text-navy mb-0">With ProveYu</h3>
+              <span class="text-uppercase tracking-wide fs-8 fw-bold text-primary">One live system</span>
             </div>
-          </div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="col-lg-4">
-          <div class="card card-shadow border-0 h-100 p-4 bg-white arch-card-hover">
-            <h3 class="h5 fw-bold text-navy mb-3 text-center">Tamper-Proof Skill Passport</h3>
-
-            <div class="arch-img-container shadow-sm">
-              <!-- Default Image -->
-              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600"
-                alt="Skill Passport Analytics"
-                class="w-100 h-100 object-fit-cover arch-img-default position-absolute top-0 start-0">
-              <!-- Hover Image -->
-              <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=600"
-                alt="Verified Skill Passport Data"
-                class="w-100 h-100 object-fit-cover arch-img-hover position-absolute top-0 start-0 opacity-0">
-
-              <div
-                class="position-absolute bottom-0 start-0 w-100 p-2 text-center text-white bg-dark bg-opacity-50 fs-8 fw-semibold backdrop-blur">
-                Stage 3: Verified Skill Matrix
-              </div>
+            <p class="text-muted-custom fs-7 mb-3 pb-2 border-bottom">Rules, schedules and notifications run themselves; the TPO only decides.</p>
+            <div class="d-flex flex-column gap-2">
+              @for (b of after; track b.title; let i = $index) {
+                <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-light-blue border">
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="point-pill-btn point-pill-success">0{{ i + 1 }}</span>
+                    <h4 class="fs-7 fw-bold text-navy mb-0">{{ b.title }}</h4>
+                  </div>
+                  <p class="text-muted-custom fs-8 mb-0 ps-1">{{ b.text }}</p>
+                </div>
+              }
             </div>
           </div>
         </div>
@@ -266,172 +234,78 @@
     </div>
   </section>
 
-  <!-- SECTION: ProveYu for Colleges & Universities -->
+  <!-- COLLEGE PORTAL HIGHLIGHT -->
   <section class="py-5 bg-white border-top border-bottom position-relative overflow-hidden">
-    <!-- Top-Left Decorative Dashed Thread Line & Arrow -->
-    <svg class="position-absolute top-0 start-0 d-none d-lg-block pe-none" width="230" height="230"
-      viewBox="0 0 230 230" fill="none" style="z-index: 10;">
-      <path d="M 15 15 Q 95 25 125 105 T 210 180" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none"
-        opacity="0.45" />
+    <svg class="position-absolute top-0 start-0 d-none d-lg-block pe-none" width="230" height="230" viewBox="0 0 230 230"
+      fill="none" style="z-index: 10;" aria-hidden="true">
+      <path d="M 15 15 Q 95 25 125 105 T 210 180" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none" opacity="0.45" />
       <polygon points="203,170 214,183 199,184" fill="#0057ff" opacity="0.75" />
     </svg>
 
     <div class="container-custom py-4 position-relative" style="z-index: 1;">
       <div class="text-center mb-5">
         <div class="section-header-banner mx-auto">
-          <span
-            class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold mb-3">Institutional
-            Partnerships</span>
-          <h2 class="h2 fw-bold text-navy mb-3">ProveYu for Colleges & Universities</h2>
+          <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold mb-3">For Training &amp; Placement cells</span>
+          <h2 class="h2 fw-bold text-navy mb-3">Everything a Placement Cell Does, in One Portal</h2>
           <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
-            Turn Placement Season Into a Verified Merit System. Boost drive shortlists, eliminate un-cheatable proxy
-            risks, and give students a 2nd hiring channel.
+            From importing the batch to the NIRF report at the end of the year: set the rules once and let the portal
+            check eligibility, avoid clashes, notify students and keep the numbers.
           </p>
         </div>
       </div>
 
       <div class="row g-5 align-items-center">
-        <!-- Left Side: Problem, 2-Month Flow & Key Benefits -->
         <div class="col-lg-6">
-          <!-- Problem Card -->
-          <div
-            class="card card-shadow border p-4 rounded-4 bg-white mb-4 position-relative">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="point-pill-btn point-pill-neutral">THE PLACEMENT VULNERABILITY</span>
-              <span class="fw-bold text-navy fs-5">30% Missed Talent</span>
-            </div>
-            <h3 class="h5 fw-bold text-navy mb-2">Placement % is Capped by Visibility, Not Talent</h3>
-            <p class="text-muted-custom fs-7 mb-0">
-              Students panic-prepare last minute, companies rely on stale resume claims, and drive shortlists miss 30%
-              of deserving candidates who get placed elsewhere.
-            </p>
-          </div>
-
-          <!-- Solution: 2-Month Flow Cards -->
           <div class="card card-shadow border p-4 rounded-4 bg-white mb-4">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-              <span class="point-pill-btn point-pill-neutral">PROVEYU PRE-PLACEMENT FLOW</span>
-              <span class="fs-8 text-uppercase tracking-wide fw-bold text-primary">Automated Merit System</span>
-            </div>
-
-            <div class="row g-3">
-              <div class="col-md-6">
-                <div class="p-3 bg-light-blue rounded-3 h-100 border">
-                  <div class="fs-8 fw-bold text-primary text-uppercase mb-1">Pre-Placement Month 1</div>
-                  <h4 class="fs-7 fw-bold text-navy mb-1">Test & Measure</h4>
-                  <p class="text-muted-custom fs-8 mb-0">First assessment. Students get instant skill diagnosis; T&P
-                    gets verified merit rankings.</p>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="p-3 bg-light-blue rounded-3 h-100 border">
-                  <div class="fs-8 fw-bold text-primary text-uppercase mb-1">Pre-Placement Month 2</div>
-                  <h4 class="fs-7 fw-bold text-navy mb-1">Improve & Re-Test</h4>
-                  <p class="text-muted-custom fs-8 mb-0">Recovery shot for low scorers. T&P holds fresh, verified data
-                    before recruiters arrive.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Key Benefits List -->
-          <div class="card card-shadow border p-4 rounded-4 bg-white mb-4">
-            <h4 class="fs-8 fw-extrabold text-uppercase tracking-wide text-primary mb-3">Key Placement Advantages</h4>
+            <h4 class="fs-8 fw-extrabold text-uppercase tracking-wide text-primary mb-3">What your team gets</h4>
             <div class="d-flex flex-column gap-3">
-              <!-- Benefit 1 -->
-              <div class="p-3 bg-light-blue rounded-3 border d-flex align-items-start gap-3">
-                <span class="badge bg-primary bg-opacity-10 text-primary fw-extrabold rounded-pill px-2.5 py-1.5 fs-8" style="min-width: 34px; text-align: center;">01</span>
-                <div>
-                  <h5 class="fs-7 fw-bold text-navy mb-1">Placement % Increase</h5>
-                  <p class="text-muted-custom fs-8 mb-0">Expected +5–8% growth via drive shortlists + ProveYu discovery channel.</p>
+              @for (b of collegeHighlights; track b.title; let i = $index) {
+                <div class="p-3 bg-light-blue rounded-3 border d-flex align-items-start gap-3">
+                  <span class="badge bg-primary bg-opacity-10 text-primary fw-extrabold rounded-pill px-2 py-1 fs-8" style="min-width: 34px; text-align: center;">0{{ i + 1 }}</span>
+                  <div>
+                    <h5 class="fs-7 fw-bold text-navy mb-1">{{ b.title }}</h5>
+                    <p class="text-muted-custom fs-8 mb-0">{{ b.text }}</p>
+                  </div>
                 </div>
-              </div>
-
-              <!-- Benefit 2 -->
-              <div class="p-3 bg-light-blue rounded-3 border d-flex align-items-start gap-3">
-                <span class="badge bg-primary bg-opacity-10 text-primary fw-extrabold rounded-pill px-2.5 py-1.5 fs-8" style="min-width: 34px; text-align: center;">02</span>
-                <div>
-                  <h5 class="fs-7 fw-bold text-navy mb-1">Tier-B Discovery Channel</h5>
-                  <p class="text-muted-custom fs-8 mb-0">Second-chance opportunities for deserving students directly on ProveYu platform.</p>
-                </div>
-              </div>
-
-              <!-- Benefit 3 -->
-              <div class="p-3 bg-light-blue rounded-3 border d-flex align-items-start gap-3">
-                <span class="badge bg-primary bg-opacity-10 text-primary fw-extrabold rounded-pill px-2.5 py-1.5 fs-8" style="min-width: 34px; text-align: center;">03</span>
-                <div>
-                  <h5 class="fs-7 fw-bold text-navy mb-1">T&P Efficiency</h5>
-                  <p class="text-muted-custom fs-8 mb-0">Takes only 30 minutes extra per cycle (entire invigilation & grading is automated).</p>
-                </div>
-              </div>
+              }
             </div>
           </div>
 
-          <!-- CTA Button -->
           <div class="d-flex flex-wrap align-items-center gap-3">
-            <a routerLink="/select-role" class="btn btn-primary-custom px-4 py-3 text-decoration-none shadow">
-              Schedule a 15-Min College Demo &rarr;
-            </a>
-            <span class="fs-8 text-muted">Limited pilot slots for this season</span>
+            <a routerLink="/college/register" class="btn btn-primary-custom px-4 py-3 text-decoration-none shadow">Register your college &rarr;</a>
+            <a routerLink="/for-colleges" class="fw-semibold text-primary text-decoration-none fs-7">See every college feature &rarr;</a>
           </div>
         </div>
 
-        <!-- Right Side: Timeline & Stats Card -->
         <div class="col-lg-6">
           <div class="card card-shadow border-0 p-4 p-md-5 rounded-4 bg-white">
-            <h3 class="h5 fw-bold text-navy mb-4 text-center">Your College Placement Calendar</h3>
+            <h3 class="h5 fw-bold text-navy mb-4 text-center">One Drive, Start to Finish</h3>
 
-            <!-- Timeline -->
             <div class="college-timeline position-relative ps-4 mb-4">
-              <!-- Timeline item 1 -->
-              <div class="timeline-step mb-4 position-relative">
-                <div
-                  class="step-badge rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center position-absolute"
-                  style="left: -41px; top: 0; width: 32px; height: 32px; font-size: 0.85rem;">1</div>
-                <span class="badge bg-primary bg-opacity-10 text-primary fs-8 fw-semibold mb-1">Step 01 — Pre-Placement
-                  Prep</span>
-                <h4 class="fs-7 fw-bold text-navy mb-1">Month 1 & 2 Pre-Placement Readiness</h4>
-                <p class="text-muted-custom fs-8 mb-0">Month 1 assessment provides objective readiness feedback to
-                  identify top performers early. In Month 2, students who missed the merit cut get a second recovery
-                  shot—giving T&P fresh, verified data before any company arrives.</p>
-              </div>
-
-              <!-- Timeline item 2 -->
-              <div class="timeline-step mb-4 position-relative">
-                <div
-                  class="step-badge rounded-circle bg-success text-white fw-bold d-flex align-items-center justify-content-center position-absolute"
-                  style="left: -41px; top: 0; width: 32px; height: 32px; font-size: 0.85rem;">2</div>
-                <span class="badge bg-success bg-opacity-10 text-success fs-8 fw-semibold mb-1">Step 02 — Placement
-                  Drives</span>
-                <h4 class="fs-7 fw-bold text-navy mb-1">Placement Drives & Continuous Merit Data</h4>
-                <p class="text-muted-custom fs-8 mb-0">Once placement drives begin, monthly assessments continue to keep
-                  students prepared throughout the entire cycle. Companies get updated merit data every cycle instead of
-                  stale resumes from 6 months back.</p>
-              </div>
-
-              <!-- Bonus Box -->
-              <div class="p-3 bg-light-blue rounded-3 border border-primary border-opacity-25 fs-8 text-navy">
-                <strong class="text-primary">Bonus:</strong> Qualified students are also listed on ProveYu's hiring
-                network. So they're not waiting for just your college drive—they get discovered by companies and
-                agencies directly too.
-              </div>
+              @for (s of driveSteps; track s.title; let i = $index; let last = $last) {
+                <div class="timeline-step position-relative" [class.mb-4]="!last">
+                  <div class="step-badge rounded-circle text-white fw-bold d-flex align-items-center justify-content-center position-absolute"
+                    [class.bg-primary]="!last" [class.bg-success]="last"
+                    style="left: -41px; top: 0; width: 32px; height: 32px; font-size: 0.85rem;">{{ i + 1 }}</div>
+                  <h4 class="fs-7 fw-bold text-navy mb-1">{{ s.title }}</h4>
+                  <p class="text-muted-custom fs-8 mb-0">{{ s.text }}</p>
+                </div>
+              }
             </div>
 
-            <!-- College Impact Stats Box -->
-            <div class="p-3.5 p-md-4 rounded-4 text-white text-center shadow"
-              style="background: linear-gradient(135deg, #0a1b3f 0%, #0057ff 100%);">
+            <div class="p-3 p-md-4 rounded-4 text-white text-center shadow" style="background: linear-gradient(135deg, #0a1b3f 0%, #0057ff 100%);">
               <div class="row g-3">
                 <div class="col-4">
-                  <div class="h3 fw-extrabold mb-0">+5–8%</div>
-                  <div class="fs-8 text-white fw-medium">Placement Improvement</div>
+                  <div class="h3 fw-extrabold mb-0">7</div>
+                  <div class="fs-8 text-white fw-medium">Ready reports, incl. NIRF / NAAC</div>
                 </div>
                 <div class="col-4 border-start border-end border-white border-opacity-25">
-                  <div class="h3 fw-extrabold mb-0">30 Min</div>
-                  <div class="fs-8 text-white fw-medium">Extra Work Per Cycle</div>
+                  <div class="h3 fw-extrabold mb-0">24 h</div>
+                  <div class="fs-8 text-white fw-medium">Automatic interview reminders</div>
                 </div>
                 <div class="col-4">
-                  <div class="h3 fw-extrabold mb-0">200-400%</div>
-                  <div class="fs-8 text-white fw-medium">Expected ROI</div>
+                  <div class="h3 fw-extrabold mb-0">3</div>
+                  <div class="fs-8 text-white fw-medium">Team roles with branch scope</div>
                 </div>
               </div>
             </div>
@@ -441,250 +315,127 @@
     </div>
   </section>
 
-  <!-- SECTION 3: Diagnostic Analysis (Problem vs Solution) -->
-  <section class="py-5 bg-white position-relative overflow-hidden">
-    <!-- Top-Right Decorative Dashed Thread Line & Arrow -->
-    <svg class="position-absolute top-0 end-0 d-none d-lg-block pe-none" width="230" height="230" viewBox="0 0 230 230"
-      fill="none" style="z-index: 10;">
-      <path d="M 215 15 Q 135 25 105 105 T 20 180" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6"
-        fill="none" opacity="0.45" />
-      <polygon points="27,170 16,183 31,184" fill="#0057ff" opacity="0.75" />
-    </svg>
-
-    <div class="container-custom py-4 position-relative" style="z-index: 1;">
-      <div class="text-center mb-5">
-        <div class="section-header-banner mx-auto">
-          <h2 class="h2 fw-bold text-navy mb-3">Why Online Assessments Fail & Physical Verification Wins</h2>
-          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
-            Online proctoring software only monitors camera feeds. It cannot detect screen relays, secondary keyboards,
-            or live AI helpers. In-person invigilation provides un-cheatable merit signal.
-          </p>
-        </div>
-      </div>
-
-      <!-- Outstanding Stat Cards Strip with Split Image & Content -->
-      <div class="row g-4 mb-4">
-        <!-- Card 1 -->
-        <div class="col-lg-4 col-md-6">
-          <div
-            class="stat-pill-card card-shadow border-0 rounded-4 h-100 p-2.5 bg-white d-flex align-items-center gap-3">
-            <div class="stat-img-wrapper rounded-3 overflow-hidden" style="width: 52%; height: 120px; flex-shrink: 0;">
-              <img src="https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&q=80&w=500"
-                alt="Resume Inflation" class="w-100 h-100 object-fit-cover">
-            </div>
-            <div class="stat-content-wrapper py-1 pe-2">
-              <div class="stat-badge-num text-danger lh-1 mb-1" style="font-size: 1.8rem;">60%</div>
-              <div class="fw-bold text-navy fs-7 lh-sm mb-2">Resume Claim Inflation</div>
-              <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2.5 py-1 fs-8">Unverified
-                Candidates</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 2 -->
-        <div class="col-lg-4 col-md-6">
-          <div
-            class="stat-pill-card card-shadow border-0 rounded-4 h-100 p-2.5 bg-white d-flex align-items-center gap-3">
-            <div class="stat-img-wrapper rounded-3 overflow-hidden" style="width: 52%; height: 120px; flex-shrink: 0;">
-              <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=500"
-                alt="Remote Proxy Risk" class="w-100 h-100 object-fit-cover">
-            </div>
-            <div class="stat-content-wrapper py-1 pe-2">
-              <div class="stat-badge-num text-success lh-1 mb-1" style="font-size: 1.8rem;">0%</div>
-              <div class="fw-bold text-navy fs-7 lh-sm mb-2">Remote Proxy Risk</div>
-              <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2.5 py-1 fs-8">Air-Gapped
-                Labs</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="col-lg-4 col-md-12">
-          <div
-            class="stat-pill-card card-shadow border-0 rounded-4 h-100 p-2.5 bg-white d-flex align-items-center gap-3">
-            <div class="stat-img-wrapper rounded-3 overflow-hidden" style="width: 52%; height: 120px; flex-shrink: 0;">
-              <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=500"
-                alt="Tech Bandwidth Saved" class="w-100 h-100 object-fit-cover">
-            </div>
-            <div class="stat-content-wrapper py-1 pe-2">
-              <div class="stat-badge-num text-primary lh-1 mb-1" style="font-size: 1.8rem;">15+ Hrs</div>
-              <div class="fw-bold text-navy fs-7 lh-sm mb-2">Tech Bandwidth Saved</div>
-              <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2.5 py-1 fs-8">Per Engineering
-                Team</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row g-4">
-        <!-- Broken Remote -->
-        <div class="col-lg-6">
-          <div class="comparison-card card-shadow border rounded-4 bg-light p-3 p-md-4 position-relative h-100">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <h3 class="h5 fw-bold text-navy mb-0">Remote Online Proctoring</h3>
-              <span class="text-uppercase tracking-wide fs-8 fw-bold text-muted">Vulnerability Analysis</span>
-            </div>
-
-            <p class="text-muted-custom fs-7 mb-3 pb-2 border-bottom">Webcam algorithms miss secondary monitors, HDMI
-              relays, under-desk keyboards, and live AI coding helpers.</p>
-
-            <div class="d-flex flex-column gap-2">
-              <!-- Point 1 -->
-              <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-white border">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <span class="point-pill-btn point-pill-danger">POINT 01</span>
-                  <h4 class="fs-7 fw-bold text-navy mb-0">Resume Inflation & Overstated Claims</h4>
-                </div>
-                <p class="text-muted-custom fs-8 mb-0 ps-1">Up to 60% of resumes contain exaggerated project experience,
-                  forcing hiring teams to waste time on unqualified candidates.</p>
-              </div>
-
-              <!-- Point 2 -->
-              <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-white border">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <span class="point-pill-btn point-pill-danger">POINT 02</span>
-                  <h4 class="fs-7 fw-bold text-navy mb-0">Remote Proxy Test-Takers & AI Assistance</h4>
-                </div>
-                <p class="text-muted-custom fs-8 mb-0 ps-1">Webcam algorithms miss secondary monitors, HDMI relays,
-                  under-desk keyboards, and live AI coding helpers.</p>
-              </div>
-
-              <!-- Point 3 -->
-              <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-white border">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <span class="point-pill-btn point-pill-danger">POINT 03</span>
-                  <h4 class="fs-7 fw-bold text-navy mb-0">College Brand & Referral Gatekeeping</h4>
-                </div>
-                <p class="text-muted-custom fs-8 mb-0 ps-1">ATS filters auto-reject deserving candidates from tier-2/3
-                  colleges before anyone evaluates their actual coding ability.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ProveYu Standard -->
-        <div class="col-lg-6">
-          <div class="comparison-card card-shadow border rounded-4 bg-white p-3 p-md-4 position-relative h-100">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <h3 class="h5 fw-bold text-navy mb-0">Physical Exam Lab Invigilation</h3>
-              <span class="text-uppercase tracking-wide fs-8 fw-bold text-primary">ProveYu Standard</span>
-            </div>
-
-            <p class="text-muted-custom fs-7 mb-3 pb-2 border-bottom">Supervised at existing high-stakes exam
-              infrastructure (TCS iON / JEE test hubs) with photo ID scans and biometric checks.</p>
-
-            <div class="d-flex flex-column gap-2">
-              <!-- Point 1 -->
-              <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-light-blue border">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <span class="point-pill-btn point-pill-success">POINT 01</span>
-                  <h4 class="fs-7 fw-bold text-navy mb-0">Physical Exam Lab Invigilation</h4>
-                </div>
-                <p class="text-muted-custom fs-8 mb-0 ps-1">Supervised at existing high-stakes exam infrastructure with
-                  photo ID scans, biometric checks, and CCTV control.</p>
-              </div>
-
-              <!-- Point 2 -->
-              <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-light-blue border">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <span class="point-pill-btn point-pill-success">POINT 02</span>
-                  <h4 class="fs-7 fw-bold text-navy mb-0">Multi-Dimensional Skill Passport</h4>
-                </div>
-                <p class="text-muted-custom fs-8 mb-0 ps-1">Comprehensive competency breakdown across logic, scenario
-                  QA, Spring Boot backend, and hands-on debugging.</p>
-              </div>
-
-              <!-- Point 3 -->
-              <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-light-blue border">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                  <span class="point-pill-btn point-pill-success">POINT 03</span>
-                  <h4 class="fs-7 fw-bold text-navy mb-0">Direct Tech Interview Shortcut</h4>
-                </div>
-                <p class="text-muted-custom fs-8 mb-0 ps-1">Verified candidates bypass preliminary online screening
-                  tests completely and proceed directly to final technical rounds.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECTION 4: How It Works Pipeline -->
+  <!-- STUDENT PREPARATION -->
   <section class="py-5 bg-light-blue position-relative overflow-hidden">
-    <!-- Top-Left Decorative Thread Arrow -->
-    <svg class="position-absolute top-0 start-0 d-none d-lg-block pe-none" width="220" height="220"
-      viewBox="0 0 220 220" fill="none" style="z-index: 10;">
-      <path d="M 15 15 Q 95 25 125 105 T 205 175" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none"
-        opacity="0.45" />
-      <polygon points="198,165 209,178 194,179" fill="#0057ff" opacity="0.75" />
-    </svg>
-
     <div class="container-custom py-4 position-relative" style="z-index: 1;">
       <div class="text-center mb-5">
         <div class="section-header-banner mx-auto">
-          <h2 class="h2 fw-bold text-navy mb-3">How ProveYu Works for Candidates & Recruiters</h2>
+          <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold mb-3">For students</span>
+          <h2 class="h2 fw-bold text-navy mb-3">Students Walk into Every Drive Prepared</h2>
           <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
-            From registration to direct interview in 4 connected, invigilated steps.
+            Preparation is built into the student portal, so practice and real drives live side by side.
           </p>
         </div>
       </div>
 
       <div class="row g-4">
-        <div class="col-md-3">
-          <div class="card card-shadow border-0 h-100 p-4 bg-white text-center">
-            <span class="badge bg-primary rounded-pill px-3 py-2 fw-bold me-auto mb-3">Step 01</span>
-            <h3 class="h5 fw-bold text-navy mb-2">Register & Pick Track</h3>
-            <p class="text-muted-custom fs-7 mb-0">Select your domain (Java, QA, Python, Web) or opt for the Universal
-              Fresher Competency test track.</p>
+        <div class="col-lg-6">
+          <div class="card card-shadow border-0 h-100 p-4 p-md-5 bg-white rounded-4">
+            <span class="feature-icon tone-violet mb-3" aria-hidden="true"><i class="bi bi-mic"></i></span>
+            <h3 class="h4 fw-bold text-navy mb-2">AI Mock Interview</h3>
+            <p class="text-muted-custom fs-7 mb-3">
+              An AI interviewer asks questions out loud, listens to spoken answers and asks a follow-up, like a real panel.
+              Paste a job description and the technical questions stay on its technologies.
+            </p>
+            <ul class="check-list mb-4">
+              <li>Technical, HR or mixed; easy, medium or hard</li>
+              <li>Every answer scored on content, relevance, communication and confidence</li>
+              <li>What a strong answer would include, for every question</li>
+              <li>One free interview every 15 days</li>
+            </ul>
+            <a routerLink="/for-students" fragment="ai-interview" class="fw-semibold text-primary text-decoration-none fs-7 mt-auto">How the AI interview works &rarr;</a>
           </div>
         </div>
-
-        <div class="col-md-3">
-          <div class="card card-shadow border-0 h-100 p-4 bg-white text-center">
-            <span class="badge bg-primary rounded-pill px-3 py-2 fw-bold me-auto mb-3">Step 02</span>
-            <h3 class="h5 fw-bold text-navy mb-2">Book In-Person Centre</h3>
-            <p class="text-muted-custom fs-7 mb-0">Pick a date and partner exam centre (TCS iON / JEE labs) near your
-              city. Receive your digital Admit Card.</p>
-          </div>
-        </div>
-
-        <div class="col-md-3">
-          <div class="card card-shadow border-0 h-100 p-4 bg-white text-center">
-            <span class="badge bg-primary rounded-pill px-3 py-2 fw-bold me-auto mb-3">Step 03</span>
-            <h3 class="h5 fw-bold text-navy mb-2">Invigilated Assessment</h3>
-            <p class="text-muted-custom fs-7 mb-0">Attempt practical, scenario-based coding tasks supervised by human
-              invigilators and evaluated by experts.</p>
-          </div>
-        </div>
-
-        <div class="col-md-3">
-          <div class="card card-shadow border border-primary border-2 h-100 p-4 bg-white text-center">
-            <span class="badge bg-success rounded-pill px-3 py-2 fw-bold me-auto mb-3">Step 04</span>
-            <h3 class="h5 fw-bold text-navy mb-2">Receive Passport & Get Hired</h3>
-            <p class="text-muted-custom fs-7 mb-0">Your multi-dimensional Skill Passport is generated. Recruiters send
-              direct interview invites with zero screening.</p>
+        <div class="col-lg-6">
+          <div class="card card-shadow border-0 h-100 p-4 p-md-5 bg-white rounded-4">
+            <span class="feature-icon tone-green mb-3" aria-hidden="true"><i class="bi bi-journal-code"></i></span>
+            <h3 class="h4 fw-bold text-navy mb-2">Mock Test Path</h3>
+            <p class="text-muted-custom fs-7 mb-3">
+              20 timed tests from easy to hard, each modelled on a real campus hiring test pattern: aptitude,
+              reasoning, verbal, technical and coding sections.
+            </p>
+            <ul class="check-list mb-4">
+              <li>Next test unlocks after scoring above 50% in the previous one</li>
+              <li>Write and run code in Python, Java, C++ or JavaScript</li>
+              <li>Section-wise score and every question explained</li>
+              <li>Colleges can upload their own drive-specific practice tests</li>
+            </ul>
+            <a routerLink="/for-students" fragment="mock-tests" class="fw-semibold text-primary text-decoration-none fs-7 mt-auto">Explore the mock tests &rarr;</a>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- SECTION 5: Bottom CTA -->
+  <!-- HOW IT WORKS -->
+  <section class="py-5 bg-white position-relative overflow-hidden">
+    <div class="container-custom py-4 position-relative" style="z-index: 1;">
+      <div class="text-center mb-5">
+        <div class="section-header-banner mx-auto">
+          <h2 class="h2 fw-bold text-navy mb-3">Live in Four Steps</h2>
+          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
+            No installation and no IT project: everything runs in the browser, for your team and your students.
+          </p>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        @for (s of startSteps; track s.title; let i = $index; let last = $last) {
+          <div class="col-md-6 col-lg-3">
+            <div class="card card-shadow h-100 p-4 bg-white text-center" [class.border-0]="!last" [class.border]="last"
+              [class.border-primary]="last" [class.border-2]="last">
+              <span class="badge rounded-pill px-3 py-2 fw-bold mx-auto mb-3" [class.bg-primary]="!last" [class.bg-success]="last">Step 0{{ i + 1 }}</span>
+              <h3 class="h5 fw-bold text-navy mb-2">{{ s.title }}</h3>
+              <p class="text-muted-custom fs-7 mb-0">{{ s.text }}</p>
+            </div>
+          </div>
+        }
+      </div>
+      <div class="text-center mt-4">
+        <a routerLink="/how-it-works" class="fw-semibold text-primary text-decoration-none fs-7">See the full placement flow &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-5 bg-light-blue">
+    <div class="container-custom py-4">
+      <div class="text-center mb-4">
+        <div class="section-header-banner mx-auto">
+          <h2 class="h2 fw-bold text-navy mb-0">Questions We Get Asked</h2>
+        </div>
+      </div>
+      <div class="mx-auto d-flex flex-column gap-2" style="max-width: 860px;">
+        @for (f of faqs; track f.q; let i = $index) {
+          <div class="faq-item card-shadow bg-white rounded-4">
+            <button type="button" class="faq-q" (click)="toggleFaq(i)" [attr.aria-expanded]="activeFaq === i" [attr.aria-controls]="'faq-' + i">
+              <span>{{ f.q }}</span>
+              <i class="bi" [class.bi-plus-lg]="activeFaq !== i" [class.bi-dash-lg]="activeFaq === i" aria-hidden="true"></i>
+            </button>
+            @if (activeFaq === i) {
+              <div class="faq-a text-muted-custom fs-7" [id]="'faq-' + i">{{ f.a }}</div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM CTA -->
   <section class="py-5 bg-white">
     <div class="container-custom py-4">
       <div class="card card-shadow border-0 text-center p-5 text-white"
-        style="background: linear-gradient(135deg, #0a1b3f 0%, #979797 100%); border-radius: 24px;">
-        <h2 class="display-6 fw-extrabold mb-3">Ready to Replace Resumes with Real Proof?</h2>
-        <p class="lead text-white mx-auto mb-4" style="max-width: 600px;">Join thousands of candidates and top hiring
-          partners on ProveYu today.</p>
+        style="background: linear-gradient(135deg, #0a1b3f 0%, #0057ff 100%); border-radius: 24px;">
+        <h2 class="display-6 fw-extrabold mb-3">Run Your Next Drive on ProveYu</h2>
+        <p class="lead text-white mx-auto mb-4" style="max-width: 640px;">
+          Register your placement cell, import your batch and publish your first drive. Your students get their portal,
+          mock tests and AI interviews the same day.
+        </p>
         <div class="d-flex flex-wrap justify-content-center gap-3">
-          <a routerLink="/select-role"
-            class="btn btn-light text-primary fw-bold px-4 py-3 rounded-pill text-decoration-none">Get Started Now
-            &rarr;</a>
-          <a routerLink="/login" class="btn btn-outline-light fw-bold px-4 py-3 rounded-pill text-decoration-none">Sign
-            In to Account</a>
+          <a routerLink="/college/register" class="btn btn-light text-primary fw-bold px-4 py-3 rounded-pill text-decoration-none">Register your college &rarr;</a>
+          <a routerLink="/student/signup" class="btn btn-outline-light fw-bold px-4 py-3 rounded-pill text-decoration-none">Activate student account</a>
         </div>
+        <p class="fs-7 text-white-50 mt-3 mb-0">Already on ProveYu? <a routerLink="/login" class="text-white fw-semibold">Sign in</a></p>
       </div>
     </div>
   </section>

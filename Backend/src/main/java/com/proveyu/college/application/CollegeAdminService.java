@@ -4,7 +4,7 @@ import com.proveyu.auth.infrastructure.UserRepository;
 import com.proveyu.college.domain.CollegeEnums.ApprovalStatus;
 import com.proveyu.college.domain.CollegeProfile;
 import com.proveyu.college.infrastructure.CollegeProfileRepository;
-import com.proveyu.organization.infrastructure.OrganizationRepository;
+import com.proveyu.college.legacy.OrganizationRepository;
 import com.proveyu.shared.email.EmailService;
 import com.proveyu.shared.error.DomainException;
 import lombok.RequiredArgsConstructor;

@@ -2,13 +2,13 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet, ActivatedRoute } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthService } from '../../../services/auth.service';
-import { CollegeService } from '../../../services/college.service';
-import { NotificationService } from '../../../services/notification.service';
-import { ThemeService } from '../../../services/theme.service';
-import { ChatService } from '../../../services/chat.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { CollegeService } from '../services/college.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { ThemeService } from '../../../core/services/theme.service';
+import { ChatService } from '../../../core/services/chat.service';
 import { NotificationPanel } from '../../../shared/ui/notification-panel';
-import { SettingsService } from '../../../services/settings.service';
+import { SettingsService } from '../services/settings.service';
 import { MemberRole } from '../../../core/models/college.models';
 import { GlobalSearch } from './global-search';
 

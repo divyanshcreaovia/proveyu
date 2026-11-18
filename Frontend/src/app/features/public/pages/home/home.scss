@@ -352,9 +352,13 @@
   -webkit-backface-visibility: hidden;
 }
 
+/* The front stays in the normal flow so the card grows with its content (narrow screens);
+   the back is laid over it at the same size. */
 .hero-flip-front {
+  position: relative;
   z-index: 2;
   transform: rotateY(0deg);
+  min-height: 480px;
 }
 
 .hero-flip-back {
@@ -364,4 +368,118 @@
 .college-timeline {
   border-left: 2px dashed rgba(0, 87, 255, 0.25);
   margin-left: 1.25rem;
+}
+/* ---------------------------------------------------------------- shared by home, for-colleges, for-students */
+
+/* Section anchors land below the sticky navbar. */
+[id] {
+  scroll-margin-top: 110px;
+}
+
+.kpi-tile {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.65rem 0.5rem;
+  border-radius: 12px;
+  background: var(--proveyu-bg-light);
+  border: 1px solid var(--proveyu-border);
+}
+
+.kpi-num {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--proveyu-navy);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.kpi-lbl {
+  font-size: 0.72rem;
+  color: var(--proveyu-text-muted);
+  font-weight: 600;
+}
+
+.flip-hint {
+  text-align: right;
+}
+
+.feature-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 14px;
+  display: inline-grid;
+  place-items: center;
+  font-size: 1.35rem;
+  color: #ffffff;
+  flex-shrink: 0;
+  box-shadow: 0 8px 20px rgba(0, 87, 255, 0.18);
+
+  &.tone-blue { background: linear-gradient(135deg, #0057ff 0%, #0a1b3f 100%); }
+  &.tone-green { background: linear-gradient(135deg, #16a34a 0%, #0d9488 100%); }
+  &.tone-violet { background: linear-gradient(135deg, #7c3aed 0%, #0057ff 100%); }
+  &.tone-amber { background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); }
+}
+
+.check-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.55rem;
+
+  li {
+    position: relative;
+    padding-left: 1.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--proveyu-navy);
+    line-height: 1.45;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.1rem;
+      width: 1.15rem;
+      height: 1.15rem;
+      border-radius: 50%;
+      background: rgba(22, 163, 74, 0.12) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316a34a' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center / 0.7rem no-repeat;
+    }
+  }
+}
+
+.faq-item {
+  border: 1px solid var(--proveyu-border);
+  overflow: hidden;
+}
+
+.faq-q {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.05rem 1.35rem;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.975rem;
+  color: var(--proveyu-navy);
+
+  i { color: var(--proveyu-primary); flex-shrink: 0; }
+
+  &:hover { color: var(--proveyu-primary); }
+  &:focus-visible { outline: 2px solid var(--proveyu-primary); outline-offset: -2px; border-radius: 16px; }
+}
+
+.faq-a {
+  padding: 0 1.35rem 1.15rem;
+  line-height: 1.6;
+}
+
+.hero-flip-container:focus-visible {
+  outline: 3px solid var(--proveyu-primary);
+  outline-offset: 6px;
+  border-radius: 20px;
 }

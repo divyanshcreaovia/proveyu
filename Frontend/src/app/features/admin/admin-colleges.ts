@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { AdminService } from '../../services/admin.service';
-import { AuthService } from '../../services/auth.service';
-import { ToastService } from '../../services/toast.service';
+import { AdminService } from './services/admin.service';
+import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
 import { ConfirmService } from '../../shared/ui/confirm-dialog';
 import { ApprovalStatus, CollegeSummary } from '../../core/models/college.models';
 import { StatusBadge } from '../../shared/ui/status-badge';

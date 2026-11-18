@@ -13,11 +13,6 @@ spring:
 jwt:
   secret: <random string of at least 64 characters, e.g. `openssl rand -base64 64`>
   expiration-ms: 86400000
-razorpay:
-  key_id: <razorpay-key-id>
-  key_secret: <razorpay-key-secret>
-  webhook_secret: <razorpay-webhook-secret>
-  mock_mode: true
 app:
   frontend-url: https://app.proveyu.com
   dev:

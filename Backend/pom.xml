@@ -23,7 +23,6 @@
         <java.version>17</java.version>
         <jjwt.version>0.12.5</jjwt.version>
         <redisson.version>3.27.0</redisson.version>
-        <razorpay.version>1.4.3</razorpay.version>
         <lombok.version>1.18.36</lombok.version>
         <poi.version>5.2.5</poi.version>
         <commons-csv.version>1.10.0</commons-csv.version>
@@ -112,13 +111,6 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
-        </dependency>
-
-        <!-- Razorpay Java SDK for Payment Module -->
-        <dependency>
-            <groupId>com.razorpay</groupId>
-            <artifactId>razorpay-java</artifactId>
-            <version>${razorpay.version}</version>
         </dependency>
 
         <!-- Apache PDFBox for Real Binary PDF Generation -->

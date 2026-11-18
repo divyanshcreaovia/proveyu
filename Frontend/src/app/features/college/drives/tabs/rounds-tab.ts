@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RoundService } from '../../../../services/round.service';
-import { CollegeService } from '../../../../services/college.service';
-import { ReportService } from '../../../../services/report.service';
-import { ToastService } from '../../../../services/toast.service';
+import { RoundService } from '../../services/round.service';
+import { CollegeService } from '../../services/college.service';
+import { ReportService } from '../../services/report.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmService } from '../../../../shared/ui/confirm-dialog';
 import { Drive, Round, RoundResultRow, RoundResultValue, RoundType } from '../../../../core/models/college.models';
 import { StatusBadge } from '../../../../shared/ui/status-badge';

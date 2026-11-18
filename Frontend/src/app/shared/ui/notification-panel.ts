@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { NotificationService } from '../../services/notification.service';
+import { NotificationService } from '../../core/services/notification.service';
 import { AppNotification } from '../../core/models/college.models';
 
 const ICONS: Record<string, { icon: string; tone: string }> = {

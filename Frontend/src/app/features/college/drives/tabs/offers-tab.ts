@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { OfferService } from '../../../../services/offer.service';
-import { ApplicationService } from '../../../../services/application.service';
-import { CollegeService } from '../../../../services/college.service';
+import { OfferService } from '../../services/offer.service';
+import { ApplicationService } from '../../services/application.service';
+import { CollegeService } from '../../services/college.service';
 import { Application, Drive, Offer } from '../../../../core/models/college.models';
 import { StatusBadge } from '../../../../shared/ui/status-badge';
 import { EmptyState } from '../../../../shared/ui/states';

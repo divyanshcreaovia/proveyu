@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import type { Options } from 'highcharts';
-import { AnalyticsService } from '../../../services/analytics.service';
-import { CollegeService } from '../../../services/college.service';
-import { ReportService } from '../../../services/report.service';
+import { AnalyticsService } from '../services/analytics.service';
+import { CollegeService } from '../services/college.service';
+import { ReportService } from '../services/report.service';
 import { Dashboard } from '../../../core/models/college.models';
 import { StatCard } from '../../../shared/ui/stat-card';
 import { Chart } from '../../../shared/ui/chart';

@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApplicationService } from '../../../../services/application.service';
-import { CollegeService } from '../../../../services/college.service';
-import { ToastService } from '../../../../services/toast.service';
+import { ApplicationService } from '../../services/application.service';
+import { CollegeService } from '../../services/college.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmService } from '../../../../shared/ui/confirm-dialog';
 import { Application, ApplicationStatus, Drive } from '../../../../core/models/college.models';
 import { Column, DataTable } from '../../../../shared/ui/data-table';

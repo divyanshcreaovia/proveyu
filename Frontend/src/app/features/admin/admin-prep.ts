@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { AdminTest, PrepService } from '../../services/prep.service';
-import { AuthService } from '../../services/auth.service';
-import { ToastService } from '../../services/toast.service';
+import { AdminTest, PrepService } from '../student/services/prep.service';
+import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../core/services/toast.service';
 import { ConfirmService } from '../../shared/ui/confirm-dialog';
 import { FileUpload } from '../../shared/ui/file-upload';
 import { EmptyState } from '../../shared/ui/states';

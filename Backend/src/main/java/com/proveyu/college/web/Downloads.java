@@ -6,10 +6,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-final class Downloads {
+/** Inline download of a stored college file (used by the college, student and company controllers). */
+public final class Downloads {
     private Downloads() {}
 
-    static ResponseEntity<Resource> inline(Resource resource, CollegeFile f) {
+    public static ResponseEntity<Resource> inline(Resource resource, CollegeFile f) {
         String safeName = f.getOriginalName().replaceAll("[\"\\r\\n]", "_");
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(f.getContentType()))

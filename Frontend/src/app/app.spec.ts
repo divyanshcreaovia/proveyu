@@ -24,7 +24,7 @@ describe('App', () => {
   it('treats portal URLs as portal routes', () => {
     const app = TestBed.createComponent(App).componentInstance as unknown as { portal(u: string): boolean };
     expect(app.portal('/college/dashboard')).toBe(true);
-    expect(app.portal('/candidate/campus-drives')).toBe(true);
+    expect(app.portal('/company/drives')).toBe(true);
     expect(app.portal('/student/dashboard')).toBe(true);
     expect(app.portal('/admin/colleges')).toBe(true);
     expect(app.portal('/how-it-works')).toBe(false);

@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { InterviewScheduleService } from '../../../../services/interview-schedule.service';
-import { ApplicationService } from '../../../../services/application.service';
-import { RoundService } from '../../../../services/round.service';
-import { CollegeService } from '../../../../services/college.service';
-import { ToastService } from '../../../../services/toast.service';
+import { InterviewScheduleService } from '../../services/interview-schedule.service';
+import { ApplicationService } from '../../services/application.service';
+import { RoundService } from '../../services/round.service';
+import { CollegeService } from '../../services/college.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { Application, Drive, Round, Slot, SlotStatus } from '../../../../core/models/college.models';
 import { StatusBadge } from '../../../../shared/ui/status-badge';
 import { EmptyState } from '../../../../shared/ui/states';

@@ -2,10 +2,10 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet, ActivatedRoute } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthService } from '../../services/auth.service';
-import { ThemeService } from '../../services/theme.service';
-import { TokenStorageService } from '../../services/token-storage.service';
-import { DriveRoomService, RoomDriveCard } from '../../services/drive-room.service';
+import { AuthService } from '../../core/services/auth.service';
+import { ThemeService } from '../../core/services/theme.service';
+import { TokenStorageService } from '../../core/services/token-storage.service';
+import { DriveRoomService, RoomDriveCard } from './services/drive-room.service';
 
 /** Company (recruiter) portal layout: same look as the student and college shells. */
 @Component({

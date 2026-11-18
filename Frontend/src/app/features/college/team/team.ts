@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TeamService } from '../../../services/team.service';
-import { CollegeService } from '../../../services/college.service';
-import { ToastService } from '../../../services/toast.service';
+import { TeamService } from '../services/team.service';
+import { CollegeService } from '../services/college.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
 import { Invite, Member, MemberRole, RoleMatrixRow } from '../../../core/models/college.models';
 import { Modal } from '../../../shared/ui/modal';

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { StudentImportService } from '../../../services/student-import.service';
-import { ToastService } from '../../../services/toast.service';
+import { StudentImportService } from '../services/student-import.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { ImportHistory, ImportResult } from '../../../core/models/college.models';
 import { Stepper } from '../../../shared/ui/stepper';
 import { FileUpload } from '../../../shared/ui/file-upload';

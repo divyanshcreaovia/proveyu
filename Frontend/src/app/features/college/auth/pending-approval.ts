@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
-import { CollegeService } from '../../../services/college.service';
-import { TokenStorageService } from '../../../services/token-storage.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { CollegeService } from '../services/college.service';
+import { TokenStorageService } from '../../../core/services/token-storage.service';
 import { Me } from '../../../core/models/college.models';
 import { AuthShell } from './auth-shell';
 

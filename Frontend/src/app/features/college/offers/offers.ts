@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { OfferService, OfferFilter } from '../../../services/offer.service';
-import { CollegeService } from '../../../services/college.service';
+import { OfferService, OfferFilter } from '../services/offer.service';
+import { CollegeService } from '../services/college.service';
 import { Offer, OfferStatus } from '../../../core/models/college.models';
 import { Column, DataTable } from '../../../shared/ui/data-table';
 import { StatusBadge } from '../../../shared/ui/status-badge';

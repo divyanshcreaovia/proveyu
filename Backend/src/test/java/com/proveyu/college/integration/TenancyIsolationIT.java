@@ -1,5 +1,6 @@
 package com.proveyu.college.integration;
 
+import com.proveyu.support.IntegrationTestBase;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

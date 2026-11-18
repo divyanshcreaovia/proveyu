@@ -81,16 +81,6 @@ jwt:
   secret: ${JWT_SECRET}
   expiration-ms: ${JWT_EXPIRATION_MS:86400000}
 
-razorpay:
-  key_id: ${RAZORPAY_KEY_ID:}
-  key_secret: ${RAZORPAY_KEY_SECRET:}
-  webhook_secret: ${RAZORPAY_WEBHOOK_SECRET:}
-  mock_mode: ${RAZORPAY_MOCK_MODE:true}
-
-uan:
-  verification_url: ${UAN_VERIFICATION_URL:https://api.epfo.gov.in/uan/verify}
-  api_key: ${UAN_VERIFICATION_API_KEY:}
-
 logging:
   level:
     root: ${LOGGING_LEVEL_ROOT:INFO}

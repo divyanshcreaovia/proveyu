@@ -10,7 +10,7 @@ score well, overall = average), questions stay on the student's own stack. With 
 went to the cloud (no rate-limit fallbacks to the local model).
 
   BACKEND_LOG=/path/backend.log python3 scripts/e2e_two_students_interview_test.py [http://localhost:8080]
-Needs seed_demo.py + seed_student_portal.py, and Piper + Ollama (qwen3:4b writes the "good" answers) running locally.
+Needs seed_demo.py + seed_student_portal.py, and Piper running locally. The "good" answers are written by Groq (GROQ_API_KEY, as for the backend).
 """
 import os
 import re

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { AttemptHistory, PrepService, TestCard } from '../../../services/prep.service';
+import { AttemptHistory, PrepService, TestCard } from '../services/prep.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
 import { EmptyState, Skeleton } from '../../../shared/ui/states';
 import { enterFullscreen, exitFullscreen } from '../../../shared/fullscreen';

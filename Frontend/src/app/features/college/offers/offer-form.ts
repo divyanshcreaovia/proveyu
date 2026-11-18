@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { OfferService } from '../../../services/offer.service';
-import { CompanyService } from '../../../services/company.service';
-import { StudentService } from '../../../services/student.service';
-import { ToastService } from '../../../services/toast.service';
+import { OfferService } from '../services/offer.service';
+import { CompanyService } from '../services/company.service';
+import { StudentService } from '../services/student.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { AppError } from '../../../core/api';
 import { Company, Drive, Offer, Student } from '../../../core/models/college.models';
 import { Modal } from '../../../shared/ui/modal';

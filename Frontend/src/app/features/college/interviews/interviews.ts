@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { InterviewScheduleService } from '../../../services/interview-schedule.service';
-import { ToastService } from '../../../services/toast.service';
+import { InterviewScheduleService } from '../services/interview-schedule.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { Slot } from '../../../core/models/college.models';
 import { StatusBadge } from '../../../shared/ui/status-badge';
 import { Modal } from '../../../shared/ui/modal';

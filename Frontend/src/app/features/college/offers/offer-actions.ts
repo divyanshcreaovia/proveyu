@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
-import { OfferService } from '../../../services/offer.service';
-import { CollegeService } from '../../../services/college.service';
-import { ToastService } from '../../../services/toast.service';
+import { OfferService } from '../services/offer.service';
+import { CollegeService } from '../services/college.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
 import { Offer, OfferStatus } from '../../../core/models/college.models';
 

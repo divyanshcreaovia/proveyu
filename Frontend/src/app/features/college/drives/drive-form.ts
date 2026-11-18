@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { PlacementDriveService } from '../../../services/placement-drive.service';
-import { CompanyService } from '../../../services/company.service';
-import { CollegeService } from '../../../services/college.service';
-import { ToastService } from '../../../services/toast.service';
+import { PlacementDriveService } from '../services/placement-drive.service';
+import { CompanyService } from '../services/company.service';
+import { CollegeService } from '../services/college.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { AppError } from '../../../core/api';
 import { Company, DriveMode, DriveRequest, DriveType } from '../../../core/models/college.models';
 import { Stepper } from '../../../shared/ui/stepper';

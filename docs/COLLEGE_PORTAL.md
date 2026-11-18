@@ -38,7 +38,7 @@ Branch: `feature/college-portal`. The portal is wired end to end: Angular 21 →
 
 Error body for every failure: `{success:false, timestamp, status, code, errorCode, message, fieldErrors}`. Swagger UI: `http://localhost:8080/swagger-ui.html`.
 
-**Frontend:** `src/app/core` (environments, interceptors, guards, models), `src/app/services` (one service per backend concern; components never use `HttpClient`), `src/app/shared/ui` (data-table, confirm-dialog, modal/drawer, file-upload, empty/error/skeleton states, stat-card, status-badge, stepper, chart, toasts), and `features/college/*`. Components use signals, OnPush and typed reactive forms, with `pm-*` scoped styles. The UI is responsive down to 390 px, has dark mode and Ctrl+K search, and is labelled and keyboard-operable. There are also `/candidate/campus-drives` and `/admin/colleges` pages.
+**Frontend:** `src/app/core` (environments, interceptors, guards, models), `src/app/services` (one service per backend concern; components never use `HttpClient`), `src/app/shared/ui` (data-table, confirm-dialog, modal/drawer, file-upload, empty/error/skeleton states, stat-card, status-badge, stepper, chart, toasts), and `features/college/*`. Components use signals, OnPush and typed reactive forms, with `pm-*` scoped styles. The UI is responsive down to 390 px, has dark mode and Ctrl+K search, and is labelled and keyboard-operable. There is also the platform admin at `/admin/colleges`, `/admin/prep` and `/admin/payments`.
 
 **Add-ons implemented:** placement policy engine (Open / One-offer / Dream tier-upgrade, max applications, max offers, minimum hike); document vault with verification; duplicate detection on import; soft delete + restore; company feedback and ratings; alumni placement history report; skill-gap analytics using PROVEYU verified scores; PROVEYU passport + profile completeness in the student drawer; global search; dark mode; export everywhere; scheduled reports; interview reminders.
 **Not implemented:** WhatsApp/SMS (needs a provider), e-signing offer letters, AI ATS scoring (there is no ATS engine in the codebase; the drawer shows profile completeness and links the existing candidate resume instead).
@@ -170,7 +170,7 @@ paying, the student enters the 12-digit UPI reference (UTR); the payment then sh
 UTR and amount in the bank or UPI business app, and clicks Approve (interviews added at once) or Reject with a reason the student
 sees. A UTR can be claimed only once, a student can have at most 3 payments waiting, and an unpaid QR stays on the student's page for
 24 hours ("Enter UTR"). The name inside GPay / PhonePe is the one registered to the UPI ID; use a business UPI registered as ProveYu
-for it to say ProveYu there too. (Razorpay is not used for interviews.)
+for it to say ProveYu there too. (Razorpay was removed with the old exam-booking module.)
 
 **Level.** Students choose Easy, Medium or Hard. The level changes the questions and follow-ups (Hard: why/how, trade-offs,
 scenarios); the scoring rubric stays the same, and the level is shown in the room, the report and the history.
@@ -253,3 +253,35 @@ every test with the answer key and the reference solutions run in the real Docke
 - `college.require-admin-approval` defaults to **true** (prod); the dev profile sets it to false.
 - Chat reuses the existing chat module, which has no participant restrictions of its own; college staff discover contacts via `/api/v1/college/chat/contacts`.
 - The candidate portal's sidebar/header icons do not render. This was already the case before this work.
+
+## 11. Removed modules (in-person assessment model)
+
+The old candidate portal (`/candidate`: exam slot booking, admit cards, Skill Passport) and recruiter portal (`/recruiter`: job posts,
+candidate search) were removed from the frontend and backend, together with the `booking`, `payment` (Razorpay), `settings`,
+`verification` and `recruiter` backend modules and the admin `/exams` and `/stats` endpoints.
+
+- **Kept because the college module reads them:** `organization` (`Organization`, `OrgType`, repository: college registration and
+  approval), `candidate` (`CandidateProfile`, `CandidateScore`, repositories) and `assessment` (`Skill`, `Domain`, `SkillRepository`):
+  the student drawer passport and the skill-gap report. Entities and repositories only, no endpoints.
+- **Moved:** the company Drive Room API controller is now `college/web/CampusDriveRoomController` (same URL, `/api/v1/recruiter/campus`).
+- The kept entities now live in `college/legacy` (see section 12).
+- **Database:** nothing was dropped (`ddl-auto: none`, migrations unchanged); the old tables simply are not used.
+- `RECRUITER` users now land on `/company/drives`, `CANDIDATE` users on `/student/dashboard`. `/candidate/campus-drives` still redirects to `/student/drives`.
+
+## 12. Backend package structure
+
+```
+com.proveyu
+├── college/        placement cell (TPO) + company Drive Room: domain, infrastructure, application, security, web
+│   └── legacy/     entities kept from the removed assessment modules that the college still reads
+├── student/        everything a student (CANDIDATE) uses
+│   ├── application/, web/   student portal /api/v1/college/student/** and sign-up /api/v1/college/auth/student-signup
+│   ├── interview/           AI mock interview (+ admin payments /api/v1/admin/interview)
+│   └── prep/                mock tests (+ college and admin uploads)
+├── auth/  chat/  notification/  admin/  shared/   used by every module
+```
+
+The student module calls the college services (eligibility, applications, offers) instead of copying them, so both portals
+always apply the same rules. URLs did not change with the move. Tests follow the same layout: `college/integration`,
+`student/integration`, `student/interview`, with the shared Testcontainers base in `support/IntegrationTestBase`.
+

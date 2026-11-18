@@ -1,5 +1,6 @@
 package com.proveyu.college.integration;
 
+import com.proveyu.support.IntegrationTestBase;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
 

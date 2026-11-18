@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { PlacementDriveService } from '../../../services/placement-drive.service';
-import { CollegeService } from '../../../services/college.service';
-import { ToastService } from '../../../services/toast.service';
+import { PlacementDriveService } from '../services/placement-drive.service';
+import { CollegeService } from '../services/college.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
 import { Drive, DriveStatus } from '../../../core/models/college.models';
 import { StatusBadge } from '../../../shared/ui/status-badge';

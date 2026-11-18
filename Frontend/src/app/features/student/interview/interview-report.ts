@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject, input, 
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AppError } from '../../../core/api';
-import { AnswerReview, InterviewService, RECOMMENDATION_LABELS, ReportView, TYPE_LABELS, DIFFICULTY_LABELS } from '../../../services/interview.service';
-import { ToastService } from '../../../services/toast.service';
+import { AnswerReview, InterviewService, RECOMMENDATION_LABELS, ReportView, TYPE_LABELS, DIFFICULTY_LABELS } from '../services/interview.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { Skeleton } from '../../../shared/ui/states';
 
 /**

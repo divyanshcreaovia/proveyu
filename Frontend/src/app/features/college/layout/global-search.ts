@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, viewChi
 import { Router } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { CollegeService } from '../../../services/college.service';
+import { CollegeService } from '../services/college.service';
 import { SearchHit, SearchResult } from '../../../core/models/college.models';
 
 /** Ctrl/Cmd + K command palette across students, companies and drives. */

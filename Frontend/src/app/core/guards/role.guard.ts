@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { Role } from '../models/college.models';
-import { TokenStorageService } from '../../services/token-storage.service';
+import { TokenStorageService } from '../services/token-storage.service';
 
 /** Usage: `canActivate: [authGuard, roleGuard], data: { roles: ['COLLEGE_ADMIN'] }`. */
 export const roleGuard: CanActivateFn = route => {

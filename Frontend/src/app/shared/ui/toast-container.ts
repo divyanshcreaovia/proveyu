@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { ToastService } from '../../services/toast.service';
-import { LoadingService } from '../../services/loading.service';
+import { ToastService } from '../../core/services/toast.service';
+import { LoadingService } from '../../core/services/loading.service';
 
 /** Global toasts + thin top progress bar. Rendered once in the app root. */
 @Component({

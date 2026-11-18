@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs';
-import { AuthService } from '../../../services/auth.service';
-import { StudentPortalService } from '../../../services/student-portal.service';
-import { ToastService } from '../../../services/toast.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { StudentPortalService } from '../services/student-portal.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { AppError } from '../../../core/api';
 import { AuthShell } from '../../college/auth/auth-shell';
 

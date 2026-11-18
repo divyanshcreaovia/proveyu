@@ -2,10 +2,10 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import type { Options } from 'highcharts';
-import { ReportService } from '../../../services/report.service';
-import { AnalyticsService } from '../../../services/analytics.service';
-import { CollegeService } from '../../../services/college.service';
-import { ToastService } from '../../../services/toast.service';
+import { ReportService } from '../services/report.service';
+import { AnalyticsService } from '../services/analytics.service';
+import { CollegeService } from '../services/college.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { ReportFormat, ReportFrequency, ReportSchedule, ReportTable, ReportType, SkillGapRow } from '../../../core/models/college.models';
 import { Chart } from '../../../shared/ui/chart';
 import { EmptyState, Skeleton } from '../../../shared/ui/states';

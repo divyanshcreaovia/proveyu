@@ -1,8 +1,8 @@
 package com.proveyu.college.application;
 
-import com.proveyu.assessment.infrastructure.SkillRepository;
-import com.proveyu.candidate.infrastructure.CandidateProfileRepository;
-import com.proveyu.candidate.infrastructure.CandidateScoreRepository;
+import com.proveyu.college.legacy.SkillRepository;
+import com.proveyu.college.legacy.CandidateProfileRepository;
+import com.proveyu.college.legacy.CandidateScoreRepository;
 import com.proveyu.college.application.dto.StudentDtos.*;
 import com.proveyu.college.domain.*;
 import com.proveyu.college.domain.CollegeEnums.*;

@@ -1,21 +1,49 @@
-<footer class="bg-white py-4 mt-5 border-top">
-  <div class="container-custom d-flex flex-wrap justify-content-between align-items-center">
-    <a class="d-flex align-items-center text-decoration-none" routerLink="/">
-      <img src="images/logo1.png" alt="ProveYu Logo" style="height: 40px; width: auto;">
-    </a>
-    
-    <ul class="nav text-muted-custom fs-7">
-      <li class="nav-item"><a href="#" class="nav-link px-3 text-muted-custom">Home</a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-3 text-muted-custom">Find Jobs</a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-3 text-muted-custom">For Recruiters</a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-3 text-muted-custom">How It Works</a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-3 text-muted-custom">Resources</a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-3 text-muted-custom">Privacy Policy</a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-3 text-muted-custom">Terms of Service</a></li>
-    </ul>
+<footer class="bg-white pt-5 pb-4 mt-5 border-top">
+  <div class="container-custom">
+    <div class="row g-4 mb-4">
+      <div class="col-lg-4">
+        <a class="d-inline-flex align-items-center text-decoration-none mb-3" routerLink="/">
+          <img src="images/logo1.png" alt="ProveYu home" style="height: 40px; width: auto;">
+        </a>
+        <p class="text-muted-custom fs-7 mb-0" style="max-width: 340px;">
+          One platform for campus placements: the placement cell runs drives end to end, students apply and prepare,
+          and companies evaluate inside their own Drive Room.
+        </p>
+      </div>
 
-    <div class="text-muted-custom fs-7">
-      &copy; 2026 ProveYu. All rights reserved.
+      <div class="col-6 col-lg-2">
+        <h2 class="footer-head">Product</h2>
+        <ul class="list-unstyled footer-links">
+          <li><a routerLink="/for-colleges">For colleges</a></li>
+          <li><a routerLink="/for-students">For students</a></li>
+          <li><a routerLink="/for-students" fragment="ai-interview">AI mock interview</a></li>
+          <li><a routerLink="/for-students" fragment="mock-tests">Mock tests</a></li>
+          <li><a routerLink="/how-it-works">How it works</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-3">
+        <h2 class="footer-head">Get started</h2>
+        <ul class="list-unstyled footer-links">
+          <li><a routerLink="/college/register">Register your college</a></li>
+          <li><a routerLink="/student/signup">Activate student account</a></li>
+          <li><a routerLink="/select-role">Create an account</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-3">
+        <h2 class="footer-head">Sign in</h2>
+        <ul class="list-unstyled footer-links">
+          <li><a routerLink="/college/login">College / placement cell</a></li>
+          <li><a routerLink="/student/login">Student</a></li>
+          <li><a routerLink="/company/login">Company (Drive Room)</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-3 border-top text-muted-custom fs-7">
+      <span>&copy; {{ year }} ProveYu. All rights reserved.</span>
+      <span>Made for Training &amp; Placement cells across India.</span>
     </div>
   </div>
 </footer>

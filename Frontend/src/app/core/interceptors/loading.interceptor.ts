@@ -1,7 +1,7 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { finalize } from 'rxjs';
-import { LoadingService } from '../../services/loading.service';
+import { LoadingService } from '../services/loading.service';
 
 /** Tracks in-flight requests for the global progress bar. */
 export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
