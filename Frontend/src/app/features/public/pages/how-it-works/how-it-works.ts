@@ -20,7 +20,7 @@ export class HowItWorks {
       tag: 'ACTIVATE & PREPARE', who: 'Students', whoIcon: 'bi-mortarboard',
       title: 'Students Activate Their Portal and Start Preparing',
       text: 'Each student activates the account with their college e-mail and roll number. Academic details come from the college, so the profile is ready in minutes.',
-      points: ['6-digit e-mail code, then a password', 'Upload resume and documents once', 'Placement-readiness checklist on the dashboard', '20-test mock path from easy to hard', 'AI mock interview on any role or job description', 'Chat with the placement cell'],
+      points: ['6-digit e-mail code, then a password', 'Upload resume and documents once', 'Placement-readiness checklist on the dashboard', '20-test mock path from easy to hard', 'AI mock interview on any role or job description', 'Off-campus jobs for the fields they choose', 'Chat with the placement cell'],
     },
     {
       tag: 'PUBLISH A DRIVE', who: 'Placement cell → students', whoIcon: 'bi-briefcase',

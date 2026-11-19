@@ -45,13 +45,15 @@ Error body for every failure: `{success:false, timestamp, status, code, errorCod
 
 ## 3. Running locally
 
-Prerequisites: JDK 17+, Maven 3.8+, Node 18+ (tested on 24), Docker.
+The full, current runbook (setup, start order, every service, accounts, all tests) is [RUN_AND_TEST.md](../RUN_AND_TEST.md). Short version:
+
+Prerequisites: JDK 17+, Maven 3.8+, Node 20+, Docker, Python 3.
 
 ```bash
-./scripts/start-db.sh                                # MySQL 8 on 127.0.0.1:3310 (Docker volume proveyu-mysql-data)
-cp Backend/.env.example Backend/.env                 # set SPRING_DATASOURCE_PASSWORD=proveyu_dev and a JWT_SECRET (openssl rand -base64 64)
-./scripts/run-backend.sh                             # http://localhost:8080  (profile dev: Flyway migrates V1..V20)
-cd Frontend && npm ci && npm start                   # http://localhost:4200
+./scripts/start-db.sh                                # MySQL 8 on 127.0.0.1:3310 (or use a system MySQL on 3306)
+cp Backend/.env.example Backend/.env                 # DB, JWT_SECRET (openssl rand -base64 64), GROQ_API_KEY, CAREERJET_API_KEY ...
+./scripts/run-backend.sh                             # http://localhost:8080  (profile dev: Flyway migrates V1..V37)
+cd Frontend && npm ci && npm start -- --port 4300    # http://localhost:4300 (4200 belongs to another local project)
 python3 scripts/seed_demo.py                         # demo data (backend must run with the dev profile)
 ```
 
@@ -75,9 +77,10 @@ Production build: `cd Frontend && npx ng build` (uses `environment.prod.ts`: sam
 
 | Command | What it runs |
 |---------|--------------|
-| `cd Backend && mvn test` | 67 tests: unit (`EligibilityEngineTest`, `StudentImportServiceTest`, the existing chat/recruiter tests) + Testcontainers MySQL integration (`AuthSecurityIT`, `TenancyIsolationIT`, `PlacementFlowIT`, `ProductionTokenExposureIT`). Needs Docker. |
-| `cd Frontend && npx ng test --watch=false` | 21 Vitest tests: TokenStorage, Auth, Student services, auth/role/guest guards, auth/error/loading interceptors, App. |
-| `python3 scripts/smoke_test.py` | 74 live API checks against a running backend (full flow + tenancy + roles). |
+| `bash scripts/run_all_tests.sh` | every suite below plus all end-to-end scripts, with a summary; see [RUN_AND_TEST.md](../RUN_AND_TEST.md) |
+| `cd Backend && mvn test` | 119 tests: unit (eligibility, import, chat, AI gateway, interview scoring, off-campus rules, Careerjet mapping, NOC PDF, ...) + Testcontainers MySQL integration (`AuthSecurityIT`, `TenancyIsolationIT`, `PlacementFlowIT`, `ProductionTokenExposureIT`, `ProctoringIT`, `AdminPortalIT`, ...). Needs Docker. |
+| `cd Frontend && npx ng test --watch=false` | Vitest unit tests: TokenStorage, Auth, Student services, auth/role/guest guards, auth/error/loading interceptors, App. |
+| `python3 scripts/smoke_test.py` | live API checks against a running backend (full flow + tenancy + roles). |
 
 ## 5. Manual test checklist
 
@@ -252,7 +255,6 @@ every test with the answer key and the reference solutions run in the real Docke
 - Legacy tables are kept as `legacy_*`. Drop them once the migrated data is verified on the shared DB.
 - `college.require-admin-approval` defaults to **true** (prod); the dev profile sets it to false.
 - Chat reuses the existing chat module, which has no participant restrictions of its own; college staff discover contacts via `/api/v1/college/chat/contacts`.
-- The candidate portal's sidebar/header icons do not render. This was already the case before this work.
 
 ## 11. Removed modules (in-person assessment model)
 
@@ -278,7 +280,10 @@ com.proveyu
 │   ├── application/, web/   student portal /api/v1/college/student/** and sign-up /api/v1/college/auth/student-signup
 │   ├── interview/           AI mock interview (+ admin payments /api/v1/admin/interview)
 │   └── prep/                mock tests (+ college and admin uploads)
-├── auth/  chat/  notification/  admin/  shared/   used by every module
+├── offcampus/      off-campus jobs, Careerjet import, fields and interests, NOC requests (admin, student and college APIs)
+├── admin/          platform admin portal
+├── support/        Help & support
+├── auth/  chat/  notification/  shared/   used by every module
 ```
 
 The student module calls the college services (eligibility, applications, offers) instead of copying them, so both portals
@@ -304,8 +309,8 @@ always apply the same rules. URLs did not change with the move. Tests follow the
 - **Tests:** `ProctoringIT` (server rules and access). A headless-Chrome run of the whole flow uses a fake screen stream, because
   headless Chrome has no screen picker; check the real picker once by hand in Chrome or Edge.
 - **Limits:** only the shared screen is captured (a second monitor that is not shared is not), clicking Chrome's "sharing your
-  screen" bar counts as leaving, and a second device (a phone next to the laptop) cannot be detected. Screenshots are not deleted
-  automatically yet.
+  screen" bar counts as leaving, and a second device (a phone next to the laptop) cannot be detected. Screenshots older than the
+  retention set in Admin → Settings are deleted every night (0 days = keep them).
 
 ## 14. Platform admin portal (`/admin`)
 
@@ -321,7 +326,9 @@ them afterwards), and every further admin is created by an admin under Admins.
 | Admins | List and create platform admins; at least one admin stays active and nobody can block themselves |
 | Payments | Approve / reject UPI payments (as before) and export all payments to Excel / CSV |
 | Mock tests | Upload and publish platform mock tests (as before) |
+| Off-campus jobs | Post jobs with eligibility and a field, publish / close / copy, see responses per job; *Imported (last 15 days)*: Careerjet drafts, *Import now*, bulk publish (section 16) |
 | Proctoring | Attempts in which a student left a test, across all colleges, with screenshots |
+| Support | Help & support inbox: answer, close, reopen (section 15) |
 | Broadcast | In-app notification (and optional e-mail) to everyone, all students, all placement cells or one college |
 | Settings | AI interview price, purchase limit, free-interview days, UPI ID and name, mock test warnings, unlock score, screenshot retention, website banner. Applied at once; each can be reset to its application.yml default |
 | Audit log | Every admin action, also the ones done through the older admin endpoints |
@@ -344,3 +351,65 @@ them afterwards), and every further admin is created by an admin under Admins.
 - `SUPPORT_INBOX_EMAIL` (optional): every new request is also e-mailed there (e.g. support@proveyu.com).
 - Backend: `com.proveyu.support` (`/api/v1/support/tickets`, `/api/v1/admin/support`), table `support_tickets` (V34).
 - Test: `python3 scripts/e2e_support_test.py <run-id>` after `scripts/e2e_three_colleges_test.py`.
+
+## 16. Off-campus jobs
+
+Jobs from companies outside campus drives, posted by the ProveYu team for students of every registered college.
+
+- **Admin portal → Off-campus jobs:** create a job (company, role, type, pay, apply link, apply-by date) with eligibility filters:
+  batch years, degree and branch keywords, minimum CGPA, maximum active backlogs, and optionally a list of colleges (blank = all).
+  Keywords match words in the student's profile: "Computer" matches "Computer Science", "IT" matches "Information Technology",
+  "B.Tech" matches "BTech". Jobs start as drafts. **Publish** sends a bell notification to every eligible student (one batch insert).
+  Close, reopen, copy as a new draft. *Responses* opens the students who opened the link, applied, are interviewing or got offers,
+  with their college. Every change goes to the audit log.
+- **Student portal → Off-campus jobs:** tabs *For me* (can apply), *Saved*, *My applications*, *All*. Cards show New / Closes in N
+  days and, when the student cannot apply, the reasons. **Apply** records the click and opens the company's site in a new tab; back
+  in the portal the student is asked "Did you finish applying?". In *My applications* the student updates the status
+  (Applied → Interviewing → Got an offer / Not selected, or Not interested) and the offer CTC. The apply link is only sent to students
+  who may apply.
+- **College portal → Off-campus:** the college's students' off-campus applications and offers (branch scope respected), totals,
+  status filter, search and Excel export. The TPO gets a bell notification when a student reports an offer. Statuses are
+  self-reported; the placement is recorded when the TPO approves the student's NOC (below).
+- **College policy (Settings → Placement policy):** *Students may apply* (default), *Placed students may not apply* (they see the jobs
+  with the reason) or *Turned off for our students* (the page shows a notice and the API refuses).
+- Backend: `com.proveyu.offcampus` (`/api/v1/admin/off-campus/jobs`, `/api/v1/college/student/off-campus`, `/api/v1/college/off-campus`),
+  tables `off_campus_jobs`, `off_campus_applications` and `college_profiles.off_campus_policy` (V35). Rules: `OffCampusRules`
+  (tested by `OffCampusRulesTest`).
+- Test: `python3 scripts/e2e_off_campus_test.py` (demo college from `seed_demo.py`).
+
+### Nightly job import (Careerjet) and fields
+
+- Internshala's terms forbid scraping, so jobs are imported from the Careerjet job search API
+  (https://www.careerjet.co.in/partners/api, key from a Careerjet publisher account). Set `CAREERJET_API_KEY` in `Backend/.env`.
+  Careerjet needs the end user's IP and user agent on every call; the nightly import sends the server's public IP
+  (`CAREERJET_USER_IP` to fix it) and a ProveYu user agent.
+- Every job has a **field**: Software development, Data analytics & science, Software testing & QA, Networking & cybersecurity,
+  UI/UX & design, Mechanical, Electrical & electronics, Civil & construction, Business analyst & consulting, Finance & accounting,
+  Marketing & sales, HR & recruitment, Other. The admin picks it on a job (or lets it be detected from the role title).
+- Every night at 12 (Asia/Kolkata, `OFFCAMPUS_IMPORT_CRON`) the import runs, for every field, one "<field> fresher" search and one
+  internship search across India, newest first, 100 per page, `CAREERJET_PAGES` pages each. The field comes from the title, else from
+  the search. Ads older than 15 days are skipped; the same ad (company + title + location) is never imported twice.
+- Imported ads arrive as **drafts** in *Admin → Off-campus jobs → Imported (last 15 days)*, filterable by field. Select and publish
+  (no bell notification for imported jobs) or close. *Import now* runs the import on demand and shows the last run. Students see
+  "via Careerjet" on the card.
+- Clean-up on every run: imported drafts older than 15 days are deleted (unless a student interacted), published ones are closed.
+  Their apply-by date is the ad date + 15 days, so students only see the last 15 days.
+- **Students pick their fields** at the top of *Off-campus jobs* (saved per student, table `off_campus_interests`, V37). *For me*
+  then shows open jobs in those fields; a field filter and a city/role search work on every tab. Publishing a team-posted job only
+  notifies students whose fields include it (or who picked none).
+- Code: `OffCampusImportService`, `OffCampusModel.JobField` (tested by `OffCampusImportTest`).
+
+### NOC for off-campus offers
+
+- A student whose status for a job is *Got an offer* clicks **Request NOC** in *Off-campus jobs → My applications*, attaches the
+  offer letter (PDF / image / Word, 10 MB) and an optional note. One open request per offer.
+- The TPO and coordinators get a bell notification. *College → Off-campus → NOC requests* (badge = waiting) shows the request with
+  the offer letter. **Approve**: ProveYu creates the NOC PDF on the college letterhead (name, logo, university, TPO name, reference
+  number, optional remarks), or the TPO uploads a signed PDF instead. **Reject**: a reason is required.
+- **Approving records the placement** (full-time jobs and internships with a pre-placement offer): the TPO confirms the CTC from
+  the letter, and an ACCEPTED off-campus offer is added to *Offers* (company added to *Companies* if new, the student's offer letter
+  attached). The student becomes **Placed**, with the highest CTC and tier updated, and the offer counts in the dashboard, reports
+  and placement policy like a campus offer. Policy conflicts are written to the audit log, not blocked: issuing the NOC is the
+  college's decision. A plain internship does not change placement status.
+- The student is notified, downloads the NOC from the same row, or sees the reason and can request again. Decisions go to the
+  college audit log. Table `off_campus_noc_requests` (V36, `college_offer_id` V38); PDF: `NocLetter`.

@@ -107,7 +107,10 @@ def run(st):
         s, r = call("POST", f"{B}/sessions/{o['sid']}/answers/text", {"questionId": o["qid"], "text": "hijack"}, token=t)
         check(who, "cannot answer in the other student's interview (404)", s == 404, (s, r))
     s, body = call("GET", f"{B}/questions/{v['current']['id']}/speech", token=t, raw=True)
-    check(who, "own question speech is a WAV", s == 200 and body[:4] == b"RIFF", s)
+    if v.get("speechAvailable", True):
+        check(who, "own question speech is a WAV", s == 200 and body[:4] == b"RIFF", s)
+    else:
+        check(who, "local voice off: server says so (503), the browser reads the question", s == 503, s)
 
     i, fus, counter, overlaps, times = 0, 0, [], [], []
     while v["status"] == "IN_PROGRESS" and v.get("current"):

@@ -56,6 +56,13 @@ import { Skeleton } from '../../../shared/ui/states';
                 <input id="po-hike" type="number" min="0" class="form-control" [(ngModel)]="pol.upgradeMinHikePercent" name="h" /></div>
               <div class="col-12 form-check ms-2"><input id="po-block" type="checkbox" class="form-check-input" [(ngModel)]="pol.blockAfterAccept" name="b" />
                 <label for="po-block" class="form-check-label small">Block further applications after a student accepts an offer (one-offer mode)</label></div>
+              <div class="col-md-8"><label class="form-label small fw-semibold" for="po-offc">Off-campus jobs (posted by ProveYu)</label>
+                <select id="po-offc" class="form-select" [(ngModel)]="pol.offCampusPolicy" name="oc">
+                  <option value="ALLOW">Students may apply</option>
+                  <option value="BLOCK_PLACED">Placed students may not apply</option>
+                  <option value="DISABLED">Turned off for our students</option>
+                </select>
+                <div class="form-text">You see your students' off-campus applications and offers under Off-campus.</div></div>
               <div class="col-12 text-end"><button class="btn btn-primary btn-sm">Save policy</button></div>
             </form>
           }

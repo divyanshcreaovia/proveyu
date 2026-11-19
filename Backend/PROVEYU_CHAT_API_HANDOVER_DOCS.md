@@ -1,6 +1,9 @@
-# PROVEYU / PARAKH — Chat Module Frontend Handover & Integration Guide
+# ProveYu chat: API and WebSocket guide
 
-This document provides complete, production-ready documentation for Frontend Developers to integrate the **Chat & Real-Time Messaging Module**, covering REST endpoints, file attachment sharing, WebSocket protocol, and concurrency architecture for handling **5,000+ active users**.
+How the one-to-one chat works: REST endpoints, file attachments and the WebSocket protocol. In the product, students chat with
+their placement cell (TPO and coordinators). Each side finds the people it may chat with through the contacts endpoints
+(`GET /api/v1/college/student/chat/contacts` for students, `GET /api/v1/college/chat/contacts` for college staff); the chat module
+itself carries the messages. Frontend: `features/student/portal/chat.ts` and `features/college/communication`.
 
 ---
 
@@ -8,8 +11,8 @@ This document provides complete, production-ready documentation for Frontend Dev
 
 ### 1.1 Base URLs
 - **REST Base URL**:
-  - Primary: `http://<host>:8080/api/chat`
-  - Alias: `http://<host>:8080/api/v1/chat`
+  - Primary: `http://<host>:8080/api/v1/chat`
+  - Alias (older clients): `http://<host>:8080/api/chat`
 - **WebSocket Base URL**:
   - Development: `ws://<host>:8080/ws/chat`
   - Production (SSL/TLS): `wss://<domain>/ws/chat`
@@ -40,7 +43,7 @@ All REST endpoints return the standard `ApiResponse<T>` wrapper:
 ### 2.1 Send Text Message
 Sends a new text message to another user. The sender identity is extracted strictly from the authenticated JWT token.
 
-- **Endpoint**: `POST /api/chat/messages`
+- **Endpoint**: `POST /api/v1/chat/messages`
 - **Headers**:
   - `Authorization: Bearer <jwt>`
   - `Content-Type: application/json`
@@ -92,7 +95,7 @@ Sends a new text message to another user. The sender identity is extracted stric
 ### 2.2 Send File Message (Attachment)
 Uploads and sends a document or image attachment with an optional caption. Files are safely stored in server storage (`uploads/chat`) and only metadata is stored in the database.
 
-- **Endpoint**: `POST /api/chat/messages/file`
+- **Endpoint**: `POST /api/v1/chat/messages/file`
 - **Headers**:
   - `Authorization: Bearer <jwt>`
   - `Content-Type: multipart/form-data`
@@ -143,7 +146,7 @@ Uploads and sends a document or image attachment with an optional caption. Files
 ### 2.3 Get Conversation History
 Retrieves paginated two-way messages between the authenticated user and another participant (`userId`), ordered chronologically.
 
-- **Endpoint**: `GET /api/chat/messages/{userId}`
+- **Endpoint**: `GET /api/v1/chat/messages/{userId}`
 - **Headers**:
   - `Authorization: Bearer <jwt>`
 - **Query Parameters**:
@@ -152,7 +155,7 @@ Retrieves paginated two-way messages between the authenticated user and another 
   - `sort`: Sorting field & direction (default: `createdAt,asc`)
 
 - **Example Request**:
-  `GET /api/chat/messages/b0803c68-90d7-426f-91a1-bbf472a269e4?page=0&size=50&sort=createdAt,asc`
+  `GET /api/v1/chat/messages/b0803c68-90d7-426f-91a1-bbf472a269e4?page=0&size=50&sort=createdAt,asc`
 
 - **Success Response (`200 OK`)**:
 ```json
@@ -212,7 +215,7 @@ Retrieves paginated two-way messages between the authenticated user and another 
 ### 2.4 Get Login Unread Notifications Summary (Dashboard / Header Notification)
 **Call this endpoint upon user login or portal load.** Returns the total count of unread messages and a group-by-sender list containing the sender's full legal name, unread message count, and last message snippet.
 
-- **Endpoint**: `GET /api/chat/notifications` *(alias: `/api/chat/unread/notifications`)*
+- **Endpoint**: `GET /api/v1/chat/notifications` *(alias: `/api/v1/chat/unread/notifications`)*
 - **Headers**:
   - `Authorization: Bearer <jwt>`
 - **Success Response (`200 OK`)**:
@@ -265,7 +268,7 @@ Retrieves paginated two-way messages between the authenticated user and another 
 ### 2.5 Get Raw Unread Messages List
 Returns raw unread message objects sent to the authenticated user.
 
-- **Endpoint**: `GET /api/chat/unread`
+- **Endpoint**: `GET /api/v1/chat/unread`
 - **Headers**:
   - `Authorization: Bearer <jwt>`
 - **Success Response (`200 OK`)**:
@@ -294,7 +297,7 @@ Returns raw unread message objects sent to the authenticated user.
 ### 2.6 Mark Message as Read
 Marks a received message as read. **Only the recipient can mark a message as read.**
 
-- **Endpoint**: `PATCH /api/chat/messages/{messageId}/read`
+- **Endpoint**: `PATCH /api/v1/chat/messages/{messageId}/read`
 - **Headers**:
   - `Authorization: Bearer <jwt>`
 - **Success Response (`200 OK`)**:
@@ -324,7 +327,7 @@ Marks a received message as read. **Only the recipient can mark a message as rea
 ### 2.7 Secure File Attachment Download
 Downloads a chat attachment file. Verifies that the requester is either the **sender OR receiver**.
 
-- **Endpoint**: `GET /api/chat/messages/{messageId}/file`
+- **Endpoint**: `GET /api/v1/chat/messages/{messageId}/file`
 - **Headers**:
   - `Authorization: Bearer <jwt>`
 - **Response**: Binary byte stream
@@ -552,14 +555,14 @@ export class ChatWebSocketService implements OnDestroy {
 
 ---
 
-## 4. Architecture at Scale: 5,000 Concurrent Users
+## 4. Capacity notes (design estimate, not a load-test result)
 
-When **5,000 candidates and recruiters** are online simultaneously with active chat windows, the system handles the workload through the following architectural design:
+When **5,000 students and placement staff** are online simultaneously with active chat windows, the system handles the workload through the following architectural design:
 
 ```
                       5,000 CONCURRENT USERS ARCHITECTURE
  ┌─────────────────────────────────────────────────────────────────────────────┐
- │ 5,000 Concurrent Browser Clients (Candidates & Recruiters)                 │
+ │ 5,000 Concurrent Browser Clients (Students & Placement Staff)              │
  └──────────────────────────────────┬──────────────────────────────────────────┘
                                     │ Persistent WebSocket (/ws/chat)
                                     ▼

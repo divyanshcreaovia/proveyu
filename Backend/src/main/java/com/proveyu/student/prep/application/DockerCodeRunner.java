@@ -63,7 +63,7 @@ public class DockerCodeRunner {
 
             List<String> cmd = List.of("docker", "run", "--rm", "--name", name, "--network", "none", "--read-only",
                     "--tmpfs", "/tmp:rw,exec,size=64m", "--memory", "256m", "--memory-swap", "256m", "--cpus", "1", "--pids-limit", "64",
-                    "--user", "65534:65534", "--security-opt", "no-new-privileges", "-v", dir + ":/code", image, "bash", "/code/run.sh");
+                    "--user", "65534:65534", "--security-opt", "no-new-privileges", "--cap-drop", "ALL", "-v", dir + ":/code", image, "bash", "/code/run.sh");
             Process p = new ProcessBuilder(cmd).redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.DISCARD).start();
             long wallSeconds = 25L + (long) inputs.size() * (perTestSeconds + 2);
             if (!p.waitFor(wallSeconds, TimeUnit.SECONDS)) {

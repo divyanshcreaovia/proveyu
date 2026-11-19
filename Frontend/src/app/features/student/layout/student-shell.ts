@@ -18,6 +18,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
   { section: 'Overview', items: [{ label: 'Dashboard', icon: 'bi-speedometer2', route: '/student/dashboard' }] },
   { section: 'Placements', items: [
     { label: 'Campus drives', icon: 'bi-briefcase', route: '/student/drives' },
+    { label: 'Off-campus jobs', icon: 'bi-globe2', route: '/student/off-campus' },
     { label: 'My applications', icon: 'bi-list-check', route: '/student/applications' },
     { label: 'Interviews', icon: 'bi-calendar3', route: '/student/interviews' },
     { label: 'Offers', icon: 'bi-award', route: '/student/offers' },
@@ -190,7 +191,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
     .pm-menu-sep { height: 1px; background: var(--pm-divider, #ebedf2); margin: .3rem .25rem; }
     .pm-menu-danger, .pm-menu-danger i { color: #dc2626; }
     .pm-menu-danger:hover, .pm-menu-danger:focus-visible { background: rgba(220, 38, 38, .08); color: #b91c1c; }
-    .pm-shell-bell { width: min(360px, 92vw); }
+    .pm-shell-bell { width: min(420px, 94vw); }
     .pm-bell-badge { position: absolute; top: -3px; right: -3px; min-width: 1.2rem; height: 1.2rem; padding: 0 .3rem; border-radius: 999px;
       background: #ef4444; color: #fff; font-size: .66rem; font-weight: 800; line-height: 1.2rem; text-align: center;
       box-shadow: 0 0 0 2px var(--pm-card-bg); font-variant-numeric: tabular-nums; }

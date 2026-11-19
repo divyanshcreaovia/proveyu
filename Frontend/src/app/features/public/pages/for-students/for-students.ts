@@ -17,6 +17,7 @@ export class ForStudents {
   readonly portal = [
     { icon: 'bi-speedometer2', title: 'Dashboard', text: 'Your next interview, drives closing soon, latest announcements and a placement-readiness checklist.' },
     { icon: 'bi-briefcase', title: 'Campus drives', text: 'See every drive you are eligible for and apply in one click. If you are not eligible, you see exactly why.' },
+    { icon: 'bi-globe2', title: 'Off-campus jobs', text: 'Jobs and internships beyond campus drives, picked for the fields you choose. Track each one, and ask your placement cell for a NOC when you get an offer.' },
     { icon: 'bi-list-check', title: 'My applications', text: 'Follow each application round by round, with pass or fail results as soon as they are out.' },
     { icon: 'bi-calendar3', title: 'Interviews', text: 'Your slots with the room or join link, and one click to add them to your calendar.' },
     { icon: 'bi-award', title: 'Offers', text: 'Accept or decline offers online and download the offer letter as PDF.' },

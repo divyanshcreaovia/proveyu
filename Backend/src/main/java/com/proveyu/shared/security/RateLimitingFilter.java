@@ -33,9 +33,18 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     @Value("${security.rate-limit.user-limit-per-minute:120}")
     private int userLimitPerMinute;
 
+    /**
+     * Addresses of reverse proxies whose X-Forwarded-For is believed (TRUSTED_PROXIES, e.g. "127.0.0.1" when nginx runs on the same
+     * server). Empty = the header is ignored, because anyone can send it: a fake address per request would dodge the rate limit.
+     */
+    @Value("${security.trusted-proxies:}")
+    private java.util.List<String> trustedProxies = java.util.List.of();
+
     private final JwtTokenProvider jwtTokenProvider;
     private final Map<String, RequestCounter> requestCounts = new ConcurrentHashMap<>();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    /** Knows java.time (ApiResponse carries an Instant timestamp); a bare ObjectMapper failed here and turned every 429 into a 500 / 401. */
+    private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules()
+            .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -106,12 +115,24 @@ public class RateLimitingFilter extends OncePerRequestFilter {
                path.startsWith("/api/v1/college/auth/");
     }
 
-    private String getClientIp(HttpServletRequest request) {
-        String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null || xfHeader.isEmpty()) {
-            return request.getRemoteAddr();
+    /**
+     * The caller's address. Behind a trusted proxy (nginx appends the real address to X-Forwarded-For) it is the right-most address
+     * that is not a proxy; anything to its left was written by the client and is ignored. Without a trusted proxy: the socket address.
+     */
+    String getClientIp(HttpServletRequest request) {
+        String remote = request.getRemoteAddr();
+        String xf = request.getHeader("X-Forwarded-For");
+        if (xf == null || xf.isBlank() || !isTrusted(remote)) return remote;
+        String[] hops = xf.split(",");
+        for (int i = hops.length - 1; i >= 0; i--) {
+            String ip = hops[i].trim();
+            if (!ip.isEmpty() && !isTrusted(ip)) return ip;
         }
-        return xfHeader.split(",")[0].trim();
+        return remote;
+    }
+
+    private boolean isTrusted(String ip) {
+        return trustedProxies != null && trustedProxies.stream().map(String::trim).anyMatch(p -> !p.isEmpty() && p.equals(ip));
     }
 
     private static class RequestCounter {

@@ -1,0 +1,26 @@
+# systemd service for the ProveYu backend. Install:
+#   sudo cp deploy/proveyu-backend.service /etc/systemd/system/ && sudo systemctl daemon-reload && sudo systemctl enable --now proveyu-backend
+# The jar comes from: cd Backend && mvn -DskipTests package  ->  copy target/proveyu-backend-*.jar to /opt/proveyu/proveyu-backend.jar
+[Unit]
+Description=ProveYu backend
+After=network-online.target mysql.service docker.service
+Wants=network-online.target
+
+[Service]
+User=proveyu
+Group=proveyu
+# the mock-test code runner starts Docker containers: the proveyu user is in the docker group (see DEPLOY_EC2.md, section 5)
+SupplementaryGroups=docker
+WorkingDirectory=/opt/proveyu
+EnvironmentFile=/etc/proveyu/backend.env
+ExecStart=/usr/bin/java -Xms512m -Xmx1536m -jar /opt/proveyu/proveyu-backend.jar
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=false
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/proveyu /tmp /opt/proveyu
+
+[Install]
+WantedBy=multi-user.target

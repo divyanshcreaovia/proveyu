@@ -150,7 +150,9 @@ def groq_key():
                     key = line.split("=", 1)[1].strip().strip("'\"")
     if not key:
         raise SystemExit("GROQ_API_KEY is not set (environment or Backend/.env): the test writes its correct answers with Groq.")
-    return key
+    # several comma-separated keys: use the last one, so the backend's first key keeps its budget for the interviews themselves
+    keys = [k.strip() for k in key.split(",") if k.strip()]
+    return keys[-1]
 
 
 def good_answer(question):
@@ -297,7 +299,8 @@ def main():
     s, r = call("GET", B, token=t)
     ov = r["data"]
     check("overview loads", s == 200, r)
-    check("all three AI services reported up", ov["services"] == {"llm": True, "speechToText": True, "textToSpeech": True}, ov["services"])
+    # question voice (Piper) is up only when local models are on (AI_LOCAL_MODELS_ENABLED); otherwise the browser reads questions
+    check("AI services reported up (LLM, speech to text)", ov["services"]["llm"] and ov["services"]["speechToText"], ov["services"])
     # Prefer the seeded Infinite Analytics drive; fall back to any drive the student applied to (the demo drive may have been run to the end by hand).
     applied = [d for d in ov["drives"] if d["applied"]]
     drive = next((d for d in applied if d["companyName"] == "Infinite Analytics"), applied[0] if applied else None)
@@ -341,7 +344,10 @@ def main():
     check("overview shows the open interview", r["data"]["openSessionId"] == sid)
 
     s, body = call("GET", f"{B}/questions/{v['current']['id']}/speech", token=t, raw=True)
-    check("question speech is a WAV (Piper)", s == 200 and body[:4] == b"RIFF", s)
+    if v.get("speechAvailable", True):
+        check("question speech is a WAV (Piper)", s == 200 and body[:4] == b"RIFF", s)
+    else:
+        check("local voice off: server says so (503), the browser reads the question", s == 503, s)
     s, _ = call("GET", f"{B}/questions/{v['current']['id']}/speech", token=other, raw=True)
     check("another student cannot fetch this question's speech", s == 404, s)
     s, _ = call("GET", f"{B}/sessions/{sid}", token=other)

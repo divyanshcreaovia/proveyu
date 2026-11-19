@@ -1,609 +1,1252 @@
-# PROVEYU Database Schema Documentation
-
-This document provides a comprehensive, production-grade reference for all database tables in the **PROVEYU** MySQL database (`PROVEYU`).
-
----
-
-## Table of Contents
-1. [Overview](#1-overview)
-2. [Detailed Table Specifications](#2-detailed-table-specifications)
-   * **Core Identity & Authentication**
-     * [1. `users`](#1-users)
-   * **Candidate Profiles, Search & Preferences**
-     * [2. `candidate_profiles`](#2-candidate_profiles)
-     * [3. `candidate_search_index` (Specialized Indexing Table)](#3-candidate_search_index-specialized-indexing-table)
-     * [4. `candidate_settings` (Settings & Alert Preferences)](#4-candidate_settings)
-   * **Recruiter & Corporate Verification**
-     * [5. `companies`](#5-companies)
-     * [6. `recruiter_profiles`](#6-recruiter_profiles)
-   * **Institution / Organization Base**
-     * [7. `organization_profiles`](#7-organization_profiles)
-     * [8. `organization_candidates`](#8-organization_candidates)
-   * **Assessment & Examination Engine**
-     * [9. `skills`](#9-skills)
-     * [10. `exams`](#10-exams)
-     * [11. `exam_sections`](#11-exam_sections)
-     * [12. `candidate_scores`](#12-candidate_scores)
-   * **Test Centers & Concurrency Slot Bookings**
-     * [13. `test_centers`](#13-test_centers)
-     * [14. `rooms`](#14-rooms)
-     * [15. `date_slots`](#15-date_slots)
-     * [16. `bookings`](#16-bookings)
-   * **Recruitment, Real-Time Chat & Communications**
-     * [17. `interview_invites`](#17-interview_invites)
-     * [18. `chat_messages` (Real-Time Messaging & Attachments)](#18-chat_messages)
-     * [19. `notifications` (User In-App Notifications)](#19-notifications)
-   * **Database Migrations**
-     * [20. `flyway_schema_history`](#20-flyway_schema_history)
-3. [Placement Management Subsystem (Campus Recruitment & Dynamic Custom RBAC)](#3-placement-management-subsystem-campus-recruitment--custom-rbac)
-   * [21. `college_custom_roles`](#21-college_custom_roles)
-   * [22. `college_team_members`](#22-college_team_members)
-   * [23. `student_profiles`](#23-student_profiles)
-   * [24. `placement_drives`](#24-placement_drives)
-   * [25. `placement_records`](#25-placement_records)
-
----
-
-## 1. Overview
-The PROVEYU database is designed around transactional integrity, high-concurrency slot reservations, candidate assessment transparency, and recruiter talent discovery.
-
-Key design principles:
-- **UUID Primary Keys**: High uniqueness and security across distributed components (`CHAR(36)` / `VARCHAR(36)`).
-- **Auditing Columns**: `created_at` and `updated_at` timestamps on all business entities.
-- **Read-Optimized Projections**: `candidate_search_index` isolates heavy candidate search queries from candidate profile updates.
-- **Dynamic Institutional RBAC**: Eliminates hardcoded role enums in favor of dynamic role definitions and branch-scoped security for universities and colleges.
-
----
-
-## 2. Detailed Table Specifications
-
-### 1. `users`
-* **Use Case**: Primary user account table storing authentication credentials, contact details, user roles (`CANDIDATE`, `RECRUITER`, `ORGANIZATION`, `ADMIN`), and password reset OTP verification tokens.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `email` | `VARCHAR(255)` | NO | Unique user email address |
-| `phone` | `VARCHAR(20)` | YES | Unique phone number |
-| `password_hash` | `VARCHAR(255)` | NO | BCrypt encrypted password string |
-| `full_name` | `VARCHAR(255)` | NO | User full legal name |
-| `role` | `VARCHAR(30)` | NO | Role enum (`CANDIDATE`, `RECRUITER`, `ORGANIZATION`, `ADMIN`) |
-| `active` | `BOOLEAN` | NO | Account active status (default: `TRUE`) |
-| `reset_token` | `VARCHAR(10)` | YES | 6-digit OTP verification token for password reset |
-| `reset_token_expires_at` | `TIMESTAMP` | YES | Expiration timestamp for reset OTP token |
-| `created_at` | `TIMESTAMP` | NO | Record creation timestamp |
-| `updated_at` | `TIMESTAMP` | YES | Record last modification timestamp |
-
----
-
-### 2. `candidate_profiles`
-* **Use Case**: Stores candidate track details (`FRESHER` vs `EXPERIENCED`), UAN number, claimed experience years, internal EPFO-verified backend experience months, college/degree info, skills list, and resume URL.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `user_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` |
-| `experience_track` | `VARCHAR(30)` | NO | Track enum (`FRESHER`, `EXPERIENCED`) |
-| `years_of_experience` | `INT` | YES | Claimed years of experience |
-| `uan_number` | `VARCHAR(30)` | YES | PF Universal Account Number (UAN) |
-| `verified_backend_exp_months` | `INT` | YES | Internal EPFO-verified experience in months (hidden from candidate API) |
-| `college_name` | `VARCHAR(255)` | YES | College / University name (Fresher track) |
-| `degree_branch` | `VARCHAR(255)` | YES | Degree & Branch (e.g. B.Tech Computer Science) |
-| `passout_year` | `INT` | YES | Year of graduation |
-| `skills_list` | `TEXT` | YES | Comma-separated list of candidate skills |
-| `resume_url` | `VARCHAR(512)` | YES | Document URL for candidate resume |
-| `location` | `VARCHAR(150)` | YES | Candidate location or city |
-| `headline` | `VARCHAR(255)` | YES | Professional headline |
-| `linkedin_url` | `VARCHAR(255)` | YES | LinkedIn profile URL |
-| `github_url` | `VARCHAR(255)` | YES | GitHub profile URL |
-| `portfolio_url` | `VARCHAR(255)` | YES | Personal portfolio website URL |
-| `bio` | `TEXT` | YES | Short biography / about me section |
-| `created_at` | `TIMESTAMP` | NO | Record creation timestamp |
-| `updated_at` | `TIMESTAMP` | YES | Record last modification timestamp |
-
----
-
-### 3. `candidate_search_index` (Specialized Indexing Table)
-* **Use Case**: **Read-Optimized Candidate Search Projection**. Solves the performance bottleneck of querying millions of candidates. Recruiter filtering on candidate performance, verified experience, skill score percentiles, and availability is queried directly against this table without performing multi-table SQL JOIN operations across `users`, `candidate_profiles`, `candidate_scores`, and `exams`.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `candidate_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` |
-| `candidate_name` | `VARCHAR(255)` | NO | Cached candidate full name |
-| `experience_track` | `VARCHAR(30)` | NO | Experience track (`FRESHER` / `EXPERIENCED`) |
-| `verified_experience_months` | `INT` | NO | Indexed EPFO verified experience in months |
-| `overall_score_percentage` | `DOUBLE` | NO | Aggregated overall assessment score percentage |
-| `verification_status` | `VARCHAR(50)` | NO | Passport status (`VERIFIED_PASSED`, `NEEDS_IMPROVEMENT`, `NO_TESTS_TAKEN`) |
-| `skills_indexed` | `TEXT` | YES | Indexed skill keywords for full-text search |
-| `last_updated_at` | `TIMESTAMP` | NO | Timestamp when index projection was last updated |
-
----
-
-### 4. `candidate_settings`
-* **Use Case**: Stores user notification preferences, alert channels, privacy options, and subscription settings for candidates.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `user_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` ON DELETE CASCADE (UNIQUE) |
-| `email_notifications` | `BOOLEAN` | NO | Enable/disable email notifications (Default: `TRUE`) |
-| `sms_notifications` | `BOOLEAN` | NO | Enable/disable SMS alerts (Default: `FALSE`) |
-| `push_notifications` | `BOOLEAN` | NO | Enable/disable browser/mobile push alerts (Default: `TRUE`) |
-| `test_reminders` | `BOOLEAN` | NO | Enable/disable upcoming exam & slot alerts (Default: `TRUE`) |
-| `interview_invites` | `BOOLEAN` | NO | Enable/disable recruiter interview notifications (Default: `TRUE`) |
-| `application_updates` | `BOOLEAN` | NO | Status updates on job applications & drives (Default: `TRUE`) |
-| `job_offers` | `BOOLEAN` | NO | Alerts for direct recruiter & campus offers (Default: `TRUE`) |
-| `marketing_updates` | `BOOLEAN` | NO | Platform marketing & promotion announcements (Default: `FALSE`) |
-| `newsletter` | `BOOLEAN` | NO | Career tips & ProveyU weekly newsletter (Default: `FALSE`) |
-| `created_at` | `TIMESTAMP` | NO | Record creation timestamp |
-| `updated_at` | `TIMESTAMP` | YES | Record last modification timestamp |
-
----
-
-### 5. `companies`
-* **Use Case**: Stores recruiter employer company details, verified GSTIN, trade name, state, website domain, and GST verification status (`PENDING`, `VERIFIED`, `REJECTED`).
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `legal_name` | `VARCHAR(255)` | NO | Company legal registered name |
-| `trade_name` | `VARCHAR(255)` | YES | Trade name / Doing-Business-As name |
-| `gstin` | `VARCHAR(15)` | NO | Unique 15-character GSTIN number |
-| `registered_address` | `TEXT` | YES | Registered official address |
-| `state` | `VARCHAR(100)` | YES | State of registration |
-| `website_domain` | `VARCHAR(255)` | YES | Corporate website domain |
-| `verification_status` | `VARCHAR(30)` | NO | Status (`PENDING`, `VERIFIED`, `REJECTED`) |
-| `verified_at` | `TIMESTAMP` | YES | Timestamp of GST verification approval |
-| `created_at` | `TIMESTAMP` | NO | Record creation timestamp |
-| `updated_at` | `TIMESTAMP` | YES | Record last modification timestamp |
-
----
-
-### 6. `recruiter_profiles`
-* **Use Case**: Maps recruiter user accounts to their verified employer company and stores professional contact information, hiring preferences, and target city preferences.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `user_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` |
-| `company_id` | `VARCHAR(36)` | YES | Foreign Key -> `companies(id)` |
-| `designation` | `VARCHAR(255)` | YES | Recruiter designation (e.g. TA Lead) |
-| `work_email` | `VARCHAR(255)` | YES | Corporate email address |
-| `work_email_verified_at` | `TIMESTAMP` | YES | Timestamp of work email verification |
-| `seats_purchased` | `INT` | NO | Number of seats purchased |
-| `company_name` | `VARCHAR(255)` | YES | Company / Agency name |
-| `city` | `VARCHAR(100)` | YES | Recruiter HQ / Location city |
-| `org_type` | `VARCHAR(50)` | YES | Organization type (e.g. agency, corporate) |
-| `website` | `VARCHAR(255)` | YES | Company Website URL |
-| `headline` | `VARCHAR(255)` | YES | Company Tagline / Headline |
-| `about` | `TEXT` | YES | About Organization & Hiring Focus |
-| `avatar` | `VARCHAR(255)` | YES | Company Logo or Avatar URL |
-| `linkedin` | `VARCHAR(255)` | YES | LinkedIn Profile URL |
-| `hiring_volume` | `VARCHAR(255)` | YES | Monthly hiring volume target |
-| `candidate_level` | `VARCHAR(255)` | YES | Candidate experience level target |
-| `primary_track` | `VARCHAR(255)` | YES | Primary verification track focus |
-| `preferred_cities` | `VARCHAR(255)` | YES | Target placement cities |
-| `custom_notes` | `TEXT` | YES | Custom hiring criteria notes |
-| `created_at` | `TIMESTAMP` | NO | Record creation timestamp |
-
----
-
-### 7. `organization_profiles`
-* **Use Case**: Stores institutional profiles for colleges, universities, or training institutes registered under the `ORGANIZATION` role.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `user_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` |
-| `legal_name` | `VARCHAR(255)` | NO | Institution legal name |
-| `org_type` | `VARCHAR(50)` | NO | Type enum (`COLLEGE`, `UNIVERSITY`, `TRAINING_INSTITUTE`) |
-| `code_or_gstin` | `VARCHAR(100)` | YES | Registration code or GSTIN |
-| `contact_email` | `VARCHAR(255)` | YES | Contact email address |
-| `contact_phone` | `VARCHAR(30)` | YES | Contact phone number |
-| `address` | `TEXT` | YES | Physical institution address |
-| `created_at` | `TIMESTAMP` | NO | Record creation timestamp |
-
----
-
-### 8. `organization_candidates`
-* **Use Case**: Maps individual candidate students onboarded under a college/organization account.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `organization_user_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` (Organization) |
-| `candidate_user_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` (Candidate) |
-| `roll_number_or_id` | `VARCHAR(100)` | YES | College Roll Number / Student ID |
-| `batch_year` | `VARCHAR(30)` | YES | Academic batch year (e.g., "2024-2028") |
-| `created_at` | `TIMESTAMP` | NO | Onboarding timestamp |
-
----
-
-### 9. `skills`
-* **Use Case**: Master catalog of technical skills assessed across exam modules.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `name` | `VARCHAR(100)` | NO | Unique skill name (e.g. Java, Python, SQL) |
-| `category` | `VARCHAR(100)` | YES | Skill category (e.g. Backend, Database) |
-| `description` | `TEXT` | YES | Brief skill description |
-
----
-
-### 10. `exams`
-* **Use Case**: Assessment exam catalog storing title, duration, total marks, passing percentage, and exam registration fee.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `title` | `VARCHAR(255)` | NO | Exam title |
-| `description` | `TEXT` | YES | Detailed exam instructions |
-| `duration_minutes` | `INT` | NO | Total duration in minutes |
-| `total_marks` | `DOUBLE` | NO | Total maximum marks |
-| `passing_score` | `DOUBLE` | NO | Minimum passing marks requirement |
-| `fee_amount` | `DOUBLE` | NO | Exam fee amount in INR |
-
----
-
-### 11. `exam_sections`
-* **Use Case**: Breakdown of multi-skill assessment exams into distinct sections, each testing a specific skill with designated duration and marks.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `exam_id` | `VARCHAR(36)` | NO | Foreign Key -> `exams(id)` |
-| `section_name` | `VARCHAR(255)` | NO | Section title (e.g. "Section A: Core Java") |
-| `duration_minutes` | `INT` | NO | Section duration limit in minutes |
-| `total_marks` | `DOUBLE` | NO | Section maximum marks |
-| `skill_id` | `VARCHAR(36)` | NO | Foreign Key -> `skills(id)` |
-| `created_at` | `TIMESTAMP` | NO | Record creation timestamp |
-
----
-
-### 12. `candidate_scores`
-* **Use Case**: Records candidate exam results, score achieved, max score, skill tested, pass status, and certificate reference.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `candidate_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` |
-| `exam_id` | `VARCHAR(36)` | NO | Foreign Key -> `exams(id)` |
-| `skill_id` | `VARCHAR(36)` | NO | Foreign Key -> `skills(id)` |
-| `score` | `DOUBLE` | NO | Achieved score |
-| `max_score` | `DOUBLE` | NO | Maximum possible score |
-| `passed` | `BOOLEAN` | NO | Pass/Fail boolean flag |
-| `created_at` | `TIMESTAMP` | NO | Assessment completion timestamp |
-
----
-
-### 13. `test_centers`
-* **Use Case**: Stores physical examination centers, location address, city, state, pincode, and operational capacity.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `center_name` | `VARCHAR(255)` | NO | Test center facility name |
-| `city` | `VARCHAR(100)` | NO | City location |
-| `state` | `VARCHAR(100)` | NO | State location |
-| `pincode` | `VARCHAR(10)` | NO | Postal pincode |
-| `address` | `TEXT` | NO | Full physical address |
-| `active` | `BOOLEAN` | NO | Operational status flag |
-
----
-
-### 14. `rooms`
-* **Use Case**: Rooms or testing labs within a physical test center with seating capacity.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `test_center_id` | `VARCHAR(36)` | NO | Foreign Key -> `test_centers(id)` |
-| `room_number` | `VARCHAR(50)` | NO | Room / Lab identifier |
-| `capacity` | `INT` | NO | Seating capacity |
-
----
-
-### 15. `date_slots`
-* **Use Case**: Date and time slot inventory for candidate exam bookings.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `room_id` | `VARCHAR(36)` | NO | Foreign Key -> `rooms(id)` |
-| `exam_id` | `VARCHAR(36)` | NO | Foreign Key -> `exams(id)` |
-| `slot_date` | `DATE` | NO | Date of exam slot |
-| `start_time` | `TIME` | NO | Slot start time |
-| `end_time` | `TIME` | NO | Slot end time |
-| `total_seats` | `INT` | NO | Total available seats |
-| `available_seats` | `INT` | NO | Remaining available seats |
-
----
-
-### 16. `bookings`
-* **Use Case**: Manages candidate exam slot reservations, holding seat locks during payment, status lifecycle (`HELD`, `CONFIRMED`, `CANCELLED`, `EXPIRED`), and 15-minute lock expiration.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `candidate_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` |
-| `slot_id` | `VARCHAR(36)` | NO | Foreign Key -> `date_slots(id)` |
-| `status` | `VARCHAR(30)` | NO | Booking status (`HELD`, `CONFIRMED`, `CANCELLED`, `EXPIRED`) |
-| `held_at` | `TIMESTAMP` | NO | Hold creation timestamp |
-| `expires_at` | `TIMESTAMP` | NO | Lock expiration timestamp (15 min after hold) |
-| `confirmed_at` | `TIMESTAMP` | YES | Payment confirmation timestamp |
-
----
-
-### 17. `interview_invites`
-* **Use Case**: Stores recruiter interview invitations issued to candidates, job title, description, recruiter salary LPA range, offered package range, invitation response status (`PENDING`, `ACCEPTED`, `DECLINED`), and candidate placement lifecycle status (`IN_PROCESS`, `HIRED`, `REJECTED`).
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `recruiter_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` (Recruiter) |
-| `company_id` | `VARCHAR(36)` | YES | Foreign Key -> `companies(id)` |
-| `candidate_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` (Candidate) |
-| `exam_id` | `VARCHAR(36)` | YES | Foreign Key -> `exams(id)` |
-| `job_title` | `VARCHAR(255)` | NO | Job position title |
-| `job_description` | `TEXT` | YES | Job responsibilities & details |
-| `min_salary_lpa` | `DOUBLE` | YES | Minimum salary LPA offered |
-| `max_salary_lpa` | `DOUBLE` | YES | Maximum salary LPA offered |
-| `package_range` | `VARCHAR(100)` | YES | Display string for package (e.g., "12.0 - 18.0 LPA") |
-| `status` | `VARCHAR(30)` | NO | Candidate response status (`PENDING`, `ACCEPTED`, `DECLINED`) |
-| `placement_status` | `VARCHAR(30)` | NO | Placement status (`IN_PROCESS`, `HIRED`, `REJECTED`) |
-| `created_at` | `TIMESTAMP` | NO | Invite creation timestamp |
-| `updated_at` | `TIMESTAMP` | YES | Invite last update timestamp |
-
----
-
-### 18. `chat_messages`
-* **Use Case**: Stores real-time and historical chat messages, file attachments (PDFs, docs, images), delivery states (`SENT`, `DELIVERED`, `READ`), and read receipts between recruiters and candidates.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `CHAR(36)` | NO | Primary Key (UUID) |
-| `sender_id` | `CHAR(36)` | NO | Foreign Key -> `users(id)` ON DELETE CASCADE |
-| `receiver_id` | `CHAR(36)` | NO | Foreign Key -> `users(id)` ON DELETE CASCADE |
-| `message` | `TEXT` | YES | Text body of the message (NULL if file only) |
-| `message_type` | `VARCHAR(20)` | NO | Enum: `TEXT`, `FILE` (Default: `TEXT`) |
-| `file_path` | `VARCHAR(500)` | YES | Server storage path for uploaded attachments |
-| `file_name` | `VARCHAR(255)` | YES | Original client file name |
-| `file_size` | `BIGINT` | YES | File size in bytes |
-| `file_content_type` | `VARCHAR(100)` | YES | MIME type (e.g. `application/pdf`, `image/png`) |
-| `status` | `VARCHAR(20)` | NO | Delivery status: `SENT`, `DELIVERED`, `READ` |
-| `read_at` | `DATETIME` | YES | Timestamp when recipient read the message |
-| `created_at` | `DATETIME` | NO | Message dispatch timestamp |
-| `updated_at` | `DATETIME` | NO | Last modification timestamp |
-
----
-
-### 19. `notifications`
-* **Use Case**: In-app notifications and alerts delivered to users for exam bookings, interview invitations, campus placement drives, and system updates.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `user_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` ON DELETE CASCADE |
-| `type` | `VARCHAR(50)` | NO | Notification type (e.g. `INTERVIEW_INVITE`, `BOOKING_CONFIRMED`, `DRIVE_ALERT`, `INFO`) |
-| `message` | `TEXT` | NO | Formatted notification text content |
-| `is_read` | `BOOLEAN` | NO | Read indicator flag (Default: `FALSE`) |
-| `created_at` | `TIMESTAMP` | NO | Notification dispatch timestamp |
-
----
-
-### 20. `flyway_schema_history`
-* **Use Case**: Managed automatically by Flyway to track executed database migrations (`V1` through `V17`).
-
-| Field Name | Data Type | Nullable | Description |
-| :--- | :--- | :--- | :--- |
-| `installed_rank` | `INT` | NO | Execution sequence rank |
-| `version` | `VARCHAR(50)` | YES | Migration version string (e.g. `V1`, `V8`, `V9`, `V17`) |
-| `description` | `VARCHAR(200)` | NO | Migration script name |
-| `type` | `VARCHAR(20)` | NO | Migration type (`SQL`) |
-| `script` | `VARCHAR(1000)` | NO | Migration SQL filename |
-| `checksum` | `INT` | YES | SQL script checksum |
-| `installed_by` | `VARCHAR(100)` | NO | DB user who executed migration |
-| `installed_on` | `TIMESTAMP` | NO | Execution timestamp |
-| `execution_time` | `INT` | NO | Execution time in milliseconds |
-| `success` | `TINYINT(1)` | NO | Success boolean flag |
-
-
-### 18. `jobs`
-
-* **Use Case**: Core job requirements posted by recruiters or hiring organizations in the Manage Hiring module. Captures target domain tracks, required skills, score thresholds, experience limits, compensation, work mode, and application deadlines.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `posted_by` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` (Recruiter/Poster) |
-| `company_id` | `VARCHAR(36)` | YES | Foreign Key -> `companies(id)` |
-| `title` | `VARCHAR(255)` | NO | Job title (e.g., "Associate QA Automation Engineer") |
-| `description` | `TEXT` | YES | Full job details & responsibilities |
-| `role_track` | `VARCHAR(100)` | YES | Track (e.g., "QA & Testing", "Java Backend (Spring Boot)") |
-| `required_skills` | `TEXT` | YES | Comma-separated required skill tags |
-| `experience_level` | `VARCHAR(50)` | YES | Experience label |
-| `min_experience_years` | `INT` | YES | Minimum years of experience required (Default: 0) |
-| `max_experience_years` | `INT` | YES | Maximum years of experience |
-| `min_salary_lpa` | `DECIMAL(5,2)` | YES | Minimum salary LPA |
-| `max_salary_lpa` | `DECIMAL(5,2)` | YES | Maximum salary LPA |
-| `salary_package` | `VARCHAR(100)` | YES | Formatted compensation package |
-| `location` | `VARCHAR(150)` | YES | Job location |
-| `work_mode` | `VARCHAR(50)` | NO | Work mode (`REMOTE`, `HYBRID`, `ON_SITE`) |
-| `min_score_threshold` | `DOUBLE` | YES | Minimum invigilated assessment score threshold |
-| `vacancies` | `INT` | YES | Open headcount vacancies (Default: 1) |
-| `target_client` | `VARCHAR(255)` | YES | In-house entity or hiring agency client name |
-| `last_date` | `DATE` | YES | Application / hiring deadline |
-| `status` | `VARCHAR(30)` | NO | Posting status (`ACTIVE`, `CLOSED`, `DRAFT`, `ARCHIVED`) |
-| `created_at` | `DATETIME` | NO | Creation timestamp |
-| `updated_at` | `DATETIME` | YES | Last modification timestamp |
-
----
-
-### 19. `job_invitations`
-
-* **Use Case**: Direct interview invitations issued by recruiters to candidates based on invigilated scores.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `VARCHAR(36)` | NO | Primary Key (UUID) |
-| `recruiter_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` (Recruiter) |
-| `candidate_id` | `VARCHAR(36)` | NO | Foreign Key -> `users(id)` (Candidate) |
-| `job_id` | `VARCHAR(36)` | NO | Foreign Key -> `jobs(id)` |
-| `candidate_score_id` | `VARCHAR(36)` | YES | Foreign Key -> `candidate_scores(id)` |
-| `score_snapshot` | `DECIMAL(5,2)` | YES | Candidate score snapshot at invitation time |
-| `status` | `VARCHAR(30)` | NO | Pipeline Status |
-| `message` | `TEXT` | YES | Invitation message sent to candidate |
-| `notes` | `TEXT` | YES | Recruiter internal evaluation notes |
-| `created_at` | `DATETIME` | NO | Invitation dispatch timestamp |
-| `updated_at` | `DATETIME` | YES | Stage transition / last update timestamp |
-
----
-
-## 3. Placement Management Subsystem (Campus Recruitment & Dynamic Custom RBAC)
-
-### 21. `college_custom_roles`
-* **Use Case**: Enables colleges and institutions to define dynamic custom roles without rigid/hardcoded enum restrictions. Organizations create specialized roles (e.g., "Branch Placement Lead", "Department HOD", "Faculty Coordinator") with granular access control and branch scoping.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `CHAR(36)` | NO | Primary Key (UUID) |
-| `organization_id` | `CHAR(36)` | NO | Foreign Key -> `organizations(id)` ON DELETE CASCADE |
-| `role_name` | `VARCHAR(100)` | NO | Custom dynamic role title (e.g., "Lead CSE Coordinator", "HOD - IT") |
-| `description` | `VARCHAR(255)` | YES | Purpose and responsibilities of this custom role |
-| `assigned_branch` | `VARCHAR(100)` | NO | Branch scope restriction (e.g. "Computer Science & Engineering", or "ALL") |
-| `can_view_students` | `TINYINT(1)` | NO | Permission: View student roster and academic records (Default: 1) |
-| `can_edit_students` | `TINYINT(1)` | NO | Permission: Modify student details and verify marks (Default: 1) |
-| `can_manage_placements` | `TINYINT(1)` | NO | Permission: Record offers, schedule drives, update status (Default: 0) |
-| `can_invite_team` | `TINYINT(1)` | NO | Permission: Invite or configure team members (Default: 0) |
-| `can_export_reports` | `TINYINT(1)` | NO | Permission: Export student Excel/CSV data & KPI summaries (Default: 1) |
-| `access_percentage` | `VARCHAR(30)` | YES | Display access level (e.g., "85% Access", "Full Admin Access") |
-| `created_at` | `DATETIME` | NO | Creation timestamp |
-| `updated_at` | `DATETIME` | NO | Last update timestamp |
-
----
-
-### 22. `college_team_members`
-* **Use Case**: Stores institutional faculty, staff, and coordinators assigned to a college. Each member references an organization user and an optional dynamic custom role from `college_custom_roles`.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `CHAR(36)` | NO | Primary Key (UUID) |
-| `organization_id` | `CHAR(36)` | NO | Foreign Key -> `organizations(id)` ON DELETE CASCADE |
-| `user_id` | `CHAR(36)` | NO | Foreign Key -> `users(id)` ON DELETE CASCADE |
-| `custom_role_id` | `CHAR(36)` | YES | Foreign Key -> `college_custom_roles(id)` ON DELETE SET NULL |
-| `name` | `VARCHAR(150)` | NO | Team member full name |
-| `email` | `VARCHAR(190)` | NO | Institutional contact email address |
-| `phone` | `VARCHAR(25)` | YES | Contact telephone number |
-| `role_name` | `VARCHAR(100)` | NO | Dynamic custom role title created by college (Default: "Custom Role") |
-| `assigned_branch` | `VARCHAR(100)` | NO | Assigned department branch scope (e.g., "Information Technology", "ALL") |
-| `designation` | `VARCHAR(150)` | YES | Academic designation (e.g., "Associate Professor", "Placement Head") |
-| `access_level` | `VARCHAR(50)` | YES | Access badge label (e.g., "90% Access") |
-| `status` | `VARCHAR(30)` | NO | Member status (`ACTIVE`, `PENDING_INVITE`, `INACTIVE`) |
-| `last_active` | `VARCHAR(100)` | YES | Human-readable last activity indicator |
-| `created_at` | `DATETIME` | NO | Creation timestamp |
-| `updated_at` | `DATETIME` | NO | Last update timestamp |
-
----
-
-### 23. `student_profiles`
-* **Use Case**: Full academic roster and placement tracking for enrolled college students. Stores complete 8-semester SGPAs, aggregate CGPA, tier classification, ProveyU assessment scores, and placed company/role details.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `CHAR(36)` | NO | Primary Key (UUID) |
-| `organization_id` | `CHAR(36)` | NO | Foreign Key -> `organizations(id)` ON DELETE CASCADE |
-| `user_id` | `CHAR(36)` | NO | Foreign Key -> `users(id)` ON DELETE CASCADE (Student user account) |
-| `roll_number` | `VARCHAR(50)` | NO | Institutional roll/registration number (Unique per organization) |
-| `first_name` | `VARCHAR(100)` | NO | Student first name |
-| `last_name` | `VARCHAR(100)` | NO | Student surname / family name |
-| `email` | `VARCHAR(190)` | NO | Student college email address |
-| `phone` | `VARCHAR(25)` | YES | Student contact mobile phone |
-| `dob` | `VARCHAR(20)` | YES | Date of birth (YYYY-MM-DD) |
-| `gender` | `VARCHAR(20)` | YES | Gender (Male, Female, Other) |
-| `aadhar_number` | `VARCHAR(50)` | YES | Government Aadhaar identification |
-| `pan_number` | `VARCHAR(50)` | YES | Government PAN tax ID |
-| `residential_address` | `TEXT` | YES | Student current residential address |
-| `college_name` | `VARCHAR(255)` | YES | Enrolled institution name |
-| `batch_year` | `VARCHAR(20)` | NO | Graduation batch year (e.g., "2024") |
-| `branch` | `VARCHAR(100)` | NO | Department branch (e.g., "Computer Science & Engineering") |
-| `degree` | `VARCHAR(100)` | NO | Degree qualification (e.g., "B.Tech", "M.Tech", "MCA") |
-| `tenth_percentage` | `DOUBLE` | YES | 10th standard board percentage |
-| `twelfth_percentage` | `DOUBLE` | YES | 12th standard / Diploma percentage |
-| `active_backlogs` | `INT` | NO | Number of live uncleared backlogs (Default: 0) |
-| `gap_years` | `INT` | NO | Educational career gap years (Default: 0) |
-| `grad_date` | `VARCHAR(50)` | YES | Expected or actual graduation date |
-| `sem1_sgpa` - `sem8_sgpa` | `DOUBLE` | YES | Semester 1 through Semester 8 SGPA scores |
-| `aggregate_cgpa` | `DOUBLE` | NO | Automatically calculated mean CGPA across active semesters |
-| `tier` | `VARCHAR(20)` | NO | Academic tier classification (`Tier 1` >= 8.5, `Tier 2` >= 7.0, `Tier 3` < 7.0) |
-| `tier_badge` | `VARCHAR(50)` | YES | UI badge class (`badge-tier-1`, `badge-tier-2`, `badge-tier-3`) |
-| `prove_yu_score` | `VARCHAR(20)` | YES | Platform evaluation score (e.g. "75/100") |
-| `coding_score` | `INT` | YES | Platform coding assessment percentile / marks |
-| `aptitude_score` | `INT` | YES | Platform aptitude percentile / marks |
-| `comm_score` | `INT` | YES | Communication and soft skills rating |
-| `placement_status` | `VARCHAR(30)` | NO | Current placement state (`Unplaced`, `Placed`, `In Process`) |
-| `placed_company` | `VARCHAR(150)` | YES | Name of company where candidate was placed (e.g., "TCS", "Wipro") |
-| `placed_role` | `VARCHAR(150)` | YES | Position offered (e.g., "Associate Software Engineer") |
-| `placed_ctc` | `VARCHAR(50)` | YES | Annual compensation offered (e.g., "₹6.5L") |
-| `package_category` | `VARCHAR(100)` | YES | Category (e.g., "Dream (5-10 LPA)", "Super Dream (>10 LPA)") |
-| `bond_duration` | `VARCHAR(50)` | YES | Employment bond obligation (e.g., "No Bond", "1 Year") |
-| `offer_date` | `DATE` | YES | Date when offer letter was released |
-| `joining_date` | `DATE` | YES | Scheduled company onboarding date |
-| `recruitment_source` | `VARCHAR(100)` | YES | Placement channel (`On-Campus`, `Off-Campus`, `Pool Campus`) |
-| `linkedin_url` | `VARCHAR(255)` | YES | Candidate LinkedIn URL |
-| `github_url` | `VARCHAR(255)` | YES | Candidate GitHub portfolio URL |
-| `portfolio_url` | `VARCHAR(255)` | YES | Candidate website or personal project portfolio |
-| `resume_uploaded` | `TINYINT(1)` | NO | Boolean flag indicating whether student has an active resume attached |
-| `created_at` | `DATETIME` | NO | Creation timestamp |
-| `updated_at` | `DATETIME` | NO | Last modification timestamp |
-
----
-
-### 24. `placement_drives`
-* **Use Case**: Campus recruitment drives scheduled by the college placement cell, including company details, eligibility filters, package details, and selection pipeline stages.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `CHAR(36)` | NO | Primary Key (UUID) |
-| `organization_id` | `CHAR(36)` | NO | Foreign Key -> `organizations(id)` ON DELETE CASCADE |
-| `company_name` | `VARCHAR(150)` | NO | Visiting company name |
-| `company_website` | `VARCHAR(255)` | YES | Company portal link |
-| `logo_url` | `VARCHAR(255)` | YES | Company corporate logo URL |
-| `industry` | `VARCHAR(100)` | YES | Industry domain (IT Services, Fintech, Automotive, etc.) |
-| `roles` | `VARCHAR(150)` | NO | Hiring position(s) |
-| `package_lpa` | `DOUBLE` | NO | Annual CTC in Lakhs Per Annum |
-| `min_cgpa` | `DOUBLE` | YES | Minimum CGPA cutoff for drive eligibility |
-| `max_backlogs` | `INT` | YES | Maximum allowed active backlogs |
-| `max_gap_years` | `INT` | YES | Maximum allowed educational career gaps |
-| `min_tenth_percentage` | `DOUBLE` | YES | Minimum 10th standard percentage cutoff |
-| `min_twelfth_percentage` | `DOUBLE` | YES | Minimum 12th standard percentage cutoff |
-| `eligible_branches` | `TEXT` | YES | JSON array or comma-separated list of allowed departments |
-| `selection_rounds` | `TEXT` | YES | JSON array of drive rounds (OA, Technical Interview, HR) |
-| `drive_mode` | `VARCHAR(50)` | YES | `On-Campus`, `Virtual`, `Off-Campus` |
-| `status` | `VARCHAR(50)` | NO | Drive status (`Scheduled`, `In-Progress`, `Completed`, `Cancelled`) |
-| `created_at` | `DATETIME` | NO | Creation timestamp |
-| `updated_at` | `DATETIME` | NO | Last modification timestamp |
-
----
-
-### 25. `placement_records`
-* **Use Case**: Audit history and individual offer records associated with each student profile.
-
-| Field Name | Data Type | Nullable | Description / Constraints |
-| :--- | :--- | :--- | :--- |
-| `id` | `CHAR(36)` | NO | Primary Key (UUID) |
-| `organization_id` | `CHAR(36)` | NO | Foreign Key -> `organizations(id)` ON DELETE CASCADE |
-| `student_profile_id` | `CHAR(36)` | NO | Foreign Key -> `student_profiles(id)` ON DELETE CASCADE |
-| `drive_id` | `CHAR(36)` | YES | Foreign Key -> `placement_drives(id)` ON DELETE SET NULL |
-| `company_name` | `VARCHAR(150)` | NO | Company offering employment |
-| `role_offered` | `VARCHAR(150)` | NO | Job title |
-| `ctc` | `VARCHAR(50)` | NO | Compensation string (e.g., "₹7.5 LPA") |
-| `package_category` | `VARCHAR(100)` | YES | Category (Mass Recruiter, Dream, Super Dream) |
-| `bond_duration` | `VARCHAR(50)` | YES | Bond term (e.g., "1 Year", "No Bond") |
-| `offer_date` | `DATE` | YES | Offer letter issue date |
-| `joining_date` | `DATE` | YES | Planned joining date |
-| `recruitment_source` | `VARCHAR(100)` | YES | Drive channel |
-| `status` | `VARCHAR(50)` | NO | Status (`OFFERED`, `ACCEPTED`, `DECLINED`, `JOINED`) |
-| `created_at` | `DATETIME` | NO | Creation timestamp |
-| `updated_at` | `DATETIME` | NO | Last modification timestamp |
+# ProveYu database schema
+
+<!-- Generated by scripts/gen_docs.py from finaluseddbschema.sql. Do not edit by hand; run the script again. -->
+
+MySQL 8, database `proveyu_college`, utf8mb4. 53 tables the application uses, at Flyway version 38. The exact DDL is in [finaluseddbschema.sql](../finaluseddbschema.sql); migrations are in `Backend/src/main/resources/db/migration` (Flyway runs them when the backend starts; `ddl-auto: none`).
+
+Ids are UUIDs stored as `CHAR(36)`. Times are `DATETIME` written by the application. Every `college_*` row carries `college_id`, and every query filters by it.
+
+## Tables
+
+**Accounts, notifications, platform**
+
+- [`users`](#users): Every account: student, college staff, company person, platform admin (role, password hash, verified, blocked)
+- [`email_verification_tokens`](#email_verification_tokens): One-time e-mail verification tokens
+- [`notifications`](#notifications): Notification bell entries per user
+- [`chat_messages`](#chat_messages): One-to-one chat messages and attachments
+- [`platform_settings`](#platform_settings): Admin-editable runtime settings (interview price, UPI ID, limits, banner)
+- [`support_tickets`](#support_tickets): Help & support requests and the team's answers
+- [`admin_audit_logs`](#admin_audit_logs): Every platform admin action
+
+**College portal**
+
+- [`college_profiles`](#college_profiles): A college: name, codes, TPO, approval status, placement policy, off-campus policy, branding
+- [`college_members`](#college_members): College staff: role (TPO / coordinator / viewer) and branch scope
+- [`college_invites`](#college_invites): Pending invites for college staff and company people
+- [`college_branches`](#college_branches): Branches (departments) of a college
+- [`college_batches`](#college_batches): Batches (graduation years) of a college
+- [`college_tiers`](#college_tiers): CTC tiers (normal / dream / super dream) used by the placement policy
+- [`college_students`](#college_students): Students of a college: academic record, status (active / placed / debarred), highest offer
+- [`college_student_documents`](#college_student_documents): Student documents (resume, mark sheets, ...) and their verification
+- [`college_files`](#college_files): Every stored file (documents, offer letters, logos, NOC PDFs) and where it is on disk
+- [`college_import_jobs`](#college_import_jobs): Excel / CSV student imports (dry run and commit history)
+- [`college_companies`](#college_companies): Companies a college works with
+- [`college_company_contacts`](#college_company_contacts): Contacts of those companies
+- [`college_company_feedback`](#college_company_feedback): Feedback and ratings of companies after drives
+- [`college_drives`](#college_drives): Campus drives: role, CTC, eligibility, status
+- [`college_drive_rounds`](#college_drive_rounds): Rounds of a drive (test, interview, ...)
+- [`college_drive_recruiters`](#college_drive_recruiters): Company people with Drive Room access to a drive
+- [`college_eligibility_overrides`](#college_eligibility_overrides): Audited include / exclude decisions against the eligibility rules
+- [`college_applications`](#college_applications): A student's application to a drive and its status
+- [`college_round_results`](#college_round_results): Result of each applicant in each round
+- [`college_round_scorecards`](#college_round_scorecards): Panel scorecards from the Drive Room
+- [`college_interview_slots`](#college_interview_slots): Interview slots (time, room or link) with clash checks
+- [`college_offers`](#college_offers): Offers: CTC, status (offered / accepted / joined / ...), offer letter
+- [`college_announcements`](#college_announcements): Announcements from the placement cell
+- [`college_announcement_recipients`](#college_announcement_recipients): Who received an announcement and when they read it
+- [`college_email_templates`](#college_email_templates): College-specific e-mail templates
+- [`college_scheduled_reports`](#college_scheduled_reports): Reports e-mailed on a schedule
+- [`college_audit_logs`](#college_audit_logs): Every change made by college staff
+
+**AI interview**
+
+- [`ai_interview_sessions`](#ai_interview_sessions): AI mock interviews: student, JD, focus, status, model used
+- [`ai_interview_questions`](#ai_interview_questions): Questions asked in an interview (including follow-ups)
+- [`ai_interview_answers`](#ai_interview_answers): The student's answers (typed or transcribed speech)
+- [`ai_answer_evaluations`](#ai_answer_evaluations): AI score and feedback per answer
+- [`ai_interview_reports`](#ai_interview_reports): Final interview report (overall score, strengths, improvements)
+- [`interview_credits`](#interview_credits): Free and paid AI interview credits per student
+- [`interview_purchases`](#interview_purchases): UPI purchases of interviews and their approval
+
+**Mock tests**
+
+- [`prep_tests`](#prep_tests): Mock tests (platform ladder and college tests) as JSON
+- [`prep_attempts`](#prep_attempts): Mock test attempts: answers, score, result, auto-submit reason
+- [`prep_proctor_events`](#prep_proctor_events): Leaving-the-test events with screenshots
+
+**Off-campus jobs**
+
+- [`off_campus_jobs`](#off_campus_jobs): Off-campus jobs: posted by the team or imported (Careerjet), field, eligibility, status
+- [`off_campus_applications`](#off_campus_applications): A student's tracking of an off-campus job (saved, opened link, applied, offer)
+- [`off_campus_noc_requests`](#off_campus_noc_requests): NOC requests for off-campus offers: offer letter, decision, NOC file
+- [`off_campus_interests`](#off_campus_interests): Fields each student wants off-campus jobs in
+
+**Kept from the older platform (read only)**
+
+- [`organizations`](#organizations): Organisation record behind each college (kept from the older platform; read by registration)
+- [`candidate_profiles`](#candidate_profiles): Older candidate profile, read by the student drawer passport
+- [`domains`](#domains): Skill domains, read by the skill-gap report
+- [`skills`](#skills): Skills, read by the skill-gap report
+- [`candidate_scores`](#candidate_scores): Older verified scores, read by the passport and skill-gap report
+
+## Accounts, notifications, platform
+
+<a id="users"></a>
+### `users`
+
+Every account: student, college staff, company person, platform admin (role, password hash, verified, blocked)
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `email` | `varchar(190)` |  |  |
+| `phone` | `varchar(15)` | yes | `NULL` |
+| `password_hash` | `varchar(255)` |  |  |
+| `role` | `enum('CANDIDATE','RECRUITER','ORGANIZATION','ADMIN','COLLEGE_ADMIN','COLLEGE_COORDINATOR','COLLEGE_VIEWER')` |  | `'CANDIDATE'` |
+| `full_name` | `varchar(150)` |  |  |
+| `is_active` | `tinyint(1)` |  | `'1'` |
+| `email_verified_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `reset_token` | `varchar(100)` | yes | `NULL` |
+| `reset_token_expires_at` | `datetime` | yes | `NULL` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_users_email (email)`; `UNIQUE KEY uq_users_phone (phone)`
+
+<a id="email_verification_tokens"></a>
+### `email_verification_tokens`
+
+One-time e-mail verification tokens
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `user_id` | `char(36)` |  |  |
+| `token_hash` | `char(64)` |  |  |
+| `expires_at` | `datetime` |  |  |
+| `used_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_evt_token (token_hash)`; `CONSTRAINT fk_evt_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE`
+
+<a id="notifications"></a>
+### `notifications`
+
+Notification bell entries per user
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `varchar(36)` |  |  |
+| `user_id` | `varchar(36)` |  |  |
+| `type` | `varchar(50)` |  |  |
+| `message` | `text` |  |  |
+| `is_read` | `tinyint(1)` | yes | `'0'` |
+| `created_at` | `timestamp` | yes | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE`
+
+<a id="chat_messages"></a>
+### `chat_messages`
+
+One-to-one chat messages and attachments
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `sender_id` | `char(36)` |  |  |
+| `receiver_id` | `char(36)` |  |  |
+| `message` | `text` | yes |  |
+| `message_type` | `varchar(20)` |  | `'TEXT'` |
+| `file_path` | `varchar(500)` | yes | `NULL` |
+| `file_name` | `varchar(255)` | yes | `NULL` |
+| `file_size` | `bigint` | yes | `NULL` |
+| `file_content_type` | `varchar(100)` | yes | `NULL` |
+| `status` | `varchar(20)` |  | `'SENT'` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `read_at` | `datetime` | yes | `NULL` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_chat_receiver FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE`; `CONSTRAINT fk_chat_sender FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE`
+
+<a id="platform_settings"></a>
+### `platform_settings`
+
+Admin-editable runtime settings (interview price, UPI ID, limits, banner)
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `setting_key` | `varchar(80)` |  |  |
+| `setting_value` | `varchar(1000)` |  |  |
+| `updated_by` | `char(36)` | yes | `NULL` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (setting_key)`
+
+<a id="support_tickets"></a>
+### `support_tickets`
+
+Help & support requests and the team's answers
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `user_id` | `char(36)` |  |  |
+| `user_name` | `varchar(150)` |  |  |
+| `user_email` | `varchar(190)` |  |  |
+| `user_role` | `varchar(30)` |  |  |
+| `portal` | `varchar(20)` |  |  |
+| `college_id` | `char(36)` | yes | `NULL` |
+| `college_name` | `varchar(255)` | yes | `NULL` |
+| `category` | `varchar(30)` |  |  |
+| `subject` | `varchar(150)` |  |  |
+| `message` | `text` |  |  |
+| `status` | `varchar(20)` |  | `'OPEN'` |
+| `reply` | `text` | yes |  |
+| `replied_by` | `varchar(150)` | yes | `NULL` |
+| `replied_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`
+
+<a id="admin_audit_logs"></a>
+### `admin_audit_logs`
+
+Every platform admin action
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `admin_id` | `char(36)` | yes | `NULL` |
+| `admin_name` | `varchar(150)` | yes | `NULL` |
+| `action` | `varchar(60)` |  |  |
+| `target_type` | `varchar(40)` | yes | `NULL` |
+| `target_id` | `varchar(64)` | yes | `NULL` |
+| `summary` | `varchar(500)` |  |  |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`
+
+## College portal
+
+<a id="college_profiles"></a>
+### `college_profiles`
+
+A college: name, codes, TPO, approval status, placement policy, off-campus policy, branding
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `college_id` | `char(36)` |  |  |
+| `college_name` | `varchar(200)` |  |  |
+| `aicte_code` | `varchar(50)` | yes | `NULL` |
+| `university` | `varchar(200)` | yes | `NULL` |
+| `city` | `varchar(100)` | yes | `NULL` |
+| `state` | `varchar(100)` | yes | `NULL` |
+| `email_domain` | `varchar(120)` | yes | `NULL` |
+| `website` | `varchar(255)` | yes | `NULL` |
+| `logo_file_id` | `char(36)` | yes | `NULL` |
+| `tpo_name` | `varchar(150)` | yes | `NULL` |
+| `tpo_email` | `varchar(190)` | yes | `NULL` |
+| `tpo_phone` | `varchar(20)` | yes | `NULL` |
+| `approval_status` | `enum('PENDING','APPROVED','REJECTED','SUSPENDED')` |  | `'PENDING'` |
+| `approval_note` | `varchar(500)` | yes | `NULL` |
+| `current_academic_year` | `varchar(20)` | yes | `NULL` |
+| `policy_mode` | `enum('OPEN','ONE_OFFER','TIER_UPGRADE')` |  | `'TIER_UPGRADE'` |
+| `max_applications` | `int` | yes | `NULL` |
+| `max_offers` | `int` |  | `'2'` |
+| `upgrade_min_hike_percent` | `decimal(5,2)` |  | `'0.00'` |
+| `block_after_accept` | `tinyint(1)` |  | `'1'` |
+| `off_campus_policy` | `enum('ALLOW','BLOCK_PLACED','DISABLED')` |  | `'ALLOW'` |
+| `brand_color` | `varchar(20)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (college_id)`; `UNIQUE KEY uq_college_aicte (aicte_code)`; `CONSTRAINT fk_cp_org FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`
+
+<a id="college_members"></a>
+### `college_members`
+
+College staff: role (TPO / coordinator / viewer) and branch scope
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `user_id` | `char(36)` |  |  |
+| `role` | `enum('COLLEGE_ADMIN','COLLEGE_COORDINATOR','COLLEGE_VIEWER')` |  |  |
+| `designation` | `varchar(150)` | yes | `NULL` |
+| `branch_scope` | `text` | yes |  |
+| `status` | `enum('ACTIVE','REVOKED')` |  | `'ACTIVE'` |
+| `last_login_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_member_user (user_id)`; `CONSTRAINT fk_member_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_member_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE`
+
+<a id="college_invites"></a>
+### `college_invites`
+
+Pending invites for college staff and company people
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `email` | `varchar(190)` |  |  |
+| `full_name` | `varchar(150)` |  |  |
+| `role` | `enum('COLLEGE_ADMIN','COLLEGE_COORDINATOR','COLLEGE_VIEWER')` |  |  |
+| `designation` | `varchar(150)` | yes | `NULL` |
+| `branch_scope` | `text` | yes |  |
+| `token_hash` | `char(64)` |  |  |
+| `expires_at` | `datetime` |  |  |
+| `accepted_at` | `datetime` | yes | `NULL` |
+| `revoked_at` | `datetime` | yes | `NULL` |
+| `invited_by` | `char(36)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_invite_token (token_hash)`; `CONSTRAINT fk_invite_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`
+
+<a id="college_branches"></a>
+### `college_branches`
+
+Branches (departments) of a college
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `code` | `varchar(30)` |  |  |
+| `name` | `varchar(150)` |  |  |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_cb_code (college_id,code)`; `CONSTRAINT fk_cb_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`
+
+<a id="college_batches"></a>
+### `college_batches`
+
+Batches (graduation years) of a college
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `grad_year` | `int` |  |  |
+| `label` | `varchar(50)` |  |  |
+| `active` | `tinyint(1)` |  | `'1'` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_batch_year (college_id,grad_year)`; `CONSTRAINT fk_batch_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`
+
+<a id="college_tiers"></a>
+### `college_tiers`
+
+CTC tiers (normal / dream / super dream) used by the placement policy
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `name` | `varchar(50)` |  |  |
+| `tier_rank` | `int` |  |  |
+| `min_ctc_lpa` | `decimal(8,2)` |  |  |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_tier_rank (college_id,tier_rank)`; `UNIQUE KEY uq_tier_name (college_id,name)`; `CONSTRAINT fk_tier2_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`
+
+<a id="college_students"></a>
+### `college_students`
+
+Students of a college: academic record, status (active / placed / debarred), highest offer
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `user_id` | `char(36)` | yes | `NULL` |
+| `roll_number` | `varchar(50)` |  |  |
+| `first_name` | `varchar(100)` |  |  |
+| `last_name` | `varchar(100)` | yes | `NULL` |
+| `email` | `varchar(190)` |  |  |
+| `phone` | `varchar(20)` | yes | `NULL` |
+| `gender` | `varchar(20)` | yes | `NULL` |
+| `dob` | `date` | yes | `NULL` |
+| `branch_id` | `char(36)` | yes | `NULL` |
+| `batch_year` | `int` |  |  |
+| `degree` | `varchar(80)` | yes | `NULL` |
+| `cgpa` | `decimal(4,2)` | yes | `NULL` |
+| `tenth_percent` | `decimal(5,2)` | yes | `NULL` |
+| `twelfth_percent` | `decimal(5,2)` | yes | `NULL` |
+| `active_backlogs` | `int` |  | `'0'` |
+| `gap_years` | `int` |  | `'0'` |
+| `skills` | `text` | yes |  |
+| `linkedin_url` | `varchar(255)` | yes | `NULL` |
+| `github_url` | `varchar(255)` | yes | `NULL` |
+| `status` | `enum('ACTIVE','PLACED','DEBARRED','OPTED_OUT')` |  | `'ACTIVE'` |
+| `highest_ctc_lpa` | `decimal(8,2)` | yes | `NULL` |
+| `highest_tier_rank` | `int` | yes | `NULL` |
+| `deleted_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_cs_roll (college_id,roll_number)`; `UNIQUE KEY uq_cs_email (college_id,email)`; `CONSTRAINT fk_cs_branch FOREIGN KEY (branch_id) REFERENCES college_branches (id) ON DELETE SET NULL`; `CONSTRAINT fk_cs_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_cs_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL`
+
+<a id="college_student_documents"></a>
+### `college_student_documents`
+
+Student documents (resume, mark sheets, ...) and their verification
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `student_id` | `char(36)` |  |  |
+| `doc_type` | `enum('RESUME','MARKSHEET_10','MARKSHEET_12','MARKSHEET_SEM','ID_PROOF','OTHER','PHOTO','CERTIFICATE','INTERNSHIP_CERTIFICATE','COVER_LETTER','OFFER_LETTER')` |  |  |
+| `label` | `varchar(150)` | yes | `NULL` |
+| `file_id` | `char(36)` |  |  |
+| `verification_status` | `enum('PENDING','VERIFIED','REJECTED')` |  | `'PENDING'` |
+| `remarks` | `varchar(500)` | yes | `NULL` |
+| `verified_by` | `char(36)` | yes | `NULL` |
+| `verified_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_csd_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_csd_file FOREIGN KEY (file_id) REFERENCES college_files (id) ON DELETE CASCADE`; `CONSTRAINT fk_csd_student FOREIGN KEY (student_id) REFERENCES college_students (id) ON DELETE CASCADE`
+
+<a id="college_files"></a>
+### `college_files`
+
+Every stored file (documents, offer letters, logos, NOC PDFs) and where it is on disk
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `original_name` | `varchar(255)` |  |  |
+| `stored_name` | `varchar(255)` |  |  |
+| `content_type` | `varchar(120)` |  |  |
+| `size_bytes` | `bigint` |  |  |
+| `category` | `varchar(40)` |  |  |
+| `uploaded_by` | `char(36)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_file_stored (stored_name)`; `CONSTRAINT fk_file_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`
+
+<a id="college_import_jobs"></a>
+### `college_import_jobs`
+
+Excel / CSV student imports (dry run and commit history)
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `file_name` | `varchar(255)` |  |  |
+| `dry_run` | `tinyint(1)` |  | `'0'` |
+| `total_rows` | `int` |  | `'0'` |
+| `created_rows` | `int` |  | `'0'` |
+| `updated_rows` | `int` |  | `'0'` |
+| `error_rows` | `int` |  | `'0'` |
+| `duplicate_rows` | `int` |  | `'0'` |
+| `errors_json` | `mediumtext` | yes |  |
+| `created_by` | `char(36)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_cij_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`
+
+<a id="college_companies"></a>
+### `college_companies`
+
+Companies a college works with
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `name` | `varchar(200)` |  |  |
+| `industry` | `varchar(100)` | yes | `NULL` |
+| `website` | `varchar(255)` | yes | `NULL` |
+| `hq_location` | `varchar(150)` | yes | `NULL` |
+| `mou_status` | `enum('NONE','IN_PROGRESS','SIGNED','EXPIRED')` |  | `'NONE'` |
+| `mou_expiry` | `date` | yes | `NULL` |
+| `linked_recruiter_id` | `char(36)` | yes | `NULL` |
+| `notes` | `text` | yes |  |
+| `deleted_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_cc_name (college_id,name)`; `CONSTRAINT fk_cc_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_cc_recruiter FOREIGN KEY (linked_recruiter_id) REFERENCES users (id) ON DELETE SET NULL`
+
+<a id="college_company_contacts"></a>
+### `college_company_contacts`
+
+Contacts of those companies
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `company_id` | `char(36)` |  |  |
+| `name` | `varchar(150)` |  |  |
+| `designation` | `varchar(150)` | yes | `NULL` |
+| `email` | `varchar(190)` | yes | `NULL` |
+| `phone` | `varchar(20)` | yes | `NULL` |
+| `is_primary` | `tinyint(1)` |  | `'0'` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_ccc_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_ccc_company FOREIGN KEY (company_id) REFERENCES college_companies (id) ON DELETE CASCADE`
+
+<a id="college_company_feedback"></a>
+### `college_company_feedback`
+
+Feedback and ratings of companies after drives
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `company_id` | `char(36)` |  |  |
+| `drive_id` | `char(36)` | yes | `NULL` |
+| `rating` | `tinyint` |  |  |
+| `comment` | `varchar(1000)` | yes | `NULL` |
+| `created_by` | `char(36)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_ccf_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_ccf_company FOREIGN KEY (company_id) REFERENCES college_companies (id) ON DELETE CASCADE`; `CONSTRAINT fk_ccf_drive FOREIGN KEY (drive_id) REFERENCES college_drives (id) ON DELETE SET NULL`; `CONSTRAINT chk_ccf_rating CHECK ((rating between 1 and 5))`
+
+<a id="college_drives"></a>
+### `college_drives`
+
+Campus drives: role, CTC, eligibility, status
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `company_id` | `char(36)` |  |  |
+| `title` | `varchar(200)` |  |  |
+| `role_title` | `varchar(150)` |  |  |
+| `drive_type` | `enum('ON_CAMPUS','OFF_CAMPUS','POOL','INTERNSHIP','PPO')` |  | `'ON_CAMPUS'` |
+| `ctc_lpa` | `decimal(8,2)` | yes | `NULL` |
+| `stipend_monthly` | `decimal(10,2)` | yes | `NULL` |
+| `ctc_breakup` | `text` | yes |  |
+| `location` | `varchar(200)` | yes | `NULL` |
+| `bond_months` | `int` |  | `'0'` |
+| `bond_details` | `varchar(500)` | yes | `NULL` |
+| `job_description` | `text` | yes |  |
+| `skills` | `text` | yes |  |
+| `mode` | `enum('OFFLINE','ONLINE','HYBRID')` |  | `'OFFLINE'` |
+| `venue` | `varchar(255)` | yes | `NULL` |
+| `registration_deadline` | `datetime` | yes | `NULL` |
+| `drive_date` | `date` | yes | `NULL` |
+| `tier_id` | `char(36)` | yes | `NULL` |
+| `status` | `enum('DRAFT','PUBLISHED','ONGOING','COMPLETED','CANCELLED')` |  | `'DRAFT'` |
+| `min_cgpa` | `decimal(4,2)` | yes | `NULL` |
+| `min_tenth` | `decimal(5,2)` | yes | `NULL` |
+| `min_twelfth` | `decimal(5,2)` | yes | `NULL` |
+| `max_active_backlogs` | `int` | yes | `NULL` |
+| `max_gap_years` | `int` | yes | `NULL` |
+| `batch_years` | `varchar(100)` | yes | `NULL` |
+| `branch_ids` | `text` | yes |  |
+| `required_skills` | `text` | yes |  |
+| `published_at` | `datetime` | yes | `NULL` |
+| `created_by` | `char(36)` | yes | `NULL` |
+| `deleted_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_cd_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_cd_company FOREIGN KEY (company_id) REFERENCES college_companies (id)`; `CONSTRAINT fk_cd_tier FOREIGN KEY (tier_id) REFERENCES college_tiers (id) ON DELETE SET NULL`
+
+<a id="college_drive_rounds"></a>
+### `college_drive_rounds`
+
+Rounds of a drive (test, interview, ...)
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `drive_id` | `char(36)` |  |  |
+| `seq` | `int` |  |  |
+| `name` | `varchar(120)` |  |  |
+| `round_type` | `enum('APTITUDE','CODING','GD','TECHNICAL','HR','CUSTOM')` |  |  |
+| `scheduled_at` | `datetime` | yes | `NULL` |
+| `status` | `enum('PENDING','ONGOING','COMPLETED')` |  | `'PENDING'` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_cdr_seq (drive_id,seq)`; `CONSTRAINT fk_cdr_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_cdr_drive FOREIGN KEY (drive_id) REFERENCES college_drives (id) ON DELETE CASCADE`
+
+<a id="college_drive_recruiters"></a>
+### `college_drive_recruiters`
+
+Company people with Drive Room access to a drive
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `drive_id` | `char(36)` |  |  |
+| `email` | `varchar(190)` |  |  |
+| `full_name` | `varchar(150)` |  |  |
+| `designation` | `varchar(150)` | yes | `NULL` |
+| `user_id` | `char(36)` | yes | `NULL` |
+| `token_hash` | `char(64)` | yes | `NULL` |
+| `expires_at` | `datetime` | yes | `NULL` |
+| `status` | `enum('INVITED','ACTIVE','REVOKED')` |  | `'INVITED'` |
+| `share_details` | `tinyint(1)` |  | `'0'` |
+| `invited_by` | `char(36)` | yes | `NULL` |
+| `accepted_at` | `datetime` | yes | `NULL` |
+| `last_access_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_cdrec_drive_email (drive_id,email)`; `UNIQUE KEY uq_cdrec_token (token_hash)`; `CONSTRAINT fk_cdrec_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_cdrec_drive FOREIGN KEY (drive_id) REFERENCES college_drives (id) ON DELETE CASCADE`; `CONSTRAINT fk_cdrec_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL`
+
+<a id="college_eligibility_overrides"></a>
+### `college_eligibility_overrides`
+
+Audited include / exclude decisions against the eligibility rules
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `drive_id` | `char(36)` |  |  |
+| `student_id` | `char(36)` |  |  |
+| `action` | `enum('INCLUDE','EXCLUDE')` |  |  |
+| `reason` | `varchar(500)` |  |  |
+| `created_by` | `char(36)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_ceo (drive_id,student_id)`; `CONSTRAINT fk_ceo_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_ceo_drive FOREIGN KEY (drive_id) REFERENCES college_drives (id) ON DELETE CASCADE`; `CONSTRAINT fk_ceo_student FOREIGN KEY (student_id) REFERENCES college_students (id) ON DELETE CASCADE`
+
+<a id="college_applications"></a>
+### `college_applications`
+
+A student's application to a drive and its status
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `drive_id` | `char(36)` |  |  |
+| `student_id` | `char(36)` |  |  |
+| `status` | `enum('APPLIED','SHORTLISTED','WAITLISTED','IN_PROCESS','SELECTED','REJECTED','WITHDRAWN')` |  | `'APPLIED'` |
+| `source` | `enum('SELF','TPO','OVERRIDE')` |  | `'SELF'` |
+| `current_round` | `int` |  | `'0'` |
+| `remarks` | `varchar(500)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_ca (drive_id,student_id)`; `CONSTRAINT fk_ca_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_ca_drive FOREIGN KEY (drive_id) REFERENCES college_drives (id) ON DELETE CASCADE`; `CONSTRAINT fk_ca_student FOREIGN KEY (student_id) REFERENCES college_students (id) ON DELETE CASCADE`
+
+<a id="college_round_results"></a>
+### `college_round_results`
+
+Result of each applicant in each round
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `round_id` | `char(36)` |  |  |
+| `application_id` | `char(36)` |  |  |
+| `result` | `enum('PENDING','PASS','FAIL','ABSENT','HOLD')` |  | `'PENDING'` |
+| `score` | `decimal(6,2)` | yes | `NULL` |
+| `remarks` | `varchar(500)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_crr (round_id,application_id)`; `CONSTRAINT fk_crr_app FOREIGN KEY (application_id) REFERENCES college_applications (id) ON DELETE CASCADE`; `CONSTRAINT fk_crr_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_crr_round FOREIGN KEY (round_id) REFERENCES college_drive_rounds (id) ON DELETE CASCADE`
+
+<a id="college_round_scorecards"></a>
+### `college_round_scorecards`
+
+Panel scorecards from the Drive Room
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `round_id` | `char(36)` |  |  |
+| `application_id` | `char(36)` |  |  |
+| `user_id` | `char(36)` |  |  |
+| `interviewer_name` | `varchar(150)` |  |  |
+| `technical` | `tinyint` | yes | `NULL` |
+| `communication` | `tinyint` | yes | `NULL` |
+| `attitude` | `tinyint` | yes | `NULL` |
+| `result` | `enum('PASS','FAIL','HOLD','ABSENT')` |  |  |
+| `remarks` | `varchar(1000)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_crs (round_id,application_id,user_id)`; `CONSTRAINT fk_crs_app FOREIGN KEY (application_id) REFERENCES college_applications (id) ON DELETE CASCADE`; `CONSTRAINT fk_crs_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_crs_round FOREIGN KEY (round_id) REFERENCES college_drive_rounds (id) ON DELETE CASCADE`
+
+<a id="college_interview_slots"></a>
+### `college_interview_slots`
+
+Interview slots (time, room or link) with clash checks
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `drive_id` | `char(36)` |  |  |
+| `round_id` | `char(36)` | yes | `NULL` |
+| `application_id` | `char(36)` |  |  |
+| `panel_name` | `varchar(150)` | yes | `NULL` |
+| `panel_members` | `varchar(500)` | yes | `NULL` |
+| `starts_at` | `datetime` |  |  |
+| `ends_at` | `datetime` |  |  |
+| `room` | `varchar(100)` | yes | `NULL` |
+| `meeting_link` | `varchar(500)` | yes | `NULL` |
+| `status` | `enum('SCHEDULED','COMPLETED','CANCELLED','NO_SHOW')` |  | `'SCHEDULED'` |
+| `reschedule_count` | `int` |  | `'0'` |
+| `reminder_sent_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_cis_app FOREIGN KEY (application_id) REFERENCES college_applications (id) ON DELETE CASCADE`; `CONSTRAINT fk_cis_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_cis_drive FOREIGN KEY (drive_id) REFERENCES college_drives (id) ON DELETE CASCADE`; `CONSTRAINT fk_cis_round FOREIGN KEY (round_id) REFERENCES college_drive_rounds (id) ON DELETE SET NULL`
+
+<a id="college_offers"></a>
+### `college_offers`
+
+Offers: CTC, status (offered / accepted / joined / ...), offer letter
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `student_id` | `char(36)` |  |  |
+| `drive_id` | `char(36)` | yes | `NULL` |
+| `company_id` | `char(36)` |  |  |
+| `role_title` | `varchar(150)` |  |  |
+| `ctc_lpa` | `decimal(8,2)` |  |  |
+| `ctc_breakup` | `text` | yes |  |
+| `tier_rank` | `int` | yes | `NULL` |
+| `offer_date` | `date` | yes | `NULL` |
+| `joining_date` | `date` | yes | `NULL` |
+| `status` | `enum('OFFERED','ACCEPTED','DECLINED','JOINED','REVOKED')` |  | `'OFFERED'` |
+| `offer_letter_file_id` | `char(36)` | yes | `NULL` |
+| `remarks` | `varchar(500)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_co_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_co_company FOREIGN KEY (company_id) REFERENCES college_companies (id)`; `CONSTRAINT fk_co_drive FOREIGN KEY (drive_id) REFERENCES college_drives (id) ON DELETE SET NULL`; `CONSTRAINT fk_co_file FOREIGN KEY (offer_letter_file_id) REFERENCES college_files (id) ON DELETE SET NULL`; `CONSTRAINT fk_co_student FOREIGN KEY (student_id) REFERENCES college_students (id) ON DELETE CASCADE`
+
+<a id="college_announcements"></a>
+### `college_announcements`
+
+Announcements from the placement cell
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `title` | `varchar(200)` |  |  |
+| `body` | `text` |  |  |
+| `filter_json` | `text` | yes |  |
+| `recipient_count` | `int` |  | `'0'` |
+| `send_email` | `tinyint(1)` |  | `'0'` |
+| `created_by` | `char(36)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_can_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`
+
+<a id="college_announcement_recipients"></a>
+### `college_announcement_recipients`
+
+Who received an announcement and when they read it
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `announcement_id` | `char(36)` |  |  |
+| `student_id` | `char(36)` |  |  |
+| `read_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_car_ann_student (announcement_id,student_id)`; `CONSTRAINT fk_car_announcement FOREIGN KEY (announcement_id) REFERENCES college_announcements (id) ON DELETE CASCADE`; `CONSTRAINT fk_car_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_car_student FOREIGN KEY (student_id) REFERENCES college_students (id) ON DELETE CASCADE`
+
+<a id="college_email_templates"></a>
+### `college_email_templates`
+
+College-specific e-mail templates
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `template_key` | `varchar(60)` |  |  |
+| `subject` | `varchar(255)` |  |  |
+| `body` | `text` |  |  |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_cet (college_id,template_key)`; `CONSTRAINT fk_cet_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`
+
+<a id="college_scheduled_reports"></a>
+### `college_scheduled_reports`
+
+Reports e-mailed on a schedule
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `report_type` | `varchar(40)` |  |  |
+| `format` | `enum('XLSX','PDF','CSV')` |  | `'XLSX'` |
+| `frequency` | `enum('DAILY','WEEKLY','MONTHLY')` |  |  |
+| `recipients` | `varchar(1000)` |  |  |
+| `active` | `tinyint(1)` |  | `'1'` |
+| `last_run_at` | `datetime` | yes | `NULL` |
+| `next_run_at` | `datetime` |  |  |
+| `created_by` | `char(36)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_csr_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`
+
+<a id="college_audit_logs"></a>
+### `college_audit_logs`
+
+Every change made by college staff
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `actor_user_id` | `char(36)` | yes | `NULL` |
+| `actor_name` | `varchar(150)` | yes | `NULL` |
+| `action` | `varchar(60)` |  |  |
+| `entity_type` | `varchar(60)` |  |  |
+| `entity_id` | `char(36)` | yes | `NULL` |
+| `summary` | `varchar(500)` |  |  |
+| `details` | `text` | yes |  |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_cal_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`
+
+## AI interview
+
+<a id="ai_interview_sessions"></a>
+### `ai_interview_sessions`
+
+AI mock interviews: student, JD, focus, status, model used
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `student_id` | `char(36)` |  |  |
+| `user_id` | `char(36)` |  |  |
+| `drive_id` | `char(36)` | yes | `NULL` |
+| `interview_type` | `enum('TECHNICAL','HR','MIXED')` |  |  |
+| `difficulty` | `enum('EASY','MEDIUM','HARD')` |  | `'MEDIUM'` |
+| `role_title` | `varchar(200)` |  |  |
+| `status` | `enum('IN_PROGRESS','EVALUATING','COMPLETED','FAILED')` |  | `'IN_PROGRESS'` |
+| `planned_questions` | `int` |  |  |
+| `job_description` | `text` | yes |  |
+| `focus_skills` | `varchar(500)` | yes | `NULL` |
+| `credit_source` | `enum('FREE','PAID')` |  |  |
+| `consent_at` | `datetime` |  |  |
+| `started_at` | `datetime` |  |  |
+| `ended_at` | `datetime` | yes | `NULL` |
+| `error_message` | `varchar(500)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_aisess_college FOREIGN KEY (college_id) REFERENCES organizations (id) ON DELETE CASCADE`; `CONSTRAINT fk_aisess_drive FOREIGN KEY (drive_id) REFERENCES college_drives (id) ON DELETE SET NULL`; `CONSTRAINT fk_aisess_student FOREIGN KEY (student_id) REFERENCES college_students (id) ON DELETE CASCADE`
+
+<a id="ai_interview_questions"></a>
+### `ai_interview_questions`
+
+Questions asked in an interview (including follow-ups)
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `session_id` | `char(36)` |  |  |
+| `seq` | `int` |  |  |
+| `question_text` | `varchar(1000)` |  |  |
+| `topic` | `varchar(120)` | yes | `NULL` |
+| `parent_question_id` | `char(36)` | yes | `NULL` |
+| `asked_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_aiq_session_seq (session_id,seq)`; `CONSTRAINT fk_aiq_session FOREIGN KEY (session_id) REFERENCES ai_interview_sessions (id) ON DELETE CASCADE`
+
+<a id="ai_interview_answers"></a>
+### `ai_interview_answers`
+
+The student's answers (typed or transcribed speech)
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `session_id` | `char(36)` |  |  |
+| `question_id` | `char(36)` |  |  |
+| `transcript` | `text` |  |  |
+| `input_mode` | `enum('VOICE','TEXT')` |  |  |
+| `audio_path` | `varchar(300)` | yes | `NULL` |
+| `duration_seconds` | `int` | yes | `NULL` |
+| `words_per_minute` | `int` | yes | `NULL` |
+| `answered_at` | `datetime` |  |  |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_aians_question (question_id)`; `CONSTRAINT fk_aians_question FOREIGN KEY (question_id) REFERENCES ai_interview_questions (id) ON DELETE CASCADE`; `CONSTRAINT fk_aians_session FOREIGN KEY (session_id) REFERENCES ai_interview_sessions (id) ON DELETE CASCADE`
+
+<a id="ai_answer_evaluations"></a>
+### `ai_answer_evaluations`
+
+AI score and feedback per answer
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `answer_id` | `char(36)` |  |  |
+| `content` | `tinyint` |  |  |
+| `communication` | `tinyint` |  |  |
+| `confidence` | `tinyint` |  |  |
+| `relevance` | `tinyint` |  |  |
+| `feedback` | `varchar(1000)` | yes | `NULL` |
+| `better_answer` | `varchar(1500)` | yes | `NULL` |
+| `model` | `varchar(80)` |  |  |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_aieval_answer (answer_id)`; `CONSTRAINT fk_aieval_answer FOREIGN KEY (answer_id) REFERENCES ai_interview_answers (id) ON DELETE CASCADE`
+
+<a id="ai_interview_reports"></a>
+### `ai_interview_reports`
+
+Final interview report (overall score, strengths, improvements)
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `session_id` | `char(36)` |  |  |
+| `overall_score` | `decimal(5,2)` |  |  |
+| `recommendation` | `enum('READY','ALMOST_READY','NEEDS_PRACTICE')` |  |  |
+| `summary` | `varchar(2000)` | yes | `NULL` |
+| `strengths_json` | `text` | yes |  |
+| `improvements_json` | `text` | yes |  |
+| `model` | `varchar(80)` |  |  |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_airep_session (session_id)`; `CONSTRAINT fk_airep_session FOREIGN KEY (session_id) REFERENCES ai_interview_sessions (id) ON DELETE CASCADE`
+
+<a id="interview_credits"></a>
+### `interview_credits`
+
+Free and paid AI interview credits per student
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `student_id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `free_used` | `int` |  | `'0'` |
+| `paid_balance` | `int` |  | `'0'` |
+| `version` | `int` |  | `'0'` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (student_id)`; `CONSTRAINT fk_icred_student FOREIGN KEY (student_id) REFERENCES college_students (id) ON DELETE CASCADE`
+
+<a id="interview_purchases"></a>
+### `interview_purchases`
+
+UPI purchases of interviews and their approval
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `student_id` | `char(36)` |  |  |
+| `user_id` | `char(36)` |  |  |
+| `quantity` | `int` |  |  |
+| `amount_paise` | `int` |  |  |
+| `status` | `enum('PENDING','SUBMITTED','PAID','REJECTED')` |  | `'PENDING'` |
+| `reference` | `varchar(20)` |  |  |
+| `utr` | `varchar(30)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `paid_at` | `datetime` | yes | `NULL` |
+| `submitted_at` | `datetime` | yes | `NULL` |
+| `reviewed_at` | `datetime` | yes | `NULL` |
+| `reviewed_by` | `char(36)` | yes | `NULL` |
+| `review_note` | `varchar(300)` | yes | `NULL` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uk_interview_purchase_reference (reference)`; `UNIQUE KEY uk_interview_purchase_utr (utr)`
+
+## Mock tests
+
+<a id="prep_tests"></a>
+### `prep_tests`
+
+Mock tests (platform ladder and college tests) as JSON
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `college_id` | `char(36)` | yes | `NULL` |
+| `title` | `varchar(200)` |  |  |
+| `description` | `text` | yes |  |
+| `company_tag` | `varchar(100)` | yes | `NULL` |
+| `level` | `varchar(10)` | yes | `NULL` |
+| `level_order` | `int` | yes | `NULL` |
+| `duration_minutes` | `int` |  |  |
+| `question_count` | `int` |  | `'0'` |
+| `coding_count` | `int` |  | `'0'` |
+| `total_marks` | `int` |  | `'0'` |
+| `definition_json` | `mediumtext` |  |  |
+| `published` | `tinyint(1)` |  | `'0'` |
+| `created_by` | `char(36)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`
+
+<a id="prep_attempts"></a>
+### `prep_attempts`
+
+Mock test attempts: answers, score, result, auto-submit reason
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `test_id` | `char(36)` |  |  |
+| `user_id` | `char(36)` |  |  |
+| `started_at` | `datetime` |  |  |
+| `deadline_at` | `datetime` |  |  |
+| `submitted_at` | `datetime` | yes | `NULL` |
+| `auto_submit_reason` | `varchar(30)` | yes | `NULL` |
+| `score` | `decimal(8,2)` | yes | `NULL` |
+| `max_score` | `int` |  | `'0'` |
+| `answers_json` | `mediumtext` | yes |  |
+| `result_json` | `mediumtext` | yes |  |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_prep_attempt_test FOREIGN KEY (test_id) REFERENCES prep_tests (id) ON DELETE CASCADE`; `CONSTRAINT fk_prep_attempt_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE`
+
+<a id="prep_proctor_events"></a>
+### `prep_proctor_events`
+
+Leaving-the-test events with screenshots
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `attempt_id` | `char(36)` |  |  |
+| `user_id` | `char(36)` |  |  |
+| `kind` | `varchar(20)` |  |  |
+| `seq` | `int` |  |  |
+| `occurred_at` | `datetime(3)` |  |  |
+| `client_at` | `datetime(3)` | yes | `NULL` |
+| `screenshot_path` | `varchar(255)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uk_prep_proctor_seq (attempt_id,seq)`; `CONSTRAINT fk_prep_proctor_attempt FOREIGN KEY (attempt_id) REFERENCES prep_attempts (id) ON DELETE CASCADE`
+
+## Off-campus jobs
+
+<a id="off_campus_jobs"></a>
+### `off_campus_jobs`
+
+Off-campus jobs: posted by the team or imported (Careerjet), field, eligibility, status
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `company_name` | `varchar(150)` |  |  |
+| `role_title` | `varchar(150)` |  |  |
+| `job_type` | `varchar(20)` |  |  |
+| `work_mode` | `varchar(20)` |  |  |
+| `field` | `varchar(30)` | yes | `NULL` |
+| `location` | `varchar(150)` | yes | `NULL` |
+| `ctc_min_lpa` | `decimal(8,2)` | yes | `NULL` |
+| `ctc_max_lpa` | `decimal(8,2)` | yes | `NULL` |
+| `stipend_per_month` | `int` | yes | `NULL` |
+| `description` | `text` | yes |  |
+| `skills` | `varchar(500)` | yes | `NULL` |
+| `apply_url` | `varchar(1000)` |  |  |
+| `apply_deadline` | `datetime` | yes | `NULL` |
+| `batch_years` | `varchar(100)` | yes | `NULL` |
+| `degree_keywords` | `varchar(300)` | yes | `NULL` |
+| `branch_keywords` | `varchar(300)` | yes | `NULL` |
+| `min_cgpa` | `decimal(4,2)` | yes | `NULL` |
+| `max_backlogs` | `int` | yes | `NULL` |
+| `college_ids` | `text` | yes |  |
+| `status` | `varchar(20)` |  | `'DRAFT'` |
+| `source` | `varchar(20)` |  | `'MANUAL'` |
+| `source_id` | `varchar(100)` | yes | `NULL` |
+| `source_posted_at` | `datetime` | yes | `NULL` |
+| `created_by` | `char(36)` | yes | `NULL` |
+| `published_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_ocj_source (source,source_id)`
+
+<a id="off_campus_applications"></a>
+### `off_campus_applications`
+
+A student's tracking of an off-campus job (saved, opened link, applied, offer)
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `job_id` | `char(36)` |  |  |
+| `student_id` | `char(36)` |  |  |
+| `user_id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `status` | `varchar(20)` | yes | `NULL` |
+| `saved` | `tinyint(1)` |  | `'0'` |
+| `offer_ctc_lpa` | `decimal(8,2)` | yes | `NULL` |
+| `note` | `varchar(500)` | yes | `NULL` |
+| `clicked_at` | `datetime` | yes | `NULL` |
+| `applied_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_oca_job_student (job_id,student_id)`; `CONSTRAINT fk_oca_job FOREIGN KEY (job_id) REFERENCES off_campus_jobs (id) ON DELETE CASCADE`; `CONSTRAINT fk_oca_student FOREIGN KEY (student_id) REFERENCES college_students (id) ON DELETE CASCADE`
+
+<a id="off_campus_noc_requests"></a>
+### `off_campus_noc_requests`
+
+NOC requests for off-campus offers: offer letter, decision, NOC file
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `application_id` | `char(36)` |  |  |
+| `job_id` | `char(36)` |  |  |
+| `student_id` | `char(36)` |  |  |
+| `user_id` | `char(36)` |  |  |
+| `college_id` | `char(36)` |  |  |
+| `offer_file_id` | `char(36)` |  |  |
+| `student_note` | `varchar(1000)` | yes | `NULL` |
+| `status` | `varchar(20)` |  | `'PENDING'` |
+| `decision_note` | `varchar(1000)` | yes | `NULL` |
+| `noc_file_id` | `char(36)` | yes | `NULL` |
+| `noc_generated` | `tinyint(1)` |  | `'0'` |
+| `college_offer_id` | `char(36)` | yes | `NULL` |
+| `decided_by` | `char(36)` | yes | `NULL` |
+| `decided_by_name` | `varchar(150)` | yes | `NULL` |
+| `decided_at` | `datetime` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_noc_application FOREIGN KEY (application_id) REFERENCES off_campus_applications (id) ON DELETE CASCADE`
+
+<a id="off_campus_interests"></a>
+### `off_campus_interests`
+
+Fields each student wants off-campus jobs in
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `student_id` | `char(36)` |  |  |
+| `fields` | `varchar(300)` |  |  |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (student_id)`; `CONSTRAINT fk_oci_student FOREIGN KEY (student_id) REFERENCES college_students (id) ON DELETE CASCADE`
+
+## Kept from the older platform (read only)
+
+<a id="organizations"></a>
+### `organizations`
+
+Organisation record behind each college (kept from the older platform; read by registration)
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `user_id` | `char(36)` |  |  |
+| `legal_name` | `varchar(200)` |  |  |
+| `org_type` | `enum('COLLEGE','UNIVERSITY','TRAINING_INSTITUTE','CONSULTANCY','COMPANY')` |  | `'COLLEGE'` |
+| `code_or_gstin` | `varchar(50)` | yes | `NULL` |
+| `contact_email` | `varchar(190)` | yes | `NULL` |
+| `contact_phone` | `varchar(20)` | yes | `NULL` |
+| `address` | `text` | yes |  |
+| `is_verified` | `tinyint(1)` |  | `'1'` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_org_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE`
+
+<a id="candidate_profiles"></a>
+### `candidate_profiles`
+
+Older candidate profile, read by the student drawer passport
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `user_id` | `char(36)` |  |  |
+| `domain_id` | `char(36)` | yes | `NULL` |
+| `experience_track` | `varchar(20)` |  | `'FRESHER'` |
+| `years_of_experience` | `int` | yes | `'0'` |
+| `uan_number` | `varchar(50)` | yes | `NULL` |
+| `verified_backend_experience_months` | `int` | yes | `'0'` |
+| `college_name` | `varchar(150)` | yes | `NULL` |
+| `degree_branch` | `varchar(100)` | yes | `NULL` |
+| `passout_year` | `int` | yes | `NULL` |
+| `skills_list` | `varchar(255)` | yes | `NULL` |
+| `resume_url` | `varchar(255)` | yes | `NULL` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `location` | `varchar(150)` | yes | `NULL` |
+| `headline` | `varchar(255)` | yes | `NULL` |
+| `linkedin_url` | `varchar(255)` | yes | `NULL` |
+| `github_url` | `varchar(255)` | yes | `NULL` |
+| `portfolio_url` | `varchar(255)` | yes | `NULL` |
+| `bio` | `text` | yes |  |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY user_id (user_id)`; `CONSTRAINT fk_cand_profile_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE`; `CONSTRAINT fk_candidate_profile_domain FOREIGN KEY (domain_id) REFERENCES domains (id) ON DELETE SET NULL`
+
+<a id="domains"></a>
+### `domains`
+
+Skill domains, read by the skill-gap report
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `name` | `varchar(100)` |  |  |
+| `code` | `varchar(100)` |  |  |
+| `description` | `text` | yes |  |
+| `active` | `tinyint(1)` |  | `'1'` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+| `updated_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY name (name)`; `UNIQUE KEY code (code)`
+
+<a id="skills"></a>
+### `skills`
+
+Skills, read by the skill-gap report
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `name` | `varchar(100)` |  |  |
+| `category` | `varchar(60)` | yes | `NULL` |
+
+Keys: `PRIMARY KEY (id)`; `UNIQUE KEY uq_skills_name (name)`
+
+<a id="candidate_scores"></a>
+### `candidate_scores`
+
+Older verified scores, read by the passport and skill-gap report
+
+| Column | Type | Null | Default |
+|---|---|---|---|
+| `id` | `char(36)` |  |  |
+| `candidate_id` | `char(36)` |  |  |
+| `exam_id` | `char(36)` |  |  |
+| `skill_id` | `char(36)` |  |  |
+| `score` | `decimal(5,2)` |  |  |
+| `max_score` | `decimal(5,2)` |  |  |
+| `passed` | `tinyint(1)` |  | `'1'` |
+| `created_at` | `datetime` |  | `CURRENT_TIMESTAMP` |
+
+Keys: `PRIMARY KEY (id)`; `CONSTRAINT fk_cand_score_skill FOREIGN KEY (skill_id) REFERENCES skills (id)`; `CONSTRAINT fk_cand_score_user FOREIGN KEY (candidate_id) REFERENCES users (id) ON DELETE CASCADE`

@@ -5,6 +5,7 @@ import { AppNotification } from '../../core/models/college.models';
 
 const ICONS: Record<string, { icon: string; tone: string }> = {
   CAMPUS_DRIVE: { icon: 'bi-briefcase', tone: 'blue' },
+  OFF_CAMPUS: { icon: 'bi-globe2', tone: 'violet' },
   DRIVE: { icon: 'bi-briefcase', tone: 'blue' },
   ANNOUNCEMENT: { icon: 'bi-megaphone', tone: 'violet' },
   INTERVIEW: { icon: 'bi-calendar-event', tone: 'amber' },
@@ -60,8 +61,7 @@ const ICONS: Record<string, { icon: string; tone: string }> = {
     .np-slate { background: var(--pm-soft, #f1f5f9); color: var(--pm-muted); }
     .np-item:not(.np-unread) .np-icon { opacity: .6; }
     .np-body { flex: 1; min-width: 0; display: grid; gap: .15rem; padding-right: .6rem; }
-    .np-msg { font-size: .83rem; line-height: 1.35; color: var(--pm-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-      overflow-wrap: anywhere; }
+    .np-msg { font-size: .83rem; line-height: 1.4; color: var(--pm-muted); white-space: normal; overflow-wrap: anywhere; } /* the whole message, never cut */
     .np-unread .np-msg { color: var(--pm-heading); font-weight: 600; }
     .np-time { font-size: .7rem; color: var(--pm-muted); }
     .np-unread .np-time { color: #2563eb; font-weight: 600; }

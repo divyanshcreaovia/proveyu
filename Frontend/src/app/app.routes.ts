@@ -38,6 +38,7 @@ export const routes: Routes = [
       { path: 'admins', title: 'Admins', loadComponent: () => import('./features/admin/pages/admins').then(m => m.AdminAdminsPage) },
       { path: 'payments', title: 'Interview payments', loadComponent: () => import('./features/admin/pages/payments').then(m => m.AdminPaymentsPage) },
       { path: 'mock-tests', title: 'Mock tests', loadComponent: () => import('./features/admin/pages/mock-tests').then(m => m.AdminMockTestsPage) },
+      { path: 'off-campus', title: 'Off-campus jobs', loadComponent: () => import('./features/admin/pages/off-campus').then(m => m.AdminOffCampusPage) },
       { path: 'prep', redirectTo: 'mock-tests' },
       { path: 'proctoring', title: 'Proctoring', loadComponent: () => import('./features/admin/pages/proctoring').then(m => m.AdminProctoringPage) },
       { path: 'support', title: 'Support', loadComponent: () => import('./features/admin/pages/support').then(m => m.AdminSupportPage) },
@@ -72,6 +73,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', title: 'Dashboard', loadComponent: () => import('./features/student/portal/dashboard').then(m => m.StudentDashboard) },
       { path: 'drives', title: 'Campus drives', loadComponent: () => import('./features/student/portal/drives').then(m => m.StudentDrives) },
+      { path: 'off-campus', title: 'Off-campus jobs', loadComponent: () => import('./features/student/portal/off-campus').then(m => m.StudentOffCampus) },
       { path: 'applications', title: 'My applications', loadComponent: () => import('./features/student/portal/applications').then(m => m.StudentApplications) },
       { path: 'interviews', title: 'Interviews', loadComponent: () => import('./features/student/portal/interviews').then(m => m.StudentInterviews) },
       { path: 'offers', title: 'Offers', loadComponent: () => import('./features/student/portal/offers').then(m => m.StudentOffers) },
@@ -144,6 +146,7 @@ export const routes: Routes = [
       { path: 'team', title: 'Team & roles', loadComponent: () => import('./features/college/team/team').then(m => m.Team) },
       { path: 'communication', title: 'Communication', loadComponent: () => import('./features/college/communication/communication').then(m => m.Communication) },
       { path: 'reports', title: 'Reports & analytics', loadComponent: () => import('./features/college/reports/reports').then(m => m.Reports) },
+      { path: 'off-campus', title: 'Off-campus', loadComponent: () => import('./features/college/off-campus/off-campus').then(m => m.CollegeOffCampus) },
       { path: 'mock-tests', title: 'Mock tests', loadComponent: () => import('./features/college/prep/college-mock-tests').then(m => m.CollegeMockTests) },
       {
         path: 'audit', title: 'Audit log', canActivate: [roleGuard], data: { roles: COLLEGE_ADMIN },

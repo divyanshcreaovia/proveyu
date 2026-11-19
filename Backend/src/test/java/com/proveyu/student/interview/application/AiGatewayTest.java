@@ -63,6 +63,101 @@ class AiGatewayTest {
         assertThat(AiGateway.isSilent(new byte[]{1, 2, 3})).isFalse(); // not a WAV: let the speech service decide
     }
 
+    /** Fake OpenAI-compatible server: "key-a" is always rate limited, "key-b" answers. Records which key each call used. */
+    @Test
+    void aRateLimitedKeyFallsBackToTheNextKeyAndRests() throws Exception {
+        java.util.List<String> used = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
+        com.sun.net.httpserver.HttpServer server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/v1/chat/completions", ex -> {
+            String key = ex.getRequestHeaders().getFirst("Authorization").substring("Bearer ".length());
+            used.add(key);
+            byte[] body = "key-a".equals(key) ? "{\"error\":\"rate limit\"}".getBytes()
+                    : "{\"choices\":[{\"finish_reason\":\"stop\",\"message\":{\"content\":\"{\\\"ok\\\":true}\"}}],\"usage\":{}}".getBytes();
+            if ("key-a".equals(key)) ex.getResponseHeaders().add("retry-after", "60");
+            ex.sendResponseHeaders("key-a".equals(key) ? 429 : 200, body.length);
+            ex.getResponseBody().write(body);
+            ex.close();
+        });
+        server.start();
+        try {
+            String url = "http://127.0.0.1:" + server.getAddress().getPort() + "/v1";
+            AiGateway g = new AiGateway(new ObjectMapper(), "http://localhost:1", "local-small", "", "http://localhost:1", "http://localhost:1", 5, 2,
+                    " key-a , key-b ", url, "cloud-model", "", "whisper-x", "", "", "low", 4, false);
+            String schema = "{\"type\":\"object\",\"properties\":{\"ok\":{\"type\":\"boolean\"}}}";
+
+            assertThat(g.chatJson("s", "u", 0.2, schema).path("ok").asBoolean()).isTrue();
+            assertThat(used).containsExactly("key-a", "key-b");
+
+            // key-a now rests for its retry-after, so the next call goes straight to key-b
+            assertThat(g.chatJson("s", "u", 0.2, schema).path("ok").asBoolean()).isTrue();
+            assertThat(used).containsExactly("key-a", "key-b", "key-b");
+        } finally {
+            server.stop(0);
+        }
+    }
+
+    /** Groq's "json_validate_failed" is transient: two failures in a row are retried and the call still ends on the cloud model. */
+    @Test
+    void aFailedJsonCheckIsRetriedTwice() throws Exception {
+        java.util.concurrent.atomic.AtomicInteger calls = new java.util.concurrent.atomic.AtomicInteger();
+        com.sun.net.httpserver.HttpServer server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/v1/chat/completions", ex -> {
+            boolean fail = calls.incrementAndGet() <= 2;
+            byte[] body = fail ? "{\"error\":{\"code\":\"json_validate_failed\",\"message\":\"Failed to validate JSON.\"}}".getBytes()
+                    : "{\"choices\":[{\"finish_reason\":\"stop\",\"message\":{\"content\":\"{\\\"ok\\\":true}\"}}],\"usage\":{}}".getBytes();
+            ex.sendResponseHeaders(fail ? 400 : 200, body.length);
+            ex.getResponseBody().write(body);
+            ex.close();
+        });
+        server.start();
+        try {
+            AiGateway g = new AiGateway(new ObjectMapper(), "http://localhost:1", "local-small", "", "http://localhost:1", "http://localhost:1", 5, 2,
+                    "key-a", "http://127.0.0.1:" + server.getAddress().getPort() + "/v1", "cloud-model", "", "whisper-x", "", "", "low", 4, false);
+            assertThat(g.chatJson("s", "u", 0.2, "{\"type\":\"object\",\"properties\":{\"ok\":{\"type\":\"boolean\"}}}").path("ok").asBoolean()).isTrue();
+            assertThat(calls.get()).isEqualTo(3);
+        } finally {
+            server.stop(0);
+        }
+    }
+
+    /** Three healthy keys are used in turn, so no single key carries all the load. */
+    @Test
+    void severalKeysAreUsedInTurn() throws Exception {
+        java.util.List<String> used = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
+        com.sun.net.httpserver.HttpServer server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/v1/chat/completions", ex -> {
+            used.add(ex.getRequestHeaders().getFirst("Authorization").substring("Bearer ".length()));
+            byte[] body = "{\"choices\":[{\"finish_reason\":\"stop\",\"message\":{\"content\":\"{\\\"ok\\\":true}\"}}],\"usage\":{}}".getBytes();
+            ex.sendResponseHeaders(200, body.length);
+            ex.getResponseBody().write(body);
+            ex.close();
+        });
+        server.start();
+        try {
+            AiGateway g = new AiGateway(new ObjectMapper(), "http://localhost:1", "local-small", "", "http://localhost:1", "http://localhost:1", 5, 2,
+                    "k1,k2,k3", "http://127.0.0.1:" + server.getAddress().getPort() + "/v1", "cloud-model", "", "whisper-x", "", "", "low", 4, false);
+            String schema = "{\"type\":\"object\",\"properties\":{\"ok\":{\"type\":\"boolean\"}}}";
+            for (int i = 0; i < 4; i++) g.chatJson("s", "u", 0.2, schema);
+            assertThat(used).containsExactly("k1", "k2", "k3", "k1");
+        } finally {
+            server.stop(0);
+        }
+    }
+
+    /** AI_LOCAL_MODELS_ENABLED=false: nothing local is ever called; without a Groq key the AI says it is not set up. */
+    @Test
+    void localModelsOffNeverCallsLocalServices() {
+        AiGateway off = new AiGateway(new ObjectMapper(), "http://localhost:1", "local-small", "", "http://localhost:1", "http://localhost:1", 5, 2,
+                "", "https://api.example.com/v1", "cloud-model", "", "whisper-x", "", "", "low", 4, false);
+        assertThat(off.localModels()).isFalse();
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> off.chatJson("s", "u", 0.2, "{\"type\":\"object\",\"properties\":{}}"))
+                .hasMessageContaining("not set up");
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> off.speak("Hello")).hasMessageContaining("turned off");
+        assertThat(off.health().textToSpeech()).isFalse();
+        assertThat(off.health().llm()).isFalse();
+        assertThat(withCloud.localModels()).isTrue();
+    }
+
     @Test
     void segmentsWhisperMarksAsSilenceAreDropped() throws Exception {
         ObjectMapper m = new ObjectMapper();

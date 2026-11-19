@@ -39,7 +39,7 @@ export class ForColleges {
     {
       icon: 'bi-award', tone: 'tone-amber', title: 'Offers & placement policy',
       text: 'Offers recorded once, numbers always correct.',
-      points: ['One-offer, dream upgrade, maximum offers and minimum hike rules', 'Offer letters as PDF; students accept or decline online', 'Placed status and highest CTC worked out automatically', 'Every policy override is logged'],
+      points: ['One-offer, dream upgrade, maximum offers and minimum hike rules', 'Offer letters as PDF; students accept or decline online', 'Placed status and highest CTC worked out automatically', 'Off-campus offers reported by students, with NOCs issued on your letterhead', 'Every policy override is logged'],
     },
     {
       icon: 'bi-megaphone', tone: 'tone-violet', title: 'Communication',

@@ -67,6 +67,12 @@ def main():
         d = json.load(open(f))
         defs[d["title"]] = d
     s, r = call("POST", "/api/v1/auth/login", {"email": STUDENT[0], "password": STUDENT[1]})
+    if s != 200:  # a seeded student who never activated the account: set the password through the dev OTP reset
+        f, fr = call("POST", "/api/v1/auth/forgot-password", {"email": STUDENT[0]})
+        otp = (fr or {}).get("data", {}).get("devOtp") if f == 200 else None
+        if otp:
+            call("POST", "/api/v1/auth/reset-password", {"email": STUDENT[0], "resetToken": otp, "newPassword": STUDENT[1]})
+            s, r = call("POST", "/api/v1/auth/login", {"email": STUDENT[0], "password": STUDENT[1]})
     if s != 200:
         raise SystemExit(f"login failed for {STUDENT[0]}")
     t = r["data"]["token"]

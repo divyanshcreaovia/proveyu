@@ -1,7 +1,7 @@
 -- =====================================================================================================
 -- finaluseddbschema.sql : ProveYu final database schema (MySQL 8, utf8mb4)
--- Only the 49 tables the application code uses (JPA entities and SQL in Backend/src/main/java).
--- Generated from the live dev database proveyu_college (Flyway version 34), structure only, no data.
+-- Only the 53 tables the application code uses (JPA entities and SQL in Backend/src/main/java).
+-- Generated from the live dev database proveyu_college (Flyway version 38), structure only, no data.
 -- Not included: flyway_schema_history (Flyway creates it) and 44 idle tables no code reads or writes.
 -- Change: candidate_scores.exam_id keeps its column but the foreign key to the idle `exams` table is dropped.
 -- =====================================================================================================
@@ -154,6 +154,7 @@ CREATE TABLE `college_profiles` (
   `max_offers` int NOT NULL DEFAULT '2',
   `upgrade_min_hike_percent` decimal(5,2) NOT NULL DEFAULT '0.00',
   `block_after_accept` tinyint(1) NOT NULL DEFAULT '1',
+  `off_campus_policy` enum('ALLOW','BLOCK_PLACED','DISABLED') NOT NULL DEFAULT 'ALLOW',
   `brand_color` varchar(20) DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -911,6 +912,98 @@ CREATE TABLE `prep_proctor_events` (
   UNIQUE KEY `uk_prep_proctor_seq` (`attempt_id`,`seq`),
   KEY `idx_prep_proctor_attempt` (`attempt_id`,`occurred_at`),
   CONSTRAINT `fk_prep_proctor_attempt` FOREIGN KEY (`attempt_id`) REFERENCES `prep_attempts` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `off_campus_jobs` (
+  `id` char(36) NOT NULL,
+  `company_name` varchar(150) NOT NULL,
+  `role_title` varchar(150) NOT NULL,
+  `job_type` varchar(20) NOT NULL,
+  `work_mode` varchar(20) NOT NULL,
+  `field` varchar(30) DEFAULT NULL,
+  `location` varchar(150) DEFAULT NULL,
+  `ctc_min_lpa` decimal(8,2) DEFAULT NULL,
+  `ctc_max_lpa` decimal(8,2) DEFAULT NULL,
+  `stipend_per_month` int DEFAULT NULL,
+  `description` text,
+  `skills` varchar(500) DEFAULT NULL,
+  `apply_url` varchar(1000) NOT NULL,
+  `apply_deadline` datetime DEFAULT NULL,
+  `batch_years` varchar(100) DEFAULT NULL,
+  `degree_keywords` varchar(300) DEFAULT NULL,
+  `branch_keywords` varchar(300) DEFAULT NULL,
+  `min_cgpa` decimal(4,2) DEFAULT NULL,
+  `max_backlogs` int DEFAULT NULL,
+  `college_ids` text,
+  `status` varchar(20) NOT NULL DEFAULT 'DRAFT',
+  `source` varchar(20) NOT NULL DEFAULT 'MANUAL',
+  `source_id` varchar(100) DEFAULT NULL,
+  `source_posted_at` datetime DEFAULT NULL,
+  `created_by` char(36) DEFAULT NULL,
+  `published_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_ocj_source` (`source`,`source_id`),
+  KEY `idx_ocj_status_deadline` (`status`,`apply_deadline`),
+  KEY `idx_ocj_source_status` (`source`,`status`,`source_posted_at`),
+  KEY `idx_ocj_field` (`field`,`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `off_campus_applications` (
+  `id` char(36) NOT NULL,
+  `job_id` char(36) NOT NULL,
+  `student_id` char(36) NOT NULL,
+  `user_id` char(36) NOT NULL,
+  `college_id` char(36) NOT NULL,
+  `status` varchar(20) DEFAULT NULL,
+  `saved` tinyint(1) NOT NULL DEFAULT '0',
+  `offer_ctc_lpa` decimal(8,2) DEFAULT NULL,
+  `note` varchar(500) DEFAULT NULL,
+  `clicked_at` datetime DEFAULT NULL,
+  `applied_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_oca_job_student` (`job_id`,`student_id`),
+  KEY `idx_oca_college_status` (`college_id`,`status`),
+  KEY `idx_oca_user` (`user_id`),
+  KEY `fk_oca_student` (`student_id`),
+  CONSTRAINT `fk_oca_job` FOREIGN KEY (`job_id`) REFERENCES `off_campus_jobs` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_oca_student` FOREIGN KEY (`student_id`) REFERENCES `college_students` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `off_campus_noc_requests` (
+  `id` char(36) NOT NULL,
+  `application_id` char(36) NOT NULL,
+  `job_id` char(36) NOT NULL,
+  `student_id` char(36) NOT NULL,
+  `user_id` char(36) NOT NULL,
+  `college_id` char(36) NOT NULL,
+  `offer_file_id` char(36) NOT NULL,
+  `student_note` varchar(1000) DEFAULT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'PENDING',
+  `decision_note` varchar(1000) DEFAULT NULL,
+  `noc_file_id` char(36) DEFAULT NULL,
+  `noc_generated` tinyint(1) NOT NULL DEFAULT '0',
+  `college_offer_id` char(36) DEFAULT NULL,
+  `decided_by` char(36) DEFAULT NULL,
+  `decided_by_name` varchar(150) DEFAULT NULL,
+  `decided_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_noc_college_status` (`college_id`,`status`,`created_at`),
+  KEY `idx_noc_application` (`application_id`),
+  CONSTRAINT `fk_noc_application` FOREIGN KEY (`application_id`) REFERENCES `off_campus_applications` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `off_campus_interests` (
+  `student_id` char(36) NOT NULL,
+  `fields` varchar(300) NOT NULL,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`student_id`),
+  CONSTRAINT `fk_oci_student` FOREIGN KEY (`student_id`) REFERENCES `college_students` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- -----------------------------------------------------------------------------------------------------

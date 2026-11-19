@@ -53,6 +53,10 @@ public class CollegeProfile {
     @Column(name = "upgrade_min_hike_percent") private BigDecimal upgradeMinHikePercent = BigDecimal.ZERO;
     @Builder.Default
     @Column(name = "block_after_accept") private boolean blockAfterAccept = true;
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "off_campus_policy") private com.proveyu.offcampus.domain.OffCampusModel.Policy offCampusPolicy =
+            com.proveyu.offcampus.domain.OffCampusModel.Policy.ALLOW;
     @Column(name = "brand_color") private String brandColor;
     @CreationTimestamp @Column(name = "created_at", updatable = false) private Instant createdAt;
     @UpdateTimestamp @Column(name = "updated_at") private Instant updatedAt;

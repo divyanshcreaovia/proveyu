@@ -61,7 +61,11 @@ export interface CollegeProfile {
   website?: string; tpoName?: string; tpoEmail?: string; tpoPhone?: string; approvalStatus: ApprovalStatus; currentAcademicYear?: string;
   hasLogo: boolean; brandColor?: string;
 }
-export interface Policy { policyMode: PolicyMode; maxApplications: number | null; maxOffers: number; upgradeMinHikePercent: number; blockAfterAccept: boolean; }
+export type OffCampusPolicy = 'ALLOW' | 'BLOCK_PLACED' | 'DISABLED';
+export interface Policy {
+  policyMode: PolicyMode; maxApplications: number | null; maxOffers: number; upgradeMinHikePercent: number; blockAfterAccept: boolean;
+  offCampusPolicy: OffCampusPolicy;
+}
 export interface Branch { id: string; code: string; name: string; students: number; }
 export interface Batch { id: string; gradYear: number; label: string; active: boolean; students: number; }
 export interface Tier { id?: string | null; name: string; tierRank: number; minCtcLpa: number; }

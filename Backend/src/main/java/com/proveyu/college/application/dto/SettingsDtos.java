@@ -1,5 +1,6 @@
 package com.proveyu.college.application.dto;
 
+import com.proveyu.offcampus.domain.OffCampusModel;
 import com.proveyu.college.domain.CollegeEnums.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -22,7 +23,8 @@ public final class SettingsDtos {
                                  @Pattern(regexp = "^#[0-9a-fA-F]{6}$", message = "Use a hex colour like #2563eb") String brandColor) {}
 
     public record PolicyDto(@NotNull PolicyMode policyMode, @Min(1) @Max(200) Integer maxApplications, @NotNull @Min(1) @Max(10) Integer maxOffers,
-                            @NotNull @DecimalMin("0") @DecimalMax("500") BigDecimal upgradeMinHikePercent, boolean blockAfterAccept) {}
+                            @NotNull @DecimalMin("0") @DecimalMax("500") BigDecimal upgradeMinHikePercent, boolean blockAfterAccept,
+                            OffCampusModel.Policy offCampusPolicy) {} // offCampusPolicy null = keep the current value
 
     public record BranchRequest(@NotBlank @Size(max = 30) @Pattern(regexp = "^[A-Za-z0-9_-]+$", message = "Letters, numbers, - and _ only") String code,
                                 @NotBlank @Size(max = 150) String name) {}

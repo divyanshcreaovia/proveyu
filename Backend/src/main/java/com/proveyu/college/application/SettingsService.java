@@ -79,13 +79,16 @@ public class SettingsService {
     @Transactional(readOnly = true)
     public PolicyDto policy(CollegeContext ctx) {
         CollegeProfile p = directory.profile(ctx.collegeId());
-        return new PolicyDto(p.getPolicyMode(), p.getMaxApplications(), p.getMaxOffers(), p.getUpgradeMinHikePercent(), p.isBlockAfterAccept());
+        return new PolicyDto(p.getPolicyMode(), p.getMaxApplications(), p.getMaxOffers(), p.getUpgradeMinHikePercent(), p.isBlockAfterAccept(),
+                p.getOffCampusPolicy());
     }
 
     @Transactional
     public PolicyDto updatePolicy(CollegeContext ctx, PolicyDto r) {
         CollegeProfile p = directory.profile(ctx.collegeId());
-        String before = p.getPolicyMode() + "/maxApps=" + p.getMaxApplications() + "/maxOffers=" + p.getMaxOffers() + "/hike=" + p.getUpgradeMinHikePercent();
+        String before = p.getPolicyMode() + "/maxApps=" + p.getMaxApplications() + "/maxOffers=" + p.getMaxOffers() + "/hike=" + p.getUpgradeMinHikePercent()
+                + "/offCampus=" + p.getOffCampusPolicy();
+        if (r.offCampusPolicy() != null) p.setOffCampusPolicy(r.offCampusPolicy());
         p.setPolicyMode(r.policyMode());
         p.setMaxApplications(r.maxApplications());
         p.setMaxOffers(r.maxOffers());

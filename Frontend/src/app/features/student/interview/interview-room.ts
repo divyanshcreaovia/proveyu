@@ -356,6 +356,8 @@ export class InterviewRoom implements OnInit, OnDestroy {
     this.hint.set('');
     this.phase.set('asking');
     const done = () => { if (this.phase() === 'asking') this.afterQuestion(); };
+    // local voice switched off on the server (AI_LOCAL_MODELS_ENABLED=false): the browser reads the question itself
+    if (this.view()?.speechAvailable === false) { this.browserVoice(q.text, done); return; }
     this.api.questionSpeech(q.id).subscribe({
       next: url => {
         this.audioUrl = url;

@@ -1,1568 +1,358 @@
-# PROVEYU API Specification & Payload Documentation
-
-This document provides a comprehensive, production-grade specification of every REST API in the **PROVEYU** backend platform, including URI paths, HTTP methods, authorization headers, request parameters, request JSON payloads, and response JSON formats.
-
----
-
-## Table of Contents
-1. [Standard API Response Format (`ApiResponse<T>`)](#standard-api-response-format-apiresponset)
-2. [1. Authentication & Session Module (`/api/v1/auth`)](#1-authentication--session-module-apiv1auth)
-   * 1.1 User Registration (`POST /register`)
-   * 1.2 User Login (`POST /login`)
-   * 1.3 Request Password Reset OTP (`POST /forgot-password`)
-   * 1.4 Verify Reset OTP Token (`POST /verify-otp`)
-   * 1.5 Set New Password (`POST /reset-password`)
-   * 1.6 User Logout (`POST /logout`)
-3. [2. Candidate Profile & Performance Passport Module (`/api/v1/candidates`)](#2-candidate-profile--performance-passport-module-apiv1candidates)
-   * 2.1 Upsert Candidate Profile (`POST /profile`)
-   * 2.2 Get Candidate Profile (`GET /profile`)
-   * 2.3 Get Candidate Score Passport (`GET /passport`)
-   * 2.4 Upload Candidate PDF Resume (`POST /resume/upload`)
-   * 2.5 View / Download Candidate Resume File (`GET /resume/download/{filename}`)
-4. [3. Candidate Settings & Notifications Module (`/api/v1/candidates/settings`, `/api/v1/notifications`)](#3-candidate-settings--notifications-module)
-   * 3.1 Get User Notification Settings (`GET /candidates/settings`)
-   * 3.2 Update User Notification Settings (`PUT /candidates/settings`)
-   * 3.3 Get In-App Notifications Feed (`GET /notifications`)
-   * 3.4 Mark In-App Notification as Read (`PUT /notifications/{id}/read`)
-5. [4. Assessment & Examination Module (`/api/v1/exams`)](#4-assessment--examination-module-apiv1exams)
-   * 4.1 List Active Assessment Exams (`GET /exams`)
-6. [5. Slot Booking, Payments & Admit Card Issuance Module (`/api/v1/bookings`, `/api/v1/payments`, `/api/v1/admit-cards`)](#5-slot-booking-payments--admit-card-issuance-module)
-   * 5.1 Reserve Exam Slot (`POST /bookings`)
-   * 5.2 Create UPI / Gateway Payment Order (`POST /payments/create-order`)
-   * 5.3 Verify Payment & Issue Dynamic PDF Admit Card (`POST /payments/verify`)
-   * 5.4 Fetch Booking Admit Card Metadata (`GET /payments/admit-card/{bookingId}`)
-   * 5.5 Download Scannable Admit Card PDF (`GET /admit-cards/download/{filename}`)
-   * 5.6 Razorpay Asynchronous Payment Webhook (`POST /payments/webhook`)
-7. [6. Recruiter Candidate Discovery & Corporate Verification Module (`/api/v1/recruiters`)](#6-recruiter-candidate-discovery--corporate-verification-module)
-   * 6.1 Search Verified Candidates (`GET /recruiters/candidates`)
-   * 6.2 Get Recruiter Corporate Profile (`GET /recruiters/profile`)
-   * 6.3 Update Recruiter Corporate Profile (`PUT /recruiters/profile`)
-   * 6.4 Verify Company GSTIN (`POST /recruiters/companies/verify-gst`)
-8. [7. Recruiter Interview Invitations Module (`/api/v1/interviews`)](#7-recruiter-interview-invitations-module-apiv1interviews)
-   * 7.1 Dispatch Interview Invitation (`POST /interviews/invite`)
-   * 7.2 Candidate View Received Interview Invites (`GET /interviews/candidate-invites`)
-   * 7.3 Recruiter View Sent Interview Invites (`GET /interviews/sent`)
-   * 7.4 Candidate Respond to Interview Invite (`PUT /interviews/{inviteId}/respond`)
-   * 7.5 Update Candidate Placement Status (`PUT /interviews/{inviteId}/placement-status`)
-9. [8. Real-Time Chat & File Messaging Module (`/api/v1/chat`, `/ws/chat`)](#8-real-time-chat--file-messaging-module-apiv1chat-wschat)
-   * 8.1 Send Text Chat Message (`POST /chat/messages`)
-   * 8.2 Send File Attachment Message (`POST /chat/messages/file`)
-   * 8.3 Get 1-on-1 Conversation History (`GET /chat/messages/{userId}`)
-   * 8.4 Get Unread Messages List (`GET /chat/unread`)
-   * 8.5 Get Unread Notification Summary (`GET /chat/notifications`)
-   * 8.6 Mark Message as Read (`PATCH /chat/messages/{messageId}/read`)
-   * 8.7 Download Chat File Attachment (`GET /chat/messages/{messageId}/file`)
-10. [9. Institutional Organization Accounts (`/api/v1/organizations`)](#9-institutional-organization-accounts-apiv1organizations)
-    * 9.1 Create or Update Organization Profile (`POST /organizations/profile`)
-    * 9.2 Onboard Candidate Under Organization (`POST /organizations/candidates`)
-    * 9.3 Get Enrolled Candidates (`GET /organizations/candidates`)
-11. [10. College Placement Management Subsystem & Dynamic Custom Roles (`/api/v1/college`)](#10-college-placement-management-subsystem--dynamic-custom-roles)
-    * 10.1 Resolve Logged-In User Placement Context (`GET /college/team/context`)
-    * 10.2 Download Student Import Roster Template (`GET /college/students/template`)
-    * 10.3 Bulk Student Roster Upload & Ingestion (`POST /college/students/bulk-upload`)
-    * 10.4 Get Paginated Student Roster (`GET /college/students`)
-    * 10.5 Get Individual Student Profile (`GET /college/students/{studentId}`)
-    * 10.6 Create Student Profile Manually (`POST /college/students`)
-    * 10.7 Update Student Profile (`PUT /college/students/{studentId}`)
-    * 10.8 Bulk Record Placement Offers (`POST /college/students/bulk-placement`)
-    * 10.9 Get Student Self Profile (`GET /college/students/my-profile`)
-    * 10.10 Update Student Self Profile (`PUT /college/students/my-profile`)
-    * 10.11 Placement KPI Dashboard Analytics (`GET /college/students/dashboard/kpi`)
-    * 10.12 List College Placement Drives (`GET /college/placements`)
-    * 10.13 Get Placement Drive Details (`GET /college/placements/{driveId}`)
-    * 10.14 Schedule New Placement Drive (`POST /college/placements`)
-    * 10.15 Update Placement Drive (`PUT /college/placements/{driveId}`)
-    * 10.16 Delete Placement Drive (`DELETE /college/placements/{driveId}`)
-    * 10.17 List College Placement Team Members (`GET /college/team`)
-    * 10.18 Invite Placement Team Member (`POST /college/team/invite`)
-    * 10.19 Update Team Member Privileges (`PUT /college/team/{memberId}`)
-    * 10.20 Remove Team Member (`DELETE /college/team/{memberId}`)
-    * 10.21 List Defined Custom Dynamic Roles (`GET /college/roles`)
-    * 10.22 Get Custom Dynamic Role by ID (`GET /college/roles/{roleId}`)
-    * 10.23 Create Custom Dynamic Role (`POST /college/roles`)
-    * 10.24 Update Custom Dynamic Role (`PUT /college/roles/{roleId}`)
-    * 10.25 Delete Custom Dynamic Role (`DELETE /college/roles/{roleId}`)
-12. [11. Platform Administration Module (`/api/v1/admin`)](#11-platform-administration-module-apiv1admin)
-    * 11.1 Create System Administrator (`POST /admin/users/create-admin`)
-    * 11.2 Configure Examination Catalog (`POST /admin/exams`)
-    * 11.3 Get Global Platform Statistics (`GET /admin/stats`)
-
----
-
-## Standard API Response Format (`ApiResponse<T>`)
-
-Every API across the PROVEYU backend delivers responses encapsulated within a standardized JSON envelope:
-
-```json
-{
-  "success": true,
-  "message": "Operation summary message",
-  "data": { ... },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:00:00Z"
-}
-```
-
-When an error occurs, `success` evaluates to `false`, `data` is `null`, and `errorCode` identifies the domain error constraint:
-
-```json
-{
-  "success": false,
-  "message": "Too many requests. Please slow down and try again after 1 minute.",
-  "data": null,
-  "errorCode": "RATE_LIMIT_EXCEEDED",
-  "timestamp": "2026-10-20T18:00:00Z"
-}
-```
-
----
-
-## 1. Authentication & Session Module (`/api/v1/auth`)
-
-### 1.1 User Registration
-* **Endpoint**: `POST /api/v1/auth/register`
-* **Security**: Public
-* **Headers**: `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "email": "candidate_proveyu@example.com",
-  "password": "Password123!",
-  "fullName": "Aarav Sharma",
-  "phone": "+919876543210",
-  "role": "CANDIDATE"
-}
-```
-* **Success Response (`201 Created`)**:
-```json
-{
-  "success": true,
-  "message": "User registered successfully",
-  "data": {
-    "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiMDgwM2M2OC05MGQ3LTQyNmYtOTFhMS1iYmY0NzJhMjY5ZTQiLCJlbWFpbCI6ImNhbmRpZGF0ZV9wcm92ZXl1QGV4YW1wbGUuY29tIiwicm9sZSI6IkNBTkRJREFURSJ9...",
-    "userId": "b0803c68-90d7-426f-91a1-bbf472a269e4",
-    "email": "candidate_proveyu@example.com",
-    "fullName": "Aarav Sharma",
-    "role": "CANDIDATE"
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:00:00Z"
-}
-```
-
----
-
-### 1.2 User Login
-* **Endpoint**: `POST /api/v1/auth/login`
-* **Security**: Public
-* **Headers**: `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "email": "candidate_proveyu@example.com",
-  "password": "Password123!"
-}
-```
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "User authenticated successfully",
-  "data": {
-    "token": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJiMDgwM2M2OC05MGQ3LTQyNmYtOTFhMS1iYmY0NzJhMjY5ZTQiLCJlbWFpbCI6ImNhbmRpZGF0ZV9wcm92ZXl1QGV4YW1wbGUuY29tIiwicm9sZSI6IkNBTkRJREFURSJ9...",
-    "userId": "b0803c68-90d7-426f-91a1-bbf472a269e4",
-    "email": "candidate_proveyu@example.com",
-    "fullName": "Aarav Sharma",
-    "role": "CANDIDATE"
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:00:05Z"
-}
-```
-
----
-
-### 1.3 Request Password Reset OTP
-* **Endpoint**: `POST /api/v1/auth/forgot-password`
-* **Security**: Public
-* **Headers**: `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "email": "candidate_proveyu@example.com"
-}
-```
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Password reset instructions sent",
-  "data": {
-    "email": "candidate_proveyu@example.com",
-    "resetToken": "829104",
-    "message": "Password reset token generated. Valid for 15 minutes."
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:00:10Z"
-}
-```
-
----
-
-### 1.4 Verify Reset OTP Token
-* **Endpoint**: `POST /api/v1/auth/verify-otp`
-* **Security**: Public
-* **Headers**: `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "email": "candidate_proveyu@example.com",
-  "otp": "829104"
-}
-```
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "OTP verified successfully",
-  "data": true,
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:00:15Z"
-}
-```
-
----
-
-### 1.5 Set New Password
-* **Endpoint**: `POST /api/v1/auth/reset-password`
-* **Security**: Public
-* **Headers**: `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "resetToken": "829104",
-  "newPassword": "NewSecurePassword123!"
-}
-```
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Password reset successful",
-  "data": "Password has been reset successfully",
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:00:20Z"
-}
-```
-
----
-
-### 1.6 User Logout
-* **Endpoint**: `POST /api/v1/auth/logout`
-* **Security**: Authenticated
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Logged out successfully",
-  "data": null,
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:00:25Z"
-}
-```
-
----
-
-## 2. Candidate Profile & Performance Passport Module (`/api/v1/candidates`)
-
-### 2.1 Upsert Candidate Profile
-* **Endpoint**: `POST /api/v1/candidates/profile`
-* **Security**: Authenticated (`Role.CANDIDATE`)
-* **Headers**: `Authorization: Bearer <candidate_token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "fullName": "Aarav Patel",
-  "phone": "+91 98765 43210",
-  "experienceTrack": "EXPERIENCED",
-  "yearsOfExperience": 4,
-  "uanNumber": "100918273645",
-  "collegeName": null,
-  "degreeBranch": null,
-  "passoutYear": null,
-  "location": "Bengaluru, Karnataka",
-  "headline": "Senior Software Engineer",
-  "linkedinUrl": "https://linkedin.com/in/aarav",
-  "githubUrl": "https://github.com/aarav",
-  "portfolioUrl": "https://aarav.dev",
-  "bio": "Passionate about high-throughput Spring Boot microservices.",
-  "skillsList": "Java, Spring Boot, MySQL, Microservices",
-  "resumeUrl": "https://s3.amazonaws.com/proveyu-resumes/aarav.pdf"
-}
-```
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Candidate profile updated successfully",
-  "data": {
-    "id": "c54b7323-0f1e-46f2-aff8-f0da2631b86e",
-    "userId": "b0803c68-90d7-426f-91a1-bbf472a269e4",
-    "fullName": "Aarav Patel",
-    "email": "aarav@example.com",
-    "phone": "+91 98765 43210",
-    "experienceTrack": "EXPERIENCED",
-    "yearsOfExperience": 4,
-    "uanNumber": "100918273645",
-    "collegeName": null,
-    "degreeBranch": null,
-    "passoutYear": null,
-    "location": "Bengaluru, Karnataka",
-    "headline": "Senior Software Engineer",
-    "linkedinUrl": "https://linkedin.com/in/aarav",
-    "githubUrl": "https://github.com/aarav",
-    "portfolioUrl": "https://aarav.dev",
-    "bio": "Passionate about high-throughput Spring Boot microservices.",
-    "skillsList": "Java, Spring Boot, MySQL, Microservices",
-    "resumeUrl": "https://s3.amazonaws.com/proveyu-resumes/aarav.pdf",
-    "updatedAt": "2026-10-20T18:00:30Z"
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:00:30Z"
-}
-```
-
----
-
-### 2.2 Get Candidate Profile
-* **Endpoint**: `GET /api/v1/candidates/profile`
-* **Security**: Authenticated (`Role.CANDIDATE`)
-* **Headers**: `Authorization: Bearer <candidate_token>`
-* **Success Response (`200 OK`)**: Same data model as `2.1 Upsert Candidate Profile`.
-
----
-
-### 2.3 Get Candidate Score Passport
-* **Endpoint**: `GET /api/v1/candidates/passport`
-* **Security**: Authenticated (`Role.CANDIDATE`)
-* **Headers**: `Authorization: Bearer <candidate_token>`
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Candidate score passport retrieved successfully",
-  "data": {
-    "candidateId": "b0803c68-90d7-426f-91a1-bbf472a269e4",
-    "fullName": "Aarav Sharma",
-    "email": "candidate_proveyu@example.com",
-    "experienceTrack": "EXPERIENCED",
-    "overallScorePercentage": 88.5,
-    "verificationStatus": "VERIFIED_PASSED",
-    "skillScores": [
-      {
-        "skillId": "e1122334-5566-7788-9900-aabbccddeeff",
-        "skillName": "Java",
-        "averagePercentage": 92.0,
-        "attemptsCount": 2
-      }
-    ],
-    "examHistory": [
-      {
-        "scoreId": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-        "examId": "f9e8d7c6-b5a4-3210-9876-54321fedcba9",
-        "examTitle": "Senior Java Architect Exam",
-        "score": 92.0,
-        "maxScore": 100.0,
-        "percentage": 92.0,
-        "passed": true
-      }
-    ]
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:00:35Z"
-}
-```
-
----
-
-### 2.4 Upload Candidate PDF Resume
-* **Endpoint**: `POST /api/v1/candidates/resume/upload`
-* **Security**: Authenticated (`Role.CANDIDATE`)
-* **Headers**: `Authorization: Bearer <candidate_token>`, `Content-Type: multipart/form-data`
-* **Form Field**: `file` (Multipart file binary: `.pdf`, `.doc`, `.docx`, max size: 5MB)
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "PDF Resume uploaded and linked successfully",
-  "data": {
-    "id": "c54b7323-0f1e-46f2-aff8-f0da2631b86e",
-    "userId": "b0803c68-90d7-426f-91a1-bbf472a269e4",
-    "resumeUrl": "/api/v1/candidates/resume/download/resume_b0803c68-90d7-426f-91a1-bbf472a269e4_1789925847709.pdf",
-    "updatedAt": "2026-10-20T18:00:40Z"
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:00:40Z"
-}
-```
-
----
-
-### 2.5 View / Download Candidate Resume File
-* **Endpoint**: `GET /api/v1/candidates/resume/download/{filename}`
-* **Security**: Public
-* **Response Headers**: `Content-Type: application/pdf`, `Content-Disposition: inline; filename="..."`
-* **Body**: Raw document binary stream.
-
----
-
-## 3. Candidate Settings & Notifications Module
-
-### 3.1 Get User Notification Settings
-* **Endpoint**: `GET /api/v1/candidates/settings`
-* **Security**: Authenticated
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Settings retrieved successfully",
-  "data": {
-    "emailNotifications": true,
-    "smsNotifications": false,
-    "pushNotifications": true,
-    "testReminders": true,
-    "interviewInvites": true,
-    "applicationUpdates": true,
-    "jobOffers": true,
-    "marketingUpdates": false,
-    "newsletter": false
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:00:45Z"
-}
-```
-
----
-
-### 3.2 Update User Notification Settings
-* **Endpoint**: `PUT /api/v1/candidates/settings`
-* **Security**: Authenticated
-* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
-* **Request Payload**: (Same fields as `3.1`)
-* **Success Response (`200 OK`)**: Echoes updated settings object.
-
----
-
-### 3.3 Get In-App Notifications Feed
-* **Endpoint**: `GET /api/v1/notifications`
-* **Security**: Authenticated
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Notifications retrieved successfully",
-  "data": [
-    {
-      "id": "c54b7323-0f1e-46f2-aff8-f0da2631b86e",
-      "type": "INTERVIEW_INVITE",
-      "message": "You received an interview invite for Lead Backend Engineer from Acme Technologies",
-      "isRead": false,
-      "createdAt": "2026-10-20T17:30:00Z"
-    }
-  ],
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:00:50Z"
-}
-```
-
----
-
-### 3.4 Mark In-App Notification as Read
-* **Endpoint**: `PUT /api/v1/notifications/{id}/read`
-* **Security**: Authenticated
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Notification marked as read",
-  "data": null,
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:00:55Z"
-}
-```
-
----
-
-## 4. Assessment & Examination Module (`/api/v1/exams`)
-
-### 4.1 List Active Assessment Exams
-* **Endpoint**: `GET /api/v1/exams`
-* **Security**: Public
-* **Success Response (`200 OK`)**:
-```json
-[
-  {
-    "id": "f9e8d7c6-b5a4-3210-9876-54321fedcba9",
-    "title": "National Graduate Engineering Aptitude & Logic Assessment",
-    "description": "Standardized evaluation testing Core Logic, Systems Architecture, and Code Quality",
-    "durationMinutes": 90,
-    "totalMarks": 100.0,
-    "passingScore": 60.0,
-    "feeAmount": 499.0,
-    "active": true
-  }
-]
-```
-
----
-
-## 5. Slot Booking, Payments & Admit Card Issuance Module
-
-### 5.1 Reserve Exam Slot
-* **Endpoint**: `POST /api/v1/bookings`
-* **Security**: Authenticated (`Role.CANDIDATE`)
-* **Headers**: `Authorization: Bearer <candidate_token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "slotId": "a1b2c3d4-e5f6-7890-1234-56789abcdef0"
-}
-```
-* **Success Response (`201 Created`)**:
-```json
-{
-  "success": true,
-  "message": "Slot reserved successfully for 15 minutes",
-  "data": {
-    "id": "bf24140d-5b09-40b3-963d-7a7544952a99",
-    "candidateId": "b0803c68-90d7-426f-91a1-bbf472a269e4",
-    "slotId": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
-    "status": "HELD",
-    "heldAt": "2026-10-20T18:01:00Z",
-    "expiresAt": "2026-10-20T18:16:00Z",
-    "confirmedAt": null
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:01:00Z"
-}
-```
-
----
-
-### 5.2 Create UPI / Gateway Payment Order
-* **Endpoint**: `POST /api/v1/payments/create-order`
-* **Security**: Authenticated (`Role.CANDIDATE`)
-* **Headers**: `Authorization: Bearer <candidate_token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "bookingId": "bf24140d-5b09-40b3-963d-7a7544952a99",
-  "amountCents": 49900
-}
-```
-* **Success Response (`201 Created`)**:
-```json
-{
-  "success": true,
-  "message": "Payment order created successfully",
-  "data": {
-    "orderId": "order_mock_cf4a8cc051da46",
-    "amountCents": 49900,
-    "currency": "INR",
-    "keyId": "rzp_test_mockKey123"
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:01:05Z"
-}
-```
-
----
-
-### 5.3 Verify Payment & Issue Dynamic PDF Admit Card
-* **Endpoint**: `POST /api/v1/payments/verify`
-* **Security**: Authenticated (`Role.CANDIDATE`)
-* **Headers**: `Authorization: Bearer <candidate_token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "orderId": "order_mock_cf4a8cc051da46",
-  "paymentId": "pay_mock_123",
-  "signature": "mock_signature_sha256"
-}
-```
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Payment verified and admit card issued successfully",
-  "data": {
-    "id": "adb646d3-0012-42f5-9a0c-d41c5619aef5",
-    "bookingId": "bf24140d-5b09-40b3-963d-7a7544952a99",
-    "qrCodeToken": "QR_PROVEYU_d04cd1b6-bd01-44b0-802d-00d4501e3ff7",
-    "barcodeValue": "BC1789926479843",
-    "issuedAt": "2026-10-20T18:01:10Z",
-    "pdfUrl": "/api/v1/admit-cards/download/admit_card_bf24140d-5b09-40b3-963d-7a7544952a99.pdf"
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:01:10Z"
-}
-```
-
----
-
-### 5.4 Fetch Booking Admit Card Metadata
-* **Endpoint**: `GET /api/v1/payments/admit-card/{bookingId}`
-* **Security**: Authenticated
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**: Returns `AdmitCard` object with QR token, barcode value, and download link.
-
----
-
-### 5.5 Download Scannable Admit Card PDF
-* **Endpoint**: `GET /api/v1/admit-cards/download/{filename}`
-* **Security**: Public
-* **Response Headers**: `Content-Type: application/pdf`, `Content-Disposition: inline; filename="admit_card_{bookingId}.pdf"`
-* **Body**: High-resolution binary `%PDF-1.6` document generated by Apache PDFBox and ZXing.
-
----
-
-### 5.6 Razorpay Asynchronous Payment Webhook
-* **Endpoint**: `POST /api/v1/payments/webhook`
-* **Headers**: `X-Razorpay-Signature: <hmac_sha256_signature>`
-* **Request Payload**:
-```json
-{
-  "event": "order.paid",
-  "payload": {
-    "order": {
-      "entity": {
-        "id": "order_mock_cf4a8cc051da46"
-      }
-    }
-  }
-}
-```
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "WEBHOOK_PROCESSED",
-  "data": "Webhook processed successfully",
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:01:15Z"
-}
-```
-
----
-
-## 6. Recruiter Candidate Discovery & Corporate Verification Module
-
-### 6.1 Search Verified Candidates
-* **Endpoint**: `GET /api/v1/recruiters/candidates?skillId={uuid}&page=0&size=20`
-* **Security**: Authenticated (`Role.RECRUITER`)
-* **Headers**: `Authorization: Bearer <recruiter_token>`
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Candidate search completed successfully",
-  "data": {
-    "content": [
-      {
-        "id": "e8a1b2c3-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
-        "candidateId": "b0803c68-90d7-426f-91a1-bbf472a269e4",
-        "candidateName": "Aarav Sharma",
-        "experienceTrack": "EXPERIENCED",
-        "verifiedExperienceMonths": 48,
-        "overallScorePercentage": 91.5,
-        "verificationStatus": "VERIFIED_PASSED",
-        "skillsIndexed": "Java, Spring Boot, MySQL, Kafka, Docker",
-        "lastUpdatedAt": "2026-10-20T18:00:00Z"
-      }
-    ],
-    "pageable": { "pageNumber": 0, "pageSize": 20 },
-    "totalElements": 1,
-    "totalPages": 1
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:01:20Z"
-}
-```
-
----
-
-### 6.2 Get Recruiter Corporate Profile
-* **Endpoint**: `GET /api/v1/recruiters/profile`
-* **Security**: Authenticated (`Role.RECRUITER`)
-* **Headers**: `Authorization: Bearer <recruiter_token>`
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Profile fetched",
-  "data": {
-    "contactName": "Vikram Malhotra",
-    "workEmail": "vikram@acmetech.com",
-    "phone": "+91 98765 11111",
-    "companyName": "Acme Technologies Private Limited",
-    "city": "Mumbai",
-    "orgType": "corporate",
-    "website": "https://acmetech.com",
-    "headline": "Scaling Next-Gen Fintech Solutions",
-    "about": "Acme Tech is an enterprise cloud engineering firm.",
-    "avatar": "https://s3.amazonaws.com/acme/logo.png",
-    "linkedin": "https://linkedin.com/company/acmetech",
-    "hiringVolume": "50+ hires/quarter",
-    "candidateLevel": "Mid to Senior Engineers",
-    "primaryTrack": "EXPERIENCED",
-    "preferredCities": "Mumbai, Bengaluru, Pune",
-    "customNotes": "Prioritize candidates with strong distributed systems design scores."
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:01:25Z"
-}
-```
-
----
-
-### 6.3 Update Recruiter Corporate Profile
-* **Endpoint**: `PUT /api/v1/recruiters/profile`
-* **Security**: Authenticated (`Role.RECRUITER`)
-* **Headers**: `Authorization: Bearer <recruiter_token>`, `Content-Type: application/json`
-* **Request Payload**: (Map of profile keys to be updated)
-* **Success Response (`200 OK`)**: Echoes updated profile map.
-
----
-
-### 6.4 Verify Company GSTIN
-* **Endpoint**: `POST /api/v1/recruiters/companies/verify-gst`
-* **Security**: Authenticated (`Role.RECRUITER`)
-* **Headers**: `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "legalName": "Acme Technologies Private Limited",
-  "tradeName": "Acme Tech",
-  "gstin": "27AAAAA0000A1Z5",
-  "registeredAddress": "101 Cyber City, Bandra Kurla Complex",
-  "state": "Maharashtra",
-  "websiteDomain": "acmetech.com"
-}
-```
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Company GST verified successfully",
-  "data": {
-    "id": "c1d2e3f4-5678-9012-3456-7890abcdef12",
-    "legalName": "Acme Technologies Private Limited",
-    "tradeName": "Acme Tech",
-    "gstin": "27AAAAA0000A1Z5",
-    "verificationStatus": "VERIFIED",
-    "verifiedAt": "2026-10-20T18:01:30Z"
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:01:30Z"
-}
-```
-
----
-
-## 7. Recruiter Interview Invitations Module (`/api/v1/interviews`)
-
-### 7.1 Dispatch Interview Invitation
-* **Endpoint**: `POST /api/v1/interviews/invite`
-* **Security**: Authenticated (`Role.RECRUITER`)
-* **Headers**: `Authorization: Bearer <recruiter_token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "candidateId": "b0803c68-90d7-426f-91a1-bbf472a269e4",
-  "companyId": "c1d2e3f4-5678-9012-3456-7890abcdef12",
-  "examId": "f9e8d7c6-b5a4-3210-9876-54321fedcba9",
-  "jobTitle": "Lead Backend Engineer",
-  "jobDescription": "Designing distributed Spring Boot microservices",
-  "minSalaryLpa": 18.0,
-  "maxSalaryLpa": 24.0,
-  "packageRange": "18.0 - 24.0 LPA"
-}
-```
-* **Success Response (`201 Created`)**:
-```json
-{
-  "success": true,
-  "message": "Interview invitation sent successfully",
-  "data": {
-    "id": "5207a672-7fed-40b5-b832-2ae6f9326e92",
-    "recruiterId": "4431656b-3fad-43e8-96ce-531263de5f40",
-    "candidateId": "b0803c68-90d7-426f-91a1-bbf472a269e4",
-    "jobTitle": "Lead Backend Engineer",
-    "jobDescription": "Designing distributed Spring Boot microservices",
-    "packageRange": "18.0 - 24.0 LPA",
-    "status": "PENDING",
-    "placementStatus": "IN_PROCESS",
-    "createdAt": "2026-10-20T18:01:35Z"
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:01:35Z"
-}
-```
-
----
-
-### 7.2 Candidate View Received Interview Invites
-* **Endpoint**: `GET /api/v1/interviews/candidate-invites`
-* **Security**: Authenticated (`Role.CANDIDATE`)
-* **Headers**: `Authorization: Bearer <candidate_token>`
-* **Success Response (`200 OK`)**: List of `InterviewInvite` records addressed to logged-in candidate.
-
----
-
-### 7.3 Recruiter View Sent Interview Invites
-* **Endpoint**: `GET /api/v1/interviews/sent`
-* **Security**: Authenticated (`Role.RECRUITER`)
-* **Headers**: `Authorization: Bearer <recruiter_token>`
-* **Success Response (`200 OK`)**: List of `InterviewInvite` records dispatched by recruiter.
-
----
-
-### 7.4 Candidate Respond to Interview Invite
-* **Endpoint**: `PUT /api/v1/interviews/{inviteId}/respond`
-* **Security**: Authenticated (`Role.CANDIDATE`)
-* **Headers**: `Authorization: Bearer <candidate_token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "accept": true
-}
-```
-* **Success Response (`200 OK`)**: Returns updated `InterviewInvite` with status `ACCEPTED` or `DECLINED`.
-
----
-
-### 7.5 Update Candidate Placement Status
-* **Endpoint**: `PUT /api/v1/interviews/{inviteId}/placement-status`
-* **Security**: Authenticated (`Role.RECRUITER`)
-* **Headers**: `Authorization: Bearer <recruiter_token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "placementStatus": "HIRED"
-}
-```
-* **Success Response (`200 OK`)**: Returns updated `InterviewInvite` with placement status `HIRED` or `REJECTED`.
-
----
-
-## 8. Real-Time Chat & File Messaging Module (`/api/v1/chat`, `/ws/chat`)
-
-### 8.1 Send Text Chat Message
-* **Endpoint**: `POST /api/v1/chat/messages`
-* **Security**: Authenticated
-* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "receiverId": "b0803c68-90d7-426f-91a1-bbf472a269e4",
-  "message": "Hello Aarav, your technical evaluation scores are impressive. Let's connect for an interview."
-}
-```
-* **Success Response (`201 Created`)**:
-```json
-{
-  "success": true,
-  "message": "Message sent successfully",
-  "data": {
-    "id": "7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d",
-    "senderId": "4431656b-3fad-43e8-96ce-531263de5f40",
-    "receiverId": "b0803c68-90d7-426f-91a1-bbf472a269e4",
-    "message": "Hello Aarav, your technical evaluation scores are impressive. Let's connect for an interview.",
-    "messageType": "TEXT",
-    "status": "SENT",
-    "createdAt": "2026-10-20T18:01:40Z"
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:01:40Z"
-}
-```
-
----
-
-### 8.2 Send File Attachment Message
-* **Endpoint**: `POST /api/v1/chat/messages/file`
-* **Security**: Authenticated
-* **Headers**: `Authorization: Bearer <token>`, `Content-Type: multipart/form-data`
-* **Form Fields**:
-  * `receiverId`: UUID
-  * `message` (optional): String text caption
-  * `file`: Multipart file binary (Max: 10MB)
-* **Success Response (`201 Created`)**: Returns `ChatMessageResponse` with `messageType: "FILE"`, file name, size, and download link.
-
----
-
-### 8.3 Get 1-on-1 Conversation History
-* **Endpoint**: `GET /api/v1/chat/messages/{userId}?page=0&size=50`
-* **Security**: Authenticated
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**: Paginated list of chat messages ordered chronologically.
-
----
-
-### 8.4 Get Unread Messages List
-* **Endpoint**: `GET /api/v1/chat/unread`
-* **Security**: Authenticated
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**: List of unread messages for the logged-in user.
-
----
-
-### 8.5 Get Unread Notification Summary
-* **Endpoint**: `GET /api/v1/chat/notifications`
-* **Security**: Authenticated
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Unread notifications retrieved successfully",
-  "data": {
-    "totalUnreadCount": 3,
-    "senderSummaries": [
-      {
-        "senderId": "4431656b-3fad-43e8-96ce-531263de5f40",
-        "senderName": "Acme Technologies Recruiter",
-        "unreadCount": 3,
-        "lastMessageSnippet": "Let's connect for an interview.",
-        "lastMessageTime": "2026-10-20T18:01:40Z"
-      }
-    ]
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:01:45Z"
-}
-```
-
----
-
-### 8.6 Mark Message as Read
-* **Endpoint**: `PATCH /api/v1/chat/messages/{messageId}/read`
-* **Security**: Authenticated
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**: Returns `ChatMessageResponse` with status `READ` and `readAt` timestamp.
-
----
-
-### 8.7 Download Chat File Attachment
-* **Endpoint**: `GET /api/v1/chat/messages/{messageId}/file`
-* **Security**: Authenticated
-* **Headers**: `Authorization: Bearer <token>`
-* **Response Headers**: `Content-Type: <detected_mime_type>`, `Content-Disposition: attachment; filename="..."`
-* **Body**: Streamed file binary.
-
----
-
-## 9. Institutional Organization Accounts (`/api/v1/organizations`)
-
-### 9.1 Create or Update Organization Profile
-* **Endpoint**: `POST /api/v1/organizations/profile`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <org_token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "legalName": "MGM College of Engineering & Technology",
-  "orgType": "COLLEGE",
-  "codeOrGstin": "ENG-MGM-001",
-  "contactEmail": "tpo@mgmcet.ac.in",
-  "contactPhone": "+91 98765 43210",
-  "address": "Navi Mumbai, Maharashtra - 410206"
-}
-```
-* **Success Response (`201 Created`)**: Returns `Organization` entity.
-
----
-
-### 9.2 Onboard Candidate Under Organization
-* **Endpoint**: `POST /api/v1/organizations/candidates`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <org_token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "email": "student@mgmcet.ac.in",
-  "fullName": "Kavita Deshmukh",
-  "password": "StudentPassword123!",
-  "rollNumberOrId": "2024-CSE-045",
-  "batchYear": "2024"
-}
-```
-* **Success Response (`201 Created`)**: Returns created candidate `User` object.
-
----
-
-### 9.3 Get Enrolled Candidates
-* **Endpoint**: `GET /api/v1/organizations/candidates`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <org_token>`
-* **Success Response (`200 OK`)**: List of `OrganizationCandidate` mappings.
-
----
-
-## 10. College Placement Management Subsystem & Dynamic Custom Roles
-
-### 10.1 Resolve Logged-In User Placement Context
-* **Endpoint**: `GET /api/v1/college/team/context`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <token>`
-* **Description**: Delivers the logged-in user's placement authority context (Head TPO vs Branch Coordinator), assigned department scope, and capability flags for frontend UI configuration.
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "User context resolved successfully",
-  "data": {
-    "organizationId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "roleName": "Department Placement Coordinator",
-    "customRoleId": "8b9c0d1e-2f3a-4b5c-6d7e-8f9a0b1c2d3e",
-    "assignedBranch": "Computer Science & Engineering",
-    "isHeadTpo": false,
-    "canViewStudents": true,
-    "canEditStudents": true,
-    "canManagePlacements": true,
-    "canInviteTeam": false,
-    "canExportReports": true
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:01:50Z"
-}
-```
-
----
-
-### 10.2 Download Student Import Roster Template
-* **Endpoint**: `GET /api/v1/college/students/template?sample=true`
-* **Security**: Public
-* **Query Parameters**:
-  * `sample` (boolean, default: `true`): If `true`, downloads CSV populated with representative sample students; if `false`, downloads blank template.
-* **Response**: `text/csv` attachment (`Content-Disposition: attachment; filename="proveyu_student_import_sample_template.csv"`).
-
----
-
-### 10.3 Bulk Student Roster Upload & Ingestion
-* **Endpoint**: `POST /api/v1/college/students/bulk-upload`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <token>`, `Content-Type: multipart/form-data`
-* **Form Field**: `file` (Multipart `.xlsx`, `.xls`, or `.csv` roster)
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Bulk student roster processed successfully",
-  "data": {
-    "totalRows": 25,
-    "importedCount": 23,
-    "updatedCount": 2,
-    "failedCount": 0,
-    "errors": [],
-    "importedStudents": [
-      {
-        "id": "fa44534e-965b-42c7-9294-f49acad7a57f",
-        "rollNumber": "2024-MECH-001",
-        "firstName": "Amit",
-        "lastName": "Patil",
-        "email": "amit@mgmcet.ac.in",
-        "phone": "+91 98765 43212",
-        "branch": "Mechanical Engineering",
-        "batchYear": "2024",
-        "degree": "B.Tech",
-        "aggregateCgpa": 8.52,
-        "tier": "Tier 1",
-        "tierBadge": "badge-tier-1",
-        "placementStatus": "ELIGIBLE"
-      }
-    ]
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:01:55Z"
-}
-```
-
----
-
-### 10.4 Get Paginated Student Roster
-* **Endpoint**: `GET /api/v1/college/students`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <token>`
-* **Query Parameters**:
-  * `search` (optional string): Case-insensitive match on roll number, name, email.
-  * `branch` (optional string, default: `"All"`): Department branch (locked automatically to `ctx.assignedBranch` for non-TPO coordinators).
-  * `tier` (optional string, default: `"All"`): `"Tier 1"`, `"Tier 2"`, `"Tier 3"`.
-  * `status` (optional string, default: `"All"`): `"ELIGIBLE"`, `"PLACED"`, `"OPTED_OUT"`, `"INELIGIBLE"`.
-  * `minCgpa` (optional double), `maxBacklogs` (optional int), `maxGapYears` (optional int).
-  * `page` (default: `0`), `size` (default: `10`), `sortBy` (default: `"createdAt"`), `sortDir` (default: `"desc"`).
-* **Success Response (`200 OK`)**: Page object containing array of `StudentProfileDto` items.
-
----
-
-### 10.5 Get Individual Student Profile
-* **Endpoint**: `GET /api/v1/college/students/{studentId}`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**: Returns complete `StudentProfileDto`.
-
----
-
-### 10.6 Create Student Profile Manually
-* **Endpoint**: `POST /api/v1/college/students`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "rollNumber": "2024-IT-089",
-  "firstName": "Neha",
-  "lastName": "Sharma",
-  "email": "neha.sharma@mgmcet.ac.in",
-  "phone": "+91 98765 22222",
-  "dob": "2002-05-14",
-  "gender": "Female",
-  "branch": "Information Technology",
-  "batchYear": "2024",
-  "degree": "B.Tech",
-  "sem1Sgpa": 8.2,
-  "sem2Sgpa": 8.4,
-  "sem3Sgpa": 8.6,
-  "sem4Sgpa": 8.5,
-  "sem5Sgpa": 8.8,
-  "sem6Sgpa": 8.9,
-  "sem7Sgpa": 9.1,
-  "sem8Sgpa": 9.2,
-  "activeBacklogs": 0,
-  "gapYears": 0,
-  "placementStatus": "ELIGIBLE"
-}
-```
-* **Success Response (`201 Created`)**: Returns newly created `StudentProfileDto` with auto-calculated aggregate CGPA and tier.
-
----
-
-### 10.7 Update Student Profile
-* **Endpoint**: `PUT /api/v1/college/students/{studentId}`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
-* **Request Payload**: Same fields as `10.6`.
-* **Success Response (`200 OK`)**: Returns updated `StudentProfileDto`.
-
----
-
-### 10.8 Bulk Record Placement Offers
-* **Endpoint**: `POST /api/v1/college/students/bulk-placement`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "studentIds": [
-    "fa44534e-965b-42c7-9294-f49acad7a57f",
-    "b1c2d3e4-5f6a-7b8c-9d0e-1f2a3b4c5d6e"
-  ],
-  "company": "Tata Motors Ltd",
-  "role": "Graduate Engineer Trainee - Design",
-  "ctc": "₹8.5 LPA",
-  "packageCategory": "Dream (5-10 LPA)",
-  "bondDuration": "1 Year",
-  "offerDate": "2026-10-15",
-  "joiningDate": "2026-12-01",
-  "recruitmentSource": "Campus Drive"
-}
-```
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Placement Recorded",
-  "data": "Successfully updated placement status for selected candidates",
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:02:00Z"
-}
-```
-
----
-
-### 10.9 Get Student Self Profile
-* **Endpoint**: `GET /api/v1/college/students/my-profile`
-* **Security**: Authenticated (`Role.CANDIDATE`)
-* **Headers**: `Authorization: Bearer <candidate_token>`
-* **Success Response (`200 OK`)**: Returns `StudentProfileDto` linked to the logged-in candidate.
-
----
-
-### 10.10 Update Student Self Profile
-* **Endpoint**: `PUT /api/v1/college/students/my-profile`
-* **Security**: Authenticated (`Role.CANDIDATE`)
-* **Headers**: `Authorization: Bearer <candidate_token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "phone": "+91 98765 99999",
-  "residentialAddress": "Flat 402, Green Valley Apartments, Navi Mumbai",
-  "linkedinUrl": "https://linkedin.com/in/student-profile",
-  "githubUrl": "https://github.com/student-dev",
-  "portfolioUrl": "https://studentdev.tech"
-}
-```
-* **Success Response (`200 OK`)**: Echoes updated `StudentProfileDto`.
-
----
-
-### 10.11 Placement KPI Dashboard Analytics
-* **Endpoint**: `GET /api/v1/college/students/dashboard/kpi`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Dashboard KPIs fetched successfully",
-  "data": {
-    "totalStudents": 450,
-    "placedStudents": 320,
-    "unplacedStudents": 130,
-    "placementPercentage": 71.1,
-    "activeDrives": 8,
-    "averagePackageLpa": 6.8,
-    "highestPackageLpa": 24.0,
-    "branchWisePlacements": {
-      "Computer Science & Engineering": 140,
-      "Information Technology": 110,
-      "Mechanical Engineering": 45,
-      "Electronics & Telecommunication": 25
-    },
-    "upcomingDrives": []
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:02:05Z"
-}
-```
-
----
-
-### 10.12 List College Placement Drives
-* **Endpoint**: `GET /api/v1/college/placements`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**: List of `PlacementDriveDto.Response` objects.
-
----
-
-### 10.13 Get Placement Drive Details
-* **Endpoint**: `GET /api/v1/college/placements/{driveId}`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**: Individual `PlacementDriveDto.Response` object.
-
----
-
-### 10.14 Schedule New Placement Drive
-* **Endpoint**: `POST /api/v1/college/placements`
-* **Security**: Authenticated (`Role.ORGANIZATION` with `canManagePlacements`)
-* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "companyName": "Accenture Solutions",
-  "companyWebsite": "https://accenture.com",
-  "logoUrl": "https://accenture.com/logo.png",
-  "industry": "IT Consulting & Services",
-  "roles": "Associate Software Engineer",
-  "jobLocation": "Pune / Bengaluru",
-  "employmentType": "Full-Time",
-  "packageLpa": 4.5,
-  "stipendMonthly": "₹25,000",
-  "bondDurationMonths": 0,
-  "driveCategory": "On-Campus",
-  "driveDate": "2026-11-20",
-  "driveMode": "Hybrid",
-  "venue": "Campus Auditorium & Labs",
-  "minCgpa": 6.5,
-  "maxBacklogs": 0,
-  "maxGapYears": 1,
-  "minTenthPercentage": 60.0,
-  "minTwelfthPercentage": 60.0,
-  "eligibleBranches": "Computer Science & Engineering, Information Technology",
-  "selectionRounds": "Online Aptitude, Technical Interview, HR Discussion",
-  "hrContactName": "Pooja Hegde",
-  "hrContactEmail": "pooja.hegde@accenture.com",
-  "hrContactPhone": "+91 98765 88888",
-  "status": "Scheduled"
-}
-```
-* **Success Response (`201 Created`)**: Returns created `PlacementDriveDto.Response`.
-
----
-
-### 10.15 Update Placement Drive
-* **Endpoint**: `PUT /api/v1/college/placements/{driveId}`
-* **Security**: Authenticated (`Role.ORGANIZATION` with `canManagePlacements`)
-* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
-* **Request Payload**: Same fields as `10.14`.
-* **Success Response (`200 OK`)**: Returns updated `PlacementDriveDto.Response`.
-
----
-
-### 10.16 Delete Placement Drive
-* **Endpoint**: `DELETE /api/v1/college/placements/{driveId}`
-* **Security**: Authenticated (`Role.ORGANIZATION` with `canManagePlacements`)
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Drive Deleted",
-  "data": "Placement drive deleted successfully",
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:02:10Z"
-}
-```
-
----
-
-### 10.17 List College Placement Team Members
-* **Endpoint**: `GET /api/v1/college/team`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**: List of `TeamMemberDto.Response` items.
-
----
-
-### 10.18 Invite Placement Team Member
-* **Endpoint**: `POST /api/v1/college/team/invite`
-* **Security**: Authenticated (`Role.ORGANIZATION`, Head TPO Admin)
-* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "name": "Dr. Sunil Mehta",
-  "email": "sunil.mehta@mgmcet.ac.in",
-  "phone": "+91 98765 77777",
-  "customRoleId": "8b9c0d1e-2f3a-4b5c-6d7e-8f9a0b1c2d3e",
-  "assignedBranch": "Information Technology",
-  "designation": "HOD & Placement Coordinator",
-  "accessLevel": "80% Access",
-  "tempPassword": "CollegeSecurePassword123!"
-}
-```
-* **Success Response (`201 Created`)**:
-```json
-{
-  "success": true,
-  "message": "Team member invited successfully",
-  "data": {
-    "id": "6c7d8e9f-0a1b-2c3d-4e5f-6a7b8c9d0e1f",
-    "organizationId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "userId": "9a0b1c2d-3e4f-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Dr. Sunil Mehta",
-    "email": "sunil.mehta@mgmcet.ac.in",
-    "phone": "+91 98765 77777",
-    "roleName": "Department Placement Coordinator",
-    "assignedBranch": "Information Technology",
-    "designation": "HOD & Placement Coordinator",
-    "accessLevel": "80% Access",
-    "status": "ACTIVE",
-    "lastActive": "Invitation Sent"
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:02:15Z"
-}
-```
-
----
-
-### 10.19 Update Team Member Privileges
-* **Endpoint**: `PUT /api/v1/college/team/{memberId}`
-* **Security**: Authenticated (`Role.ORGANIZATION`, Head TPO Admin)
-* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "name": "Dr. Sunil Mehta",
-  "phone": "+91 98765 77777",
-  "customRoleId": "8b9c0d1e-2f3a-4b5c-6d7e-8f9a0b1c2d3e",
-  "assignedBranch": "Information Technology",
-  "designation": "Professor & Senior Placement Lead",
-  "accessLevel": "90% Access",
-  "status": "ACTIVE"
-}
-```
-* **Success Response (`200 OK`)**: Returns updated `TeamMemberDto.Response`.
-
----
-
-### 10.20 Remove Team Member
-* **Endpoint**: `DELETE /api/v1/college/team/{memberId}`
-* **Security**: Authenticated (`Role.ORGANIZATION`, Head TPO Admin)
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Member Deleted",
-  "data": "Team member removed successfully",
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:02:20Z"
-}
-```
-
----
-
-### 10.21 List Defined Custom Dynamic Roles
-* **Endpoint**: `GET /api/v1/college/roles`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**: List of `CustomRoleDto.Response` items.
-
----
-
-### 10.22 Get Custom Dynamic Role by ID
-* **Endpoint**: `GET /api/v1/college/roles/{roleId}`
-* **Security**: Authenticated (`Role.ORGANIZATION`)
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**: Returns individual `CustomRoleDto.Response`.
-
----
-
-### 10.23 Create Custom Dynamic Role
-* **Endpoint**: `POST /api/v1/college/roles`
-* **Security**: Authenticated (`Role.ORGANIZATION`, Head TPO Admin)
-* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "roleName": "Department Placement Coordinator - Mechanical",
-  "description": "Manages mechanical engineering batch rosters and technical drive eligibility",
-  "assignedBranch": "Mechanical Engineering",
-  "canViewStudents": true,
-  "canEditStudents": true,
-  "canManagePlacements": true,
-  "canInviteTeam": false,
-  "canExportReports": true,
-  "accessPercentage": "80% Access"
-}
-```
-* **Success Response (`201 Created`)**:
-```json
-{
-  "success": true,
-  "message": "Custom role created successfully",
-  "data": {
-    "id": "8b9c0d1e-2f3a-4b5c-6d7e-8f9a0b1c2d3e",
-    "organizationId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "roleName": "Department Placement Coordinator - Mechanical",
-    "description": "Manages mechanical engineering batch rosters and technical drive eligibility",
-    "assignedBranch": "Mechanical Engineering",
-    "canViewStudents": true,
-    "canEditStudents": true,
-    "canManagePlacements": true,
-    "canInviteTeam": false,
-    "canExportReports": true,
-    "accessPercentage": "80% Access"
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:02:25Z"
-}
-```
-
----
-
-### 10.24 Update Custom Dynamic Role
-* **Endpoint**: `PUT /api/v1/college/roles/{roleId}`
-* **Security**: Authenticated (`Role.ORGANIZATION`, Head TPO Admin)
-* **Headers**: `Authorization: Bearer <token>`, `Content-Type: application/json`
-* **Request Payload**: Same fields as `10.23`.
-* **Success Response (`200 OK`)**: Returns updated `CustomRoleDto.Response`.
-
----
-
-### 10.25 Delete Custom Dynamic Role
-* **Endpoint**: `DELETE /api/v1/college/roles/{roleId}`
-* **Security**: Authenticated (`Role.ORGANIZATION`, Head TPO Admin)
-* **Headers**: `Authorization: Bearer <token>`
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Role Deleted",
-  "data": "Custom role deleted successfully",
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:02:30Z"
-}
-```
-
----
-
-## 11. Platform Administration Module (`/api/v1/admin`)
-
-### 11.1 Create System Administrator
-* **Endpoint**: `POST /api/v1/admin/users/create-admin`
-* **Security**: Authenticated (`Role.ADMIN`)
-* **Headers**: `Authorization: Bearer <admin_token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "email": "superadmin@proveyu.com",
-  "fullName": "System Controller",
-  "password": "AdminMasterPassword123!"
-}
-```
-* **Success Response (`201 Created`)**: Returns created `User` with role `Role.ADMIN`.
-
----
-
-### 11.2 Configure Examination Catalog
-* **Endpoint**: `POST /api/v1/admin/exams`
-* **Security**: Authenticated (`Role.ADMIN`)
-* **Headers**: `Authorization: Bearer <admin_token>`, `Content-Type: application/json`
-* **Request Payload**:
-```json
-{
-  "skillId": "e1122334-5566-7788-9900-aabbccddeeff",
-  "level": "ADVANCED",
-  "title": "National Graduate Engineering Aptitude & Logic Assessment",
-  "durationMinutes": 90,
-  "totalMarks": 100.0,
-  "passingMarks": 60.0,
-  "priceCents": 49900,
-  "currency": "INR"
-}
-```
-* **Success Response (`201 Created`)**: Returns configured `Exam` entity.
-
----
-
-### 11.3 Get Global Platform Statistics
-* **Endpoint**: `GET /api/v1/admin/stats`
-* **Security**: Authenticated (`Role.ADMIN`)
-* **Headers**: `Authorization: Bearer <admin_token>`
-* **Success Response (`200 OK`)**:
-```json
-{
-  "success": true,
-  "message": "Platform statistics retrieved successfully",
-  "data": {
-    "totalUsers": 12450,
-    "totalCandidates": 11200,
-    "totalRecruiters": 950,
-    "totalOrganizations": 300,
-    "confirmedBookings": 8420,
-    "verifiedGstCompanies": 680,
-    "totalActiveDrives": 42
-  },
-  "errorCode": null,
-  "timestamp": "2026-10-20T18:02:35Z"
-}
-```
+# ProveYu REST API reference
+
+<!-- Generated by scripts/gen_docs.py from the @RestController classes. Do not edit by hand; run the script again. -->
+
+Every endpoint of the backend (269 in total), grouped by module, with who may call it. Request and response bodies, field rules and examples are in Swagger: `http://localhost:8080/swagger-ui.html` (JSON: `/v3/api-docs`).
+
+## Conventions
+
+- Base URL: `http://localhost:8080` in development; same origin behind the reverse proxy in production.
+- Sign in with `POST /api/v1/auth/login`; send the returned token as `Authorization: Bearer <token>`.
+- Every JSON response is wrapped: `{ "success": true, "message": "...", "data": { ... } }`. Errors: `{ "success": false, "status": 404, "code": "NOT_FOUND", "errorCode": "NOT_FOUND", "message": "...", "fieldErrors": {...} }`.
+- College data is separated per college: another college's ids answer 404. Students only reach their own records.
+- Paged lists take `page` (from 0) and `size`. File downloads return the file itself (not wrapped).
+- Rate limits: 60 requests a minute per IP on sign-in routes, 120 a minute per user elsewhere.
+
+## Modules
+
+- [Sign-in, e-mail verification, passwords](#auth) (8)
+- [College portal (placement cell) and company Drive Room](#college) (144)
+- [Student portal, mock tests, AI interview](#student) (60)
+- [Off-campus jobs, NOC, job import](#offcampus) (21)
+- [Platform admin portal](#admin) (20)
+- [Help & support](#support) (6)
+- [Chat (REST; live messages over the WebSocket /ws/chat)](#chat) (8)
+- [Notification bell](#notification) (2)
+
+<a id="auth"></a>
+## Sign-in, e-mail verification, passwords
+
+Package `com.proveyu.auth`.
+
+| Method | Path | Who | What |
+|---|---|---|---|
+| `POST` | `/api/v1/auth/forgot-password` | Public | forgot password |
+| `POST` | `/api/v1/auth/login` | Public | login |
+| `POST` | `/api/v1/auth/logout` | Any signed-in user | logout |
+| `POST` | `/api/v1/auth/register` | Public | register |
+| `POST` | `/api/v1/auth/resend-verification` | Public | resend verification |
+| `POST` | `/api/v1/auth/reset-password` | Public | reset password |
+| `POST` | `/api/v1/auth/verify-email` | Public | verify email |
+| `POST` | `/api/v1/auth/verify-otp` | Public | verify otp |
+
+<a id="college"></a>
+## College portal (placement cell) and company Drive Room
+
+Package `com.proveyu.college`.
+
+| Method | Path | Who | What |
+|---|---|---|---|
+| `GET` | `/api/v1/admin/colleges` | Platform admin | list |
+| `POST` | `/api/v1/admin/colleges/{collegeId}/decision` | Platform admin | decide |
+| `GET` | `/api/v1/college/analytics/dashboard` | College staff (TPO, coordinator, viewer) | dashboard |
+| `GET` | `/api/v1/college/analytics/skill-gap` | College staff (TPO, coordinator, viewer) | skill gap |
+| `GET` | `/api/v1/college/announcements` | College staff (TPO, coordinator, viewer) | announcements |
+| `POST` | `/api/v1/college/announcements` | TPO, coordinator | announce |
+| `POST` | `/api/v1/college/announcements/audience` | TPO, coordinator | audience |
+| `PATCH` | `/api/v1/college/applications/status` | TPO, coordinator | bulk status |
+| `GET` | `/api/v1/college/audit-logs` | TPO only | audit |
+| `POST` | `/api/v1/college/auth/accept-invite` | Public | accept |
+| `GET` | `/api/v1/college/auth/invite/{token}` | Public | invite |
+| `POST` | `/api/v1/college/auth/recruiter-accept` | Public | recruiter accept |
+| `GET` | `/api/v1/college/auth/recruiter-invite/{token}` | Public | recruiter invite |
+| `POST` | `/api/v1/college/auth/register` | Public | register |
+| `GET` | `/api/v1/college/chat/contacts` | College staff (TPO, coordinator, viewer) | chat contacts |
+| `GET` | `/api/v1/college/companies` | College staff (TPO, coordinator, viewer) | list |
+| `POST` | `/api/v1/college/companies` | TPO, coordinator | create |
+| `PUT` | `/api/v1/college/companies/contacts/{contactId}` | TPO, coordinator | update contact |
+| `DELETE` | `/api/v1/college/companies/contacts/{contactId}` | TPO, coordinator | delete contact |
+| `GET` | `/api/v1/college/companies/export` | College staff (TPO, coordinator, viewer) | export |
+| `GET` | `/api/v1/college/companies/recruiters` | TPO, coordinator | recruiters |
+| `GET` | `/api/v1/college/companies/{id}` | College staff (TPO, coordinator, viewer) | get |
+| `PUT` | `/api/v1/college/companies/{id}` | TPO, coordinator | update |
+| `DELETE` | `/api/v1/college/companies/{id}` | TPO, coordinator | delete |
+| `POST` | `/api/v1/college/companies/{id}/contacts` | TPO, coordinator | add contact |
+| `POST` | `/api/v1/college/companies/{id}/feedback` | TPO, coordinator | feedback |
+| `POST` | `/api/v1/college/companies/{id}/invite` | TPO, coordinator | invite |
+| `POST` | `/api/v1/college/companies/{id}/restore` | TPO, coordinator | restore |
+| `GET` | `/api/v1/college/drives` | College staff (TPO, coordinator, viewer) | list |
+| `POST` | `/api/v1/college/drives` | TPO, coordinator | create |
+| `GET` | `/api/v1/college/drives/export` | College staff (TPO, coordinator, viewer) | export |
+| `GET` | `/api/v1/college/drives/{driveId}/recruiters` | College staff (TPO, coordinator, viewer) | list |
+| `POST` | `/api/v1/college/drives/{driveId}/recruiters` | TPO, coordinator | invite |
+| `PATCH` | `/api/v1/college/drives/{driveId}/recruiters/{accessId}` | TPO, coordinator | update |
+| `POST` | `/api/v1/college/drives/{driveId}/recruiters/{accessId}/resend` | TPO, coordinator | resend |
+| `POST` | `/api/v1/college/drives/{driveId}/recruiters/{accessId}/revoke` | TPO, coordinator | revoke |
+| `GET` | `/api/v1/college/drives/{id}` | College staff (TPO, coordinator, viewer) | get |
+| `PUT` | `/api/v1/college/drives/{id}` | TPO, coordinator | update |
+| `DELETE` | `/api/v1/college/drives/{id}` | TPO, coordinator | delete |
+| `GET` | `/api/v1/college/drives/{id}/applications` | College staff (TPO, coordinator, viewer) | applications |
+| `POST` | `/api/v1/college/drives/{id}/applications` | TPO, coordinator | add applicants |
+| `GET` | `/api/v1/college/drives/{id}/applications/export` | College staff (TPO, coordinator, viewer) | export applications |
+| `POST` | `/api/v1/college/drives/{id}/clone` | TPO, coordinator | clone drive |
+| `GET` | `/api/v1/college/drives/{id}/eligibility` | College staff (TPO, coordinator, viewer) | eligibility |
+| `GET` | `/api/v1/college/drives/{id}/overrides` | College staff (TPO, coordinator, viewer) | overrides |
+| `POST` | `/api/v1/college/drives/{id}/overrides` | TPO, coordinator | add override |
+| `POST` | `/api/v1/college/drives/{id}/restore` | TPO, coordinator | restore |
+| `GET` | `/api/v1/college/drives/{id}/rounds` | College staff (TPO, coordinator, viewer) | rounds |
+| `POST` | `/api/v1/college/drives/{id}/rounds` | TPO, coordinator | add round |
+| `PUT` | `/api/v1/college/drives/{id}/rounds/order` | TPO, coordinator | reorder |
+| `POST` | `/api/v1/college/drives/{id}/status` | TPO, coordinator | transition |
+| `GET` | `/api/v1/college/interviews` | College staff (TPO, coordinator, viewer) | calendar |
+| `POST` | `/api/v1/college/interviews` | TPO, coordinator | schedule |
+| `POST` | `/api/v1/college/interviews/bulk` | TPO, coordinator | bulk |
+| `POST` | `/api/v1/college/interviews/check` | TPO, coordinator | check |
+| `GET` | `/api/v1/college/interviews/drive/{driveId}` | College staff (TPO, coordinator, viewer) | for drive |
+| `PUT` | `/api/v1/college/interviews/{id}` | TPO, coordinator | reschedule |
+| `POST` | `/api/v1/college/interviews/{id}/remind` | TPO, coordinator | remind |
+| `PATCH` | `/api/v1/college/interviews/{id}/status` | TPO, coordinator | status |
+| `GET` | `/api/v1/college/me` | College staff (TPO, coordinator, viewer) | me |
+| `GET` | `/api/v1/college/offers` | College staff (TPO, coordinator, viewer) | list |
+| `POST` | `/api/v1/college/offers` | TPO, coordinator | create |
+| `GET` | `/api/v1/college/offers/export` | College staff (TPO, coordinator, viewer) | export |
+| `PUT` | `/api/v1/college/offers/{id}` | TPO, coordinator | update |
+| `GET` | `/api/v1/college/offers/{id}/letter` | College staff (TPO, coordinator, viewer) | letter |
+| `POST` | `/api/v1/college/offers/{id}/letter` | TPO, coordinator | upload letter |
+| `PATCH` | `/api/v1/college/offers/{id}/status` | TPO, coordinator | status |
+| `DELETE` | `/api/v1/college/overrides/{overrideId}` | TPO, coordinator | remove override |
+| `GET` | `/api/v1/college/report-schedules` | College staff (TPO, coordinator, viewer) | schedules |
+| `POST` | `/api/v1/college/report-schedules` | TPO, coordinator | schedule |
+| `PATCH` | `/api/v1/college/report-schedules/{id}` | TPO, coordinator | toggle |
+| `DELETE` | `/api/v1/college/report-schedules/{id}` | TPO, coordinator | delete schedule |
+| `GET` | `/api/v1/college/reports/types` | College staff (TPO, coordinator, viewer) | report types |
+| `GET` | `/api/v1/college/reports/{type}` | College staff (TPO, coordinator, viewer) | report |
+| `GET` | `/api/v1/college/reports/{type}/preview` | College staff (TPO, coordinator, viewer) | preview |
+| `PUT` | `/api/v1/college/rounds/{roundId}` | TPO, coordinator | update round |
+| `DELETE` | `/api/v1/college/rounds/{roundId}` | TPO, coordinator | delete round |
+| `POST` | `/api/v1/college/rounds/{roundId}/complete` | TPO, coordinator | complete |
+| `GET` | `/api/v1/college/rounds/{roundId}/results` | College staff (TPO, coordinator, viewer) | results |
+| `PUT` | `/api/v1/college/rounds/{roundId}/results` | TPO, coordinator | save results |
+| `POST` | `/api/v1/college/rounds/{roundId}/results/upload` | TPO, coordinator | upload |
+| `GET` | `/api/v1/college/rounds/{roundId}/scorecards` | College staff (TPO, coordinator, viewer) | scorecards |
+| `POST` | `/api/v1/college/rounds/{roundId}/start` | TPO, coordinator | start |
+| `GET` | `/api/v1/college/search` | College staff (TPO, coordinator, viewer) | search |
+| `GET` | `/api/v1/college/settings/batches` | College staff (TPO, coordinator, viewer) | batches |
+| `POST` | `/api/v1/college/settings/batches` | TPO only | add batch |
+| `PUT` | `/api/v1/college/settings/batches/{id}` | TPO only | update batch |
+| `DELETE` | `/api/v1/college/settings/batches/{id}` | TPO only | delete batch |
+| `GET` | `/api/v1/college/settings/branches` | College staff (TPO, coordinator, viewer) | branches |
+| `POST` | `/api/v1/college/settings/branches` | TPO only | add branch |
+| `PUT` | `/api/v1/college/settings/branches/{id}` | TPO only | update branch |
+| `DELETE` | `/api/v1/college/settings/branches/{id}` | TPO only | delete branch |
+| `GET` | `/api/v1/college/settings/email-templates` | TPO only | templates |
+| `PUT` | `/api/v1/college/settings/email-templates/{key}` | TPO only | save template |
+| `DELETE` | `/api/v1/college/settings/email-templates/{key}` | TPO only | reset template |
+| `GET` | `/api/v1/college/settings/logo` | College staff (TPO, coordinator, viewer) | get logo |
+| `POST` | `/api/v1/college/settings/logo` | TPO only | logo |
+| `GET` | `/api/v1/college/settings/policy` | College staff (TPO, coordinator, viewer) | policy |
+| `PUT` | `/api/v1/college/settings/policy` | TPO only | update policy |
+| `GET` | `/api/v1/college/settings/profile` | College staff (TPO, coordinator, viewer) | profile |
+| `PUT` | `/api/v1/college/settings/profile` | TPO only | update profile |
+| `GET` | `/api/v1/college/settings/tiers` | College staff (TPO, coordinator, viewer) | tiers |
+| `PUT` | `/api/v1/college/settings/tiers` | TPO only | save tiers |
+| `GET` | `/api/v1/college/students` | College staff (TPO, coordinator, viewer) | list |
+| `POST` | `/api/v1/college/students` | TPO, coordinator | create |
+| `DELETE` | `/api/v1/college/students/documents/{docId}` | TPO, coordinator | delete document |
+| `GET` | `/api/v1/college/students/documents/{docId}/file` | College staff (TPO, coordinator, viewer) | document file |
+| `PATCH` | `/api/v1/college/students/documents/{docId}/verify` | TPO, coordinator | verify |
+| `GET` | `/api/v1/college/students/export` | College staff (TPO, coordinator, viewer) | export |
+| `POST` | `/api/v1/college/students/import` | TPO, coordinator | import file |
+| `GET` | `/api/v1/college/students/import/history` | College staff (TPO, coordinator, viewer) | history |
+| `GET` | `/api/v1/college/students/import/template` | College staff (TPO, coordinator, viewer) | template |
+| `GET` | `/api/v1/college/students/{id}` | College staff (TPO, coordinator, viewer) | get |
+| `PUT` | `/api/v1/college/students/{id}` | TPO, coordinator | update |
+| `DELETE` | `/api/v1/college/students/{id}` | TPO, coordinator | delete |
+| `GET` | `/api/v1/college/students/{id}/documents` | College staff (TPO, coordinator, viewer) | documents |
+| `POST` | `/api/v1/college/students/{id}/documents` | TPO, coordinator | upload |
+| `POST` | `/api/v1/college/students/{id}/restore` | TPO, coordinator | restore |
+| `PATCH` | `/api/v1/college/students/{id}/status` | TPO, coordinator | status |
+| `GET` | `/api/v1/college/team/invites` | TPO only | invites |
+| `POST` | `/api/v1/college/team/invites` | TPO only | invite |
+| `DELETE` | `/api/v1/college/team/invites/{id}` | TPO only | revoke invite |
+| `POST` | `/api/v1/college/team/invites/{id}/resend` | TPO only | resend |
+| `GET` | `/api/v1/college/team/members` | College staff (TPO, coordinator, viewer) | members |
+| `PUT` | `/api/v1/college/team/members/{id}` | TPO only | update |
+| `POST` | `/api/v1/college/team/members/{id}/restore` | TPO only | restore |
+| `POST` | `/api/v1/college/team/members/{id}/revoke` | TPO only | revoke |
+| `GET` | `/api/v1/college/team/role-matrix` | College staff (TPO, coordinator, viewer) | matrix |
+| `GET` | `/api/v1/recruiter/campus/drives` | Company (Drive Room) | drives |
+| `GET` | `/api/v1/recruiter/campus/drives/{driveId}` | Company (Drive Room) | summary |
+| `GET` | `/api/v1/recruiter/campus/drives/{driveId}/applicants` | Company (Drive Room) | applicants |
+| `GET` | `/api/v1/recruiter/campus/drives/{driveId}/applicants/{applicationId}/resume` | Company (Drive Room) | resume |
+| `PATCH` | `/api/v1/recruiter/campus/drives/{driveId}/applications/status` | Company (Drive Room) | status |
+| `GET` | `/api/v1/recruiter/campus/drives/{driveId}/offers` | Company (Drive Room) | offers |
+| `POST` | `/api/v1/recruiter/campus/drives/{driveId}/offers` | Company (Drive Room) | create offers |
+| `POST` | `/api/v1/recruiter/campus/drives/{driveId}/offers/{offerId}/letter` | Company (Drive Room) | letter |
+| `GET` | `/api/v1/recruiter/campus/drives/{driveId}/report` | Company (Drive Room) | report |
+| `POST` | `/api/v1/recruiter/campus/drives/{driveId}/resumes.zip` | Company (Drive Room) | resumes |
+| `POST` | `/api/v1/recruiter/campus/drives/{driveId}/rounds/{roundId}/complete` | Company (Drive Room) | complete |
+| `GET` | `/api/v1/recruiter/campus/drives/{driveId}/rounds/{roundId}/results` | Company (Drive Room) | results |
+| `PUT` | `/api/v1/recruiter/campus/drives/{driveId}/rounds/{roundId}/results` | Company (Drive Room) | save results |
+| `GET` | `/api/v1/recruiter/campus/drives/{driveId}/rounds/{roundId}/scorecards` | Company (Drive Room) | scorecards |
+| `PUT` | `/api/v1/recruiter/campus/drives/{driveId}/rounds/{roundId}/scorecards/{applicationId}` | Company (Drive Room) | save scorecard |
+| `POST` | `/api/v1/recruiter/campus/drives/{driveId}/rounds/{roundId}/start` | Company (Drive Room) | start |
+
+<a id="student"></a>
+## Student portal, mock tests, AI interview
+
+Package `com.proveyu.student`.
+
+| Method | Path | Who | What |
+|---|---|---|---|
+| `POST` | `/api/v1/admin/interview/credits` | Platform admin | grant |
+| `GET` | `/api/v1/admin/interview/purchases` | Platform admin | UPI payments to check against the bank statement (default: the ones waiting). |
+| `POST` | `/api/v1/admin/interview/purchases/{id}/approve` | Platform admin | approve |
+| `POST` | `/api/v1/admin/interview/purchases/{id}/reject` | Platform admin | reject |
+| `GET` | `/api/v1/admin/prep/tests` | Platform admin | list |
+| `POST` | `/api/v1/admin/prep/tests` | Platform admin | upload |
+| `DELETE` | `/api/v1/admin/prep/tests/{id}` | Platform admin | delete |
+| `GET` | `/api/v1/admin/prep/tests/{id}/definition` | Platform admin | definition |
+| `PATCH` | `/api/v1/admin/prep/tests/{id}/publish` | Platform admin | publish |
+| `POST` | `/api/v1/college/auth/student-signup` | Public | student signup |
+| `GET` | `/api/v1/college/prep/attempts` | com.proveyu.college.security.CollegeAccess.READ | attempts |
+| `GET` | `/api/v1/college/prep/attempts/{id}/proctor` | com.proveyu.college.security.CollegeAccess.READ | proctor log |
+| `GET` | `/api/v1/college/prep/proctor/{eventId}/screenshot` | com.proveyu.college.security.CollegeAccess.READ | screenshot |
+| `GET` | `/api/v1/college/prep/tests` | com.proveyu.college.security.CollegeAccess.READ | list |
+| `POST` | `/api/v1/college/prep/tests` | com.proveyu.college.security.CollegeAccess.WRITE | upload |
+| `DELETE` | `/api/v1/college/prep/tests/{id}` | com.proveyu.college.security.CollegeAccess.WRITE | delete |
+| `GET` | `/api/v1/college/prep/tests/{id}/definition` | com.proveyu.college.security.CollegeAccess.READ | The uploaded JSON, to edit and upload again. |
+| `PATCH` | `/api/v1/college/prep/tests/{id}/publish` | com.proveyu.college.security.CollegeAccess.WRITE | publish |
+| `GET` | `/api/v1/college/student/announcements` | Student | announcements |
+| `POST` | `/api/v1/college/student/announcements/read-all` | Student | mark all read |
+| `POST` | `/api/v1/college/student/announcements/{id}/read` | Student | mark read |
+| `GET` | `/api/v1/college/student/applications` | Student | applications |
+| `GET` | `/api/v1/college/student/applications/{id}/rounds` | Student | rounds |
+| `POST` | `/api/v1/college/student/applications/{id}/withdraw` | Student | withdraw |
+| `GET` | `/api/v1/college/student/chat/contacts` | Student | contacts |
+| `GET` | `/api/v1/college/student/documents` | Student | documents |
+| `POST` | `/api/v1/college/student/documents` | Student | upload |
+| `DELETE` | `/api/v1/college/student/documents/{docId}` | Student | delete document |
+| `GET` | `/api/v1/college/student/documents/{docId}/file` | Student | document file |
+| `GET` | `/api/v1/college/student/drives` | Student | drives |
+| `POST` | `/api/v1/college/student/drives/{driveId}/apply` | Student | apply |
+| `GET` | `/api/v1/college/student/interview` | Student | overview |
+| `GET` | `/api/v1/college/student/interview/answers/{answerId}/audio` | Student | answer audio |
+| `POST` | `/api/v1/college/student/interview/purchases` | Student | Buy AI interviews: a UPI payment request (QR link) at the server's price. |
+| `POST` | `/api/v1/college/student/interview/purchases/{id}/utr` | Student | UPI: the student paid by QR and enters the 12-digit UPI reference; an admin then verifies it. |
+| `GET` | `/api/v1/college/student/interview/questions/{questionId}/speech` | Student | speech |
+| `POST` | `/api/v1/college/student/interview/sessions` | Student | start |
+| `GET` | `/api/v1/college/student/interview/sessions/{id}` | Student | session |
+| `POST` | `/api/v1/college/student/interview/sessions/{id}/answers/text` | Student | Typed answer, or skip with empty text. |
+| `POST` | `/api/v1/college/student/interview/sessions/{id}/answers/voice` | Student | Voice answer: 16 kHz mono WAV recorded in the browser. |
+| `POST` | `/api/v1/college/student/interview/sessions/{id}/end` | Student | end |
+| `GET` | `/api/v1/college/student/interview/sessions/{id}/report` | Student | report |
+| `POST` | `/api/v1/college/student/interview/sessions/{id}/report/retry` | Student | retry |
+| `GET` | `/api/v1/college/student/interviews` | Student | interviews |
+| `GET` | `/api/v1/college/student/offers` | Student | offers |
+| `GET` | `/api/v1/college/student/offers/{id}/letter` | Student | offer letter |
+| `POST` | `/api/v1/college/student/offers/{id}/respond` | Student | respond |
+| `GET` | `/api/v1/college/student/prep/attempts` | Student | history |
+| `GET` | `/api/v1/college/student/prep/attempts/{id}` | Student | attempt |
+| `PUT` | `/api/v1/college/student/prep/attempts/{id}/answers` | Student | save |
+| `GET` | `/api/v1/college/student/prep/attempts/{id}/proctor` | Student | proctor log |
+| `POST` | `/api/v1/college/student/prep/attempts/{id}/proctor` | Student | The student left the running test (kind TAB_HIDDEN, WINDOW_BLUR or SHARE_STOPPED), with a screenshot of the shared screen. After the allowed warnings, the ne... |
+| `GET` | `/api/v1/college/student/prep/attempts/{id}/result` | Student | result |
+| `POST` | `/api/v1/college/student/prep/attempts/{id}/run` | Student | run |
+| `POST` | `/api/v1/college/student/prep/attempts/{id}/submit` | Student | submit |
+| `GET` | `/api/v1/college/student/prep/proctor/{eventId}/screenshot` | Student | screenshot |
+| `GET` | `/api/v1/college/student/prep/tests` | Student | tests |
+| `POST` | `/api/v1/college/student/prep/tests/{id}/start` | Student | start |
+| `GET` | `/api/v1/college/student/profile` | Student | profile |
+| `PATCH` | `/api/v1/college/student/profile` | Student | update profile |
+
+<a id="offcampus"></a>
+## Off-campus jobs, NOC, job import
+
+Package `com.proveyu.offcampus`.
+
+| Method | Path | Who | What |
+|---|---|---|---|
+| `GET` | `/api/v1/admin/off-campus/import` | Platform admin | last |
+| `POST` | `/api/v1/admin/off-campus/import/run` | Platform admin | run |
+| `GET` | `/api/v1/admin/off-campus/jobs` | Platform admin | list |
+| `POST` | `/api/v1/admin/off-campus/jobs` | Platform admin | create |
+| `POST` | `/api/v1/admin/off-campus/jobs/bulk-status` | Platform admin | bulk |
+| `PUT` | `/api/v1/admin/off-campus/jobs/{id}` | Platform admin | update |
+| `GET` | `/api/v1/admin/off-campus/jobs/{id}/applicants` | Platform admin | applicants |
+| `POST` | `/api/v1/admin/off-campus/jobs/{id}/duplicate` | Platform admin | duplicate |
+| `POST` | `/api/v1/admin/off-campus/jobs/{id}/status` | Platform admin | status |
+| `GET` | `/api/v1/college/off-campus` | College staff (TPO, coordinator, viewer) | list |
+| `GET` | `/api/v1/college/off-campus/export` | College staff (TPO, coordinator, viewer) | export |
+| `GET` | `/api/v1/college/off-campus/nocs` | College staff (TPO, coordinator, viewer) | nocs |
+| `POST` | `/api/v1/college/off-campus/nocs/{id}/decision` | TPO, coordinator | status = APPROVED (optional signed PDF; without it the NOC is generated; ctcLpa = CTC from the letter) or REJECTED (note required). |
+| `GET` | `/api/v1/college/off-campus/nocs/{id}/{kind}` | College staff (TPO, coordinator, viewer) | noc file |
+| `GET` | `/api/v1/college/student/off-campus` | Student | jobs |
+| `PUT` | `/api/v1/college/student/off-campus/interests` | Student | The fields the student wants to see first (software, data, mechanical, ...). Empty = all. |
+| `GET` | `/api/v1/college/student/off-campus/noc/{nocId}/{kind}` | Student | kind = "noc" (the issued NOC) or "offer" (the offer letter the student attached). |
+| `POST` | `/api/v1/college/student/off-campus/{jobId}/click` | Student | click |
+| `POST` | `/api/v1/college/student/off-campus/{jobId}/noc` | Student | request noc |
+| `POST` | `/api/v1/college/student/off-campus/{jobId}/save` | Student | save |
+| `PUT` | `/api/v1/college/student/off-campus/{jobId}/status` | Student | status |
+
+<a id="admin"></a>
+## Platform admin portal
+
+Package `com.proveyu.admin`.
+
+| Method | Path | Who | What |
+|---|---|---|---|
+| `GET` | `/api/v1/admin/admins` | Platform admin | admins |
+| `POST` | `/api/v1/admin/admins` | Platform admin | create |
+| `GET` | `/api/v1/admin/audit` | Platform admin | list |
+| `POST` | `/api/v1/admin/broadcast` | Platform admin | send |
+| `GET` | `/api/v1/admin/broadcast/count` | Platform admin | How many users the message would reach. |
+| `GET` | `/api/v1/admin/colleges/{collegeId}` | Platform admin | One college with its numbers and team (approve / reject / suspend stay on POST /api/v1/admin/colleges/{id}/decision). |
+| `GET` | `/api/v1/admin/dashboard` | Platform admin | dashboard |
+| `GET` | `/api/v1/admin/payments/export` | Platform admin | export |
+| `GET` | `/api/v1/admin/proctoring` | Platform admin | flagged |
+| `GET` | `/api/v1/admin/proctoring/attempts/{id}` | Platform admin | log |
+| `GET` | `/api/v1/admin/proctoring/screenshots/{eventId}` | Platform admin | screenshot |
+| `GET` | `/api/v1/admin/settings` | Platform admin | list |
+| `PUT` | `/api/v1/admin/settings` | Platform admin | update |
+| `DELETE` | `/api/v1/admin/settings/{key}` | Platform admin | reset |
+| `GET` | `/api/v1/admin/users` | Platform admin | users |
+| `POST` | `/api/v1/admin/users/create-admin` | Platform admin | Older path of the same action, kept for scripts. |
+| `POST` | `/api/v1/admin/users/{id}/block` | Platform admin | block |
+| `POST` | `/api/v1/admin/users/{id}/reset-password` | Platform admin | reset password |
+| `POST` | `/api/v1/admin/users/{id}/unblock` | Platform admin | unblock |
+| `GET` | `/api/v1/public/banner` | Public | banner |
+
+<a id="support"></a>
+## Help & support
+
+Package `com.proveyu.support`.
+
+| Method | Path | Who | What |
+|---|---|---|---|
+| `GET` | `/api/v1/admin/support` | Platform admin | list |
+| `GET` | `/api/v1/admin/support/open-count` | Platform admin | open count |
+| `POST` | `/api/v1/admin/support/{id}/reply` | Platform admin | reply |
+| `POST` | `/api/v1/admin/support/{id}/status` | Platform admin | status |
+| `GET` | `/api/v1/support/tickets` | Student, TPO, coordinator, viewer | mine |
+| `POST` | `/api/v1/support/tickets` | Student, TPO, coordinator, viewer | create |
+
+<a id="chat"></a>
+## Chat (REST; live messages over the WebSocket /ws/chat)
+
+Package `com.proveyu.chat`.
+
+| Method | Path | Who | What |
+|---|---|---|---|
+| `POST` | `/api/v1/chat/messages` | Any signed-in user | send text message |
+| `POST` | `/api/v1/chat/messages/file` | Any signed-in user | send file message |
+| `GET` | `/api/v1/chat/messages/{messageId}/file` | Any signed-in user | download attachment |
+| `PATCH` | `/api/v1/chat/messages/{messageId}/read` | Any signed-in user | mark as read |
+| `GET` | `/api/v1/chat/messages/{userId}` | Any signed-in user | get conversation |
+| `GET` | `/api/v1/chat/notifications` | Any signed-in user | get unread notifications |
+| `GET` | `/api/v1/chat/unread` | Any signed-in user | get unread messages |
+| `GET` | `/api/v1/chat/unread/notifications` | Any signed-in user | get unread notifications |
+
+<a id="notification"></a>
+## Notification bell
+
+Package `com.proveyu.notification`.
+
+| Method | Path | Who | What |
+|---|---|---|---|
+| `GET` | `/api/v1/notifications` | Any signed-in user | get notifications |
+| `PUT` | `/api/v1/notifications/{id}/read` | Any signed-in user | mark as read |

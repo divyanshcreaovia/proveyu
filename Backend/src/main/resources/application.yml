@@ -67,6 +67,8 @@ spring:
 
 server:
   port: ${SERVER_PORT:8080}
+  address: ${SERVER_ADDRESS:0.0.0.0}          # 127.0.0.1 in production behind nginx: the backend is not reachable from outside
+  forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:none}   # native behind nginx, so https and the client address are known
 
 file:
   upload-dir: ${FILE_UPLOAD_DIR:uploads/resumes}
@@ -91,6 +93,9 @@ cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
 
 security:
+  # Reverse proxies whose X-Forwarded-For is believed for the rate limit (127.0.0.1 when nginx runs on the same server).
+  # Empty: the header is ignored, so a client cannot pretend to be many addresses.
+  trusted-proxies: ${TRUSTED_PROXIES:}
   rate-limit:
     enabled: ${RATE_LIMIT_ENABLED:true}
     auth-limit-per-minute: ${AUTH_LIMIT_PER_MINUTE:60}
@@ -118,7 +123,7 @@ interview:
   # git-ignored). Failures and rate limits fall back to the local
   # services below. To use an own model server later: set INTERVIEW_CLOUD_URL to it (e.g. http://gpu-box:11434/v1) or drop the key.
   cloud:
-    api-key: ${GROQ_API_KEY:}
+    api-key: ${GROQ_API_KEY:} # several keys, comma-separated (key1,key2,key3): used in turn; a rate-limited key is skipped until it recovers
     url: ${INTERVIEW_CLOUD_URL:https://api.groq.com/openai/v1}
     model: ${INTERVIEW_CLOUD_MODEL:openai/gpt-oss-20b}          # questions + follow-ups
     eval-model: ${INTERVIEW_CLOUD_EVAL_MODEL:openai/gpt-oss-20b} # scoring + report (openai/gpt-oss-120b is stronger)
@@ -127,7 +132,9 @@ interview:
     stt-language: ${INTERVIEW_CLOUD_STT_LANGUAGE:}               # blank = auto-detect (handles Hinglish); "en" forces English
     stt-prompt: ${INTERVIEW_CLOUD_STT_PROMPT:A job interview answer by an Indian engineering student. Technical terms such as Java, Python, SQL, API, Spring Boot, Angular, React, DBMS, OOPS.}
     max-parallel: ${INTERVIEW_CLOUD_MAX_PARALLEL:4}
-    fallback-local: ${INTERVIEW_CLOUD_FALLBACK_LOCAL:true}
+    # Local models (Ollama, whisper.cpp, Piper). true: used when every Groq key fails (and when no key is set). false: Groq only,
+    # nothing local is called, questions are read by the browser's voice. AI_LOCAL_MODELS_ENABLED wins over the older name.
+    fallback-local: ${AI_LOCAL_MODELS_ENABLED:${INTERVIEW_CLOUD_FALLBACK_LOCAL:true}}
   llm:
     url: ${INTERVIEW_LLM_URL:http://localhost:11434}
     model: ${INTERVIEW_LLM_MODEL:qwen3:1.7b}           # live interview: questions + follow-ups (qwen3:8b on a GPU server)
@@ -172,6 +179,29 @@ prep:
 
 springdoc:
   api-docs:
-    enabled: ${SPRINGDOC_ENABLED:true}
+    enabled: ${SPRINGDOC_ENABLED:true}       # false in production: the API list and Swagger UI are not served
   swagger-ui:
+    enabled: ${SPRINGDOC_ENABLED:true}
     path: /swagger-ui.html
+
+# Off-campus jobs: nightly import of fresher jobs and internships from the Careerjet API (key from a Careerjet publisher account:
+# https://www.careerjet.co.in/partners/api). Imported ads arrive as drafts in Admin > Off-campus jobs > Imported; only the last
+# `days` days are kept. Each field (software, data, mechanical, ...) gets a fresher search and an internship search across India.
+offcampus:
+  import:
+    cron: ${OFFCAMPUS_IMPORT_CRON:0 0 0 * * *}   # every night at 12
+    zone: Asia/Kolkata
+    days: 15
+    careerjet:
+      api-key: ${CAREERJET_API_KEY:}
+      locale: en_IN
+      pages: ${CAREERJET_PAGES:2}                # 100 ads per page, per search
+      user-ip: ${CAREERJET_USER_IP:}             # blank = the server's public IP (looked up at import time)
+      referer: ${CAREERJET_REFERER:}             # the website URL declared in the Careerjet publisher account (required by Careerjet)
+
+# Health: the app is UP when it and its database work. Mail is sent in the background and a slow or failing SMTP server must not
+# mark the whole backend DOWN (the mail check also held every health request for up to 10 s).
+management:
+  health:
+    mail:
+      enabled: false

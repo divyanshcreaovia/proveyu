@@ -100,6 +100,24 @@ public class CollegeFileService {
                 .build());
     }
 
+    /** Stores a file the server made itself (for example a generated PDF), so it needs no upload checks. */
+    @Transactional
+    public CollegeFile storeBytes(UUID collegeId, UUID uploadedBy, byte[] bytes, String fileName, String category) {
+        String ext = extensionOf(fileName);
+        String storedName = UUID.randomUUID() + ext;
+        Path dir = baseDir.resolve(collegeId.toString()).normalize();
+        try {
+            Files.createDirectories(dir);
+            Files.write(dir.resolve(storedName).normalize(), bytes);
+        } catch (IOException e) {
+            throw new DomainException("Could not store file", HttpStatus.INTERNAL_SERVER_ERROR, "FILE_STORE_FAILED");
+        }
+        return repository.save(CollegeFile.builder()
+                .collegeId(collegeId).uploadedBy(uploadedBy).originalName(fileName.length() > 255 ? fileName.substring(0, 255) : fileName)
+                .storedName(storedName).contentType(contentTypeFor(ext)).sizeBytes((long) bytes.length).category(category)
+                .build());
+    }
+
     @Transactional(readOnly = true)
     public CollegeFile get(UUID collegeId, UUID fileId) {
         return repository.findByIdAndCollegeId(fileId, collegeId)

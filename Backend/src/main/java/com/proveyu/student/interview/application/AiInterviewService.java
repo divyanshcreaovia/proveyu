@@ -433,7 +433,7 @@ public class AiInterviewService {
             }
         }
         return new SessionView(s.getId(), s.getInterviewType(), level(s), s.getRoleTitle(), companyName(s), s.getStatus(), s.getPlannedQuestions(), done.size(),
-                s.getStartedAt(), done, current, true, maxAnswerSeconds, focus(s));
+                s.getStartedAt(), done, current, ai.localModels(), maxAnswerSeconds, focus(s));
     }
 
     private static AskedQuestion asked(InterviewQuestion q, int number, String transcript) {
