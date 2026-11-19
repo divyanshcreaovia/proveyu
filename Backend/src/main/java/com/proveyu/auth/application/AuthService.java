@@ -199,7 +199,7 @@ public class AuthService {
         verificationTokenRepository.save(EmailVerificationToken.builder()
                 .userId(user.getId()).tokenHash(TokenUtils.sha256(raw)).expiresAt(Instant.now().plus(48, ChronoUnit.HOURS)).build());
         String link = appProperties.getFrontendUrl() + "/college/verify-email?token=" + raw;
-        emailService.sendHtml(user.getEmail(), "Verify your PROVEYU account",
+        emailService.sendHtml(user.getEmail(), "Verify your ProveYu account",
                 "<p>Hi " + org.springframework.web.util.HtmlUtils.htmlEscape(user.getFullName()) + ",</p>"
                         + "<p>Please confirm your e-mail address to activate your college account:</p>"
                         + "<p><a href=\"" + link + "\">Verify e-mail</a></p><p>The link expires in 48 hours.</p>");

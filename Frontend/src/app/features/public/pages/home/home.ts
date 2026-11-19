@@ -35,7 +35,7 @@ export const FAQS: Faq[] = [
   styleUrl: './home.scss',
 })
 export class Home {
-  isHeroCardFlipped = false;
+  isHeroCardFlipped = true;
   activeFaq: number | null = 0;
   readonly faqs = FAQS;
 

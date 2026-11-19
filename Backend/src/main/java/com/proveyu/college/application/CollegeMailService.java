@@ -24,7 +24,7 @@ public class CollegeMailService {
     public static final Map<String, Template> DEFAULTS = new LinkedHashMap<>();
     static {
         DEFAULTS.put("STUDENT_WELCOME", new Template("Your {{collegeName}} placement portal account",
-                "<p>Hi {{studentName}},</p><p>{{collegeName}} has added you to the PROVEYU placement portal.</p>"
+                "<p>Hi {{studentName}},</p><p>{{collegeName}} has added you to the ProveYu placement portal.</p>"
                         + "<p>Sign in at <a href=\"{{portalUrl}}\">{{portalUrl}}</a> with <b>{{email}}</b>. Use <i>Forgot password</i> to set your password.</p>"));
         DEFAULTS.put("DRIVE_PUBLISHED", new Template("New placement drive: {{companyName}} - {{roleTitle}}",
                 "<p>Hi {{studentName}},</p><p>You are eligible for <b>{{companyName}}</b> ({{roleTitle}}, {{ctc}}).</p>"
@@ -68,7 +68,7 @@ public class CollegeMailService {
         if (t == null) return;
         String subject = render(t.subject(), vars).replaceAll("<[^>]*>", "");
         String body = "<div style=\"font-family:Arial,sans-serif;font-size:14px;color:#1e293b\">" + render(t.body(), vars)
-                + "<hr style=\"border:none;border-top:1px solid #e2e8f0\"/><p style=\"font-size:12px;color:#64748b\">Sent via PROVEYU Placement Portal</p></div>";
+                + "<hr style=\"border:none;border-top:1px solid #e2e8f0\"/><p style=\"font-size:12px;color:#64748b\">Sent via ProveYu</p></div>";
         emailService.sendHtml(to, subject, body);
     }
 

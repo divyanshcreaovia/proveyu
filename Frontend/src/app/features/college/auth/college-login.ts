@@ -74,6 +74,13 @@ export class CollegeLogin {
     this.auth.login(email.trim(), password, remember).subscribe({
       next: s => {
         const home = AuthService.homeFor(s.role, s.collegeApprovalStatus);
+        if (!home.startsWith('/college')) {
+          // students, recruiters and the ProveYu team have their own portals: do not keep their session here
+          this.auth.logout('/college/login');
+          this.busy.set(false);
+          this.error.set('This sign-in is for placement cell staff. Students, recruiters and the ProveYu team use their own portal.');
+          return;
+        }
         const target = this.returnUrl() && this.returnUrl()!.startsWith('/') && home === '/college/dashboard' && this.returnUrl()!.startsWith('/college')
           ? this.returnUrl()! : home;
         this.router.navigateByUrl(target);

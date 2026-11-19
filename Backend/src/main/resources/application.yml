@@ -105,6 +105,7 @@ security:
 app:
   # Public URL of the Angular app, used in e-mail links (verification, invites, password reset)
   frontend-url: ${APP_FRONTEND_URL:http://localhost:4200}
+  contact-email: ${APP_CONTACT_EMAIL:support@proveyu.com}   # shown in e-mail footers as the address people write to
   dev:
     # NEVER enable in production: returns OTP / verification / invite tokens in API responses and logs them
     expose-tokens: ${APP_DEV_EXPOSE_TOKENS:false}

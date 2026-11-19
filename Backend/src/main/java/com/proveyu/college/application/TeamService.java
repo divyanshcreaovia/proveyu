@@ -155,7 +155,7 @@ public class TeamService {
     private void sendInviteMail(CollegeContext ctx, CollegeInvite inv, String raw) {
         CollegeProfile p = directory.profile(ctx.collegeId());
         String link = appProperties.getFrontendUrl() + "/college/accept-invite?token=" + raw;
-        emailService.sendHtml(inv.getEmail(), "You're invited to " + p.getCollegeName() + " on PROVEYU",
+        emailService.sendHtml(inv.getEmail(), "You're invited to " + p.getCollegeName() + " on ProveYu",
                 "<p>Hi " + HtmlUtils.htmlEscape(inv.getFullName()) + ",</p><p>" + HtmlUtils.htmlEscape(ctx.actorName()) + " invited you to join the <b>"
                         + HtmlUtils.htmlEscape(p.getCollegeName()) + "</b> placement team as <b>" + inv.getRole().name().replace("COLLEGE_", "").toLowerCase(Locale.ROOT)
                         + "</b>.</p><p><a href=\"" + link + "\">Accept invitation</a> (valid for 7 days)</p>");

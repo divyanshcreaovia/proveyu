@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SUPPORT_EMAIL } from '../../../features/support/support.service';
 
 @Component({
   selector: 'app-footer',
@@ -9,4 +10,5 @@ import { RouterLink } from '@angular/router';
 })
 export class Footer {
   readonly year = new Date().getFullYear();
+  readonly supportEmail = SUPPORT_EMAIL;
 }

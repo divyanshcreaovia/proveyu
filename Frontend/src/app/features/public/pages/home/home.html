@@ -57,7 +57,7 @@
         <div class="hero-visual-col">
           <div class="hero-flip-container" [class.flipped]="isHeroCardFlipped" (click)="toggleHeroFlip()"
             (keydown.enter)="toggleHeroFlip()" tabindex="0" role="button"
-            [attr.aria-label]="isHeroCardFlipped ? 'Show the placement cell dashboard' : 'Show the student portal'">
+            [attr.aria-label]="isHeroCardFlipped ? 'Show the student portal':'Show the placement cell dashboard'">
             <div class="hero-flip-inner">
 
               <div class="hero-flip-front">

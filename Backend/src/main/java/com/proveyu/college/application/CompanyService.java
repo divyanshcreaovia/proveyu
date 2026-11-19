@@ -203,7 +203,7 @@ public class CompanyService {
         CollegeCompany c = directory.company(ctx.collegeId(), companyId);
         CollegeProfile p = directory.profile(ctx.collegeId());
         String body = "<p>Hello,</p><p><b>" + HtmlUtils.htmlEscape(p.getCollegeName()) + "</b> invites <b>" + HtmlUtils.htmlEscape(c.getName())
-                + "</b> to recruit from our campus on PROVEYU.</p>"
+                + "</b> to recruit from our campus on ProveYu.</p>"
                 + (r.message() == null ? "" : "<p>" + HtmlUtils.htmlEscape(r.message()).replace("\n", "<br>") + "</p>")
                 + "<p>Create your free recruiter account: <a href=\"" + appProperties.getFrontendUrl() + "/select-role\">"
                 + appProperties.getFrontendUrl() + "/select-role</a></p><p>Regards,<br>" + HtmlUtils.htmlEscape(ctx.actorName()) + "</p>";
