@@ -1,7 +1,8 @@
 -- =====================================================================================================
 -- finaluseddbschema.sql : ProveYu final database schema (MySQL 8, utf8mb4)
--- Only the 53 tables the application code uses (JPA entities and SQL in Backend/src/main/java).
--- Generated from the live dev database proveyu_college (Flyway version 39), structure only, no data.
+-- Only the 54 tables the application code uses (JPA entities and SQL in Backend/src/main/java).
+-- Flyway version 39 (V1..V39 applied), structure only, no data. Checked column by column against databases migrated to V39.
+-- New server: load this into an EMPTY database and set SPRING_FLYWAY_BASELINE_VERSION=39; Flyway then runs only V40 and later.
 -- Not included: flyway_schema_history (Flyway creates it) and 44 idle tables no code reads or writes.
 -- Change: candidate_scores.exam_id keeps its column but the foreign key to the idle `exams` table is dropped.
 -- =====================================================================================================
