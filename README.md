@@ -223,6 +223,6 @@ portal: [RUN_AND_TEST.md](RUN_AND_TEST.md).
 - Student code runs in Docker with no network, a read-only file system, an unprivileged user and a time limit.
 - College and admin actions are written to audit logs.
 
-Deploying to a server: follow [DEPLOY_EC2.md](DEPLOY_EC2.md) (AWS) or [DEPLOY_GCP.md](DEPLOY_GCP.md) (Google Cloud, e2-standard-4 on the free trial) (ready-made nginx, systemd and production `.env` files in
+Deploying to a server: start with the one-page [DEPLOY_CHECKLIST.md](DEPLOY_CHECKLIST.md), then follow [DEPLOY_EC2.md](DEPLOY_EC2.md) (AWS) or [DEPLOY_GCP.md](DEPLOY_GCP.md) (Google Cloud, e2-standard-4 on the free trial) (ready-made nginx, systemd and production `.env` files in
 [deploy/](deploy/), and the security checklist). In short: HTTPS with HSTS and a Content-Security-Policy at the reverse proxy, `APP_DEV_EXPOSE_TOKENS=false`,
 `COLLEGE_REQUIRE_APPROVAL=true`, a long random `JWT_SECRET`, and `CORS_ALLOWED_ORIGINS` set to the real domain.
