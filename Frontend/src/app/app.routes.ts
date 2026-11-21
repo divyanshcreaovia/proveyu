@@ -13,6 +13,7 @@ export const routes: Routes = [
   { path: 'for-colleges', title: 'For colleges', loadComponent: () => import('./features/public/pages/for-colleges/for-colleges').then(m => m.ForColleges) },
   { path: 'for-students', title: 'For students', loadComponent: () => import('./features/public/pages/for-students/for-students').then(m => m.ForStudents) },
   { path: 'how-it-works', title: 'How it works', loadComponent: () => import('./features/public/pages/how-it-works/how-it-works').then(m => m.HowItWorks) },
+  { path: 'pricing', title: 'Pricing', loadComponent: () => import('./features/public/pages/pricing/pricing').then(m => m.Pricing) },
   // old pages of the in-person assessment model: keep old links working
   { path: 'why-in-person', redirectTo: 'how-it-works' },
   { path: 'fresher-model', redirectTo: 'for-students' },
@@ -42,6 +43,7 @@ export const routes: Routes = [
       { path: 'prep', redirectTo: 'mock-tests' },
       { path: 'proctoring', title: 'Proctoring', loadComponent: () => import('./features/admin/pages/proctoring').then(m => m.AdminProctoringPage) },
       { path: 'support', title: 'Support', loadComponent: () => import('./features/admin/pages/support').then(m => m.AdminSupportPage) },
+      { path: 'enquiries', title: 'Pricing enquiries', loadComponent: () => import('./features/admin/pages/enquiries').then(m => m.AdminEnquiriesPage) },
       { path: 'broadcast', title: 'Broadcast', loadComponent: () => import('./features/admin/pages/broadcast').then(m => m.AdminBroadcastPage) },
       { path: 'settings', title: 'Settings', loadComponent: () => import('./features/admin/pages/settings').then(m => m.AdminSettingsPage) },
       { path: 'audit', title: 'Audit log', loadComponent: () => import('./features/admin/pages/audit').then(m => m.AdminAuditPage) },

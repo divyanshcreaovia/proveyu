@@ -1,7 +1,7 @@
 -- =====================================================================================================
 -- finaluseddbschema.sql : ProveYu final database schema (MySQL 8, utf8mb4)
 -- Only the 53 tables the application code uses (JPA entities and SQL in Backend/src/main/java).
--- Generated from the live dev database proveyu_college (Flyway version 38), structure only, no data.
+-- Generated from the live dev database proveyu_college (Flyway version 39), structure only, no data.
 -- Not included: flyway_schema_history (Flyway creates it) and 44 idle tables no code reads or writes.
 -- Change: candidate_scores.exam_id keeps its column but the foreign key to the idle `exams` table is dropped.
 -- =====================================================================================================
@@ -86,6 +86,27 @@ CREATE TABLE `platform_settings` (
   `updated_by` char(36) DEFAULT NULL,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`setting_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `pricing_enquiries` (
+  `id` char(36) NOT NULL,
+  `full_name` varchar(150) NOT NULL,
+  `email` varchar(190) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `organization` varchar(255) NOT NULL,
+  `org_type` varchar(20) NOT NULL,
+  `designation` varchar(120) DEFAULT NULL,
+  `city` varchar(120) DEFAULT NULL,
+  `student_count` varchar(20) DEFAULT NULL,
+  `message` text,
+  `status` varchar(20) NOT NULL DEFAULT 'NEW',
+  `admin_note` text,
+  `handled_by` varchar(150) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_pricing_enquiry_status_time` (`status`,`created_at`),
+  KEY `idx_pricing_enquiry_email_time` (`email`,`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `support_tickets` (

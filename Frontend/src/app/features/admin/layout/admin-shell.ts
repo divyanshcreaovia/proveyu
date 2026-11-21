@@ -7,8 +7,9 @@ import { ThemeService } from '../../../core/services/theme.service';
 import { TokenStorageService } from '../../../core/services/token-storage.service';
 import { AdminService } from '../services/admin.service';
 import { SupportService } from '../../support/support.service';
+import { EnquiryService } from '../../public/services/enquiry.service';
 
-interface NavItem { label: string; icon: string; route: string; badge?: 'colleges' | 'payments' | 'support'; }
+interface NavItem { label: string; icon: string; route: string; badge?: 'colleges' | 'payments' | 'support' | 'enquiries'; }
 
 const NAV: { section: string; items: NavItem[] }[] = [
   { section: 'Overview', items: [{ label: 'Dashboard', icon: 'bi-speedometer2', route: '/admin/dashboard' }] },
@@ -25,6 +26,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
   ] },
   { section: 'Platform', items: [
     { label: 'Support', icon: 'bi-life-preserver', route: '/admin/support', badge: 'support' },
+    { label: 'Pricing enquiries', icon: 'bi-tag', route: '/admin/enquiries', badge: 'enquiries' },
     { label: 'Broadcast', icon: 'bi-megaphone', route: '/admin/broadcast' },
     { label: 'Settings', icon: 'bi-gear', route: '/admin/settings' },
     { label: 'Audit log', icon: 'bi-journal-text', route: '/admin/audit' },
@@ -187,6 +189,7 @@ export class AdminShell implements OnInit {
   menu = signal(false);
   title = signal('');
   private support = inject(SupportService);
+  private enquiries = inject(EnquiryService);
   private counts = signal<{ colleges: number; payments: number }>({ colleges: 0, payments: 0 });
   initials = computed(() => this.name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase());
 
@@ -201,11 +204,14 @@ export class AdminShell implements OnInit {
     this.destroyRef.onDestroy(() => clearInterval(poll));
   }
 
-  badge(kind: 'colleges' | 'payments' | 'support'): number { return kind === 'support' ? this.support.open() : this.counts()[kind]; }
+  badge(kind: 'colleges' | 'payments' | 'support' | 'enquiries'): number {
+    return kind === 'support' ? this.support.open() : kind === 'enquiries' ? this.enquiries.fresh() : this.counts()[kind];
+  }
 
   /** Colleges waiting for approval, payments waiting for a check and open support requests, for the menu badges. */
   private loadCounts(): void {
     this.support.refreshOpen();
+    this.enquiries.refreshNew();
     this.admin.dashboard().subscribe({
       next: d => this.counts.set({ colleges: d.colleges['PENDING'] ?? 0, payments: d.paymentsWaiting }),
       error: () => undefined,

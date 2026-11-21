@@ -73,6 +73,7 @@ public class SecurityConfig {
                         "/api/v1/college/auth/student-signup", "/api/v1/college/auth/recruiter-accept").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/college/auth/invite/**", "/api/v1/college/auth/recruiter-invite/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/public/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/public/pricing-enquiries").permitAll()
                 .requestMatchers("/actuator/health", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 // WebSocket handshake authenticates itself via WebSocketAuthInterceptor (?token=)
                 .requestMatchers("/ws/**").permitAll()
