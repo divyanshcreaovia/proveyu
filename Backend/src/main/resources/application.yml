@@ -44,17 +44,15 @@ spring:
     port: ${SPRING_MAIL_PORT:465}
     username: ${SPRING_MAIL_USERNAME:}
     password: ${SPRING_MAIL_PASSWORD:}
-    protocol: smtps
+    protocol: smtp
     properties:
       mail:
         smtp:
           auth: ${SPRING_MAIL_SMTP_AUTH:true}
           ssl:
-            enable: true
-          socketFactory:
-            port: 465
-            class: javax.net.ssl.SSLSocketFactory
-            fallback: false
+            enable: ${SPRING_MAIL_SSL_ENABLE:true}
+          starttls:
+            enable: ${SPRING_MAIL_STARTTLS_ENABLE:false}
           connectiontimeout: 10000
           timeout: 10000
           writetimeout: 10000
