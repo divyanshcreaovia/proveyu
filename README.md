@@ -21,7 +21,7 @@ from the placement cell when they get an offer). The ProveYu team runs the platf
 |---|---|
 | Frontend | Angular 21 (standalone components, signals, zoneless), Bootstrap 5, TypeScript 5.9 |
 | Backend | Spring Boot 3.2.3 (Java 17+, runs on 21), Spring Security with JWT, JPA plus JdbcTemplate, Flyway |
-| Database | MySQL 8, database `proveyu_college`, migrations `V1`–`V39`, 54 tables in use (see [finaluseddbschema.sql](finaluseddbschema.sql)) |
+| Database | MySQL 8, database `proveyu_college`, migrations `V1`–`V42`, 54 tables in use (see [finaluseddbschema.sql](finaluseddbschema.sql)) |
 | AI interview | Groq cloud first (`gpt-oss-20b` for questions and scoring, `whisper-large-v3-turbo` for speech; several keys back each other up). Local fallback: Ollama `qwen3:1.7b` and whisper.cpp. Piper for the spoken voice |
 | Off-campus job feed | Careerjet job search API, imported every night at 12 (Internshala and similar sites forbid scraping) |
 | PDFs | Apache PDFBox (offer letters, reports, NOC on the college letterhead) |
@@ -75,7 +75,7 @@ proveyu/
 ├── scripts/                  # run scripts, demo seed data, end-to-end tests, run_all_tests.sh, gen_docs.py
 ├── docs/COLLEGE_PORTAL.md    # detailed guide: modules, proctoring, admin portal, support, off-campus, NOC
 ├── RUN_AND_TEST.md           # full runbook and the end-to-end test checklist for every portal
-└── finaluseddbschema.sql     # structure of the 54 tables the code uses (Flyway baseline 39)
+└── finaluseddbschema.sql     # structure of the 54 tables the code uses (Flyway baseline 42)
 ```
 
 ---

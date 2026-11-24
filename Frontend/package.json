@@ -17,10 +17,13 @@
     "@angular/forms": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@mediapipe/tasks-vision": "1.2.3",
+    "@ricky0123/vad-web": "0.0.31",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.13.1",
     "highcharts": "^13.1.1",
     "highcharts-angular": "^5.4.1",
+    "onnxruntime-web": "1.31.1",
     "qrcode": "^1.5.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

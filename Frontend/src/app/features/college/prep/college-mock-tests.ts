@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { AdminTest, PrepService } from '../../student/services/prep.service';
 import { CollegeService } from '../services/college.service';
@@ -8,6 +8,8 @@ import { FileUpload } from '../../../shared/ui/file-upload';
 import { EmptyState } from '../../../shared/ui/states';
 import { AppError } from '../../../core/api';
 import { CollegeTestAttempts } from './college-test-attempts';
+import { ExamMonitorView, ExamSettingsDialog } from './college-exams';
+import { Pager, pageOf } from '../../../shared/ui/pager';
 
 const EXAMPLE = `{
   "title": "Infosys drive practice - 12 Dec",
@@ -50,21 +52,22 @@ const EXAMPLE = `{
  */
 @Component({
   selector: 'pm-college-mock-tests',
-  imports: [DatePipe, FileUpload, EmptyState, CollegeTestAttempts],
+  imports: [DatePipe, FileUpload, EmptyState, CollegeTestAttempts, ExamSettingsDialog, ExamMonitorView, Pager],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <ul class="nav nav-tabs mb-3" role="tablist">
       <li class="nav-item" role="presentation"><button class="nav-link" role="tab" [class.active]="tab() === 'tests'" [attr.aria-selected]="tab() === 'tests'"
-        (click)="tab.set('tests')"><i class="bi bi-journal-code me-1"></i>Tests</button></li>
+        (click)="tab.set('tests')"><i class="bi bi-journal-code me-1"></i>Tests &amp; exams</button></li>
       <li class="nav-item" role="presentation"><button class="nav-link" role="tab" [class.active]="tab() === 'attempts'" [attr.aria-selected]="tab() === 'attempts'"
         (click)="tab.set('attempts')"><i class="bi bi-shield-check me-1"></i>Student attempts &amp; proctoring</button></li>
     </ul>
-    @if (tab() === 'attempts') { <pm-college-test-attempts /> } @else {
+    @if (tab() === 'attempts') { <pm-college-test-attempts /> } @else if (monitorFor(); as mt) { <pm-exam-monitor [test]="mt" (back)="monitorFor.set(null); load()" /> } @else {
     <section class="bg-body border rounded-3 p-3 mb-3">
-      <h2 class="h5 fw-bold mb-1">Mock tests for your students</h2>
-      <p class="small text-body-secondary mb-3">Upload practice tests, for example in the pattern of a company visiting next week. Once published, they appear for
-        <strong>your college's students only</strong> under Preparation → Mock tests → <em>College assessments</em>, open to everyone straight away.
-        The 20-test placement path from ProveYu stays available to them as well.</p>
+      <h2 class="h5 fw-bold mb-1">Tests and exams for your students</h2>
+      <p class="small text-body-secondary mb-3">Upload a test, then in <strong>Settings</strong> keep it a <strong>practice test</strong> (open any time, retakes allowed) or make it an
+        <strong>exam</strong> such as a sessional: one attempt, a fixed time window, only the branches and batches you choose, shuffled questions, and results hidden
+        until you release them. Students see them under <em>College tests</em>; <strong>Monitor</strong> shows who is writing, gives extra time, marks written
+        answers and downloads the marks register.</p>
       <ol class="mt-steps">
         <li><span>1</span> <a href="samples/mock-test-template.json" download="mock-test-template.json">Download the template</a></li>
         <li><span>2</span> Edit it (format below)</li>
@@ -113,6 +116,19 @@ const EXAMPLE = `{
               <li>Marks are given in proportion to hidden tests passed. Extra spaces at line ends are ignored.</li>
             </ul>
           </details>
+          <details class="mb-2">
+            <summary class="fw-semibold">Written (descriptive) question</summary>
+            <ul class="ps-3 mb-0 mt-1">
+              <li><code>"type": "TEXT"</code>, <code>text</code>, optional <code>title</code> and <code>marks</code> (default 5).</li>
+              <li>Students type the answer (pasting is off). A teacher marks it in <strong>Monitor → Mark</strong>; <code>explanation</code> is shown to the teacher as the model answer.</li>
+            </ul>
+          </details>
+          <details class="mb-2">
+            <summary class="fw-semibold">Question pool</summary>
+            <ul class="ps-3 mb-0 mt-1">
+              <li>Add <code>"pick": 10</code> to a section: each student gets 10 random questions of that section. All its questions need the same marks.</li>
+            </ul>
+          </details>
           <details>
             <summary class="fw-semibold">Example file</summary>
             <pre class="mt-example mt-1"><code>{{ example }}</code></pre>
@@ -127,16 +143,24 @@ const EXAMPLE = `{
         <thead><tr><th>Test</th><th class="d-none d-md-table-cell">Questions</th><th>Students</th><th class="d-none d-sm-table-cell">Average</th><th>Status</th>
           @if (college.canWrite()) { <th></th> }</tr></thead>
         <tbody>
-          @for (t of rows(); track t.id) {
+          @for (t of pageRows(); track t.id) {
             <tr>
-              <td><strong>{{ t.title }}</strong>@if (t.companyTag) { <span class="badge text-bg-light border ms-1">{{ t.companyTag }}</span> }<br>
-                <span class="text-body-secondary">{{ t.durationMinutes }} min · {{ t.totalMarks }} marks · uploaded {{ t.createdAt | date: 'mediumDate' }}</span></td>
-              <td class="d-none d-md-table-cell">{{ t.questionCount - t.codingCount }} MCQ · {{ t.codingCount }} coding</td>
+              <td><strong>{{ t.title }}</strong>@if (t.companyTag) { <span class="badge text-bg-light border ms-1">{{ t.companyTag }}</span> }
+                @if (t.exam?.mode === 'EXAM') { <span class="badge ms-1" style="background:#e0e7ff;color:#3730a3">Exam</span> }
+                @else { <span class="badge text-bg-light border ms-1">Practice</span> }<br>
+                <span class="text-body-secondary">{{ t.durationMinutes }} min · {{ t.totalMarks }} marks · uploaded {{ t.createdAt | date: 'mediumDate' }}</span>
+                @if (t.exam?.mode === 'EXAM') {
+                  <br><span class="text-body-secondary"><i class="bi bi-calendar-event me-1"></i>{{ t.exam?.startsAt | date: 'd MMM, h:mm a' }} – {{ t.exam?.endsAt | date: 'd MMM, h:mm a' }}
+                    · results {{ t.exam?.resultsReleased ? 'released' : 'hidden' }}</span>
+                }</td>
+              <td class="d-none d-md-table-cell">{{ t.questionCount - t.codingCount }} MCQ/written · {{ t.codingCount }} coding</td>
               <td>{{ t.students ?? 0 }}<span class="text-body-secondary d-none d-lg-inline"> ({{ t.attempts }} attempts)</span></td>
               <td class="d-none d-sm-table-cell">{{ t.averagePercent === null || t.averagePercent === undefined ? '-' : t.averagePercent + '%' }}</td>
               <td>@if (t.published) { <span class="badge text-bg-success">Published</span> } @else { <span class="badge text-bg-secondary">Draft</span> }</td>
               @if (college.canWrite()) {
                 <td class="text-end text-nowrap">
+                  <button class="btn btn-sm btn-outline-primary me-1" (click)="monitorFor.set(t)" title="Live monitor, marking and marks register"><i class="bi bi-display me-1"></i>Monitor</button>
+                  <button class="btn btn-sm btn-outline-secondary me-1" (click)="settingsFor.set(t)" title="Practice or exam settings"><i class="bi bi-gear me-1"></i>Settings</button>
                   <button class="btn btn-sm me-1" [class.btn-success]="!t.published" [class.btn-outline-secondary]="t.published" (click)="toggle(t)">
                     {{ t.published ? 'Unpublish' : 'Publish' }}</button>
                   <button class="btn btn-sm btn-outline-secondary me-1" (click)="download(t)" title="Download JSON" [attr.aria-label]="'Download ' + t.title"><i class="bi bi-download"></i></button>
@@ -151,7 +175,9 @@ const EXAMPLE = `{
         </tbody>
       </table>
     </div>
-    }`,
+    <pm-pager [total]="rows().length" [(page)]="page" [(size)]="size" [sizes]="[10, 25, 50]" />
+    }
+    <pm-exam-settings [test]="settingsFor()" (saved)="settingsFor.set(null); load()" (closed)="settingsFor.set(null)" />`,
   styles: [`
     .mt-steps { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; font-size: .85rem; }
     .mt-steps li { display: flex; align-items: center; gap: .4rem; }
@@ -173,6 +199,11 @@ export class CollegeMockTests implements OnInit {
   /** Tests (upload / publish) or Student attempts (scores and proof of leaving a test). */
   tab = signal<'tests' | 'attempts'>('tests');
   rows = signal<AdminTest[]>([]);
+  settingsFor = signal<AdminTest | null>(null);
+  page = signal(0);
+  size = signal(10);
+  pageRows = computed(() => pageOf(this.rows(), this.page(), this.size()));
+  monitorFor = signal<AdminTest | null>(null);
   busy = signal(false);
   error = signal('');
 
@@ -192,7 +223,9 @@ export class CollegeMockTests implements OnInit {
     if (!t.published) {
       const r = await this.confirm.ask({
         title: `Publish "${t.title}"?`, confirmText: 'Publish', tone: 'primary',
-        message: `All your college's students will see it under Preparation → Mock tests and can start it right away (${t.durationMinutes} minutes).`,
+        message: t.exam?.mode === 'EXAM'
+          ? `The exam's students see it under College tests now and can start it between ${new Date(t.exam.startsAt!).toLocaleString()} and ${new Date(t.exam.endsAt!).toLocaleString()} (one attempt).`
+          : `All your college's students will see it under College tests and can start it right away (${t.durationMinutes} minutes).`,
       });
       if (!r.ok) return;
     }

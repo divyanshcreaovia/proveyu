@@ -12,6 +12,7 @@ plus tenancy isolation: college B cannot read college A's data, viewer cannot wr
 """
 import io
 import json
+import os
 import sys
 import time
 import urllib.error
@@ -76,7 +77,28 @@ def register_college(tag):
     check("verify e-mail", s == 200)
     s, r = call("POST", "/api/v1/auth/login", {"email": email, "password": "Secret123"})
     check(f"login TPO {tag}", s == 200 and r["data"]["role"] == "COLLEGE_ADMIN", r)
+    approve_if_pending(r["data"]["token"], email, r["data"].get("collegeApprovalStatus"))
     return r["data"]["token"], r["data"]
+
+
+ADMIN_LOGIN = (os.environ.get("ADMIN_EMAIL", "admin@proveyu.local"), os.environ.get("ADMIN_PASSWORD", "Admin@1234"))
+
+
+def approve_if_pending(tpo_token, tpo_email, status):
+    """COLLEGE_REQUIRE_APPROVAL=true: the new college is locked until a platform admin approves it (the real flow)."""
+    if status != "PENDING":
+        return
+    s, r = call("GET", "/api/v1/college/students", token=tpo_token)
+    check("pending college cannot use the portal (403 COLLEGE_PENDING_APPROVAL)", s == 403 and r.get("errorCode") == "COLLEGE_PENDING_APPROVAL", r)
+    s, r = call("POST", "/api/v1/auth/login", {"email": ADMIN_LOGIN[0], "password": ADMIN_LOGIN[1]})
+    admin = r["data"]["token"] if s == 200 else None
+    s, r = call("GET", "/api/v1/admin/colleges?status=PENDING", token=admin)
+    college = next((c for c in (r.get("data") or []) if c.get("tpoEmail") == tpo_email), None)
+    check("admin sees the college waiting for approval", college is not None, r)
+    s, _ = call("POST", f"/api/v1/admin/colleges/{college['collegeId']}/decision", {"status": "APPROVED", "note": "e2e"}, admin)
+    check("admin approves the college", s == 200)
+    s, _ = call("GET", "/api/v1/college/students", token=tpo_token)
+    check("approved college can use the portal", s == 200)
 
 
 def main():

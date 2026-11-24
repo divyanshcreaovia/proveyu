@@ -26,7 +26,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
   ] },
   { section: 'Engage', items: [
     { label: 'Communication', icon: 'bi-megaphone', route: '/college/communication', badge: 'chat' },
-    { label: 'Mock tests', icon: 'bi-journal-code', route: '/college/mock-tests' },
+    { label: 'Tests', icon: 'bi-journal-code', route: '/college/mock-tests' },
     { label: 'Off-campus', icon: 'bi-globe2', route: '/college/off-campus' },
     { label: 'Reports', icon: 'bi-bar-chart-line', route: '/college/reports' },
   ] },

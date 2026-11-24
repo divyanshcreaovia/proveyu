@@ -76,7 +76,7 @@ Open three terminals in the project folder.
 scripts/start-db.sh                      # only if you use the Docker MySQL instead of a system MySQL
 cd ai-services && docker compose up -d && cd ..
 
-# terminal 2: backend on :8080 (applies new Flyway migrations on start; schema file = V39)
+# terminal 2: backend on :8080 (applies new Flyway migrations on start; schema file = V42)
 bash scripts/run-backend.sh
 
 # terminal 3: frontend on :4300

@@ -25,6 +25,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
   ] },
   { section: 'Preparation', items: [
     { label: 'Mock tests', icon: 'bi-journal-code', route: '/student/prep' },
+    { label: 'College tests', icon: 'bi-building-check', route: '/student/college-tests' },
     { label: 'AI interview', icon: 'bi-mic', route: '/student/ai-interview' },
   ] },
   { section: 'College', items: [

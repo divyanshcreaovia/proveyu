@@ -28,13 +28,31 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "vision_wasm_internal.{js,wasm}",
+                "input": "node_modules/@mediapipe/tasks-vision/wasm",
+                "output": "proctor/mediapipe"
+              },
+              {
+                "glob": "{vad.worklet.bundle.min.js,silero_vad_v5.onnx}",
+                "input": "node_modules/@ricky0123/vad-web/dist",
+                "output": "proctor/vad"
+              },
+              {
+                "glob": "ort-wasm-simd-threaded.{wasm,mjs}",
+                "input": "node_modules/onnxruntime-web/dist",
+                "output": "proctor/ort"
               }
             ],
             "styles": [
               "src/styles.scss"
             ],
             "allowedCommonJsDependencies": [
-              "qrcode"
+              "qrcode",
+              "@ricky0123/vad-web",
+              "onnxruntime-web",
+              "onnxruntime-web/wasm"
             ]
           },
           "configurations": {

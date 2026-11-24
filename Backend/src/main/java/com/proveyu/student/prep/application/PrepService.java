@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import static com.proveyu.student.prep.domain.PrepModel.CODING;
 import static com.proveyu.student.prep.domain.PrepModel.MCQ;
+import static com.proveyu.student.prep.domain.PrepModel.TEXT;
 
 /** Mock tests: admin uploads JSON definitions; students take timed attempts that are scored on the server. */
 @Service
@@ -38,6 +39,7 @@ public class PrepService {
     private final ObjectMapper json;
     private final com.proveyu.college.infrastructure.CollegeStudentRepository students;
     private final com.proveyu.student.prep.infrastructure.PrepProctorEventRepository proctorEvents;
+    private final TestNotifier notifier;
 
     /** Unlock score and leave-the-test warnings: application.yml defaults, changeable by the platform admin. */
     private final com.proveyu.shared.settings.PlatformSettings settings;
@@ -48,6 +50,17 @@ public class PrepService {
     }
 
     /** Times a student may leave a running test with only a warning; the next time submits the test. */
+    /** AI proctoring (camera + microphone) on mock tests; false = the browser skips the camera check. */
+    @org.springframework.beans.factory.annotation.Value("${prep.ai-proctoring.enabled:true}")
+    private boolean aiProctoringEnabled;
+    /** AI events allowed before the attempt is flagged for review (AI events never submit a test). */
+    @org.springframework.beans.factory.annotation.Value("${prep.max-ai-warnings:5}")
+    private int maxAiWarnings;
+
+    public boolean aiProctoringEnabled() { return aiProctoringEnabled; }
+
+    public int maxAiWarnings() { return maxAiWarnings; }
+
     int maxTabSwitchWarnings() {
         return settings.number(com.proveyu.shared.settings.PlatformSettings.PREP_MAX_WARNINGS);
     }
@@ -63,12 +76,8 @@ public class PrepService {
     private AdminTestSummary create(String rawJson, UUID createdBy, UUID collegeId) {
         TestDefinition def = parse(rawJson);
         TestDefinition clean = validate(def);
-        int q = 0, coding = 0, marks = 0;
-        for (Section s : clean.sections()) for (Question x : s.questions()) {
-            q++;
-            if (CODING.equals(x.type())) coding++;
-            marks += x.marksOrDefault();
-        }
+        int[] tot = totals(clean);
+        int q = tot[0], coding = tot[1], marks = tot[2];
         PrepTest t = testRepository.save(PrepTest.builder().title(clean.title().trim()).description(clean.description())
                 .collegeId(collegeId).companyTag(blankToNull(clean.companyTag())).level(clean.level())
                 .levelOrder(collegeId == null ? clean.order() : null).durationMinutes(clean.durationMinutes()).questionCount(q).codingCount(coding)
@@ -104,13 +113,19 @@ public class PrepService {
     @Transactional
     public AdminTestSummary collegeSetPublished(UUID collegeId, UUID id, boolean published) {
         PrepTest t = collegeTest(collegeId, id);
+        boolean changed = t.isPublished() != published;
         t.setPublished(published);
-        return summary(testRepository.save(t), 0);
+        if (published && t.isExam() && t.getStartsAt() != null && !Instant.now().isBefore(t.getStartsAt())) t.setLiveNotifiedAt(Instant.now()); // told below
+        AdminTestSummary out = summary(testRepository.save(t), 0);
+        if (changed && published) notifier.published(t);
+        else if (changed) notifier.withdrawn(t);
+        return out;
     }
 
     @Transactional
     public PrepTest collegeDelete(UUID collegeId, UUID id) {
         PrepTest t = collegeTest(collegeId, id);
+        if (t.isPublished()) notifier.withdrawn(t);
         testRepository.delete(t);
         return t;
     }
@@ -143,21 +158,24 @@ public class PrepService {
         Map<UUID, List<PrepAttempt>> mine = attemptRepository.findAllByUserIdOrderByStartedAtDesc(userId).stream()
                 .peek(this::autoSubmitIfExpired)
                 .collect(Collectors.groupingBy(PrepAttempt::getTestId, LinkedHashMap::new, Collectors.toList()));
-        UUID college = collegeOf(userId);
+        com.proveyu.college.domain.CollegeStudent me = studentOf(userId);
         List<PrepTest> tests = new ArrayList<>(testRepository.findAllByPublishedTrueOrderByCreatedAtDesc().stream()
-                .filter(t -> visibleTo(t, college)).toList());
+                .filter(t -> visibleTo(t, me)).toList());
         // Ladder tests first, easiest to hardest; then the standalone tests, newest first.
         tests.sort(Comparator.comparing((PrepTest t) -> t.getLevelOrder() == null ? Integer.MAX_VALUE : t.getLevelOrder()));
         Map<UUID, String> lockedBy = lockedTests(tests, mine);
         return tests.stream().map(t -> {
             List<PrepAttempt> a = mine.getOrDefault(t.getId(), List.of());
-            BigDecimal best = a.stream().map(PrepAttempt::getScore).filter(Objects::nonNull).max(Comparator.naturalOrder()).orElse(null);
+            boolean hidden = t.isExam() && !t.isResultsReleased();
+            BigDecimal best = hidden ? null : a.stream().map(PrepAttempt::getScore).filter(Objects::nonNull).max(Comparator.naturalOrder()).orElse(null);
             UUID open = a.stream().filter(x -> x.getSubmittedAt() == null).map(PrepAttempt::getId).findFirst().orElse(null);
             UUID last = a.stream().filter(x -> x.getSubmittedAt() != null).map(PrepAttempt::getId).findFirst().orElse(null);
             List<String> sections = definition(t).sections().stream().map(Section::name).toList();
             return new TestCard(t.getId(), t.getTitle(), t.getDescription(), t.getCompanyTag(), t.getDurationMinutes(), t.getQuestionCount(),
                     t.getCodingCount(), t.getTotalMarks(), sections, (int) a.stream().filter(x -> x.getSubmittedAt() != null).count(), best, open, last,
-                    t.getLevel(), t.getLevelOrder(), bestPercent(a), lockedBy.containsKey(t.getId()) && open == null, lockedBy.get(t.getId()), unlockPercent(), passed(a));
+                    t.getLevel(), t.getLevelOrder(), hidden ? null : bestPercent(a), lockedBy.containsKey(t.getId()) && open == null, lockedBy.get(t.getId()),
+                    unlockPercent(), !hidden && passed(a), aiProctoringEnabled, t.getMode(), t.getStartsAt(), t.getEndsAt(), examStatus(t),
+                    !t.isExam() || t.isResultsReleased(), t.getCollegeId() != null);
         }).toList();
     }
 
@@ -178,14 +196,36 @@ public class PrepService {
         return locked;
     }
 
-    /** The student's college, or null for a candidate not linked to a college. */
-    private UUID collegeOf(UUID userId) {
-        return students.findFirstByUserIdAndDeletedAtIsNull(userId).map(com.proveyu.college.domain.CollegeStudent::getCollegeId).orElse(null);
+    /** The student's college record, or null for a candidate not linked to a college. */
+    private com.proveyu.college.domain.CollegeStudent studentOf(UUID userId) {
+        return students.findFirstByUserIdAndDeletedAtIsNull(userId).orElse(null);
     }
 
-    /** Platform tests are for everyone; a college's own tests only for its students. */
-    private static boolean visibleTo(PrepTest t, UUID studentCollege) {
-        return t.getCollegeId() == null || t.getCollegeId().equals(studentCollege);
+    /** Platform tests are for everyone; a college's own tests only for its students; an exam only for its branches / batch years. */
+    static boolean visibleTo(PrepTest t, com.proveyu.college.domain.CollegeStudent s) {
+        if (t.getCollegeId() == null) return true;
+        if (s == null || !t.getCollegeId().equals(s.getCollegeId())) return false;
+        return !t.isExam() || eligible(t, s);
+    }
+
+    /** The student is in one of the exam's branches and batch years (empty list = all). */
+    static boolean eligible(PrepTest t, com.proveyu.college.domain.CollegeStudent s) {
+        List<String> branches = csv(t.getBranchIds()), years = csv(t.getBatchYears());
+        return (branches.isEmpty() || (s.getBranchId() != null && branches.contains(s.getBranchId().toString())))
+                && (years.isEmpty() || (s.getBatchYear() != null && years.contains(s.getBatchYear().toString())));
+    }
+
+    /** UPCOMING, LIVE or CLOSED for an exam; null for a practice test. */
+    static String examStatus(PrepTest t) {
+        if (!t.isExam()) return null;
+        Instant now = Instant.now();
+        if (t.getStartsAt() != null && now.isBefore(t.getStartsAt())) return "UPCOMING";
+        if (t.getEndsAt() != null && !now.isBefore(t.getEndsAt())) return "CLOSED";
+        return "LIVE";
+    }
+
+    static List<String> csv(String v) {
+        return v == null || v.isBlank() ? List.of() : Arrays.stream(v.split(",")).map(String::trim).filter(x -> !x.isEmpty()).toList();
     }
 
     /** Some submitted attempt scored strictly more than unlockPercent() of its maximum (exact, no rounding). */
@@ -205,10 +245,19 @@ public class PrepService {
     @Transactional
     public AttemptView start(UUID userId, UUID testId) {
         PrepTest t = test(testId);
-        if (!t.isPublished() || !visibleTo(t, collegeOf(userId))) throw notFound("Test");
-        PrepAttempt open = attemptRepository.findAllByUserIdOrderByStartedAtDesc(userId).stream()
-                .filter(a -> a.getTestId().equals(testId) && a.getSubmittedAt() == null)
+        if (!t.isPublished() || !visibleTo(t, studentOf(userId))) throw notFound("Test");
+        List<PrepAttempt> previous = attemptRepository.findAllByUserIdOrderByStartedAtDesc(userId).stream()
+                .filter(a -> a.getTestId().equals(testId)).toList();
+        PrepAttempt open = previous.stream().filter(a -> a.getSubmittedAt() == null)
                 .peek(this::autoSubmitIfExpired).filter(a -> a.getSubmittedAt() == null).findFirst().orElse(null);
+        if (open == null && t.isExam()) {
+            if (previous.stream().anyMatch(a -> a.getSubmittedAt() != null)) {
+                throw new DomainException("You have already taken this exam (one attempt only)", HttpStatus.CONFLICT, "EXAM_ALREADY_TAKEN");
+            }
+            String st = examStatus(t);
+            if ("UPCOMING".equals(st)) throw new DomainException("This exam has not started yet", HttpStatus.CONFLICT, "EXAM_NOT_STARTED");
+            if ("CLOSED".equals(st)) throw new DomainException("This exam is closed", HttpStatus.CONFLICT, "EXAM_CLOSED");
+        }
         if (open == null) {
             if (t.getLevelOrder() != null) {
                 Map<UUID, List<PrepAttempt>> mine = attemptRepository.findAllByUserIdOrderByStartedAtDesc(userId).stream()
@@ -220,8 +269,12 @@ public class PrepService {
                 }
             }
             Instant now = Instant.now();
-            open = attemptRepository.save(PrepAttempt.builder().testId(testId).userId(userId).startedAt(now)
-                    .deadlineAt(now.plus(Duration.ofMinutes(t.getDurationMinutes()))).maxScore(t.getTotalMarks()).answersJson("{}").build());
+            Instant deadline = now.plus(Duration.ofMinutes(t.getDurationMinutes()));
+            if (t.isExam() && t.getEndsAt() != null && deadline.isAfter(t.getEndsAt())) deadline = t.getEndsAt(); // the exam window ends for everyone
+            Layout layout = newLayout(t);
+            open = attemptRepository.save(PrepAttempt.builder().testId(testId).userId(userId).startedAt(now).deadlineAt(deadline)
+                    .maxScore(layout == null ? t.getTotalMarks() : layoutMarks(t, layout)).answersJson("{}")
+                    .layoutJson(layout == null ? null : write(layout)).build());
         }
         return view(t, open);
     }
@@ -270,28 +323,58 @@ public class PrepService {
         PrepAttempt a = own(userId, attemptId);
         autoSubmitIfExpired(a);
         if (a.getSubmittedAt() == null) throw new DomainException("Submit the test to see your result", HttpStatus.CONFLICT, "ATTEMPT_OPEN");
+        return forStudent(test(a.getTestId()), storedResult(a));
+    }
+
+    /** The stored result as graded (teachers see it all). */
+    AttemptResult storedResult(PrepAttempt a) {
         try {
-            return json.readValue(a.getResultJson(), AttemptResult.class);
+            AttemptResult r = json.readValue(a.getResultJson(), AttemptResult.class);
+            boolean pending = r.questions().stream().anyMatch(q -> Boolean.TRUE.equals(q.pendingReview()));
+            return new AttemptResult(r.attemptId(), r.testId(), r.title(), r.companyTag(), r.startedAt(), r.submittedAt(), r.timeTakenSeconds(),
+                    r.score(), r.maxScore(), r.percent(), r.sections(), r.questions(), true, true, pending);
         } catch (Exception e) {
-            throw new IllegalStateException("Unreadable result for attempt " + attemptId, e);
+            throw new IllegalStateException("Unreadable result for attempt " + a.getId(), e);
         }
+    }
+
+    /** What the student may see: an exam before its results are released shows only that it was submitted; answers can be hidden. */
+    private static AttemptResult forStudent(PrepTest t, AttemptResult r) {
+        if (t.isExam() && !t.isResultsReleased()) {
+            return new AttemptResult(r.attemptId(), r.testId(), r.title(), r.companyTag(), r.startedAt(), r.submittedAt(), r.timeTakenSeconds(),
+                    null, r.maxScore(), 0, List.of(), List.of(), false, false, r.pendingReview());
+        }
+        if (t.isShowAnswers()) return r;
+        List<QuestionResult> qs = r.questions().stream().map(q -> new QuestionResult(q.id(), q.type(), q.section(), q.title(), q.text(), q.options(),
+                q.yourOption(), null, null, q.language(), q.code(), q.testsPassed(), q.testsTotal(), q.compileError(), q.marksAwarded(), q.marks(),
+                q.answerText(), q.pendingReview())).toList();
+        return new AttemptResult(r.attemptId(), r.testId(), r.title(), r.companyTag(), r.startedAt(), r.submittedAt(), r.timeTakenSeconds(),
+                r.score(), r.maxScore(), r.percent(), r.sections(), qs, true, false, r.pendingReview());
     }
 
     @Transactional(readOnly = true)
     public List<AttemptHistory> history(UUID userId) {
-        Map<UUID, String> titles = testRepository.findAll().stream().collect(Collectors.toMap(PrepTest::getId, PrepTest::getTitle));
+        Map<UUID, PrepTest> byId = testRepository.findAll().stream().collect(Collectors.toMap(PrepTest::getId, x -> x));
+        Map<UUID, String> titles = byId.values().stream().collect(Collectors.toMap(PrepTest::getId, PrepTest::getTitle));
         List<PrepAttempt> done = attemptRepository.findAllByUserIdOrderByStartedAtDesc(userId).stream().filter(a -> a.getSubmittedAt() != null).toList();
         Map<UUID, Integer> switches = switchCounts(done.stream().map(PrepAttempt::getId).toList());
         return done.stream()
-                .map(a -> new AttemptHistory(a.getId(), a.getTestId(), titles.getOrDefault(a.getTestId(), "Deleted test"), a.getStartedAt(),
-                        a.getSubmittedAt(), a.getScore(), a.getMaxScore(), switches.getOrDefault(a.getId(), 0), a.getAutoSubmitReason())).toList();
+                .map(a -> {
+                    PrepTest t = byId.get(a.getTestId());
+                    boolean released = t == null || !t.isExam() || t.isResultsReleased();
+                    return new AttemptHistory(a.getId(), a.getTestId(), titles.getOrDefault(a.getTestId(), "Deleted test"), a.getStartedAt(),
+                            a.getSubmittedAt(), released ? a.getScore() : null, a.getMaxScore(), switches.getOrDefault(a.getId(), 0), a.getAutoSubmitReason(),
+                            a.getAiWarningCount(), released);
+                }).toList();
     }
 
-    /** Number of times each attempt was left (tab or app switch). */
+    /** Number of times each attempt was left (tab or app switch); AI proctoring events are not counted here. */
     Map<UUID, Integer> switchCounts(Collection<UUID> attemptIds) {
         if (attemptIds.isEmpty()) return Map.of();
         Map<UUID, Integer> out = new HashMap<>();
-        for (Object[] r : proctorEvents.countByAttempt(attemptIds)) out.put((UUID) r[0], ((Number) r[1]).intValue());
+        for (Object[] r : proctorEvents.countByAttempt(attemptIds, com.proveyu.student.prep.domain.PrepProctorEvent.Kind.SWITCH_KINDS)) {
+            out.put((UUID) r[0], ((Number) r[1]).intValue());
+        }
         return out;
     }
 
@@ -312,22 +395,32 @@ public class PrepService {
         PrepTest t = test(a.getTestId());
         TestDefinition def = definition(t);
         Map<String, Answer> ans = answers(a);
+        Layout layout = layout(a);
         List<QuestionResult> results = new ArrayList<>();
+        boolean pendingReview = false;
         Map<String, BigDecimal> secScore = new LinkedHashMap<>();
         Map<String, int[]> secStats = new LinkedHashMap<>(); // max, correct, total
         BigDecimal total = BigDecimal.ZERO;
         for (Section s : def.sections()) {
             for (Question q : s.questions()) {
+                if (layout != null && !layout.questions().contains(q.id())) continue; // not in this student's pool
                 Answer given = ans.get(q.id());
                 int marks = q.marksOrDefault();
                 BigDecimal awarded;
                 QuestionResult qr;
                 if (MCQ.equals(q.type())) {
-                    Integer opt = given == null ? null : given.option();
+                    Integer opt = original(layout, q.id(), given == null ? null : given.option()); // the student saw shuffled options
                     boolean ok = opt != null && opt.equals(q.answer());
                     awarded = ok ? BigDecimal.valueOf(marks) : BigDecimal.ZERO;
                     qr = new QuestionResult(q.id(), MCQ, s.name(), q.title(), q.text(), q.options(), opt, q.answer(), q.explanation(),
-                            null, null, null, null, null, awarded, marks);
+                            null, null, null, null, null, awarded, marks, null, null);
+                } else if (TEXT.equals(q.type())) {
+                    String text = given == null || given.text() == null ? null : given.text().trim();
+                    boolean answered = text != null && !text.isEmpty();
+                    awarded = BigDecimal.ZERO; // a teacher marks it; unanswered stays 0
+                    if (answered) pendingReview = true;
+                    qr = new QuestionResult(q.id(), TEXT, s.name(), q.title(), q.text(), null, null, null, q.explanation(), null, null, null, null, null,
+                            awarded, marks, text, answered);
                 } else {
                     String code = given == null ? null : given.code();
                     String lang = given == null ? null : given.language();
@@ -345,7 +438,7 @@ public class PrepService {
                     awarded = BigDecimal.valueOf(marks).multiply(BigDecimal.valueOf(passed))
                             .divide(BigDecimal.valueOf(Math.max(totalTests, 1)), 2, RoundingMode.HALF_UP);
                     qr = new QuestionResult(q.id(), CODING, s.name(), q.title(), q.text(), null, null, null, q.explanation(), lang, code,
-                            passed, totalTests, compileError, awarded, marks);
+                            passed, totalTests, compileError, awarded, marks, null, null);
                 }
                 results.add(qr);
                 total = total.add(awarded);
@@ -360,9 +453,11 @@ public class PrepService {
         Instant submitted = now.isAfter(a.getDeadlineAt()) ? a.getDeadlineAt() : now;
         List<SectionScore> sections = secStats.entrySet().stream()
                 .map(e -> new SectionScore(e.getKey(), secScore.get(e.getKey()), e.getValue()[0], e.getValue()[1], e.getValue()[2])).toList();
-        int percent = t.getTotalMarks() == 0 ? 0 : total.multiply(BigDecimal.valueOf(100)).divide(BigDecimal.valueOf(t.getTotalMarks()), 0, RoundingMode.HALF_UP).intValue();
+        int max = a.getMaxScore() > 0 ? a.getMaxScore() : t.getTotalMarks();
+        int percent = max == 0 ? 0 : total.multiply(BigDecimal.valueOf(100)).divide(BigDecimal.valueOf(max), 0, RoundingMode.HALF_UP).intValue();
         AttemptResult result = new AttemptResult(a.getId(), t.getId(), t.getTitle(), t.getCompanyTag(), a.getStartedAt(), submitted,
-                Duration.between(a.getStartedAt(), submitted).toSeconds(), total, t.getTotalMarks(), percent, sections, results);
+                Duration.between(a.getStartedAt(), submitted).toSeconds(), total, max, percent, sections, results, true, true, pendingReview);
+        a.setReviewStatus(pendingReview ? "PENDING" : null);
         a.setScore(total);
         a.setSubmittedAt(submitted);
         a.setResultJson(write(result));
@@ -388,12 +483,88 @@ public class PrepService {
 
     private AttemptView view(PrepTest t, PrepAttempt a) {
         List<QuestionView> qs = new ArrayList<>();
+        Map<String, QuestionView> byId = new LinkedHashMap<>();
+        Layout layout = layout(a);
         for (Section s : definition(t).sections()) for (Question q : s.questions()) {
-            qs.add(new QuestionView(q.id(), q.type(), s.name(), q.title(), q.text(), q.options(), q.marksOrDefault(),
+            List<String> options = q.options();
+            List<Integer> perm = layout == null || layout.options() == null ? null : layout.options().get(q.id());
+            if (options != null && perm != null) options = perm.stream().map(options::get).toList();
+            byId.put(q.id(), new QuestionView(q.id(), q.type(), s.name(), q.title(), q.text(), options, q.marksOrDefault(),
                     CODING.equals(q.type()) ? q.starterCode() : null, CODING.equals(q.type()) ? q.samples() : null));
         }
+        if (layout == null) qs.addAll(byId.values());
+        else layout.questions().stream().map(byId::get).filter(Objects::nonNull).forEach(qs::add);
         return new AttemptView(a.getId(), t.getId(), t.getTitle(), t.getCompanyTag(), t.getDurationMinutes(), a.getStartedAt(), a.getDeadlineAt(),
-                Instant.now(), PrepModel.LANGUAGES, qs, answers(a), switchCounts(List.of(a.getId())).getOrDefault(a.getId(), 0), maxTabSwitchWarnings());
+                Instant.now(), PrepModel.LANGUAGES, qs, answers(a), switchCounts(List.of(a.getId())).getOrDefault(a.getId(), 0), maxTabSwitchWarnings(),
+                a.getConsentAt(), aiProctoringEnabled, a.getAiWarningCount(), maxAiWarnings, t.getMode());
+    }
+
+    // ================================================================== question pool + shuffling (per attempt)
+
+    /** This attempt's questions in order, and for shuffled MCQs the original index of each option shown. */
+    public record Layout(List<String> questions, Map<String, List<Integer>> options) {}
+
+    /** A fresh layout when the test has a pool or shuffling; null = every question in the original order (as before). */
+    Layout newLayout(PrepTest t) {
+        TestDefinition def = definition(t);
+        boolean pool = def.sections().stream().anyMatch(s -> s.pick() != null);
+        if (!pool && !t.isShuffleQuestions() && !t.isShuffleOptions()) return null;
+        java.util.concurrent.ThreadLocalRandom rnd = java.util.concurrent.ThreadLocalRandom.current();
+        List<String> order = new ArrayList<>();
+        Map<String, List<Integer>> perms = new HashMap<>();
+        for (Section s : def.sections()) { // sections keep their order; questions shuffle inside a section
+            List<Question> qs = new ArrayList<>(s.questions());
+            if (s.pick() != null || t.isShuffleQuestions()) Collections.shuffle(qs, rnd);
+            if (s.pick() != null) qs = qs.subList(0, s.pick());
+            if (!t.isShuffleQuestions() && s.pick() != null) { // keep the original order of the picked questions
+                List<String> picked = qs.stream().map(Question::id).toList();
+                qs = s.questions().stream().filter(x -> picked.contains(x.id())).toList();
+            }
+            for (Question q : qs) {
+                order.add(q.id());
+                if (t.isShuffleOptions() && MCQ.equals(q.type()) && q.options() != null) {
+                    List<Integer> p = new ArrayList<>();
+                    for (int i = 0; i < q.options().size(); i++) p.add(i);
+                    Collections.shuffle(p, rnd);
+                    perms.put(q.id(), p);
+                }
+            }
+        }
+        return new Layout(order, perms);
+    }
+
+    private int layoutMarks(PrepTest t, Layout l) {
+        return definition(t).sections().stream().flatMap(s -> s.questions().stream()).filter(q -> l.questions().contains(q.id()))
+                .mapToInt(Question::marksOrDefault).sum();
+    }
+
+    Layout layout(PrepAttempt a) {
+        if (a.getLayoutJson() == null) return null;
+        try {
+            return json.readValue(a.getLayoutJson(), Layout.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /** The original option index of the option the student picked (options may have been shown shuffled). */
+    private static Integer original(Layout l, String qid, Integer shown) {
+        if (shown == null || l == null || l.options() == null) return shown;
+        List<Integer> p = l.options().get(qid);
+        return p == null || shown < 0 || shown >= p.size() ? shown : p.get(shown);
+    }
+
+    /** {questions, coding questions, marks} one student gets (a section with pick counts pick questions). */
+    private static int[] totals(TestDefinition d) {
+        int q = 0, coding = 0, marks = 0;
+        for (Section s : d.sections()) {
+            int n = s.pick() == null ? s.questions().size() : s.pick();
+            q += n;
+            long c = s.questions().stream().filter(x -> CODING.equals(x.type())).count();
+            coding += (int) Math.min(c, n);
+            marks += s.pick() == null ? s.questions().stream().mapToInt(Question::marksOrDefault).sum() : n * s.questions().get(0).marksOrDefault();
+        }
+        return new int[]{q, coding, marks};
     }
 
     private TestDefinition validate(TestDefinition d) {
@@ -422,11 +593,17 @@ public class PrepService {
                     if (q.title() == null || q.title().isBlank()) errors.add(w + ": coding question needs a title");
                     if (q.starterCode() != null) q.starterCode().keySet().stream().filter(k -> !PrepModel.LANGUAGES.contains(k))
                             .forEach(k -> errors.add(w + ": unknown starterCode language '" + k + "' (use " + PrepModel.LANGUAGES + ")"));
-                } else errors.add(w + ": type must be MCQ or CODING");
+                } else if (!TEXT.equals(type)) errors.add(w + ": type must be MCQ, CODING or TEXT");
                 qs.add(new Question("q" + (++n), type, q.title(), q.text(), q.options(), q.answer(), q.marks(), q.explanation(), q.starterCode(),
                         q.samples(), q.tests()));
             }
-            sections.add(new Section(s.name() == null ? "" : s.name().trim(), qs));
+            if (s.pick() != null) {
+                if (s.pick() < 1 || s.pick() > qs.size()) errors.add(where + ": pick must be 1-" + qs.size());
+                else if (qs.stream().map(Question::marksOrDefault).distinct().count() > 1) {
+                    errors.add(where + ": with pick, every question of the section needs the same marks");
+                }
+            }
+            sections.add(new Section(s.name() == null ? "" : s.name().trim(), s.pick() != null && s.pick() >= qs.size() ? null : s.pick(), qs));
         }
         if (!errors.isEmpty()) {
             throw new DomainException("The test file has problems: " + String.join("; ", errors.subList(0, Math.min(errors.size(), 8)))
@@ -495,7 +672,13 @@ public class PrepService {
     private AdminTestSummary summary(PrepTest t, long attempts, long students, Integer averagePercent) {
         return new AdminTestSummary(t.getId(), t.getTitle(), t.getDescription(), t.getCompanyTag(), t.getDurationMinutes(), t.getQuestionCount(),
                 t.getCodingCount(), t.getTotalMarks(), t.isPublished(), attempts, t.getCreatedAt(), t.getLevel(), t.getLevelOrder(), students,
-                averagePercent);
+                averagePercent, examSettings(t));
+    }
+
+    static ExamSettings examSettings(PrepTest t) {
+        return new ExamSettings(t.getMode(), t.getStartsAt(), t.getEndsAt(), csv(t.getBranchIds()).stream().map(UUID::fromString).toList(),
+                csv(t.getBatchYears()).stream().map(Integer::valueOf).toList(), t.isShuffleQuestions(), t.isShuffleOptions(), t.isShowAnswers(),
+                t.isResultsReleased());
     }
 
     private String write(Object o) {

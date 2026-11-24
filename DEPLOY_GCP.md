@@ -127,7 +127,7 @@ sudo cp -r Frontend/dist/proveyu-frontend/browser/* /var/www/proveyu/
 sudo docker build -t proveyu-code-runner:1 Backend/runner          # mock-test code sandbox
 
 sudo mysql proveyufinaldb < finaluseddbschema.sql                  # the schema; first line names its Flyway version
-head -5 finaluseddbschema.sql | grep -o "Flyway version [0-9]*"   # 39 -> SPRING_FLYWAY_BASELINE_VERSION=39
+head -5 finaluseddbschema.sql | grep -o "Flyway version [0-9]*"   # 42 -> SPRING_FLYWAY_BASELINE_VERSION=42
 ```
 
 ## 8. Optional: local AI backup (16 GB has room for it)

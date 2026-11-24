@@ -34,7 +34,8 @@ import { EmptyState } from '../../../shared/ui/states';
               <td>{{ a.testTitle }}<br><span class="text-body-secondary">@if (a.submittedAt) { {{ a.score | number: '1.0-1' }}/{{ a.maxScore }} } @else { In progress }</span></td>
               <td class="d-none d-lg-table-cell">{{ a.startedAt | date: 'd MMM, h:mm a' }}</td>
               <td>@if (a.autoSubmitReason === 'TAB_SWITCH') { <span class="badge text-bg-danger">{{ a.tabSwitches }}× · auto-submitted</span> }
-                @else { <span class="badge text-bg-warning">{{ a.tabSwitches }}× warning{{ a.tabSwitches === 1 ? '' : 's' }}</span> }</td>
+                @else if (a.tabSwitches) { <span class="badge text-bg-warning">{{ a.tabSwitches }}× warning{{ a.tabSwitches === 1 ? '' : 's' }}</span> }
+                @if (a.aiWarnings) { <span class="badge ms-1" style="background:#ede9fe;color:#6d28d9" title="Camera / microphone events"><i class="bi bi-camera-video me-1"></i>{{ a.aiWarnings }}</span> }</td>
             </tr>
           } @empty { <tr><td colspan="5"><pm-empty-state icon="bi-shield-check" title="No student left a test" text="Flagged attempts appear here." /></td></tr> }
         </tbody>

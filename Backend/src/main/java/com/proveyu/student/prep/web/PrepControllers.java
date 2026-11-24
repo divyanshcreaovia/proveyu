@@ -149,6 +149,27 @@ public final class PrepControllers {
             return ApiResponse.success(st, st.autoSubmitted() ? "Test submitted after leaving it too many times" : "Switch recorded");
         }
 
+        /** The student agreed to camera + microphone monitoring (AI proctoring) for this attempt. Idempotent. */
+        @PostMapping("/attempts/{id}/consent")
+        public ApiResponse<com.proveyu.student.prep.domain.PrepModel.ConsentView> consent(Authentication auth, @PathVariable UUID id) {
+            return ApiResponse.success(proctor.consent(uid(auth), id), "Consent recorded");
+        }
+
+        /**
+         * AI proctoring event from the browser: kind NO_FACE, MULTIPLE_FACES, LOOKING_AWAY, CAMERA_BLOCKED or VOICE_DETECTED, an optional
+         * camera snapshot (JPEG/PNG, max 200 KB) and optional metadata JSON. Never submits the test; flagged = over the AI warning limit.
+         */
+        @PostMapping(value = "/attempts/{id}/proctor/ai", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        public ApiResponse<ProctorStatus> reportAi(Authentication auth, @PathVariable UUID id, @RequestParam("kind") String kind,
+                                                   @RequestParam(value = "clientAt", required = false) Instant clientAt,
+                                                   @RequestParam(value = "metadata", required = false) String metadata,
+                                                   @RequestPart(value = "snapshot", required = false) MultipartFile snapshot) throws IOException {
+            boolean has = snapshot != null && !snapshot.isEmpty();
+            ProctorStatus st = proctor.reportAi(uid(auth), id, kind, clientAt, metadata, has ? snapshot.getBytes() : null,
+                    has ? snapshot.getContentType() : null);
+            return ApiResponse.success(st, !st.recorded() ? "Already recorded" : st.flagged() ? "Recorded; attempt flagged for review" : "Recorded");
+        }
+
         @GetMapping("/attempts/{id}/proctor")
         public ApiResponse<ProctorLog> proctorLog(Authentication auth, @PathVariable UUID id) {
             return ApiResponse.success(proctor.log(uid(auth), id));
@@ -171,8 +192,9 @@ public final class PrepControllers {
 
         @GetMapping("/attempts")
         public ApiResponse<List<CollegeAttemptRow>> attempts(com.proveyu.college.security.CollegeContext ctx,
-                                                             @RequestParam(defaultValue = "false") boolean flagged) {
-            return ApiResponse.success(proctor.collegeAttempts(ctx, flagged));
+                                                             @RequestParam(defaultValue = "false") boolean flagged,
+                                                             @RequestParam(required = false) UUID testId) {
+            return ApiResponse.success(proctor.collegeAttempts(ctx, flagged, testId));
         }
 
         @GetMapping("/attempts/{id}/proctor")
@@ -197,6 +219,59 @@ public final class PrepControllers {
     public static class CollegePrepController {
         private final PrepService service;
         private final com.proveyu.college.application.AuditService audit;
+        private final com.proveyu.student.prep.application.ExamService exams;
+
+        /** Practice or exam: window, branches / batch years, pool shuffling, answers shown and results released. */
+        @PutMapping("/{id}/settings")
+        @PreAuthorize(com.proveyu.college.security.CollegeAccess.WRITE)
+        public ApiResponse<AdminTestSummary> settings(com.proveyu.college.security.CollegeContext ctx, @PathVariable UUID id, @RequestBody ExamSettings body) {
+            AdminTestSummary t = exams.saveSettings(ctx, id, body);
+            audit.log(ctx, "EXAM_SETTINGS_SAVED", "PREP_TEST", id, ("EXAM".equals(t.exam().mode()) ? "Exam settings saved for \"" : "Set as practice test \"")
+                    + t.title() + "\"" + ("EXAM".equals(t.exam().mode()) && t.exam().resultsReleased() ? " (results released)" : ""), null);
+            return ApiResponse.success(t, "Settings saved");
+        }
+
+        /** Live invigilator view: every eligible student with status, progress and proctoring counts. */
+        @GetMapping("/{id}/monitor")
+        @PreAuthorize(com.proveyu.college.security.CollegeAccess.READ)
+        public ApiResponse<ExamMonitor> monitor(com.proveyu.college.security.CollegeContext ctx, @PathVariable UUID id) {
+            return ApiResponse.success(exams.monitor(ctx, id));
+        }
+
+        @PostMapping("/{id}/attempts/{attemptId}/extend")
+        @PreAuthorize(com.proveyu.college.security.CollegeAccess.WRITE)
+        public ApiResponse<MonitorRow> extend(com.proveyu.college.security.CollegeContext ctx, @PathVariable UUID id, @PathVariable UUID attemptId,
+                                              @RequestBody Map<String, Integer> body) {
+            int minutes = body.getOrDefault("minutes", 0) == null ? 0 : body.get("minutes");
+            MonitorRow r = exams.extend(ctx, id, attemptId, minutes);
+            audit.log(ctx, "EXAM_TIME_EXTENDED", "PREP_ATTEMPT", attemptId, "Gave " + minutes + " extra minutes to " + r.studentName(), null);
+            return ApiResponse.success(r, minutes + " minutes added");
+        }
+
+        /** A submitted attempt with every answer (descriptive answers to mark). */
+        @GetMapping("/{id}/attempts/{attemptId}/review")
+        @PreAuthorize(com.proveyu.college.security.CollegeAccess.READ)
+        public ApiResponse<ReviewView> review(com.proveyu.college.security.CollegeContext ctx, @PathVariable UUID id, @PathVariable UUID attemptId) {
+            return ApiResponse.success(exams.review(ctx, id, attemptId));
+        }
+
+        @PutMapping("/{id}/attempts/{attemptId}/marks")
+        @PreAuthorize(com.proveyu.college.security.CollegeAccess.WRITE)
+        public ApiResponse<ReviewView> mark(com.proveyu.college.security.CollegeContext ctx, @PathVariable UUID id, @PathVariable UUID attemptId,
+                                            @RequestBody Map<String, java.math.BigDecimal> marks) {
+            ReviewView v = exams.mark(ctx, id, attemptId, marks);
+            audit.log(ctx, "EXAM_MARKED", "PREP_ATTEMPT", attemptId, "Marked descriptive answers of " + v.studentName(), null);
+            return ApiResponse.success(v, "Marks saved");
+        }
+
+        /** Marks register (CSV, opens in Excel): one row per eligible student, absent ones included. */
+        @GetMapping("/{id}/export")
+        @PreAuthorize(com.proveyu.college.security.CollegeAccess.READ)
+        public ResponseEntity<byte[]> export(com.proveyu.college.security.CollegeContext ctx, @PathVariable UUID id) {
+            byte[] csv = exams.exportCsv(ctx, id);
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"marks-" + id + ".csv\"")
+                    .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8")).body(csv);
+        }
 
         @GetMapping
         @PreAuthorize(com.proveyu.college.security.CollegeAccess.READ)

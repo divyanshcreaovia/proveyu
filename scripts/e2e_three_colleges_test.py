@@ -88,6 +88,7 @@ def setup_college(c):
     s, r = call("POST", "/api/v1/auth/login", {"email": tpo_email, "password": "Tpo@12345"})
     check(f"[{k}] TPO logs in as COLLEGE_ADMIN", s == 200 and r["data"]["role"] == "COLLEGE_ADMIN", r)
     tpo = r["data"]["token"]
+    st.approve_if_pending(tpo, tpo_email, r["data"].get("collegeApprovalStatus"))
     me = data(call("GET", "/api/v1/college/me", token=tpo))
     college_id = me["collegeId"]
 

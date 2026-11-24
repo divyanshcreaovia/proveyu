@@ -18,4 +18,7 @@ public interface PrepTestRepository extends JpaRepository<PrepTest, UUID> {
     List<PrepTest> findAllByPublishedTrueOrderByCreatedAtDesc();
 
     List<PrepTest> findAllByPublishedTrueAndLevelOrderNotNullOrderByLevelOrderAsc();
+
+    /** Published exams whose window has started and whose students were not told yet. */
+    List<PrepTest> findAllByModeAndPublishedTrueAndLiveNotifiedAtIsNullAndStartsAtLessThanEqualAndEndsAtGreaterThan(String mode, java.time.Instant start, java.time.Instant end);
 }

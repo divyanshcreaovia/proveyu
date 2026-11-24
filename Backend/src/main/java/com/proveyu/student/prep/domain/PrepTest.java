@@ -48,6 +48,36 @@ public class PrepTest {
     @Column(name = "definition_json")
     private String definitionJson;
     private boolean published;
+    /** PRACTICE (any time, retakes) or EXAM (one attempt in a time window, for chosen branches / batches). College tests only. */
+    @Builder.Default
+    private String mode = "PRACTICE";
+    @Column(name = "starts_at")
+    private Instant startsAt;
+    @Column(name = "ends_at")
+    private Instant endsAt;
+    /** CSV of branch ids / batch years the exam is for; null = everyone in the college. */
+    @Column(name = "branch_ids")
+    private String branchIds;
+    @Column(name = "batch_years")
+    private String batchYears;
+    @Column(name = "shuffle_questions")
+    private boolean shuffleQuestions;
+    @Column(name = "shuffle_options")
+    private boolean shuffleOptions;
+    /** Correct answers and explanations on the student's result page. */
+    @Builder.Default
+    @Column(name = "show_answers")
+    private boolean showAnswers = true;
+    /** Students can see their score (an exam keeps it hidden until the college releases it). */
+    @Builder.Default
+    @Column(name = "results_released")
+    private boolean resultsReleased = true;
+
+    /** When eligible students were told the exam is live (null = not yet; cleared when the window changes). */
+    @Column(name = "live_notified_at")
+    private Instant liveNotifiedAt;
+
+    public boolean isExam() { return "EXAM".equals(mode); }
     @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "created_by", columnDefinition = "CHAR(36)")
     private UUID createdBy;

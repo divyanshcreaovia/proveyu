@@ -15,11 +15,15 @@ public interface PrepProctorEventRepository extends JpaRepository<PrepProctorEve
     /** Screenshots older than the retention period. */
     List<PrepProctorEvent> findAllByScreenshotPathNotNullAndOccurredAtBefore(java.time.Instant cutoff);
 
-    /** Attempts with at least one switch, newest switch first. */
+    /** Attempts with at least one proctoring event (switch or AI), newest event first. */
     @Query("select e.attemptId from PrepProctorEvent e group by e.attemptId order by max(e.occurredAt) desc")
     List<UUID> flaggedAttemptIds(org.springframework.data.domain.Pageable page);
 
-    /** Per attempt: number of switches. */
-    @Query("select e.attemptId, count(e) from PrepProctorEvent e where e.attemptId in :ids group by e.attemptId")
-    List<Object[]> countByAttempt(@Param("ids") Collection<UUID> ids);
+    /** Per attempt: number of events of the given kinds (the tab-switch kinds for switches). */
+    @Query("select e.attemptId, count(e) from PrepProctorEvent e where e.attemptId in :ids and e.kind in :kinds group by e.attemptId")
+    List<Object[]> countByAttempt(@Param("ids") Collection<UUID> ids, @Param("kinds") Collection<PrepProctorEvent.Kind> kinds);
+
+    /** Highest event number of an attempt (0 when none), so switch and AI events share one sequence. */
+    @Query("select coalesce(max(e.seq), 0) from PrepProctorEvent e where e.attemptId = :attemptId")
+    int maxSeq(@Param("attemptId") UUID attemptId);
 }

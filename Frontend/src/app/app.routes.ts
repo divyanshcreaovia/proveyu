@@ -84,6 +84,7 @@ export const routes: Routes = [
       { path: 'documents', title: 'Document locker', loadComponent: () => import('./features/student/portal/documents').then(m => m.StudentDocuments) },
       { path: 'profile', title: 'My profile', loadComponent: () => import('./features/student/portal/profile').then(m => m.StudentProfile) },
       { path: 'prep', title: 'Preparation', loadComponent: () => import('./features/student/prep/prep-home').then(m => m.PrepHome) },
+      { path: 'college-tests', title: 'College tests', data: { tab: 'college' }, loadComponent: () => import('./features/student/prep/prep-home').then(m => m.PrepHome) },
       { path: 'prep/result/:id', title: 'Test result', loadComponent: () => import('./features/student/prep/prep-result').then(m => m.PrepResult) },
       { path: 'ai-interview', title: 'AI interview', loadComponent: () => import('./features/student/interview/interview-home').then(m => m.InterviewHome) },
       { path: 'ai-interview/report/:id', title: 'Interview report', loadComponent: () => import('./features/student/interview/interview-report').then(m => m.InterviewReport) },
@@ -149,7 +150,7 @@ export const routes: Routes = [
       { path: 'communication', title: 'Communication', loadComponent: () => import('./features/college/communication/communication').then(m => m.Communication) },
       { path: 'reports', title: 'Reports & analytics', loadComponent: () => import('./features/college/reports/reports').then(m => m.Reports) },
       { path: 'off-campus', title: 'Off-campus', loadComponent: () => import('./features/college/off-campus/off-campus').then(m => m.CollegeOffCampus) },
-      { path: 'mock-tests', title: 'Mock tests', loadComponent: () => import('./features/college/prep/college-mock-tests').then(m => m.CollegeMockTests) },
+      { path: 'mock-tests', title: 'Tests', loadComponent: () => import('./features/college/prep/college-mock-tests').then(m => m.CollegeMockTests) },
       {
         path: 'audit', title: 'Audit log', canActivate: [roleGuard], data: { roles: COLLEGE_ADMIN },
         loadComponent: () => import('./features/college/audit/audit-log').then(m => m.AuditLog),

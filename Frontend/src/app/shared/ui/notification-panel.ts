@@ -6,6 +6,7 @@ import { AppNotification } from '../../core/models/college.models';
 const ICONS: Record<string, { icon: string; tone: string }> = {
   CAMPUS_DRIVE: { icon: 'bi-briefcase', tone: 'blue' },
   OFF_CAMPUS: { icon: 'bi-globe2', tone: 'violet' },
+  COLLEGE_TEST: { icon: 'bi-pencil-square', tone: 'blue' },
   DRIVE: { icon: 'bi-briefcase', tone: 'blue' },
   ANNOUNCEMENT: { icon: 'bi-megaphone', tone: 'violet' },
   INTERVIEW: { icon: 'bi-calendar-event', tone: 'amber' },

@@ -17,6 +17,20 @@ type Filter = 'all' | 'wrong' | 'right';
     @if (!r()) { <pm-skeleton [rows]="8" /> } @else {
       @let res = r()!;
       <a routerLink="/student/prep" class="small d-inline-block mb-2"><i class="bi bi-arrow-left"></i> Back to Preparation</a>
+      @if (res.released === false) {
+        <section class="st-card rs-hero mb-3">
+          <div class="rs-done" aria-hidden="true"><i class="bi bi-check2-circle"></i></div>
+          <div class="min-w-0 flex-grow-1">
+            <h2 class="h4 st-h mb-1">{{ res.title }}</h2>
+            <p class="st-muted small mb-2">Submitted {{ res.submittedAt | date: 'medium' }} · time taken {{ duration(res.timeTakenSeconds) }}</p>
+            <p class="mb-0 rs-msg">Your exam is submitted. Your college will publish the results; you will see your score here then.</p>
+          </div>
+        </section>
+      } @else {
+      @if (res.pendingReview) {
+        <div class="alert alert-info small d-flex gap-2 align-items-start" role="status"><i class="bi bi-hourglass-split mt-1" aria-hidden="true"></i>
+          <span>Some written answers are still being checked by a teacher. Your score will go up when they are marked.</span></div>
+      }
       <section class="st-card rs-hero mb-3">
         <svg viewBox="0 0 120 120" class="rs-ring" role="img" [attr.aria-label]="'Score ' + res.percent + ' percent'">
           <circle cx="60" cy="60" r="52" class="rs-track" />
@@ -70,14 +84,19 @@ type Filter = 'all' | 'wrong' | 'right';
           @if (q.type === 'MCQ') {
             <div class="rs-opts">
               @for (o of q.options; track $index) {
-                <div class="rs-opt" [class.correct]="$index === q.correctOption" [class.wrong]="$index === q.yourOption && $index !== q.correctOption">
+                <div class="rs-opt" [class.correct]="$index === q.correctOption" [class.wrong]="res.answersShown !== false && $index === q.yourOption && $index !== q.correctOption"
+                  [class.chosen]="res.answersShown === false && $index === q.yourOption">
                   <span class="rs-letter">{{ letters[$index] }}</span><span class="flex-grow-1">{{ o }}</span>
                   @if ($index === q.correctOption) { <i class="bi bi-check-circle-fill" aria-label="Correct answer"></i> }
-                  @else if ($index === q.yourOption) { <i class="bi bi-x-circle-fill" aria-label="Your answer"></i> }
+                  @else if ($index === q.yourOption) { <i class="bi" [class.bi-x-circle-fill]="res.answersShown !== false" [class.bi-record-circle]="res.answersShown === false" aria-label="Your answer"></i> }
                 </div>
               }
             </div>
             @if (q.yourOption === null || q.yourOption === undefined) { <p class="small st-muted mt-2 mb-0">You did not answer this question.</p> }
+          } @else if (q.type === 'TEXT') {
+            @if (q.answerText) { <div class="rs-text small">{{ q.answerText }}</div> }
+            @else { <p class="small st-muted mb-0">You did not answer this question.</p> }
+            @if (q.pendingReview) { <p class="small text-info mt-2 mb-0"><i class="bi bi-hourglass-split me-1"></i>Waiting for a teacher to mark it.</p> }
           } @else {
             <p class="small mb-2"><strong>{{ q.testsPassed ?? 0 }} of {{ q.testsTotal }}</strong> hidden test cases passed
               @if (q.language) { <span class="st-muted"> · {{ langLabels[q.language] }}</span> }</p>
@@ -88,12 +107,16 @@ type Filter = 'all' | 'wrong' | 'right';
           @if (q.explanation) { <div class="rs-exp"><i class="bi bi-lightbulb"></i> {{ q.explanation }}</div> }
         </article>
       }
+      }
       <div class="d-flex justify-content-center gap-2 mt-3">
         <a routerLink="/student/prep" class="btn btn-outline-secondary">Back to Preparation</a>
       </div>
     }`,
   styles: [`
     .rs-hero { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+    .rs-done { width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; font-size: 3rem; background: rgba(22,163,74,.12); color: #16a34a; flex-shrink: 0; }
+    .rs-text { white-space: pre-wrap; background: var(--pm-soft); border-radius: 8px; padding: .6rem .75rem; }
+    .rs-opt.chosen { outline: 2px solid var(--bs-primary); }
     .rs-ring { width: 132px; height: 132px; flex-shrink: 0; }
     .rs-track { fill: none; stroke: var(--pm-soft); stroke-width: 10; }
     .rs-val { fill: none; stroke: #e11d48; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset .8s ease; }

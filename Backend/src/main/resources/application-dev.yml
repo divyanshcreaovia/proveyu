@@ -5,7 +5,7 @@ app:
   dev:
     expose-tokens: true
 college:
-  require-admin-approval: ${COLLEGE_REQUIRE_APPROVAL:false}
+  require-admin-approval: ${COLLEGE_REQUIRE_APPROVAL:true}   # new colleges wait for a platform admin (tests turn it off in application-test.yml)
 logging:
   level:
     com.proveyu: DEBUG

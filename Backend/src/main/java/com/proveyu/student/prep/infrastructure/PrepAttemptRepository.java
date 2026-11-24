@@ -12,6 +12,8 @@ public interface PrepAttemptRepository extends JpaRepository<PrepAttempt, UUID> 
 
     List<PrepAttempt> findAllByUserIdInOrderByStartedAtDesc(java.util.Collection<UUID> userIds);
 
+    List<PrepAttempt> findAllByTestIdOrderByStartedAtDesc(UUID testId);
+
     /** Row lock, so two switch reports arriving together get consecutive numbers. */
     @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
     @Query("select a from PrepAttempt a where a.id = :id")

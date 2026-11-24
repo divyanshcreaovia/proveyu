@@ -24,13 +24,13 @@ Only ports 80 and 443 are open to the internet. MySQL, 8080 and Docker are never
 | What | File / value | Notes |
 |---|---|---|
 | Code | the latest commit on the branch you were given | build from a clean checkout |
-| Database schema | [finaluseddbschema.sql](finaluseddbschema.sql) | Flyway version **39**, 54 tables, structure only |
-| Flyway baseline | `SPRING_FLYWAY_BASELINE_VERSION=39` | must equal the version on line 4 of the schema file |
+| Database schema + data | [finaluseddbschema.sql](finaluseddbschema.sql) | Flyway version **42**, 54 tables, the 20 mock tests and one complete college (LTCE) |
+| Flyway baseline | `SPRING_FLYWAY_BASELINE_VERSION=42` | must equal the version on line 4 of the schema file |
 | Backend settings | [deploy/backend.env.production.example](deploy/backend.env.production.example) → `/etc/proveyu/backend.env` | fill in every empty value |
 | Backend service | [deploy/proveyu-backend.service](deploy/proveyu-backend.service) → `/etc/systemd/system/` | runs the jar as user `proveyu` |
 | Web server | [deploy/nginx-proveyu.conf](deploy/nginx-proveyu.conf) → `/etc/nginx/sites-available/proveyu` | replace `proveyu.example.com` with the real domain |
 | Code runner image | `Backend/runner/Dockerfile` → image **`proveyu-code-runner:1`** | the backend uses this exact name |
-| Mock tests (20) | `scripts/mocktests/out/*.json`, loaded with `scripts/mocktests/load.py` | the schema has no data, so load them once |
+| Mock tests (20) | already in `finaluseddbschema.sql` | `scripts/mocktests/load.py` only for a database made without that file |
 
 Do not use `Backend/.env` or `Backend/src/main/resources/application-dev.yml` on the server. They are for local development.
 
@@ -66,10 +66,10 @@ Create these yourself on the server (new values, never the development ones):
 - [ ] `CREATE DATABASE proveyufinaldb CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;`
 - [ ] App user `proveyu_app@127.0.0.1` with rights **on `proveyufinaldb` only**. Never use root.
 - [ ] Load the schema **into the empty database**, once: `mysql proveyufinaldb < finaluseddbschema.sql`
-- [ ] `SPRING_FLYWAY_BASELINE_VERSION=39` is in `/etc/proveyu/backend.env`.
+- [ ] `SPRING_FLYWAY_BASELINE_VERSION=42` is in `/etc/proveyu/backend.env`.
 
-How Flyway works here: on the first start it records the database as version 39 and runs nothing old. On every later start it runs
-only new files (`V40__...`, `V41__...`) from `Backend/src/main/resources/db/migration`.
+How Flyway works here: on the first start it records the database as version 42 and runs nothing old. On every later start it runs
+only new files (`V43__...`, `V44__...`) from `Backend/src/main/resources/db/migration`.
 
 **Never:**
 - load the schema into a database that already has tables
@@ -129,7 +129,7 @@ Start from [deploy/backend.env.production.example](deploy/backend.env.production
 | `CORS_ALLOWED_ORIGINS`, `APP_FRONTEND_URL`, `CAREERJET_REFERER` | `https://<domain>` (mail links use `APP_FRONTEND_URL`) |
 | `SPRING_DATASOURCE_PASSWORD` | the MySQL app user password |
 | `JWT_SECRET` | the new random secret |
-| `SPRING_FLYWAY_BASELINE_VERSION` | `39` |
+| `SPRING_FLYWAY_BASELINE_VERSION` | `42` |
 | `ADMIN_BOOTSTRAP_EMAIL`, `ADMIN_BOOTSTRAP_PASSWORD` | first admin; **delete the password line after the first start** |
 | `SPRING_MAIL_*` | SMTP for `info@proveyu.com` |
 | `SUPPORT_INBOX_EMAIL` | `support@proveyu.com` (support tickets and pricing enquiries are e-mailed here) |
@@ -141,23 +141,29 @@ Start from [deploy/backend.env.production.example](deploy/backend.env.production
 ## 8. Start, HTTPS, nginx
 
 - [ ] `sudo systemctl enable --now proveyu-backend`, then `journalctl -u proveyu-backend -f` until "Started".
-- [ ] The log shows Flyway baseline 39 and no errors.
+- [ ] The log shows Flyway baseline 42 and no errors.
 - [ ] Remove `ADMIN_BOOTSTRAP_PASSWORD` from the env file, then `sudo systemctl restart proveyu-backend`.
 - [ ] DNS A record → server IP.
 - [ ] Certificate with certbot (standalone, with the stop/start hooks in the guide), then `sudo certbot renew --dry-run` works.
 - [ ] nginx config installed, domain replaced, default site removed, `sudo nginx -t` OK.
 
-## 9. Load the mock tests (once)
+## 9. Data that comes with the schema
 
-From any machine with Python 3 and the repository:
+`finaluseddbschema.sql` already holds the 20 mock tests and one complete college for showing the product:
+Lokmanya Tilak College of Engineering (`ltce.in`), with its team, 60 students, drives in every stage, offers, a scheduled
+exam, off-campus jobs and notifications. The college passwords are not in the repository; the owner has them.
 
-```bash
-ADMIN_EMAIL=<admin e-mail> ADMIN_PASSWORD=<admin password> python3 scripts/mocktests/load.py https://<domain>
-```
+- [ ] Admin → Mock tests shows 20 published tests; Admin → Colleges shows LTCE as approved.
+- [ ] Before real students of LTCE use the platform, remove the showcase students and drives (they use `@ltce.in` addresses:
+      keep mail in mind, see below), or load a database without them.
+- [ ] Only if you built the database without this file: load the mock tests with
+      `ADMIN_EMAIL=<admin e-mail> ADMIN_PASSWORD=<admin password> python3 scripts/mocktests/load.py https://<domain>`.
 
-- [ ] Admin → Mock tests shows 20 published tests.
+**Mail:** every showcase account has an `@ltce.in` address. With SMTP on, actions such as publishing a drive or an exam e-mail
+those addresses. Do not publish or change showcase drives / exams with mail on unless those mailboxes are yours.
 
-**Never** run `seed_*` scripts or the `e2e_*` / `run_all_tests.sh` test suites against production. They create demo accounts with public passwords.
+**Never** run the other `seed_*` scripts or the `e2e_*` / `run_all_tests.sh` test suites against production. They create demo
+accounts with public passwords.
 
 ## 10. Check before announcing
 

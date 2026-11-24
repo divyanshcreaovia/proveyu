@@ -27,7 +27,7 @@ export type Audience = 'ALL' | 'STUDENTS' | 'COLLEGE_STAFF' | 'COLLEGE';
 export interface SettingEntry { key: string; group: string; label: string; help: string; type: 'INT' | 'TEXT' | 'BOOL'; min: number; max: number;
   value: string; defaultValue: string; overridden: boolean; updatedAt?: string; }
 export interface FlaggedAttempt { attemptId: string; collegeName?: string; studentName: string; rollNumber?: string; testTitle: string; startedAt: string;
-  submittedAt?: string; score?: number; maxScore: number; tabSwitches: number; autoSubmitReason?: string; }
+  submittedAt?: string; score?: number; maxScore: number; tabSwitches: number; autoSubmitReason?: string; aiWarnings?: number; }
 
 export const ROLE_LABELS: Record<string, string> = {
   CANDIDATE: 'Student', COLLEGE_ADMIN: 'TPO / college admin', COLLEGE_COORDINATOR: 'Coordinator', COLLEGE_VIEWER: 'Viewer',

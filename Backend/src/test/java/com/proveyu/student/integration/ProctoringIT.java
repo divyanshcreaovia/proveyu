@@ -3,6 +3,8 @@ package com.proveyu.student.integration;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.proveyu.support.IntegrationTestBase;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 
@@ -111,6 +113,124 @@ class ProctoringIT extends IntegrationTestBase {
         assertThat(get_("/api/v1/college/prep/attempts/" + attemptId + "/proctor", otherTpo).status()).isEqualTo(404);
         assertThat(image("/api/v1/college/prep/proctor/" + eventId + "/screenshot", otherTpo).getStatus()).isEqualTo(404);
         assertThat(get_("/api/v1/college/prep/attempts", student).status()).isEqualTo(403);
+    }
+
+    // ================================================================== AI proctoring (camera + microphone)
+
+    @Autowired private JdbcTemplate jdbc;
+
+    @Test
+    void aiEventsNeedConsentAreRateLimitedFlagButNeverSubmit() throws Exception {
+        String tpo = registerCollege("aip");
+        String branch = addBranch(tpo, "CSE");
+        String student = activate(addStudent(tpo, branch, "A" + uid(), 8.0, 0).get("email").asText());
+        String classmate = activate(addStudent(tpo, branch, "B" + uid(), 8.0, 0).get("email").asText());
+        String otherTpo = registerCollege("aio");
+        String attemptId = startAttempt(tpo, student);
+        String base = "/api/v1/college/student/prep/attempts/" + attemptId;
+
+        JsonNode view = get_(base, student).data();
+        assertThat(view.get("aiProctoring").asBoolean()).isTrue();
+        assertThat(view.get("consentAt").isNull()).isTrue();
+        assertThat(view.get("maxAiWarnings").asInt()).isEqualTo(5);
+
+        // no consent yet: refused
+        Resp noConsent = ai(base, student, "NO_FACE", null, null);
+        assertThat(noConsent.status()).isEqualTo(403);
+        assertThat(noConsent.body().path("errorCode").asText()).isEqualTo("CONSENT_REQUIRED");
+
+        // consent is idempotent; another student cannot consent for this attempt
+        assertThat(post(base + "/consent", classmate, null).status()).isEqualTo(404);
+        String c1 = post(base + "/consent", student, null).data().get("consentAt").asText();
+        String c2 = post(base + "/consent", student, null).data().get("consentAt").asText();
+        assertThat(c1).isEqualTo(c2);
+
+        // validation: unknown kind, a tab-switch kind, oversize snapshot, not an image, non-owner
+        assertThat(ai(base, student, "DANCING", null, null).body().path("errorCode").asText()).isEqualTo("INVALID_KIND");
+        assertThat(ai(base, student, "TAB_HIDDEN", null, null).body().path("errorCode").asText()).isEqualTo("INVALID_KIND");
+        byte[] big = new byte[201 * 1024];
+        System.arraycopy(JPEG, 0, big, 0, JPEG.length);
+        Resp tooBig = ai(base, student, "NO_FACE", big, "image/jpeg");
+        assertThat(tooBig.status()).isEqualTo(413);
+        assertThat(tooBig.body().path("errorCode").asText()).isEqualTo("SNAPSHOT_TOO_LARGE");
+        assertThat(ai(base, student, "NO_FACE", "nope".getBytes(StandardCharsets.UTF_8), "image/jpeg").body().path("errorCode").asText())
+                .isEqualTo("BAD_SNAPSHOT");
+        assertThat(ai(base, student, "NO_FACE", JPEG, "text/plain").body().path("errorCode").asText()).isEqualTo("BAD_SNAPSHOT");
+        assertThat(ai(base, classmate, "NO_FACE", null, null).status()).isEqualTo(404);
+
+        // a valid event is saved with its snapshot and metadata
+        Resp first = call(multipart(base + "/proctor/ai").file(new MockMultipartFile("snapshot", "c.jpg", "image/jpeg", JPEG))
+                .param("kind", "MULTIPLE_FACES").param("metadata", "{\"faces\":2}").param("clientAt", java.time.Instant.now().toString()), student, null);
+        assertThat(first.status()).as(first.body().toString()).isEqualTo(200);
+        JsonNode s1 = first.data();
+        assertThat(s1.get("recorded").asBoolean()).isTrue();
+        assertThat(s1.get("aiWarnings").asInt()).isEqualTo(1);
+        assertThat(s1.get("flagged").asBoolean()).isFalse();
+        assertThat(s1.get("autoSubmitted").asBoolean()).isFalse();
+        assertThat(s1.get("tabSwitches").asInt()).isZero();
+        assertThat(s1.path("event").get("hasScreenshot").asBoolean()).isTrue();
+        assertThat(s1.path("event").get("ai").asBoolean()).isTrue();
+        assertThat(s1.path("event").get("metadata").asText()).isEqualTo("{\"faces\":2}");
+        String eventId = s1.path("event").get("id").asText();
+        assertThat(jdbc.queryForObject("select kind from prep_proctor_events where id = ?", String.class, eventId)).isEqualTo("MULTIPLE_FACES");
+
+        // the same kind again within 10 s: no-op (200, not recorded, count unchanged)
+        JsonNode again = ai(base, student, "MULTIPLE_FACES", JPEG, "image/jpeg").data();
+        assertThat(again.get("recorded").asBoolean()).isFalse();
+        assertThat(again.get("aiWarnings").asInt()).isEqualTo(1);
+        // another kind is recorded, but its snapshot is dropped (one snapshot per 10 s)
+        JsonNode voice = ai(base, student, "VOICE_DETECTED", JPEG, "image/jpeg").data();
+        assertThat(voice.get("recorded").asBoolean()).isTrue();
+        assertThat(voice.path("event").get("hasScreenshot").asBoolean()).isFalse();
+
+        // AI events do not count as tab switches: one real switch is still only the 1st warning
+        JsonNode sw = report(base, student, "TAB_HIDDEN", JPEG).data();
+        assertThat(sw.get("tabSwitches").asInt()).isEqualTo(1);
+        assertThat(sw.get("autoSubmitted").asBoolean()).isFalse();
+
+        // over the AI limit (5): flagged, never submitted
+        for (String k : new String[]{"NO_FACE", "LOOKING_AWAY", "CAMERA_BLOCKED"}) assertThat(ai(base, student, k, null, null).data().get("recorded").asBoolean()).isTrue();
+        jdbc.update("update prep_proctor_events set occurred_at = occurred_at - interval 1 minute where attempt_id = ?", attemptId);
+        JsonNode sixth = ai(base, student, "NO_FACE", null, null).data();
+        assertThat(sixth.get("aiWarnings").asInt()).isEqualTo(6);
+        assertThat(sixth.get("flagged").asBoolean()).isTrue();
+        assertThat(sixth.get("autoSubmitted").asBoolean()).isFalse();
+        assertThat(jdbc.queryForObject("select submitted_at from prep_attempts where id = ?", java.sql.Timestamp.class, attemptId)).isNull();
+        assertThat(jdbc.queryForObject("select ai_warning_count from prep_attempts where id = ?", Integer.class, attemptId)).isEqualTo(6);
+
+        // logs: the student and the own college see AI events with metadata; another college does not
+        JsonNode log = get_(base + "/proctor", student).data();
+        assertThat(log.get("flagged").asBoolean()).isTrue();
+        assertThat(log.get("aiWarnings").asInt()).isEqualTo(6);
+        assertThat(log.get("events")).hasSize(7);
+        JsonNode collegeLog = get_("/api/v1/college/prep/attempts/" + attemptId + "/proctor", tpo).data();
+        assertThat(collegeLog.get("events").get(0).get("kind").asText()).isEqualTo("MULTIPLE_FACES");
+        assertThat(collegeLog.get("events").get(0).get("metadata").asText()).isEqualTo("{\"faces\":2}");
+        assertThat(image("/api/v1/college/prep/proctor/" + eventId + "/screenshot", tpo).getStatus()).isEqualTo(200);
+        assertThat(get_("/api/v1/college/prep/attempts/" + attemptId + "/proctor", otherTpo).status()).isEqualTo(404);
+        JsonNode row = get_("/api/v1/college/prep/attempts?flagged=true", tpo).data();
+        assertThat(row.findValues("attemptId").stream().map(JsonNode::asText)).contains(attemptId);
+
+        // after submitting, AI events and consent are refused
+        post(base + "/submit", student, Map.of());
+        Resp late = ai(base, student, "LOOKING_AWAY", null, null);
+        assertThat(late.status()).isEqualTo(409);
+        assertThat(late.body().path("errorCode").asText()).isEqualTo("ATTEMPT_SUBMITTED");
+        assertThat(post(base + "/consent", student, null).status()).isEqualTo(409);
+    }
+
+    private String startAttempt(String tpo, String student) throws Exception {
+        Resp up = call(multipart("/api/v1/college/prep/tests")
+                .file(new MockMultipartFile("file", "t.json", "application/json", TEST_JSON.getBytes(StandardCharsets.UTF_8))), tpo, null);
+        String testId = up.data().get("id").asText();
+        patch("/api/v1/college/prep/tests/" + testId + "/publish", tpo, Map.of("published", true));
+        return post("/api/v1/college/student/prep/tests/" + testId + "/start", student, null).data().get("attemptId").asText();
+    }
+
+    private Resp ai(String base, String token, String kind, byte[] snapshot, String type) throws Exception {
+        var req = multipart(base + "/proctor/ai");
+        if (snapshot != null) req.file(new MockMultipartFile("snapshot", "c.jpg", type, snapshot));
+        return call(req.param("kind", kind), token, null);
     }
 
     private Resp report(String base, String token, String kind, byte[] screenshot) throws Exception {

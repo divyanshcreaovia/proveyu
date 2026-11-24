@@ -52,7 +52,7 @@ Prerequisites: JDK 17+, Maven 3.8+, Node 20+, Docker, Python 3.
 ```bash
 ./scripts/start-db.sh                                # MySQL 8 on 127.0.0.1:3310 (or use a system MySQL on 3306)
 cp Backend/.env.example Backend/.env                 # DB, JWT_SECRET (openssl rand -base64 64), GROQ_API_KEY, CAREERJET_API_KEY ...
-./scripts/run-backend.sh                             # http://localhost:8080  (profile dev: Flyway migrates up to V39)
+./scripts/run-backend.sh                             # http://localhost:8080  (profile dev: Flyway migrates up to V42)
 cd Frontend && npm ci && npm start -- --port 4300    # http://localhost:4300 (4200 belongs to another local project)
 python3 scripts/seed_demo.py                         # demo data (backend must run with the dev profile)
 ```

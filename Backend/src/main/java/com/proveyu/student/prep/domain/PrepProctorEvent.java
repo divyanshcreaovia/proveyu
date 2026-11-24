@@ -19,8 +19,20 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PrepProctorEvent {
 
-    /** TAB_HIDDEN: switched tab or minimised; WINDOW_BLUR: moved to another app or window; SHARE_STOPPED: stopped sharing the screen. */
-    public enum Kind { TAB_HIDDEN, WINDOW_BLUR, SHARE_STOPPED }
+    /**
+     * Leaving the test (counted as tab switches, may submit it): TAB_HIDDEN switched tab or minimised; WINDOW_BLUR moved to another
+     * app or window; SHARE_STOPPED stopped sharing the screen.
+     * AI proctoring (camera + microphone, only flag the attempt for review): NO_FACE, MULTIPLE_FACES, LOOKING_AWAY, CAMERA_BLOCKED,
+     * VOICE_DETECTED.
+     */
+    public enum Kind {
+        TAB_HIDDEN, WINDOW_BLUR, SHARE_STOPPED,
+        NO_FACE, MULTIPLE_FACES, LOOKING_AWAY, CAMERA_BLOCKED, VOICE_DETECTED;
+
+        public static final java.util.Set<Kind> SWITCH_KINDS = java.util.EnumSet.of(TAB_HIDDEN, WINDOW_BLUR, SHARE_STOPPED);
+
+        public boolean isAi() { return !SWITCH_KINDS.contains(this); }
+    }
 
     @Id
     @JdbcTypeCode(SqlTypes.VARCHAR)
@@ -41,6 +53,8 @@ public class PrepProctorEvent {
     private Instant clientAt;
     @Column(name = "screenshot_path")
     private String screenshotPath;
+    /** AI events: small JSON from the browser (faces seen, head angle, speech length). */
+    private String metadata;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;

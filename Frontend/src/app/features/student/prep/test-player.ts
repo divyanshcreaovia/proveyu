@@ -5,6 +5,9 @@ import { Router } from '@angular/router';
 import { AppError } from '../../../core/api';
 import { AttemptView, LANGUAGE_LABELS, PrepAnswer, PrepLanguage, PrepService, ProctorStatus, QuestionView, RunResponse, SWITCH_LABELS, SwitchKind } from '../services/prep.service';
 import { ScreenProctor, SHARE_PROBLEM_TEXT, ShareProblem } from './screen-proctor';
+import { CameraProctor } from './camera-proctor';
+import { ProctorPrecheck } from './proctor-precheck';
+import { ProctorOverlay } from './proctor-overlay';
 import { ThemeService } from '../../../core/services/theme.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
@@ -20,7 +23,7 @@ import { enterFullscreen, exitFullscreen, fullscreenSupported, isFullscreen } fr
  */
 @Component({
   selector: 'pm-test-player',
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe, ProctorPrecheck, ProctorOverlay],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: '../../college/layout/college-theme.scss',
   template: `
@@ -63,6 +66,20 @@ import { enterFullscreen, exitFullscreen, fullscreenSupported, isFullscreen } fr
                       <span class="tp-letter">{{ letters[$index] }}</span><span class="tp-otext">{{ o }}</span></button>
                   }
                 </div>
+                <div class="tp-brand">© ProveYu mock test{{ roll() ? ' · ' + roll() : '' }}</div>
+              </section>
+            } @else if (q.type === 'TEXT') {
+              <section class="tp-card tp-wmk" (copy)="onCopy($event)">
+                <div class="tp-wm" aria-hidden="true" [style.background-image]="watermark()"></div>
+                <div class="tp-qhead"><span class="tp-qno">Question {{ idx() + 1 }} of {{ qs().length }}</span>
+                  <span class="tp-tag">{{ q.section }}</span><span class="tp-tag">{{ q.marks }} marks · written answer</span></div>
+                @if (q.title) { <h2 class="h5 st-h mb-2">{{ q.title }}</h2> }
+                <p class="tp-qtext">{{ q.text }}</p>
+                <label class="form-label small fw-semibold" [for]="'tp-text-' + q.id">Your answer</label>
+                <textarea class="form-control tp-textans" [id]="'tp-text-' + q.id" rows="10" maxlength="10000" spellcheck="true"
+                  [value]="answers()[q.id]?.text ?? ''" (input)="write(q, $any($event.target).value)" (paste)="$event.preventDefault()"
+                  placeholder="Type your answer here. Pasting is turned off; a teacher marks this answer."></textarea>
+                <div class="small text-body-secondary mt-1">{{ words(answers()[q.id]?.text) }} words · saved automatically</div>
                 <div class="tp-brand">© ProveYu mock test{{ roll() ? ' · ' + roll() : '' }}</div>
               </section>
             } @else {
@@ -151,6 +168,11 @@ import { enterFullscreen, exitFullscreen, fullscreenSupported, isFullscreen } fr
             </div>
           </div>
         }
+        @if (cameraGate()) {
+          <pm-proctor-precheck [consented]="!!view()?.consentAt" startLabel="Continue the test" [starting]="cameraBusy()"
+            (confirmed)="cameraReady()" (cancelled)="confirmExit()" />
+        }
+        @if (camera.running()) { <pm-proctor-overlay /> }
         @if (shareGate()) {
           <div class="tp-lock" role="dialog" aria-modal="true" aria-labelledby="tp-share-title">
             <div class="tp-lock-card">
@@ -266,6 +288,7 @@ import { enterFullscreen, exitFullscreen, fullscreenSupported, isFullscreen } fr
     .tp-qno { font-weight: 700; font-size: .85rem; color: var(--pm-link); }
     .tp-tag { font-size: .7rem; font-weight: 600; padding: .15rem .55rem; border-radius: 999px; background: var(--pm-soft); color: var(--pm-label); }
     .tp-qtext { white-space: pre-wrap; font-size: 1rem; line-height: 1.6; color: var(--pm-heading); }
+    .tp-textans { position: relative; z-index: 1; font-size: .95rem; line-height: 1.6; min-height: 220px; resize: vertical; }
     .tp-options { display: grid; gap: .6rem; }
     .tp-option { all: unset; box-sizing: border-box; display: flex; gap: .85rem; align-items: center; padding: .85rem 1rem; border-radius: 12px; cursor: pointer;
       border: 1.5px solid var(--pm-card-border); background: var(--pm-card-bg); transition: border-color .12s, background .12s; }
@@ -351,7 +374,11 @@ export class TestPlayer implements OnInit {
   readonly shareText = SHARE_PROBLEM_TEXT;
   readonly labels = SWITCH_LABELS;
   /** Blocks the test until the entire screen is shared (after a reload, or when the student stopped sharing). */
-  shareGate = computed(() => !!this.view() && !this.screen.sharing() && !this.submitting() && !this.leaving());
+  shareGate = computed(() => !!this.view() && !this.cameraGate() && !this.screen.sharing() && !this.submitting() && !this.leaving());
+  /** AI proctoring: camera + microphone must be on (after a reload they are off) before the screen share and the test. */
+  readonly camera = inject(CameraProctor);
+  cameraGate = computed(() => !!this.view()?.aiProctoring && !this.camera.active() && !this.submitting() && !this.leaving());
+  cameraBusy = signal(false);
   shareMsg = signal('');
   sharingNow = signal(false);
   switches = signal(0);
@@ -394,6 +421,7 @@ export class TestPlayer implements OnInit {
       exitFullscreen();
       this.screen.onEnded(null);
       this.screen.stop();
+      this.camera.stop();
       this.objectUrls.forEach(u => URL.revokeObjectURL(u));
     });
     this.screen.onEnded(() => this.left('SHARE_STOPPED'));
@@ -403,6 +431,7 @@ export class TestPlayer implements OnInit {
         this.answers.set(v.answers ?? {});
         for (const [qid, a] of Object.entries(v.answers ?? {})) if (a.language && a.code !== undefined) this.drafts[qid] = { [a.language]: a.code };
         this.view.set(v);
+        if (v.aiProctoring && this.camera.active()) this.cameraReady();
         this.switches.set(v.tabSwitches ?? 0);
         this.maxWarnings.set(v.maxWarnings ?? 2);
         if (v.tabSwitches) this.loadLog();
@@ -470,6 +499,19 @@ export class TestPlayer implements OnInit {
   }
 
   // ---------------------------------------------------------------- proctoring
+  /** Camera + microphone are on: record consent once for this attempt, then start the camera and voice checks (CameraProctor). */
+  cameraReady(): void {
+    const v = this.view();
+    if (!v) return;
+    const begin = () => { this.cameraBusy.set(false); void this.camera.begin(v.attemptId, v.aiWarnings ?? 0, v.maxAiWarnings ?? 5); };
+    if (v.consentAt) { begin(); return; }
+    this.cameraBusy.set(true);
+    this.prep.consent(v.attemptId).subscribe({
+      next: c => { this.view.set({ ...v, consentAt: c.consentAt }); begin(); },
+      error: () => this.cameraBusy.set(false),
+    });
+  }
+
   async share(): Promise<void> {
     this.shareMsg.set('');
     this.sharingNow.set(true);
@@ -503,7 +545,8 @@ export class TestPlayer implements OnInit {
   private afterSwitch(st: ProctorStatus, kind: SwitchKind, at: Date, img: string | null): void {
     this.switches.set(st.tabSwitches);
     this.maxWarnings.set(st.maxWarnings);
-    const seq = st.event?.seq ?? st.tabSwitches;
+    // the switch number (camera / microphone events share the server's sequence, so its seq is not the switch number)
+    const seq = st.tabSwitches;
     const isNew = !this.switchLog().some(e => e.seq === seq);
     if (isNew) {
       const entry: SwitchEntry = { seq, kind: (st.event?.kind as SwitchKind) ?? kind, at: st.event ? new Date(st.event.occurredAt) : at, img };
@@ -528,10 +571,11 @@ export class TestPlayer implements OnInit {
   /** Switches saved before a reload, with their screenshots. */
   private loadLog(): void {
     this.prep.proctorLog(this.id()).subscribe(log => {
-      this.switchLog.set(log.events.map(e => ({ seq: e.seq, kind: e.kind, at: new Date(e.occurredAt), img: null })));
-      for (const e of log.events.filter(x => x.hasScreenshot)) {
-        this.prep.screenshotUrl(e.id).subscribe(u => this.switchLog.update(l => l.map(x => x.seq === e.seq ? { ...x, img: this.track(u) } : x)));
-      }
+      const switches = log.events.filter(e => !e.ai);
+      this.switchLog.set(switches.map((e, i) => ({ seq: i + 1, kind: e.kind as SwitchKind, at: new Date(e.occurredAt), img: null })));
+      switches.forEach((e, i) => {
+        if (e.hasScreenshot) this.prep.screenshotUrl(e.id).subscribe(u => this.switchLog.update(l => l.map(x => x.seq === i + 1 ? { ...x, img: this.track(u) } : x)));
+      });
     });
   }
 
@@ -553,9 +597,13 @@ export class TestPlayer implements OnInit {
   isAnswered(q: QuestionView): boolean {
     const a = this.answers()[q.id];
     if (!a) return false;
+    if (q.type === 'TEXT') return !!a.text && a.text.trim() !== '';
     return q.type === 'MCQ' ? a.option !== undefined && a.option !== null : !!a.code && a.code.trim() !== (q.starterCode?.[a.language!] ?? '').trim();
   }
   choose(q: QuestionView, option: number): void { this.setAnswer(q.id, { option }); }
+  /** Descriptive (TEXT) answer typed by the student. */
+  write(q: QuestionView, text: string): void { this.setAnswer(q.id, { text }); }
+  words(t?: string): number { return t ? t.trim().split(/\s+/).filter(Boolean).length : 0; }
   clear(q: QuestionView): void {
     this.answers.update(a => { const { [q.id]: _, ...rest } = a; return rest; });
     this.dirty.add(q.id); this.queueSave();
