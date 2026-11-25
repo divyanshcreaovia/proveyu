@@ -33,7 +33,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AdminUserService {
 
-    private static final Set<String> ROLES = Set.of("CANDIDATE", "RECRUITER", "ADMIN", "COLLEGE_ADMIN", "COLLEGE_COORDINATOR", "COLLEGE_VIEWER", "ORGANIZATION");
+    private static final Set<String> ROLES = Set.of("CANDIDATE", "RECRUITER", "ADMIN", "COLLEGE_ADMIN", "COLLEGE_COORDINATOR", "COLLEGE_VIEWER", "ORGANIZATION", "CXO");
 
     private final JdbcTemplate jdbc;
     private final UserRepository users;
@@ -63,13 +63,14 @@ public class AdminUserService {
                  from users u
                  left join college_students s on s.user_id = u.id and s.deleted_at is null
                  left join college_members m on m.user_id = u.id and m.status = 'ACTIVE'
-                 left join college_profiles c on c.college_id = coalesce(s.college_id, m.college_id)""";
+                 left join cxo_members x on x.user_id = u.id
+                 left join college_profiles c on c.college_id = coalesce(s.college_id, m.college_id, x.college_id)""";
         Long total = jdbc.queryForObject("select count(distinct u.id)" + from + where, Long.class, args.toArray());
         List<Object> pageArgs = new ArrayList<>(args);
         pageArgs.add(sz); pageArgs.add(pg * sz);
         List<UserRow> rows = jdbc.query("""
                 select u.id, u.full_name, u.email, u.phone, u.role, u.is_active, u.email_verified_at is not null, u.created_at,
-                       min(c.college_name), min(coalesce(s.roll_number, m.role))""" + from + where
+                       min(c.college_name), min(coalesce(s.roll_number, m.role, x.designation))""" + from + where
                         + " group by u.id, u.full_name, u.email, u.phone, u.role, u.is_active, u.email_verified_at, u.created_at"
                         + " order by u.created_at desc limit ? offset ?",
                 (rs, i) -> new UserRow(UUID.fromString(rs.getString(1)), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5),

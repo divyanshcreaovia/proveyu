@@ -207,3 +207,22 @@ management:
   health:
     mail:
       enabled: false
+
+# CXO portal (college leadership): AI-built dashboards. The model only picks metrics from a fixed catalog; it never writes SQL.
+cxo:
+  ai:
+    api-key: ${CXO_GROQ_API_KEY:}                       # separate from the AI interview key; blank = rule-based planner
+    url: ${CXO_AI_URL:https://api.groq.com/openai/v1}   # any OpenAI-compatible endpoint
+    model: ${CXO_AI_MODEL:openai/gpt-oss-120b}
+    reasoning-effort: ${CXO_AI_REASONING:low}           # blank for models without reasoning
+    timeout-seconds: ${CXO_AI_TIMEOUT:20}                # replies take 3-6 s; past this the rule-based planner answers
+    max-parallel: ${CXO_AI_MAX_PARALLEL:4}
+  query:
+    timeout-seconds: ${CXO_QUERY_TIMEOUT:8}             # per widget query
+  cache:                                                # AI answers only; widget numbers are always live
+    plan-ttl-hours: ${CXO_CACHE_PLAN_TTL_HOURS:168}     # same question -> same dashboard plan for a week (0 = off)
+    insight-ttl-hours: ${CXO_CACHE_INSIGHT_TTL_HOURS:24} # same numbers -> same summary for a day
+    cleanup-cron: "0 30 3 * * *"
+  stream:
+    pace-ms: ${CXO_STREAM_PACE_MS:220}                  # gap between widgets so the dashboard visibly builds itself (0 = off)
+    max-parallel: ${CXO_STREAM_MAX_PARALLEL:8}          # dashboards built at the same time

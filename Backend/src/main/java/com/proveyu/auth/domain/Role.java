@@ -11,5 +11,7 @@ public enum Role {
     /** Placement coordinator, optionally scoped to branches. */
     COLLEGE_COORDINATOR,
     /** Read-only college staff. */
-    COLLEGE_VIEWER
+    COLLEGE_VIEWER,
+    /** College leadership (principal, director, management): the CXO portal, read-only AI dashboards for one college. */
+    CXO
 }

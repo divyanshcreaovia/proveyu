@@ -23,9 +23,13 @@ class AdminPortalIT extends IntegrationTestBase {
     @Autowired UserRepository users;
     @Autowired PasswordEncoder encoder;
 
+    /** E-mail of this test's first admin (other ITs in the shared container create admins named "Root Admin" too). */
+    private String rootEmail;
+
     /** The first admin of a new installation (what AdminBootstrap does from ADMIN_BOOTSTRAP_*). */
     private String firstAdmin() throws Exception {
         String email = "root" + uid() + "@proveyu.test";
+        rootEmail = email;
         users.save(User.builder().email(email).fullName("Root Admin").passwordHash(encoder.encode("RootPass1")).role(Role.ADMIN).active(true)
                 .emailVerifiedAt(Instant.now()).build());
         return login(email, "RootPass1");
@@ -83,7 +87,7 @@ class AdminPortalIT extends IntegrationTestBase {
         assertThat(post("/api/v1/admin/users/" + studentId + "/unblock", admin, null).status()).isEqualTo(200);
         assertThat(get("/api/v1/college/student/profile", student).status()).isEqualTo(200);
         String adminId = get("/api/v1/admin/admins", admin).data().findValues("id").stream()
-                .filter(n -> users.findById(java.util.UUID.fromString(n.asText())).map(u -> u.getFullName().equals("Root Admin")).orElse(false))
+                .filter(n -> users.findById(java.util.UUID.fromString(n.asText())).map(u -> u.getEmail().equals(rootEmail)).orElse(false))
                 .findFirst().orElseThrow().asText();
         assertThat(post("/api/v1/admin/users/" + adminId + "/block", admin, null).body().path("errorCode").asText()).isEqualTo("SELF_BLOCK");
         assertThat(post("/api/v1/admin/users/" + studentId + "/reset-password", admin, null).data().has("devOtp")).isTrue();

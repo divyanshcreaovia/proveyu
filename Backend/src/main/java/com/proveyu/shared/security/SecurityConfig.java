@@ -3,6 +3,7 @@ package com.proveyu.shared.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.proveyu.shared.response.ApiResponse;
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,6 +67,8 @@ public class SecurityConfig {
                         "You do not have permission to perform this action", "FORBIDDEN"))
             )
             .authorizeHttpRequests(auth -> auth
+                // async re-dispatch of an already authorized streaming response (CXO dashboard SSE)
+                .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
                 // ---- public ----
                 .requestMatchers("/api/v1/auth/logout").authenticated()
                 .requestMatchers("/api/v1/auth/**").permitAll()
@@ -83,6 +86,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/college/**").hasAnyRole(COLLEGE_ROLES)
                 // company Drive Room (/api/v1/recruiter/campus/**)
                 .requestMatchers("/api/v1/recruiter/**").hasAnyRole("RECRUITER", "ADMIN")
+                // CXO portal (college leadership): AI dashboards for the member's own college
+                .requestMatchers("/api/v1/cxo/**").hasRole("CXO")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)

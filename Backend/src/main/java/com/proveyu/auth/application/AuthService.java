@@ -10,6 +10,8 @@ import com.proveyu.college.domain.CollegeEnums.MemberStatus;
 import com.proveyu.college.domain.CollegeMember;
 import com.proveyu.college.infrastructure.CollegeMemberRepository;
 import com.proveyu.college.infrastructure.CollegeProfileRepository;
+import com.proveyu.cxo.domain.CxoMember;
+import com.proveyu.cxo.infrastructure.CxoMemberRepository;
 import com.proveyu.shared.config.AppProperties;
 import com.proveyu.shared.email.EmailService;
 import com.proveyu.shared.error.DomainException;
@@ -52,6 +54,7 @@ public class AuthService {
     private final EmailVerificationTokenRepository verificationTokenRepository;
     private final CollegeMemberRepository collegeMemberRepository;
     private final CollegeProfileRepository collegeProfileRepository;
+    private final CxoMemberRepository cxoMemberRepository;
     private final AppProperties appProperties;
 
     /** OTP brute-force guard (per e-mail, in memory). */
@@ -122,6 +125,17 @@ public class AuthService {
             member.setLastLoginAt(Instant.now());
             collegeMemberRepository.save(member);
             collegeProfileRepository.findById(member.getCollegeId()).ifPresent(p -> response
+                    .collegeId(p.getCollegeId()).collegeName(p.getCollegeName()).collegeApprovalStatus(p.getApprovalStatus().name()));
+        }
+        if (user.getRole() == Role.CXO) {
+            CxoMember cxo = cxoMemberRepository.findByUserId(user.getId())
+                    .orElseThrow(() -> new DomainException("This leadership account is not linked to a college", HttpStatus.FORBIDDEN, "NOT_CXO_MEMBER"));
+            if (cxo.getStatus() != MemberStatus.ACTIVE) {
+                throw new DomainException("Your leadership access has been revoked", HttpStatus.FORBIDDEN, "ACCESS_REVOKED");
+            }
+            cxo.setLastLoginAt(Instant.now());
+            cxoMemberRepository.save(cxo);
+            collegeProfileRepository.findById(cxo.getCollegeId()).ifPresent(p -> response
                     .collegeId(p.getCollegeId()).collegeName(p.getCollegeName()).collegeApprovalStatus(p.getApprovalStatus().name()));
         }
 
