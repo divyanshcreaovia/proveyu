@@ -17,6 +17,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
     { label: 'Colleges', icon: 'bi-building', route: '/admin/colleges', badge: 'colleges' },
     { label: 'Users', icon: 'bi-people', route: '/admin/users' },
     { label: 'Admins', icon: 'bi-shield-lock', route: '/admin/admins' },
+    { label: 'CXO accounts', icon: 'bi-person-workspace', route: '/admin/cxo-users' },
   ] },
   { section: 'Students', items: [
     { label: 'Payments', icon: 'bi-currency-rupee', route: '/admin/payments', badge: 'payments' },

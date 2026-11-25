@@ -42,7 +42,7 @@ export class ForgotPassword {
   private fb = inject(FormBuilder).nonNullable;
   /** Set from route data, so the student portal reuses this page. */
   loginUrl = input('/college/login');
-  variant = input<'college' | 'student' | 'company'>('college');
+  variant = input<'college' | 'student' | 'company' | 'cxo'>('college');
   step = signal(0);
   busy = signal(false);
   error = signal('');

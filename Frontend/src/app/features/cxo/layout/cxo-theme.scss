@@ -1,0 +1,106 @@
+// ProveYu Leadership (CXO) theme. Its own design, separate from the college / student portals:
+// light and calm for senior leadership: white cards on a soft grey page, neutral ink text, one restrained blue accent,
+// data in shades of that blue, green and red only to mean good and bad. Compact density.
+// Tokens are set on the shell and inherited by every CXO page and widget.
+
+:host {
+  --x-bg: #f4f5f7;            // page: soft grey so white cards stand out
+  --x-panel: #ffffff;         // cards
+  --x-panel-2: #f6f7f9;       // raised: inputs, pills, tooltips
+  --x-panel-3: #eef0f3;       // hover
+  --x-line: rgba(15, 23, 42, 0.08);
+  --x-line-2: rgba(15, 23, 42, 0.14);
+  --x-text: #0f172a;          // primary text (deep navy, not pure black)
+  --x-muted: #64748b;
+  --x-dim: #94a3b8;
+  --x-accent: #2b59c3;        // calm royal blue: the one accent
+  --x-accent-ink: #ffffff;    // text on blue
+  --x-accent-soft: rgba(43, 89, 195, 0.08);
+  --x-accent-line: rgba(43, 89, 195, 0.35);
+  --x-lime: #8fa9e6;          // supporting tone: a lighter shade of the accent
+  --x-ink: #111827;           // strong neutral: primary actions, hero card
+  --x-up: #15803d;            // good change (only meaning, never decoration)
+  --x-down: #dc2626;          // bad change
+  --x-warn: #b45309;
+  --x-radius: 16px;
+  /* hairline card border */
+  --x-edge: linear-gradient(var(--x-line), var(--x-line));
+  --x-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.04);
+  --x-radius-sm: 12px;
+  --x-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: block;
+  color-scheme: light;
+}
+
+/* ---------- shell ---------- */
+.x-app { min-height: 100vh; display: flex; flex-direction: column; color: var(--x-text); font-family: 'Inter', sans-serif;
+  background: var(--x-bg);
+  background-attachment: fixed;
+  font-feature-settings: 'cv11', 'ss01'; -webkit-font-smoothing: antialiased; }
+
+.x-top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 1.5rem; height: 60px; padding: 0 1.75rem;
+  background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--x-line); }
+.x-brand { display: inline-flex; align-items: center; gap: 0.55rem; text-decoration: none; color: var(--x-text); flex-shrink: 0; }
+.x-brand img { width: 26px; height: 26px; object-fit: contain; }
+.x-brand b { font-weight: 800; letter-spacing: -0.02em; font-size: 1.02rem; }
+.x-brand span { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--x-muted); }
+
+.x-nav { display: flex; gap: 0.25rem; padding: 0.25rem; border-radius: 999px; background: var(--x-panel-2); border: 1px solid var(--x-line); }
+.x-nav a { padding: 0.38rem 0.95rem; border-radius: 999px; font-size: 0.82rem; font-weight: 600; color: var(--x-muted); text-decoration: none;
+  transition: color 0.16s ease, background-color 0.16s ease; }
+.x-nav a:hover { color: var(--x-text); }
+.x-nav a.x-on { color: var(--x-text); background: var(--x-panel); box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 0 0 1px var(--x-line); }
+
+.x-top-right { margin-left: auto; display: flex; align-items: center; gap: 0.9rem; min-width: 0; }
+.x-college { font-size: 0.78rem; color: var(--x-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px; }
+.x-user { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.25rem 0.3rem 0.25rem 0.85rem; border-radius: 999px;
+  background: var(--x-panel); border: 1px solid var(--x-line); transition: border-color 0.16s ease; }
+.x-user:hover, .x-user:focus-visible { border-color: var(--x-line-2); }
+.x-user-name { font-size: 0.8rem; font-weight: 600; line-height: 1.15; }
+.x-user-role { font-size: 0.68rem; color: var(--x-muted); line-height: 1.15; }
+.x-avatar { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 0.7rem; font-weight: 800;
+  color: #ffffff; background: var(--x-ink); }
+.x-menu { position: absolute; right: 0; top: calc(100% + 8px); width: 260px; padding: 0.4rem; border-radius: 16px; z-index: 30;
+  background: var(--x-panel-2); border: 1px solid var(--x-line-2); box-shadow: 0 18px 44px -14px rgba(15, 23, 42, 0.22); animation: xPop 0.16s var(--x-ease) backwards; }
+.x-menu-head { padding: 0.65rem 0.7rem 0.75rem; border-bottom: 1px solid var(--x-line); margin-bottom: 0.3rem; }
+.x-menu-head div { font-size: 0.85rem; font-weight: 700; }
+.x-menu-head small { display: block; font-size: 0.74rem; color: var(--x-muted); overflow-wrap: anywhere; }
+.x-menu button, .x-menu a { all: unset; box-sizing: border-box; display: block; width: 100%; padding: 0.55rem 0.7rem; border-radius: 10px; cursor: pointer;
+  font-size: 0.84rem; color: var(--x-text); }
+.x-menu button:hover, .x-menu a:hover { background: var(--x-panel-3); }
+.x-menu .x-danger { color: var(--x-down); }
+
+.x-main { flex: 1; width: 100%; margin: 0 auto; padding: 1.25rem 1.75rem 1.5rem; }   /* full width: the board sizes itself to the screen */
+@media (max-width: 767.98px) {
+  .x-top { gap: 0.75rem; padding: 0 1rem; } .x-college, .x-user-text { display: none; } .x-main { padding: 1rem; }
+}
+
+@keyframes xPop { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+/* ---------- shared bits for every CXO page (reach child components) ---------- */
+:host ::ng-deep {
+  .x-app ::selection { background: var(--x-accent); color: var(--x-accent-ink); }
+  .x-app { scrollbar-color: #cbd2dc transparent; }
+  .x-btn { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+    height: 36px; padding: 0 1rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; color: var(--x-text); white-space: nowrap;
+    background: var(--x-panel); border: 1px solid var(--x-line-2); box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.16s ease; }
+  .x-btn:hover:not(:disabled) { background: var(--x-panel-2); border-color: rgba(15, 23, 42, 0.22); }
+  .x-btn:active:not(:disabled) { transform: scale(0.97); }
+  .x-btn:focus-visible { outline: 2px solid var(--x-accent); outline-offset: 2px; }
+  .x-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .x-btn-accent { color: var(--x-accent-ink); background: var(--x-accent); border-color: transparent; }
+  .x-btn-accent:hover:not(:disabled) { background: #234aa6; }
+  .x-btn-icon { width: 36px; padding: 0; }
+  .x-btn-danger:hover:not(:disabled) { color: var(--x-down); border-color: rgba(220, 38, 38, 0.35); }
+  .x-card { position: relative; border: 1px solid transparent; border-radius: var(--x-radius);
+    background: linear-gradient(var(--x-panel), var(--x-panel)) padding-box, var(--x-edge) border-box; box-shadow: var(--x-shadow); }
+  .x-muted { color: var(--x-muted); }
+  .x-empty { padding: 3rem 1rem; text-align: center; color: var(--x-muted); font-size: 0.9rem; }
+  .x-skel { border-radius: 10px; background: linear-gradient(90deg, #eef0f3 25%, #e3e7ec 50%, #eef0f3 75%); background-size: 200% 100%;
+    animation: xShine 1.3s ease-in-out infinite; }
+  @keyframes xShine { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+}
+@media (prefers-reduced-motion: reduce) {
+  :host ::ng-deep *, :host ::ng-deep *::before, :host ::ng-deep *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

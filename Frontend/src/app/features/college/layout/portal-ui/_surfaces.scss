@@ -1,0 +1,102 @@
+// Surfaces: cards, card headings, description lists, lists, details, stat cards, modals & drawers.
+@use 'vars' as *;
+
+$pm-cards: '.st-card, .pm-dash-card, .pm-cm-card, .pm-dd-card, .pm-df-card, .pm-rt-card, .pm-el-card, .pm-st-card, .pm-tm-card, .pm-rp-card, .pm-imp-card, .oc-kpi, .pm-it-row, .proctor-pc-card, .ir-card';
+
+@include content {
+  /* ---------- cards ---------- */
+  #{$pm-cards} {
+    border-color: var(--pm-card-border);
+    transition: box-shadow var(--pm-med) var(--pm-ease), border-color var(--pm-fast) var(--pm-ease);
+  }
+  .st-card:hover, .pm-dash-card:hover, .pm-cm-card:hover, .pm-dd-card:hover, .pm-df-card:hover, .pm-rt-card:hover, .pm-el-card:hover,
+  .pm-st-card:hover, .pm-tm-card:hover, .pm-rp-card:hover, .pm-imp-card:hover, .oc-kpi:hover, .pm-it-row:hover, .proctor-pc-card:hover, .ir-card:hover {
+    box-shadow: var(--pm-card-shadow-hover);
+  }
+  /* bordered utility boxes used as cards (bg-body border rounded-3) */
+  .bg-body.border.rounded-3 { border-radius: var(--pm-r-lg) !important; border-color: var(--pm-card-border) !important; box-shadow: var(--pm-card-shadow); }
+
+  /* clickable tiles lift a little (leaf elements that never hold a dialog) */
+  a > .st-card, a.st-card, .oc-pick, .pm-step-btn {
+    transition: box-shadow var(--pm-med) var(--pm-ease), transform var(--pm-med) var(--pm-ease), border-color var(--pm-fast) var(--pm-ease),
+      background-color var(--pm-fast) var(--pm-ease);
+  }
+  a:hover > .st-card, a.st-card:hover, .oc-pick:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--pm-card-shadow-hover);
+  }
+
+  /* ---------- card headings ---------- */
+  .pm-dash-h, .pm-cm-card > h2.h6, .pm-tm-card h2.h6, .pm-rp-card h2.h6, .pm-dd-card h3.h6, .pm-el-card h3.h6, .pm-rt-card h3.h6,
+  .pm-st-card h3.h6, .st-card h2.h6, .st-card h3.h6 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--pm-heading);
+  }
+  .pm-cm-card > h2.h6, .pm-tm-card > h2.h6, .pm-rp-card > h2.h6 { margin-bottom: 1rem; }
+  hr { border-color: var(--pm-divider); opacity: 1; }
+
+  /* ---------- stat cards (shared pm-stat-card) ---------- */
+  .pm-stat {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--pm-r-lg);
+    padding: 1.15rem 1.3rem;
+    > * { position: relative; z-index: 1; }
+    &::after {
+      content: '';
+      position: absolute;
+      right: -36px;
+      top: -36px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--pm-accent-soft), transparent 70%);
+      pointer-events: none;
+    }
+  }
+  .pm-stat-label { letter-spacing: 0.06em; }
+  .pm-stat-value { font-size: 1.7rem; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+  .pm-stat-icon { width: 2.6rem; height: 2.6rem; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5); }
+
+  /* ---------- description lists ---------- */
+  dl dt {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--pm-muted);
+  }
+  dl dd { color: var(--pm-heading); font-weight: 500; }
+  dl.row dt, dl.row dd { padding-top: 0.45rem; padding-bottom: 0.45rem; margin-bottom: 0; border-bottom: 1px solid var(--pm-divider); }
+  dl.row dt:nth-last-child(2), dl.row dd:last-child { border-bottom: 0; }
+  dl.row dt { align-self: center; }
+
+  /* ---------- lists ---------- */
+  .list-group { border-radius: var(--pm-r); }
+  .list-group-item { border-color: var(--pm-divider); transition: background-color var(--pm-fast) var(--pm-ease), color var(--pm-fast) var(--pm-ease), box-shadow var(--pm-fast) var(--pm-ease); }
+  .list-group-item-action { color: var(--pm-muted); }
+  .list-group-item-action strong { color: var(--pm-heading); }
+  .list-group-item-action:hover { background: var(--pm-accent-soft); }
+  .list-group-item.active, .list-group-item-action.active {
+    background: var(--pm-accent-soft);
+    border-color: var(--pm-divider);
+    color: var(--pm-accent-600);
+    box-shadow: inset 3px 0 0 var(--pm-accent);
+    strong { color: var(--pm-accent-600); }
+  }
+
+  /* rows separated by a bottom border (activity lists inside cards) */
+  .border-bottom.py-2 { transition: background-color var(--pm-fast) var(--pm-ease); }
+
+  /* ---------- details / accordions ---------- */
+  details.border.rounded-3 {
+    padding: 0.75rem 1rem !important;
+    background: var(--pm-card-bg);
+    transition: border-color var(--pm-fast) var(--pm-ease), box-shadow var(--pm-fast) var(--pm-ease);
+    &[open] { border-color: var(--pm-accent-ring) !important; box-shadow: 0 0 0 3px var(--pm-accent-soft); }
+  }
+  details > summary { cursor: pointer; transition: color var(--pm-fast) var(--pm-ease); }
+  details > summary:hover { color: var(--pm-heading); }
+}

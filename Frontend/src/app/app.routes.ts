@@ -37,6 +37,7 @@ export const routes: Routes = [
       { path: 'colleges', title: 'Colleges', loadComponent: () => import('./features/admin/pages/colleges').then(m => m.AdminCollegesPage) },
       { path: 'users', title: 'Users', loadComponent: () => import('./features/admin/pages/users').then(m => m.AdminUsersPage) },
       { path: 'admins', title: 'Admins', loadComponent: () => import('./features/admin/pages/admins').then(m => m.AdminAdminsPage) },
+      { path: 'cxo-users', title: 'CXO accounts', loadComponent: () => import('./features/admin/pages/cxo-users').then(m => m.AdminCxoUsersPage) },
       { path: 'payments', title: 'Interview payments', loadComponent: () => import('./features/admin/pages/payments').then(m => m.AdminPaymentsPage) },
       { path: 'mock-tests', title: 'Mock tests', loadComponent: () => import('./features/admin/pages/mock-tests').then(m => m.AdminMockTestsPage) },
       { path: 'off-campus', title: 'Off-campus jobs', loadComponent: () => import('./features/admin/pages/off-campus').then(m => m.AdminOffCampusPage) },
@@ -88,6 +89,24 @@ export const routes: Routes = [
       { path: 'prep/result/:id', title: 'Test result', loadComponent: () => import('./features/student/prep/prep-result').then(m => m.PrepResult) },
       { path: 'ai-interview', title: 'AI interview', loadComponent: () => import('./features/student/interview/interview-home').then(m => m.InterviewHome) },
       { path: 'ai-interview/report/:id', title: 'Interview report', loadComponent: () => import('./features/student/interview/interview-report').then(m => m.InterviewReport) },
+    ],
+  },
+
+  // ---------------------------------------------------------------- CXO portal (college leadership; accounts are created by a platform admin)
+  { path: 'cxo/login', title: 'Leadership sign in', canActivate: [guestGuard], loadComponent: () => import('./features/cxo/auth/cxo-login').then(m => m.CxoLogin) },
+  {
+    path: 'cxo/forgot-password', data: { loginUrl: '/cxo/login', variant: 'cxo' },
+    loadComponent: () => import('./features/college/auth/forgot-password').then(m => m.ForgotPassword),
+  },
+  {
+    path: 'cxo',
+    canActivate: [authGuard, roleGuard], data: { roles: ['CXO'] },
+    loadComponent: () => import('./features/cxo/layout/cxo-shell').then(m => m.CxoShell),
+    children: [
+      { path: '', redirectTo: 'studio', pathMatch: 'full' },
+      { path: 'studio', title: 'AI Studio', loadComponent: () => import('./features/cxo/studio/cxo-studio').then(m => m.CxoStudio) },
+      { path: 'dashboards', title: 'Saved dashboards', loadComponent: () => import('./features/cxo/dashboards/cxo-dashboards').then(m => m.CxoDashboards) },
+      { path: 'dashboards/:id', title: 'Dashboard', loadComponent: () => import('./features/cxo/dashboards/cxo-dashboard-view').then(m => m.CxoDashboardView) },
     ],
   },
 

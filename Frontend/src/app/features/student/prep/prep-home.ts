@@ -22,13 +22,18 @@ import { ProctorPrecheck } from './proctor-precheck';
   styleUrl: '../student-pages.scss',
   template: `
     <section class="prep-hero st-card mb-3">
-      <div class="min-w-0">
+      <div class="prep-hero-main min-w-0">
+        <span class="prep-eyebrow"><i class="bi" [class.bi-building-check]="tab() === 'college'" [class.bi-journal-code]="tab() !== 'college'" aria-hidden="true"></i>{{ tab() === 'college' ? 'College tests' : 'Mock tests' }}</span>
         @if (tab() === 'college') {
           <h2 class="h5 st-h mb-1">Tests and exams from your college</h2>
           <p class="small st-muted mb-0">Sessional exams run in a fixed time window and can be taken once; practice tests from your placement cell are open any time.</p>
         } @else {
           <h2 class="h5 st-h mb-1">Practise like the real test</h2>
           <p class="small st-muted mb-0">Timed mock tests with aptitude, reasoning, verbal, technical MCQs and real coding questions. Take one a day or two before your drive.</p>
+        }
+        @if (desktop) {
+          <p class="prep-proctor"><i class="bi bi-shield-check" aria-hidden="true"></i><span>Tests are proctored: you share your entire screen, and every time you leave the
+            test a screenshot is saved with the time. Two warnings, then the test is submitted automatically.</span></p>
         }
       </div>
       <div class="prep-hero-stats">
@@ -42,15 +47,40 @@ import { ProctorPrecheck } from './proctor-precheck';
         <i class="bi bi-laptop mt-1" aria-hidden="true"></i>
         <span>Mock tests need a <strong>laptop or desktop</strong> (Chrome, Edge or Firefox): you share your screen during the test, and phones and tablets cannot do that. You can still see your past results here.</span>
       </div>
-    } @else {
-      <p class="small st-muted mb-3"><i class="bi bi-shield-check me-1" aria-hidden="true"></i>Tests are proctored: you share your entire screen, and every time you leave the
-        test a screenshot is saved with the time. Two warnings, then the test is submitted automatically.</p>
     }
 
-
     @if (loading()) { <pm-skeleton [rows]="6" /> } @else {
+      <!-- My attempts: collapsed until the student opens it (native <details>, no extra state) -->
+      @if (myHistory().length) {
+        <details class="prep-attempts mb-3">
+          <summary>
+            <span class="prep-attempts-icon" aria-hidden="true"><i class="bi bi-clock-history"></i></span>
+            <span class="flex-grow-1 min-w-0">
+              <strong class="st-h d-block">My attempts</strong>
+              <span class="small st-muted">{{ myHistory().length }} attempt{{ myHistory().length === 1 ? '' : 's' }}@if (avg() !== null) { · average {{ avg() }}% }</span>
+            </span>
+            <span class="prep-attempts-btn"><span class="prep-when-closed">View attempts</span><span class="prep-when-open">Hide</span><i class="bi bi-chevron-down" aria-hidden="true"></i></span>
+          </summary>
+          <div class="prep-attempts-list">
+            @for (h of myHistory(); track h.attemptId) {
+              <a class="st-row text-decoration-none prep-hist" [routerLink]="['/student/prep/result', h.attemptId]">
+                <span class="flex-grow-1 small"><strong class="st-h">{{ h.title }}</strong><br><span class="st-muted">{{ h.submittedAt | date: 'medium' }}</span>
+                  @if (h.autoSubmitReason === 'TAB_SWITCH') { <span class="st-chip text-danger ms-1"><i class="bi bi-exclamation-octagon"></i> Auto-submitted: left the test</span> }
+                  @else if (h.tabSwitches) { <span class="st-chip ms-1" style="color:#b45309"><i class="bi bi-exclamation-triangle"></i> {{ h.tabSwitches }} warning{{ h.tabSwitches === 1 ? '' : 's' }}</span> }</span>
+                @if (h.released === false) { <span class="small st-muted">Result pending</span> }
+                @else {
+                  <span class="prep-score" [class.good]="pct(h) >= 70" [class.mid]="pct(h) >= 40 && pct(h) < 70">{{ pct(h) }}%</span>
+                  <span class="small st-muted">{{ h.score | number: '1.0-1' }}/{{ h.maxScore }}</span>
+                }
+                <i class="bi bi-chevron-right st-muted"></i>
+              </a>
+            }
+          </div>
+        </details>
+      }
+
       @if (tab() === 'mock' && ladder().length) {
-        <section class="mb-4" aria-labelledby="lad-title">
+        <section class="prep-path st-card mb-4" aria-labelledby="lad-title">
           <div class="d-flex align-items-end justify-content-between gap-2 flex-wrap mb-2">
             <div>
               <h2 id="lad-title" class="h6 st-h mb-0">Placement test path</h2>
@@ -161,70 +191,116 @@ import { ProctorPrecheck } from './proctor-precheck';
           }
         }
       </div>
-
-      @if (myHistory().length) {
-        <h2 class="h6 st-h mt-4 mb-2">My attempts</h2>
-        @for (h of myHistory(); track h.attemptId) {
-          <a class="st-row text-decoration-none prep-hist" [routerLink]="['/student/prep/result', h.attemptId]">
-            <span class="flex-grow-1 small"><strong class="st-h">{{ h.title }}</strong><br><span class="st-muted">{{ h.submittedAt | date: 'medium' }}</span>
-              @if (h.autoSubmitReason === 'TAB_SWITCH') { <span class="st-chip text-danger ms-1"><i class="bi bi-exclamation-octagon"></i> Auto-submitted: left the test</span> }
-              @else if (h.tabSwitches) { <span class="st-chip ms-1" style="color:#b45309"><i class="bi bi-exclamation-triangle"></i> {{ h.tabSwitches }} warning{{ h.tabSwitches === 1 ? '' : 's' }}</span> }</span>
-            @if (h.released === false) { <span class="small st-muted">Result pending</span> }
-            @else {
-              <span class="prep-score" [class.good]="pct(h) >= 70" [class.mid]="pct(h) >= 40 && pct(h) < 70">{{ pct(h) }}%</span>
-              <span class="small st-muted">{{ h.score | number: '1.0-1' }}/{{ h.maxScore }}</span>
-            }
-            <i class="bi bi-chevron-right st-muted"></i>
-          </a>
-        }
-      }
     }
     @if (precheck()) {
       <pm-proctor-precheck startLabel="Share screen and start" (confirmed)="precheckDone(true)" (cancelled)="precheckDone(false)" />
     }`,
   styles: [`
-    .prep-hero { display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap;
-      background: linear-gradient(120deg, rgba(11,92,255,.10), rgba(0,180,255,.06)), var(--pm-card-bg); }
-    .prep-hero > div:first-child { flex: 1 1 320px; }
-    .prep-hero-stats { display: flex; gap: 1.5rem; }
-    .prep-hero-stats > div { display: grid; text-align: center; }
-    .prep-num { font-size: 1.5rem; font-weight: 800; color: var(--pm-heading); line-height: 1.1; font-variant-numeric: tabular-nums; }
-    .prep-card { transition: transform .15s, box-shadow .15s; }
-    .prep-exam { border-left: 3px solid #4f46e5; }
-    .prep-window { color: var(--pm-heading); }
-    .prep-st { font-weight: 700; }
-    .prep-st-live { background: rgba(22,163,74,.12); color: #15803d; }
-    .prep-st-upcoming { background: rgba(79,70,229,.12); color: #4338ca; }
-    .prep-st-closed { background: var(--pm-soft); color: var(--pm-muted); }
-    .prep-card:hover { transform: translateY(-2px); box-shadow: var(--pm-card-shadow-hover); }
-    .prep-desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-    .prep-meta { display: flex; flex-wrap: wrap; gap: .4rem .9rem; font-size: .8rem; color: var(--pm-label); }
-    .prep-meta i { color: var(--pm-link); margin-right: .2rem; }
-    .prep-sections { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .6rem; }
-    .prep-sections span { font-size: .7rem; padding: .15rem .5rem; border-radius: 6px; border: 1px solid var(--pm-card-border); color: var(--pm-muted); }
-    .prep-hist:hover { border-color: var(--pm-link); }
-    .prep-score { font-weight: 800; font-variant-numeric: tabular-nums; color: #e11d48; min-width: 3rem; text-align: right; }
-    .prep-score.mid { color: #d97706; } .prep-score.good { color: #16a34a; }
-    .lad-progress { min-width: 9rem; text-align: right; }
-    .lad-bar { height: 6px; border-radius: 99px; background: var(--pm-soft); margin-top: .25rem; overflow: hidden; }
-    .lad-bar span { display: block; height: 100%; background: linear-gradient(90deg, #16a34a, #0b5cff); border-radius: 99px; }
-    .lad-level { font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; margin: 1rem 0 .4rem; }
+    :host { display: block; }
+
+    /* ---------- hero ---------- */
+    .st-card.prep-hero { position: relative; overflow: hidden; display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; padding: 1.6rem 1.75rem;
+      border-color: var(--pm-accent-ring, #e2e8f0);
+      background: radial-gradient(120% 140% at 100% 0%, rgba(99,102,241,.13), transparent 55%), linear-gradient(120deg, rgba(79,70,229,.05), transparent 60%), var(--pm-card-bg); }
+    .prep-hero-main { flex: 1 1 360px; }
+    .prep-eyebrow { display: inline-flex; align-items: center; gap: .4rem; margin-bottom: .65rem; padding: .25rem .65rem; border-radius: 999px;
+      font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--pm-accent-600, #4338ca); background: var(--pm-accent-soft, rgba(79,70,229,.08)); }
+    .prep-hero h2 { font-size: 1.35rem; letter-spacing: -.02em; }
+    .prep-proctor { display: flex; gap: .55rem; align-items: flex-start; max-width: 640px; margin: 1rem 0 0; padding: .6rem .8rem; border-radius: 12px;
+      font-size: .8rem; line-height: 1.5; color: var(--pm-label); background: var(--pm-card-bg); border: 1px solid var(--pm-card-border); }
+    .prep-proctor i { color: #16a34a; font-size: .95rem; margin-top: .05rem; }
+    .prep-hero-stats { display: grid; grid-template-columns: repeat(3, minmax(88px, 1fr)); gap: .6rem; }
+    .prep-hero-stats > div { display: grid; gap: .1rem; text-align: center; padding: .8rem .9rem; border-radius: 14px; background: var(--pm-card-bg);
+      border: 1px solid var(--pm-card-border); box-shadow: var(--pm-card-shadow); }
+    .prep-hero-stats .small { font-size: .66rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+    .prep-num { font-size: 1.6rem; font-weight: 800; line-height: 1.1; letter-spacing: -.02em; color: var(--pm-heading); font-variant-numeric: tabular-nums; }
+
+    /* ---------- my attempts (collapsible) ---------- */
+    .prep-attempts { background: var(--pm-card-bg); border: 1px solid var(--pm-card-border); border-radius: 16px; box-shadow: var(--pm-card-shadow); overflow: hidden;
+      transition: box-shadow .25s ease; }
+    .prep-attempts[open] { box-shadow: var(--pm-card-shadow-hover); }
+    .prep-attempts > summary { list-style: none; display: flex; align-items: center; gap: .85rem; padding: .85rem 1.1rem; cursor: pointer; user-select: none;
+      transition: background-color .16s ease; }
+    .prep-attempts > summary::-webkit-details-marker { display: none; }
+    .prep-attempts > summary:hover { background: var(--pm-surface-2, #fafbfd); }
+    .prep-attempts > summary:focus-visible { outline: 2px solid var(--pm-focus); outline-offset: -2px; }
+    .prep-attempts-icon { width: 2.5rem; height: 2.5rem; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; font-size: 1.1rem;
+      color: var(--pm-accent, #4f46e5); background: var(--pm-accent-soft, rgba(79,70,229,.08)); }
+    .prep-attempts-btn { display: inline-flex; align-items: center; gap: .45rem; padding: .45rem .95rem; border-radius: 999px; flex-shrink: 0;
+      font-size: .8rem; font-weight: 600; color: var(--pm-heading); background: var(--pm-card-bg); border: 1px solid var(--pm-card-border);
+      box-shadow: 0 1px 2px rgba(16,24,40,.05); transition: background-color .16s ease, border-color .16s ease; }
+    .prep-attempts > summary:hover .prep-attempts-btn { border-color: var(--pm-input-hover); background: var(--pm-soft); }
+    .prep-attempts-btn i { transition: transform .25s ease; }
+    .prep-attempts[open] .prep-attempts-btn i { transform: rotate(180deg); }
+    .prep-when-open { display: none; }
+    .prep-attempts[open] .prep-when-open { display: inline; }
+    .prep-attempts[open] .prep-when-closed { display: none; }
+    .prep-attempts-list { display: grid; gap: .5rem; padding: 1rem; border-top: 1px solid var(--pm-divider); background: var(--pm-surface-2, #fafbfd); }
+    .prep-attempts[open] .prep-attempts-list { animation: prepOpen .28s cubic-bezier(.2,.8,.2,1); }
+    .prep-attempts-list .st-row { margin-bottom: 0; }
+    @keyframes prepOpen { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+    /* ---------- placement test path ---------- */
+    .st-card.prep-path { padding: 1.4rem 1.5rem; }
+    .lad-progress { min-width: 10rem; text-align: right; }
+    .lad-bar { height: 7px; border-radius: 99px; background: var(--pm-soft); margin-top: .35rem; overflow: hidden; }
+    .lad-bar span { display: block; height: 100%; background: linear-gradient(90deg, #22c55e, #6366f1); border-radius: 99px; }
+    .lad-level { display: flex; align-items: center; gap: .5rem; font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; margin: 1.35rem 0 .65rem; }
+    .lad-level::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .lad-level::after { content: ''; flex: 1; height: 1px; background: var(--pm-divider); }
     .lad-level[data-level='EASY'] { color: #16a34a; } .lad-level[data-level='MEDIUM'] { color: #d97706; } .lad-level[data-level='HARD'] { color: #e11d48; }
-    .lad-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
-    .lad-step { display: flex; gap: .85rem; align-items: center; padding: .75rem .9rem; border-radius: 12px; border: 1px solid var(--pm-card-border);
-      background: var(--pm-card-bg); }
-    .lad-step.current { border-color: var(--pm-link); box-shadow: 0 0 0 3px rgba(11,92,255,.08); }
-    .lad-step.locked { opacity: .72; }
-    .lad-num { width: 2.1rem; height: 2.1rem; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; font-weight: 800; font-size: .85rem;
+    .lad-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .6rem; }
+    .lad-step { position: relative; display: flex; gap: .9rem; align-items: center; padding: .85rem 1rem; border-radius: 14px; border: 1px solid var(--pm-card-border);
+      background: var(--pm-card-bg); transition: border-color .16s ease, box-shadow .25s ease; }
+    /* connector between consecutive steps */
+    .lad-step:not(:last-child)::after { content: ''; position: absolute; left: calc(1rem + 1.1rem - 1px); top: 100%; width: 2px; height: .6rem; background: var(--pm-divider); }
+    .lad-step.done:not(:last-child)::after { background: rgba(22,163,74,.45); }
+    .lad-step:hover:not(.locked) { border-color: var(--pm-input-border); box-shadow: var(--pm-card-shadow-hover); }
+    .lad-step.current { border-color: var(--pm-accent, #4f46e5); box-shadow: 0 0 0 3px var(--pm-accent-soft, rgba(79,70,229,.08));
+      background: linear-gradient(90deg, var(--pm-accent-soft, rgba(79,70,229,.08)), transparent 55%), var(--pm-card-bg); }
+    .lad-step.locked { background: var(--pm-surface-2, #fafbfd); }
+    .lad-step.locked .lad-body, .lad-step.locked .lad-num { opacity: .6; }
+    .lad-num { width: 2.2rem; height: 2.2rem; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; font-weight: 800; font-size: .85rem;
       background: var(--pm-soft); color: var(--pm-label); }
-    .lad-step.current .lad-num { background: #0b5cff; color: #fff; }
-    .lad-step.done .lad-num { background: #16a34a; color: #fff; }
+    .lad-step.current .lad-num { background: var(--pm-accent-grad, #4f46e5); color: #fff; box-shadow: 0 4px 10px -3px rgba(79,70,229,.55); }
+    .lad-step.done .lad-num { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
     .lad-body { flex: 1 1 auto; }
     .lad-hint { color: var(--pm-muted); }
     .lad-actions { display: flex; align-items: center; gap: .5rem; flex-shrink: 0; }
-    .lad-best { font-weight: 800; font-variant-numeric: tabular-nums; color: #d97706; }
-    .lad-best.good { color: #16a34a; }
-    @media (max-width: 575px) { .lad-step { flex-wrap: wrap; } .lad-actions { width: 100%; justify-content: flex-end; } }
+    .lad-best { padding: .2rem .6rem; border-radius: 999px; font-weight: 800; font-size: .8rem; font-variant-numeric: tabular-nums;
+      color: var(--pm-warn, #b45309); background: var(--pm-warn-soft, rgba(217,119,6,.12)); }
+    .lad-best.good { color: var(--pm-ok, #15803d); background: var(--pm-ok-soft, rgba(22,163,74,.1)); }
+    @media (max-width: 575px) { .lad-step { flex-wrap: wrap; } .lad-actions { width: 100%; justify-content: flex-end; } .lad-step:not(:last-child)::after { display: none; } }
+
+    /* ---------- test cards ---------- */
+    .prep-card { position: relative; overflow: hidden; transition: box-shadow .25s ease, border-color .16s ease; }
+    .prep-card::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--pm-accent-grad, #4f46e5); opacity: 0; transition: opacity .25s ease; }
+    .prep-card:hover { box-shadow: var(--pm-card-shadow-hover); border-color: var(--pm-accent-ring, #c7d2fe); }
+    .prep-card:hover::before { opacity: 1; }
+    .prep-exam { border-left: 3px solid var(--pm-accent, #4f46e5); }
+    .prep-window { color: var(--pm-heading); padding: .5rem .65rem; border-radius: 10px; background: var(--pm-surface-2, #fafbfd); border: 1px solid var(--pm-divider); }
+    .prep-st { font-weight: 700; }
+    .prep-st-live { position: relative; padding-left: 1.35rem !important; background: rgba(22,163,74,.12); color: #15803d; }
+    .prep-st-live::before { content: ''; position: absolute; left: .6rem; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: currentColor;
+      animation: prepLive 1.6s ease-in-out infinite; }
+    .prep-st-upcoming { background: rgba(79,70,229,.12); color: #4338ca; }
+    .prep-st-closed { background: var(--pm-soft); color: var(--pm-muted); }
+    @keyframes prepLive { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+    .prep-desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .prep-meta { display: flex; flex-wrap: wrap; gap: .4rem .9rem; font-size: .8rem; color: var(--pm-label); }
+    .prep-meta i { color: var(--pm-accent, var(--pm-link)); margin-right: .2rem; }
+    .prep-sections { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .65rem; }
+    .prep-sections span { font-size: .7rem; padding: .15rem .5rem; border-radius: 6px; border: 1px solid var(--pm-divider); background: var(--pm-surface-2, #fafbfd); color: var(--pm-muted); }
+    .prep-card .mt-auto.pt-3 { border-top: 1px dashed var(--pm-divider); margin-top: 1rem !important; }
+
+    /* ---------- attempt rows ---------- */
+    .prep-hist { background: var(--pm-card-bg); }
+    .prep-hist:hover { border-color: var(--pm-accent, var(--pm-link)) !important; }
+    .prep-score { padding: .2rem .6rem; border-radius: 999px; min-width: 3.6rem; text-align: center; font-weight: 800; font-variant-numeric: tabular-nums;
+      color: #e11d48; background: rgba(225,29,72,.09); }
+    .prep-score.mid { color: #d97706; background: rgba(217,119,6,.12); } .prep-score.good { color: #16a34a; background: rgba(22,163,74,.1); }
+
+    @media (prefers-reduced-motion: reduce) { .prep-attempts[open] .prep-attempts-list, .prep-st-live::before { animation: none; } }
   `],
 })
 export class PrepHome implements OnInit {

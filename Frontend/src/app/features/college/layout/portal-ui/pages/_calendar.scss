@@ -1,0 +1,28 @@
+// College interviews calendar (month / week grid).
+@use '../vars' as *;
+
+@include content {
+  pm-interviews > .d-flex:first-child h2 { font-size: 1.05rem; letter-spacing: -0.015em; color: var(--pm-heading); }
+
+  .pm-cal { border-radius: var(--pm-r-lg); background: var(--pm-divider); border-color: var(--pm-card-border); box-shadow: var(--pm-card-shadow); }
+  .pm-cal-dow { padding: 0.6rem 0.35rem; font-size: 0.68rem; letter-spacing: 0.08em; font-weight: 700; }
+  .pm-cal-day {
+    padding: 0.45rem 0.4rem;
+    gap: 3px;
+    transition: background-color var(--pm-fast) var(--pm-ease);
+    &:hover { background: var(--pm-surface-2); }
+  }
+  .pm-cal-num { font-size: 0.75rem; font-weight: 700; color: var(--pm-label); padding: 0.05rem 0.3rem; }
+  .pm-cal-out { background: var(--pm-surface-2); }
+  .pm-cal-today { background: linear-gradient(180deg, var(--pm-accent-soft), transparent 70%), var(--pm-card-bg); }
+  .pm-cal-today .pm-cal-num { background: var(--pm-accent-grad) !important; color: #fff; border-radius: 999px; padding: 0.05rem 0.45rem; }
+
+  .pm-cal-ev {
+    padding: 3px 7px;
+    border-radius: 6px;
+    font-weight: 600;
+    box-shadow: inset 2px 0 0 currentColor;
+    transition: transform var(--pm-fast) var(--pm-ease), box-shadow var(--pm-fast) var(--pm-ease), filter var(--pm-fast) var(--pm-ease);
+    &:hover { transform: translateY(-1px); box-shadow: inset 2px 0 0 currentColor, 0 4px 10px rgba(16, 24, 40, 0.1); }
+  }
+}

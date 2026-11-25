@@ -8,7 +8,7 @@ import { RouterLink } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="pm-auth">
-      <aside class="pm-auth-brand d-none d-lg-flex">
+      <aside class="pm-auth-brand d-none d-lg-flex" [class.pm-auth-cxo]="variant() === 'cxo'">
         @if (variant() === 'student') {
           <a routerLink="/" class="pm-auth-logo"><img src="images/proveyu-mark.png" alt="" /><span>ProveYu</span><em>Student</em></a>
           <div>
@@ -42,6 +42,17 @@ import { RouterLink } from '@angular/router';
             </ul>
           </div>
           <small class="opacity-75">© ProveYu Admin · For the ProveYu team only</small>
+        } @else if (variant() === 'cxo') {
+          <a routerLink="/" class="pm-auth-logo"><img src="images/proveyu-mark.png" alt="" /><span>ProveYu</span><em>Leadership</em></a>
+          <div>
+            <h2 class="fw-bold mb-3">Ask a question. Get a live dashboard.</h2>
+            <ul class="list-unstyled pm-auth-points">
+              <li><i class="bi bi-check2-circle"></i> Placements, packages, drives and tests in plain language</li>
+              <li><i class="bi bi-check2-circle"></i> Dashboards built live from your college's own data</li>
+              <li><i class="bi bi-check2-circle"></i> Save, refine and keep them updating on their own</li>
+            </ul>
+          </div>
+          <small class="opacity-75">© ProveYu Leadership · For principals, directors and management</small>
         } @else {
           <a routerLink="/" class="pm-auth-logo"><img src="images/proveyu-mark.png" alt="" /><span>ProveYu</span><em>Campus</em></a>
           <div>
@@ -59,7 +70,7 @@ import { RouterLink } from '@angular/router';
         <a routerLink="/" class="pm-auth-back"><i class="bi bi-arrow-left me-1"></i>Back to website</a>
         <div class="pm-auth-card" [class.pm-auth-wide]="wide()">
           <div class="pm-auth-cardbrand d-lg-none"><img src="images/proveyu-mark.png" alt="" /><span>ProveYu</span>
-            <em>{{ variant() === 'student' ? 'Student' : variant() === 'company' ? 'Recruiter' : variant() === 'admin' ? 'Admin' : 'Campus' }}</em></div>
+            <em>{{ variant() === 'student' ? 'Student' : variant() === 'company' ? 'Recruiter' : variant() === 'admin' ? 'Admin' : variant() === 'cxo' ? 'Leadership' : 'Campus' }}</em></div>
           <h1 class="h4 fw-bold mb-1">{{ heading() }}</h1>
           @if (sub()) { <p class="text-body-secondary small mb-4">{{ sub() }}</p> }
           <ng-content />
@@ -71,6 +82,7 @@ import { RouterLink } from '@angular/router';
     @media (min-width: 992px) { .pm-auth { grid-template-columns: 420px 1fr; } }
     .pm-auth-brand { flex-direction: column; justify-content: space-between; padding: 2.5rem; color: #fff;
       background: radial-gradient(circle at 20% 20%, #2563eb 0, #1e3a8a 45%, #0f172a 100%); }
+    .pm-auth-cxo { background: radial-gradient(circle at 80% 10%, #7c3aed 0, #4338ca 40%, #0f0b2a 100%); }
     .pm-auth-logo { display: inline-flex; align-items: center; gap: .6rem; text-decoration: none; color: #fff; }
     .pm-auth-logo img { width: 2.6rem; height: 2.6rem; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(0,0,0,.25)); }
     .pm-auth-logo span { font-size: 1.6rem; font-weight: 800; letter-spacing: -.02em; }
@@ -94,5 +106,5 @@ export class AuthShell {
   sub = input('');
   wide = input(false);
   /** 'student' switches the brand panel to the student portal copy. */
-  variant = input<'college' | 'student' | 'company' | 'admin'>('college');
+  variant = input<'college' | 'student' | 'company' | 'admin' | 'cxo'>('college');
 }

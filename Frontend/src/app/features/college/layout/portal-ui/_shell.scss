@@ -1,0 +1,68 @@
+// Shell chrome: sidebar, top bar, account menu, notifications popover.
+// These elements live in the shell's own template, so plain (non-deep) selectors reach them.
+
+/* ---------- sidebar ---------- */
+.pm-shell .pm-shell-side {
+  background: var(--pm-side-bg);
+  border-right: 1px solid var(--pm-side-border);
+  transition: width var(--pm-med) var(--pm-ease), transform var(--pm-med) var(--pm-ease);
+  scrollbar-width: thin;
+}
+.pm-shell .pm-shell-section { color: var(--pm-muted); opacity: 0.85; letter-spacing: 0.09em; }
+.pm-shell .pm-shell-link {
+  color: var(--pm-nav-text);
+  font-weight: 500;
+  border-radius: 10px;
+  margin-bottom: 2px;
+  transition: background-color var(--pm-fast) var(--pm-ease), color var(--pm-fast) var(--pm-ease);
+  > i { color: var(--pm-muted); transition: color var(--pm-fast) var(--pm-ease), transform var(--pm-fast) var(--pm-ease); }
+  &:hover { background: var(--pm-nav-hover-bg); color: var(--pm-heading); }
+  &:hover > i { color: var(--pm-heading); transform: translateX(1px); }
+  &:focus-visible { outline: 2px solid var(--pm-focus); outline-offset: -2px; }
+}
+.pm-shell .pm-shell-link.pm-shell-active {
+  background: var(--pm-nav-active-bg);
+  color: var(--pm-nav-active-fg);
+  font-weight: 600;
+  > i { color: var(--pm-nav-active-bar); }
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 22%;
+    bottom: 22%;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--pm-nav-active-bar);
+    animation: pm-bar-in var(--pm-med) var(--pm-ease) backwards;
+  }
+}
+.pm-shell .pm-nav-badge { box-shadow: 0 0 0 2px var(--pm-side-bg); }
+.pm-shell .pm-shell-collapse {
+  border-radius: 8px;
+  transition: background-color var(--pm-fast) var(--pm-ease), color var(--pm-fast) var(--pm-ease);
+  &:hover { background: var(--pm-nav-hover-bg); color: var(--pm-heading); }
+}
+.pm-shell .pm-shell-scrim { animation: pm-fade var(--pm-fast) ease-out backwards; backdrop-filter: blur(2px); }
+
+/* ---------- top bar ---------- */
+.pm-shell .pm-shell-title { font-size: 1.6rem; font-weight: 750; letter-spacing: -0.025em; }
+@media (max-width: 575.98px) { .pm-shell .pm-shell-title { font-size: 1.3rem; } }
+.pm-shell .pm-shell-icon, .pm-shell .pm-shell-user {
+  border: 1px solid var(--pm-card-border);
+  box-shadow: var(--pm-card-shadow);
+  transition: box-shadow var(--pm-fast) var(--pm-ease), transform var(--pm-fast) var(--pm-ease), border-color var(--pm-fast) var(--pm-ease);
+}
+.pm-shell .pm-shell-icon:hover, .pm-shell .pm-shell-user:hover { box-shadow: var(--pm-card-shadow-hover); transform: translateY(-1px); }
+.pm-shell .pm-shell-icon:active, .pm-shell .pm-shell-user:active { transform: scale(0.96); }
+.pm-shell .pm-shell-avatar { background: linear-gradient(135deg, #16122b, #3b2f7a); }
+.pm-shell .pm-bell-badge { animation: pm-pop-badge 0.4s var(--pm-ease) backwards; }
+
+/* ---------- account menu + notifications popover ---------- */
+.pm-shell .pm-shell-pop {
+  border-color: var(--pm-card-border);
+  box-shadow: var(--pm-pop-shadow) !important;
+  transform-origin: top right;
+  animation: pm-pop var(--pm-fast) var(--pm-ease) backwards;
+}
+.pm-shell .pm-menu-item { transition: background-color var(--pm-fast) var(--pm-ease), color var(--pm-fast) var(--pm-ease); }

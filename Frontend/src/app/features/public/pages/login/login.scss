@@ -15,15 +15,17 @@ button[type="submit"].btn-primary-custom:hover:disabled {
   border-color: #273247 !important;
 }
 
-/* Portal choice cards (college / student) */
+/* Portal choice cards (college / student / leadership) */
 .portal-card { display: flex; flex-direction: column; align-items: flex-start; gap: .35rem; height: 100%; padding: 1.4rem; border-radius: 18px;
   border: 1.5px solid #e2e8f0; background: #fff; text-decoration: none; color: #0f172a; transition: transform .15s, box-shadow .15s, border-color .15s; }
 .portal-card:hover, .portal-card:focus-visible { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(15, 23, 42, .1); outline: none; }
 .portal-college:hover, .portal-college:focus-visible { border-color: #f59e0b; }
 .portal-student:hover, .portal-student:focus-visible { border-color: #2563eb; }
+.portal-cxo:hover, .portal-cxo:focus-visible { border-color: #111827; }
 .portal-icon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 1.35rem; margin-bottom: .35rem; }
 .portal-college .portal-icon { background: #fef3c7; color: #b45309; }
 .portal-student .portal-icon { background: #dbeafe; color: #1d4ed8; }
+.portal-cxo .portal-icon { background: #e5e7eb; color: #111827; }
 .portal-tag { font-size: .65rem; font-weight: 700; letter-spacing: .08em; color: #64748b; }
 .portal-title { font-size: 1.05rem; font-weight: 800; }
 .portal-text { font-size: .82rem; color: #64748b; flex: 1; }

@@ -10,7 +10,7 @@
   </svg>
 
   <div class="container-custom py-2 position-relative" style="z-index: 1;">
-    <div class="card card-shadow border-0 p-4 p-md-5 bg-white mx-auto rounded-4" style="max-width: 760px;">
+    <div class="card card-shadow border-0 p-4 p-md-5 bg-white mx-auto rounded-4" style="max-width: 980px;">
 
       <!-- Header -->
       <div class="text-center mb-4">
@@ -24,7 +24,7 @@
 
       <p class="text-center text-muted-custom fs-7 mb-4">Choose your portal to continue</p>
       <div class="row g-3 mb-2">
-        <div class="col-md-6">
+        <div class="col-md-4">
           <a routerLink="/college/login" class="portal-card portal-college">
             <span class="portal-icon"><i class="bi bi-building"></i></span>
             <span class="portal-tag">FOR COLLEGES</span>
@@ -33,13 +33,22 @@
             <span class="portal-cta">College sign in &rarr;</span>
           </a>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <a routerLink="/student/login" class="portal-card portal-student">
             <span class="portal-icon"><i class="bi bi-mortarboard"></i></span>
             <span class="portal-tag">FOR STUDENTS</span>
             <span class="portal-title">Student / Candidate</span>
             <span class="portal-text">Campus drives, applications, interviews and offers</span>
             <span class="portal-cta">Student sign in &rarr;</span>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a routerLink="/cxo/login" class="portal-card portal-cxo">
+            <span class="portal-icon"><i class="bi bi-bar-chart-line"></i></span>
+            <span class="portal-tag">FOR LEADERSHIP</span>
+            <span class="portal-title">College leadership</span>
+            <span class="portal-text">Principals, directors and management: live placement dashboards</span>
+            <span class="portal-cta">Leadership sign in &rarr;</span>
           </a>
         </div>
       </div>

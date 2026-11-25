@@ -1,0 +1,65 @@
+// Drives: college drive detail + its tabs (rounds, interviews, eligibility), student drive cards.
+@use '../vars' as *;
+
+@include content {
+  /* ===================== college: drive detail ===================== */
+  pm-drive-detail > a:first-child {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: 600;
+    color: var(--pm-muted) !important;
+    .bi { transition: transform var(--pm-fast) var(--pm-ease); }
+    &:hover { color: var(--pm-heading) !important; .bi { transform: translateX(-3px); } }
+  }
+  .pm-dd-head {
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(120deg, var(--pm-accent-soft), transparent 55%), var(--pm-card-bg);
+    border: 1px solid var(--pm-card-border);
+    border-radius: var(--pm-r-lg);
+    box-shadow: var(--pm-card-shadow);
+    h2 { font-size: 1.3rem; letter-spacing: -0.02em; color: var(--pm-heading); }
+  }
+  .pm-dd-card dl dd { margin-bottom: 0.85rem; }
+  .pm-dd-card dl dd strong { color: var(--pm-accent-600); }
+
+  /* rounds tab */
+  .pm-rt-round {
+    border-color: var(--pm-card-border);
+    border-radius: var(--pm-r);
+    padding: 0.6rem 0.7rem;
+    background: var(--pm-card-bg);
+    transition: border-color var(--pm-fast) var(--pm-ease), box-shadow var(--pm-fast) var(--pm-ease), background-color var(--pm-fast) var(--pm-ease);
+    &:hover { border-color: var(--pm-input-hover); }
+  }
+  .pm-rt-sel { border-color: var(--pm-accent) !important; background: var(--pm-accent-soft); box-shadow: 0 0 0 3px var(--pm-accent-soft) !important; }
+  .pm-rt-seq { background: var(--pm-accent-soft); color: var(--pm-accent-600); }
+  .pm-rt-sel .pm-rt-seq { background: var(--pm-accent-grad); color: #fff; }
+
+  /* interviews tab */
+  .pm-it-row { border-radius: var(--pm-r); padding: 0.75rem 1rem; }
+  .pm-it-time {
+    padding: 0.35rem 0.6rem;
+    border-radius: 10px;
+    background: var(--pm-accent-soft);
+    strong { color: var(--pm-accent-600); }
+    span { color: var(--pm-muted); }
+  }
+
+  /* eligibility tab */
+  .pm-el-stats { gap: 1rem; }
+
+  /* ===================== student: drive cards ===================== */
+  pm-student-drives article.st-card {
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow var(--pm-med) var(--pm-ease), transform var(--pm-med) var(--pm-ease), border-color var(--pm-fast) var(--pm-ease);
+    &::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--pm-accent-grad); opacity: 0; transition: opacity var(--pm-med) var(--pm-ease); }
+    &:hover { transform: translateY(-3px); border-color: var(--pm-accent-ring); }
+    &:hover::before { opacity: 1; }
+    h2 { font-size: 1rem; letter-spacing: -0.01em; }
+    .small.my-2 { color: var(--pm-heading); font-weight: 600; }
+    .small.my-2 .bi, .small .bi-clock { color: var(--pm-accent); margin-right: 0.15rem; }
+    .mt-auto.pt-3 { border-top: 1px dashed var(--pm-divider); margin-top: auto; }
+  }
+}

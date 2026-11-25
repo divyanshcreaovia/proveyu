@@ -40,9 +40,20 @@ export class ConfirmService {
       </div>
     }`,
   styles: [`
-    .pm-confirm-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, .45); z-index: 1990; }
+    .pm-confirm-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, .42); z-index: 1990;
+      backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); animation: pmConfirmFade .2s ease-out backwards; }
     .pm-confirm { position: fixed; z-index: 1995; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(440px, calc(100vw - 2rem));
-      background: var(--bs-body-bg); color: var(--bs-body-color); border-radius: .75rem; padding: 1.25rem; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+      background: var(--bs-body-bg); color: var(--bs-body-color); border: 1px solid var(--bs-border-color-translucent); border-radius: 18px;
+      padding: 1.4rem 1.5rem 1.25rem; box-shadow: 0 24px 64px -12px rgba(16,24,40,.3), 0 4px 12px -2px rgba(16,24,40,.08);
+      animation: pmConfirmIn .24s cubic-bezier(.2,.8,.2,1) backwards; }
+    .pm-confirm h2 { font-size: 1.05rem; font-weight: 750 !important; letter-spacing: -.015em; }
+    .pm-confirm p { line-height: 1.55; }
+    .pm-confirm > .d-flex { margin: 1.1rem -1.5rem -1.25rem; padding: .85rem 1.5rem; border-top: 1px solid var(--bs-border-color-translucent);
+      background: var(--bs-tertiary-bg); border-radius: 0 0 18px 18px; }
+    .pm-confirm .btn { border-radius: 50px; font-weight: 600; min-width: 6rem; }
+    @keyframes pmConfirmFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes pmConfirmIn { from { opacity: 0; transform: translate(-50%, -48%) scale(.97); } to { opacity: 1; transform: translate(-50%, -50%); } }
+    @media (prefers-reduced-motion: reduce) { .pm-confirm, .pm-confirm-backdrop { animation: none; } }
   `],
 })
 export class ConfirmDialog {

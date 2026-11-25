@@ -23,6 +23,8 @@ export interface UserRow { id: string; fullName: string; email: string; phone?: 
   createdAt: string; collegeName?: string; detail?: string; }
 export interface Page<T> { rows: T[]; total: number; page: number; size: number; }
 export interface AdminRow { id: string; fullName: string; email: string; active: boolean; createdAt: string; }
+export interface CxoUserRow { userId: string; memberId: string; fullName: string; email: string; designation?: string; collegeId: string;
+  collegeName?: string; status: 'ACTIVE' | 'REVOKED'; active: boolean; lastLoginAt?: string; createdAt: string; }
 export type Audience = 'ALL' | 'STUDENTS' | 'COLLEGE_STAFF' | 'COLLEGE';
 export interface SettingEntry { key: string; group: string; label: string; help: string; type: 'INT' | 'TEXT' | 'BOOL'; min: number; max: number;
   value: string; defaultValue: string; overridden: boolean; updatedAt?: string; }
@@ -66,6 +68,14 @@ export class AdminService {
     return this.http.post<ApiResponse<{ studentName: string; paidBalance: number }>>(api(`${A}/interview/credits`), { studentEmail, count }).pipe(map(r => r.data));
   }
   admins(): Observable<AdminRow[]> { return this.get('/admins'); }
+  // ---- CXO (college leadership) accounts
+  cxoUsers(): Observable<CxoUserRow[]> { return this.get('/cxo-users'); }
+  createCxo(body: { collegeId: string; fullName: string; email: string; designation?: string; password: string }): Observable<CxoUserRow> {
+    return this.http.post<ApiResponse<CxoUserRow>>(api(`${A}/cxo-users`), body).pipe(map(r => r.data));
+  }
+  setCxoActive(memberId: string, active: boolean): Observable<unknown> {
+    return this.http.post(api(`${A}/cxo-users/${memberId}/${active ? 'restore' : 'revoke'}`), {});
+  }
   createAdmin(body: { email: string; fullName: string; password: string }): Observable<AdminRow> {
     return this.http.post<ApiResponse<AdminRow>>(api(`${A}/admins`), body).pipe(map(r => r.data));
   }

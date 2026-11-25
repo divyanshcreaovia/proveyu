@@ -1,0 +1,67 @@
+<!-- Leadership overview: header (title + Ask AI + actions), slim progress line, one-screen board. -->
+<header class="xs-head">
+  <div class="xs-title-wrap">
+    <h1 class="xs-title">{{ spec()?.title || 'Overview' }}</h1>
+    <div class="xs-sub">
+      @if (building()) { <span class="xs-live-dot xs-busy"></span>{{ statusMessage() }} }
+      @else if (live()) { <span class="xs-live-dot"></span>Live · {{ updatedAgo() }} }
+      @else if (updatedAgo()) { {{ updatedAgo() }} }
+      @else { {{ cxo.me()?.collegeName }} }
+      @if (cached() && !building()) { <span class="xs-tag xs-tag-cache">From cache</span> }
+      @else if (source() === 'AI' && !building()) { <span class="xs-tag">AI built</span> }
+    </div>
+    @if (coverageLine() && !building()) { <div class="xs-cover" [attr.title]="coverageLine()"><b>Data:</b> {{ coverageLine() }}</div> }
+  </div>
+
+  <form class="xs-ask" [class.xs-ask-on]="focused()" (ngSubmit)="ask()" (focusin)="focused.set(true)" (focusout)="focused.set(false)">
+    <span class="xs-ask-badge"><i class="bi bi-stars" aria-hidden="true"></i>Ask AI</span>
+    <label for="xs-q" class="visually-hidden">Ask AI</label>
+    <input id="xs-q" name="q" [(ngModel)]="question" maxlength="1000" autocomplete="off" [placeholder]="placeholder()" [disabled]="building()"
+      (keydown.enter)="enter($event)" />
+    <button class="xs-ask-go" [disabled]="building() || !question.trim()" aria-label="Ask"><i class="bi bi-arrow-up" aria-hidden="true"></i></button>
+    @if (focused() && !question.trim() && catalog(); as c) {
+      <div class="xs-suggest" role="listbox" aria-label="Suggestions">
+        <div class="xs-suggest-k">{{ spec() ? 'Ask about' : 'Try' }}</div>
+        @for (s of c.suggestions.slice(0, 5); track s) {
+          <button type="button" role="option" (mousedown)="$event.preventDefault(); ask(s)">{{ s }}</button>
+        }
+      </div>
+    }
+  </form>
+
+  <div class="xs-actions">
+    @if (spec() && !building()) {
+      <button type="button" class="x-btn" [class.xs-live-on]="live()" (click)="toggleLive()" [attr.aria-pressed]="live()">
+        <span class="xs-live-dot" [class.xs-off]="!live()"></span>{{ live() ? 'Live' : 'Go live' }}</button>
+      <button type="button" class="x-btn" (click)="save()" [disabled]="saving()">{{ savedId() ? 'Save changes' : 'Save' }}</button>
+      <button type="button" class="x-btn" (click)="reset()">New</button>
+    }
+  </div>
+</header>
+
+<div class="xs-progress" [class.xs-progress-on]="building()" aria-hidden="true"><span [style.width.%]="progress()"></span></div>
+
+@for (n of notices(); track $index) { <div class="xs-note" role="status">{{ n }}</div> }
+
+@if (error()) {
+  <div class="xs-error" role="alert"><span>{{ error() }}</span><button class="x-btn" (click)="retry()">Try again</button></div>
+}
+
+@if (spec(); as s) {
+  <pm-cxo-board [spec]="s" [data]="data()" [insight]="insight()" [insightPending]="(building() && step() === 'insight') || summarizing()" />
+} @else if (building() || loadingFirst()) {
+  <div class="xs-ghost">
+    <div class="xs-ghost-kpis"><div class="x-skel"></div><div class="x-skel"></div><div class="x-skel"></div><div class="x-skel"></div></div>
+    <div class="xs-ghost-grid"><div class="x-skel"></div><div class="x-skel"></div><div class="x-skel"></div></div>
+  </div>
+} @else {
+  <section class="xs-blank x-card">
+    <h2>What should we look at?</h2>
+    <p>Ask in plain language. The dashboard is built live from {{ cxo.me()?.collegeName }}'s data.</p>
+    @if (catalog(); as c) {
+      <div class="xs-blank-list">
+        @for (s of c.suggestions; track s) { <button type="button" (click)="ask(s)">{{ s }}</button> }
+      </div>
+    }
+  </section>
+}

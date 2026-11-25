@@ -1,0 +1,31 @@
+// Page toolbars & filter bars: search + filters + exports + primary action, framed as one bar.
+@use '../vars' as *;
+
+$pm-toolbars: '.pm-stu-bar, .pm-co-bar, .pm-dr-bar, .pm-dash-filters, .st-filters, pm-offers > .d-flex:first-child, pm-audit-log > .d-flex:first-child';
+
+@include content {
+  #{$pm-toolbars} {
+    padding: 0.6rem 0.7rem;
+    background: var(--pm-card-bg);
+    border: 1px solid var(--pm-card-border);
+    border-radius: 14px;
+    box-shadow: var(--pm-card-shadow);
+    .form-control-sm, .form-select-sm { min-height: 36px; }
+    .form-check.form-switch { padding-top: 0.1rem; }
+    .form-check-label { color: var(--pm-label); font-weight: 600; }
+  }
+  .pm-dash-filters { padding: 0.75rem 1rem; }
+  .pm-dash-filters .form-label { font-size: 0.7rem !important; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--pm-muted); }
+
+  /* filter panel that opens under the students toolbar */
+  .pm-stu-filters {
+    padding: 1rem;
+    border-radius: 14px;
+    background: var(--pm-surface-2);
+    animation: pm-rise 0.3s var(--pm-ease) backwards;
+    .form-label { font-size: 0.7rem !important; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--pm-muted); }
+  }
+
+  /* toolbars inside tabs (off-campus, drive tabs) stay light: no frame, just spacing */
+  pm-college-off-campus .nav-tabs + .d-flex, pm-college-off-campus .d-flex:has(> .nav-pills) { margin-bottom: 1rem !important; }
+}

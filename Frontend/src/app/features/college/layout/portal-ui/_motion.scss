@@ -1,0 +1,81 @@
+// Motion: page entrance choreography, overlay transitions, keyframes, reduced-motion.
+// Rule: containers that can hold a fixed dialog only animate opacity / shadow, and every entrance animation
+// uses `backwards` fill, so no transform stays applied once it has played.
+@use 'vars' as *;
+
+/* each routed page fades in on navigation */
+:host ::ng-deep .pm-shell-content > router-outlet + * {
+  display: block;
+  animation: pm-fade var(--pm-med) var(--pm-ease) backwards;
+}
+
+@include content {
+  scrollbar-width: thin;
+  scrollbar-color: #cfd5df transparent;
+
+  /* top-level blocks of a page rise one after another */
+  > router-outlet + * > *:not(#{$pm-overlays}) { animation: pm-rise 0.42s var(--pm-ease) backwards; }
+  @for $i from 1 through 8 {
+    > router-outlet + * > *:nth-child(#{$i}) { animation-delay: #{($i - 1) * 45}ms; }
+  }
+  /* grid columns (KPI rows, card grids) cascade in */
+  .row > [class*='col'] { animation: pm-rise 0.42s var(--pm-ease) backwards; }
+  @for $i from 1 through 12 {
+    .row > [class*='col']:nth-child(#{$i}) { animation-delay: #{40 + ($i - 1) * 40}ms; }
+  }
+  /* content that appears after a tab switch fades in */
+  .nav-tabs ~ *:not(#{$pm-overlays}) { animation: pm-fade var(--pm-med) var(--pm-ease) backwards; }
+
+  /* KPI / stat cards rise in one after another */
+  .pm-stat { animation: pm-rise 0.45s var(--pm-ease) backwards; }
+  @for $i from 1 through 9 {
+    :nth-child(#{$i}) > pm-stat-card .pm-stat, pm-stat-card:nth-child(#{$i}) .pm-stat { animation-delay: #{($i - 1) * 50}ms; }
+  }
+
+  /* table rows fade in (pagination / filter changes replay it) */
+  .table tbody tr, .pm-dt-table tbody tr { animation: pm-fade 0.35s var(--pm-ease) backwards; }
+  @for $i from 1 through 15 {
+    .table tbody tr:nth-child(#{$i}), .pm-dt-table tbody tr:nth-child(#{$i}) { animation-delay: #{($i - 1) * 22}ms; }
+  }
+
+  /* progress / score bars grow from the left */
+  .progress-bar, .lad-bar > span, .rs-bar > div, .rp-bar > div, .st-ready-fill {
+    transform-origin: left center;
+    animation: pm-grow 0.9s var(--pm-ease) 0.15s backwards;
+  }
+
+  /* timelines, chat bubbles, alerts, empty states, validation */
+  .st-tl li { animation: pm-rise 0.4s var(--pm-ease) backwards; }
+  @for $i from 1 through 8 { .st-tl li:nth-child(#{$i}) { animation-delay: #{($i - 1) * 60}ms; } }
+  .st-msg, .pm-cm-msg { animation: pm-msg-in 0.28s var(--pm-ease) backwards; }
+  .alert { animation: pm-fade var(--pm-med) var(--pm-ease) backwards; }
+  .pm-empty { animation: pm-fade 0.4s var(--pm-ease) backwards; }
+  .pm-empty-icon { animation: pm-float 3.2s ease-in-out infinite; }
+  .invalid-feedback, .form-text.text-danger { animation: pm-fade var(--pm-fast) ease-out backwards; }
+  details[open] > :not(summary) { animation: pm-fade var(--pm-med) var(--pm-ease) backwards; }
+  .nav-tabs .nav-link.active { animation: pm-fade var(--pm-fast) ease-out backwards; }
+  .prep-hero-stats > *, .iv-credits, .iv-balance { animation: pm-pop 0.45s var(--pm-ease) 0.15s backwards; }
+}
+
+
+/* ---------- keyframes ---------- */
+@keyframes pm-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pm-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes pm-pop { from { opacity: 0; transform: translateY(-4px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes pm-pop-badge { 0% { transform: scale(0.4); opacity: 0; } 70% { transform: scale(1.12); opacity: 1; } 100% { transform: none; } }
+@keyframes pm-bar-in { from { transform: scaleY(0.2); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes pm-grow { from { transform: scaleX(0); } to { transform: none; } }
+@keyframes pm-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes pm-msg-in { from { opacity: 0; transform: translateY(6px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes pm-pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18); } 50% { box-shadow: 0 0 0 7px rgba(37, 99, 235, 0.06); } }
+@keyframes pm-live { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+/* accessibility: honour "reduce motion" */
+@media (prefers-reduced-motion: reduce) {
+  :host ::ng-deep *, :host ::ng-deep *::before, :host ::ng-deep *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

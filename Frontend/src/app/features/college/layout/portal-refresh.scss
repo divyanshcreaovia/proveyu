@@ -1,0 +1,32 @@
+/*
+ * Portal UI for the STUDENT and COLLEGE portals (entry point).
+ * Loaded after college-theme.scss by: college-shell, student-shell. (test-player and interview-room load portal-exam.scss.)
+ * admin-shell and company-shell keep using college-theme.scss alone, so they are unchanged.
+ *
+ * Pure CSS: no template, class, binding or logic changes. Every module restyles existing class names only.
+ * Modules live in ./portal-ui:
+ *   foundation  tokens, shell, motion, controls, tables, feedback, surfaces, overlays
+ *   pages       one file per area (communication, toolbars, dashboard, drives, calendar, people, student, prep, interview, off-campus)
+ */
+
+/* foundation */
+@use 'portal-ui/tokens';
+@use 'portal-ui/shell';
+@use 'portal-ui/motion';
+@use 'portal-ui/controls';
+@use 'portal-ui/tables';
+@use 'portal-ui/feedback';
+@use 'portal-ui/surfaces';
+@use 'portal-ui/overlays';
+
+/* pages */
+@use 'portal-ui/pages/toolbars';
+@use 'portal-ui/pages/dashboard';
+@use 'portal-ui/pages/communication';
+@use 'portal-ui/pages/drives';
+@use 'portal-ui/pages/calendar';
+@use 'portal-ui/pages/people';
+@use 'portal-ui/pages/student';
+@use 'portal-ui/pages/prep';
+@use 'portal-ui/pages/interview';
+@use 'portal-ui/pages/off-campus';

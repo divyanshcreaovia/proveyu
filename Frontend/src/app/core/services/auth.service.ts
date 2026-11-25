@@ -35,6 +35,7 @@ export class AuthService {
       case 'ORGANIZATION': return '/college/dashboard';
       case 'RECRUITER': return '/company/drives'; // company HR / panels work in the Drive Room
       case 'ADMIN': return '/admin/dashboard';
+      case 'CXO': return '/cxo/studio'; // college leadership: AI dashboards
       case 'CANDIDATE': return '/student/dashboard'; // students use the student portal (the old candidate portal has no sign-up)
       default: return '/login';
     }
@@ -45,6 +46,7 @@ export class AuthService {
     if (url.startsWith('/student')) return '/student/login';
     if (url.startsWith('/company')) return '/company/login';
     if (url.startsWith('/admin')) return '/admin/login';
+    if (url.startsWith('/cxo')) return '/cxo/login';
     return wasCollege || url.startsWith('/college') ? '/college/login' : '/login';
   }
 

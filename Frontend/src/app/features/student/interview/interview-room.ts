@@ -23,7 +23,7 @@ const PREP_SECONDS = 10;
   selector: 'pm-interview-room',
   imports: [FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: '../../college/layout/college-theme.scss',
+  styleUrls: ['../../college/layout/college-theme.scss', '../../college/layout/portal-exam.scss'],
   template: `
     <div class="pm-shell ir" [attr.data-bs-theme]="theme.dark() ? 'dark' : 'light'">
       @if (!view()) {

@@ -1,0 +1,6 @@
+/*
+ * Exam screens of the student portal (test player, AI interview room): they render outside the portal shell,
+ * so they take only the design tokens and the dialog look, never the page restyling. Proctoring UI is unchanged.
+ */
+@use 'portal-ui/tokens';
+@use 'portal-ui/overlays';

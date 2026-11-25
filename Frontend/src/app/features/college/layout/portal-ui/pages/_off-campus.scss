@@ -1,0 +1,42 @@
+// Off-campus: college overview (KPIs, applications, NOC requests) and student job board.
+@use '../vars' as *;
+
+@include content {
+  /* ===================== college ===================== */
+  .oc-kpi {
+    position: relative;
+    overflow: hidden;
+    padding: 1.1rem 1.25rem;
+    border-radius: var(--pm-r-lg);
+    box-shadow: var(--pm-card-shadow);
+    &::after {
+      content: '';
+      position: absolute;
+      right: -34px;
+      top: -34px;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--pm-accent-soft), transparent 70%);
+      pointer-events: none;
+    }
+  }
+  .oc-n { font-size: 1.7rem; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+  .oc-l { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 0.15rem; }
+  .oc-kpi-ok { box-shadow: inset 3px 0 0 #16a34a, var(--pm-card-shadow); }
+  .oc-kpi-btn { transition: box-shadow var(--pm-med) var(--pm-ease), border-color var(--pm-fast) var(--pm-ease); }
+  .oc-kpi-btn:hover { border-color: var(--pm-accent-ring); }
+  .oc-st { display: inline-flex; align-items: center; gap: 0.35em; }
+  .oc-st::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.85; }
+
+  /* ===================== student ===================== */
+  .oc-interests { background: linear-gradient(120deg, var(--pm-accent-soft), transparent 55%), var(--pm-card-bg); }
+  .oc-pick { font-weight: 600; box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04); }
+  .oc-pick:hover { border-color: var(--pm-accent) !important; color: var(--pm-accent-600); }
+  .oc-pick-on, .oc-pick-on:hover { background: var(--pm-accent-grad) !important; border-color: transparent !important; color: #fff !important; box-shadow: 0 6px 14px -6px rgba(79, 70, 229, 0.6); }
+  .oc-new { animation: pm-live 2.4s ease-in-out infinite; }
+  pm-student-off-campus article.st-card {
+    transition: box-shadow var(--pm-med) var(--pm-ease), transform var(--pm-med) var(--pm-ease), border-color var(--pm-fast) var(--pm-ease);
+    &:hover { transform: translateY(-3px); border-color: var(--pm-accent-ring); }
+  }
+}

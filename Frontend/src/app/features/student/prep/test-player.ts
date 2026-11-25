@@ -25,7 +25,7 @@ import { enterFullscreen, exitFullscreen, fullscreenSupported, isFullscreen } fr
   selector: 'pm-test-player',
   imports: [FormsModule, DatePipe, ProctorPrecheck, ProctorOverlay],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: '../../college/layout/college-theme.scss',
+  styleUrls: ['../../college/layout/college-theme.scss', '../../college/layout/portal-exam.scss'],
   template: `
     <div class="pm-shell tp" [attr.data-bs-theme]="theme.dark() ? 'dark' : 'light'">
       @if (!view()) {

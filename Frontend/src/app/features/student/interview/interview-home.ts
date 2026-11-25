@@ -20,10 +20,15 @@ import { PaymentHistory } from './payment-history';
   styleUrl: '../student-pages.scss',
   template: `
     <section class="iv-hero st-card mb-3">
-      <div class="iv-hero-icon" aria-hidden="true"><i class="bi bi-mic-fill"></i></div>
-      <div class="min-w-0 flex-grow-1">
+      <div class="iv-hero-main min-w-0">
+        <span class="iv-eyebrow"><i class="bi bi-stars" aria-hidden="true"></i>AI interviewer</span>
         <h2 class="h5 st-h mb-1">AI mock interview</h2>
         <p class="small st-muted mb-0">Answer out loud like a real interview. The AI interviewer asks questions for your role, follows up on what you say, and gives you a scored report with tips for every answer.</p>
+        <ul class="iv-hero-points" aria-hidden="true">
+          <li><i class="bi bi-mic"></i>Speak or type</li>
+          <li><i class="bi bi-arrow-return-right"></i>Follow-up questions</li>
+          <li><i class="bi bi-clipboard-data"></i>Scored report</li>
+        </ul>
       </div>
       @if (data(); as d) {
         <div class="iv-credits" aria-label="Interviews left">
@@ -47,205 +52,294 @@ import { PaymentHistory } from './payment-history';
             <span>The AI interviewer is offline right now, so new interviews cannot start. Please try again later. Your credits are safe.</span>
           </div>
         }
-        <div class="iv-plan mb-3">
-          <div class="st-card iv-free" [class.ready]="d.credits.freeLeft > 0">
-            @if (d.credits.freeLeft > 0) {
-              <div class="iv-plan-head"><i class="bi bi-gift-fill"></i> Free interview ready</div>
-              <p class="small st-muted mb-0">You get one free interview every {{ d.credits.freeEveryDays }} days. Your next one unlocks {{ d.credits.freeEveryDays }} days after you finish this one.</p>
-            } @else if (countdown(); as c) {
-              <div class="iv-plan-head"><i class="bi bi-hourglass-split"></i> Next free interview in</div>
-              <div class="iv-timer" role="timer" aria-live="off" [attr.aria-label]="c.days + ' days ' + c.hours + ' hours ' + c.minutes + ' minutes'">
-                <span><b>{{ c.days }}</b>days</span><span><b>{{ c.hours }}</b>hrs</span><span><b>{{ c.minutes }}</b>min</span><span><b>{{ c.seconds }}</b>sec</span>
-              </div>
-              <p class="small st-muted mb-0">Unlocks on {{ d.credits.nextFreeAt | date: 'd MMM, h:mm a' }}. One free interview every {{ d.credits.freeEveryDays }} days.</p>
-            } @else {
-              <div class="iv-plan-head"><i class="bi bi-hourglass-split"></i> Free interview in use</div>
-              <p class="small st-muted mb-0">The next one unlocks {{ d.credits.freeEveryDays }} days after you finish it.</p>
-            }
-          </div>
-          <div class="st-card iv-buy">
-            <div class="iv-buy-head">
-              <span class="iv-buy-icon" aria-hidden="true"><i class="bi bi-bag-plus-fill"></i></span>
-              <div class="flex-grow-1 min-w-0">
-                <div class="iv-buy-title">Buy interviews</div>
-                <div class="small st-muted">₹{{ d.credits.pricePerInterview }} per interview · never expire</div>
-              </div>
-              <div class="iv-balance" [attr.aria-label]="d.credits.paidBalance + ' bought interviews left'">
-                <span class="iv-balance-n">{{ d.credits.paidBalance }}</span><span class="iv-balance-l">left</span>
-              </div>
+        <div class="iv-layout mb-3">
+          <form class="st-card iv-setup" (ngSubmit)="start()">
+            <div class="iv-setup-head">
+              <h3 class="h6 st-h mb-0">Start a new interview</h3>
+              <span class="iv-duration"><i class="bi bi-clock" aria-hidden="true"></i>About {{ minutes() }} min · 6 questions</span>
             </div>
-
-            @if (!d.credits.paymentsReady) {
-              <p class="small text-body-secondary mb-0 mt-3"><i class="bi bi-info-circle me-1"></i>Buying interviews is not available yet. It will open soon.</p>
-            } @else {
-              <div class="iv-checkout">
-                <div class="iv-stepper" role="group" aria-label="Number of interviews">
-                  <button type="button" (click)="setQty(qty() - 1)" [disabled]="qty() <= 1 || buying()" aria-label="One less"><i class="bi bi-dash-lg"></i></button>
-                  <span class="iv-stepper-n" aria-live="polite">{{ qty() }}</span>
-                  <button type="button" (click)="setQty(qty() + 1)" [disabled]="qty() >= d.credits.maxPerPurchase || buying()" aria-label="One more"><i class="bi bi-plus-lg"></i></button>
-                </div>
-                <div class="iv-total">
-                  <span class="iv-total-l">Total</span>
-                  <span class="iv-total-n">₹{{ qty() * d.credits.pricePerInterview }}</span>
-                </div>
-                <button type="button" class="btn btn-success iv-pay-btn" (click)="buy()" [disabled]="buying()">
-                  @if (buying()) { <span class="spinner-border spinner-border-sm me-1"></span> Processing… } @else { <i class="bi bi-qr-code me-1"></i> Pay by UPI }
-                </button>
-              </div>
-            }
-
-            @if (pendingPay(); as p) {
-              <div class="iv-alert iv-alert-action">
-                <i class="bi bi-qr-code"></i>
-                <span class="flex-grow-1">₹{{ p.amountRupees }} payment is waiting for its UTR.</span>
-                <button type="button" class="btn btn-sm btn-primary" (click)="openPending(p)">Enter UTR</button>
-              </div>
-            } @else if (verifying() > 0) {
-              <div class="iv-alert iv-alert-wait">
-                <i class="bi bi-hourglass-split"></i>
-                <span>{{ verifying() }} payment{{ verifying() === 1 ? ' is' : 's are' }} being verified. Interviews are added once approved.</span>
-              </div>
-            }
-
-            <div class="iv-buy-foot">
-              <span class="small st-muted"><i class="bi bi-shield-check me-1"></i>UPI · GPay, PhonePe, Paytm · no extra charges</span>
-              @if (d.purchases.length) {
-                <button type="button" class="btn btn-sm btn-outline-secondary iv-tx-btn" (click)="showTx.set(true)">
-                  <i class="bi bi-receipt me-1"></i> Transactions <span class="iv-tx-count">{{ d.purchases.length }}</span>
+            <div class="iv-step"><span class="iv-step-n" aria-hidden="true">1</span><span class="iv-label">Interview type</span></div>
+            <div class="iv-types mb-3" role="radiogroup" aria-label="Interview type">
+              @for (t of types; track t.key) {
+                <button type="button" class="iv-type" role="radio" [attr.aria-checked]="type() === t.key" [class.sel]="type() === t.key" (click)="type.set(t.key)">
+                  <i class="bi" [class]="t.icon"></i><span class="fw-semibold st-h">{{ t.label }}</span><span class="small st-muted">{{ t.hint }}</span>
                 </button>
               }
             </div>
-          </div>
-        </div>
-
-        <form class="st-card mb-3" (ngSubmit)="start()">
-          <h3 class="h6 st-h mb-3">Start a new interview</h3>
-          <div class="iv-label">Interview type</div>
-          <div class="iv-types mb-3" role="radiogroup" aria-label="Interview type">
-            @for (t of types; track t.key) {
-              <button type="button" class="iv-type" role="radio" [attr.aria-checked]="type() === t.key" [class.sel]="type() === t.key" (click)="type.set(t.key)">
-                <i class="bi" [class]="t.icon"></i><span class="fw-semibold st-h">{{ t.label }}</span><span class="small st-muted">{{ t.hint }}</span>
-              </button>
-            }
-          </div>
-          <div class="iv-label" id="iv-level-label">Level</div>
-          <div class="iv-levels mb-3" role="radiogroup" aria-labelledby="iv-level-label">
-            @for (l of levels; track l.key) {
-              <button type="button" class="iv-level" role="radio" [attr.aria-checked]="level() === l.key" [class.sel]="level() === l.key" [attr.data-level]="l.key" (click)="level.set(l.key)">
-                <span class="fw-semibold st-h">{{ l.label }}</span><span class="small st-muted">{{ l.hint }}</span>
-              </button>
-            }
-          </div>
-          <div class="row g-3 mb-3">
-            <div class="col-md-6">
-              <label class="iv-label" for="iv-drive">Practise for</label>
-              <select id="iv-drive" class="form-select" [ngModel]="driveId()" (ngModelChange)="driveId.set($event)" name="drive">
-                <option [ngValue]="null">A general role</option>
-                @for (o of d.drives; track o.driveId) {
-                  <option [ngValue]="o.driveId">{{ o.companyName ?? o.title }} · {{ o.roleTitle ?? o.title }}{{ o.applied ? ' (applied)' : '' }}</option>
-                }
-              </select>
-              <div class="form-text">Pick a drive and the questions come from its job description.</div>
+            <div class="iv-step"><span class="iv-step-n" aria-hidden="true">2</span><span class="iv-label" id="iv-level-label">Level</span></div>
+            <div class="iv-levels mb-3" role="radiogroup" aria-labelledby="iv-level-label">
+              @for (l of levels; track l.key) {
+                <button type="button" class="iv-level" role="radio" [attr.aria-checked]="level() === l.key" [class.sel]="level() === l.key" [attr.data-level]="l.key" (click)="level.set(l.key)">
+                  <span class="fw-semibold st-h">{{ l.label }}</span><span class="small st-muted">{{ l.hint }}</span>
+                </button>
+              }
             </div>
-            @if (!driveId()) {
+            <div class="iv-step"><span class="iv-step-n" aria-hidden="true">3</span><span class="iv-label">Target role</span></div>
+            <div class="row g-3 mb-3">
               <div class="col-md-6">
-                <label class="iv-label" for="iv-role">Role</label>
-                <input id="iv-role" class="form-control" name="role" maxlength="120" [ngModel]="role()" (ngModelChange)="role.set($event)"
-                  placeholder="Java Developer, Data Analyst, ..." />
+                <label class="iv-label" for="iv-drive">Practise for</label>
+                <select id="iv-drive" class="form-select" [ngModel]="driveId()" (ngModelChange)="driveId.set($event)" name="drive">
+                  <option [ngValue]="null">A general role</option>
+                  @for (o of d.drives; track o.driveId) {
+                    <option [ngValue]="o.driveId">{{ o.companyName ?? o.title }} · {{ o.roleTitle ?? o.title }}{{ o.applied ? ' (applied)' : '' }}</option>
+                  }
+                </select>
+                <div class="form-text">Pick a drive and the questions come from its job description.</div>
               </div>
-              <div class="col-12">
-                <label class="iv-label" for="iv-jd">Job description <span class="st-muted fw-normal text-lowercase">(optional)</span></label>
-                <textarea id="iv-jd" class="form-control" name="jd" rows="4" [maxlength]="jdMax" [ngModel]="jd()" (ngModelChange)="jd.set($event)"
-                  [class.is-invalid]="jdError()" aria-describedby="iv-jd-help"
-                  placeholder="Paste the job description from the company's post. The technical questions will only be about the technologies in it."></textarea>
-                <div id="iv-jd-help" class="form-text d-flex gap-2 flex-wrap">
-                  @if (jdError()) { <span class="text-danger">{{ jdError() }}</span> }
-                  @else { <span>Questions stay on the technologies in the role and job description: a Java job gets only Java questions. Leave it empty to use your profile skills.</span> }
-                  <span class="ms-auto">{{ jd().length }}/{{ jdMax }}</span>
+              @if (!driveId()) {
+                <div class="col-md-6">
+                  <label class="iv-label" for="iv-role">Role</label>
+                  <input id="iv-role" class="form-control" name="role" maxlength="120" [ngModel]="role()" (ngModelChange)="role.set($event)"
+                    placeholder="Java Developer, Data Analyst, ..." />
+                </div>
+                <div class="col-12">
+                  <label class="iv-label" for="iv-jd">Job description <span class="st-muted fw-normal text-lowercase">(optional)</span></label>
+                  <textarea id="iv-jd" class="form-control" name="jd" rows="4" [maxlength]="jdMax" [ngModel]="jd()" (ngModelChange)="jd.set($event)"
+                    [class.is-invalid]="jdError()" aria-describedby="iv-jd-help"
+                    placeholder="Paste the job description from the company's post. The technical questions will only be about the technologies in it."></textarea>
+                  <div id="iv-jd-help" class="form-text d-flex gap-2 flex-wrap">
+                    @if (jdError()) { <span class="text-danger">{{ jdError() }}</span> }
+                    @else { <span>Questions stay on the technologies in the role and job description: a Java job gets only Java questions. Leave it empty to use your profile skills.</span> }
+                    <span class="ms-auto">{{ jd().length }}/{{ jdMax }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+            <div class="iv-brief">
+              <div class="iv-brief-title"><i class="bi bi-info-circle" aria-hidden="true"></i>Before you start</div>
+            <ul class="iv-how small st-muted mb-0">
+              <li>About {{ minutes() }} minutes, exactly 6 questions: 5 planned and 1 follow-up on one of your answers. You can type instead of speaking.</li>
+              <li>Use Chrome or Edge, sit somewhere quiet and allow the camera and microphone when asked. After each question you get 10 seconds to think, then recording starts by itself.</li>
+              <li>You can skip a question, but a skipped or unanswered question scores 0. Scores are based only on what you answer.</li>
+            </ul>
+            </div>
+            <div class="form-check iv-consent mb-3">
+              <input class="form-check-input" type="checkbox" id="iv-consent" name="consent" [ngModel]="consent()" (ngModelChange)="consent.set($event)" />
+              <label class="form-check-label small" for="iv-consent">I agree that my answers are recorded and evaluated by AI to give me feedback, and that my camera stays on during the interview for monitoring (video is not recorded or saved). My voice and answers may be processed by a third-party AI service for this. Recordings are deleted after 30 days; the transcript and scores stay in my account.</label>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <button class="btn btn-primary" [disabled]="starting() || !consent() || !d.credits.canStart || !servicesReady() || !!jdError()">
+                @if (starting()) { <span class="spinner-border spinner-border-sm me-1"></span> Preparing your questions… } @else { <i class="bi bi-mic-fill me-1"></i> Start interview }
+              </button>
+              @if (!d.credits.canStart) {
+                <span class="small st-muted">Your free interview is used. Wait for the timer, or buy an interview above for ₹{{ d.credits.pricePerInterview }}.</span>
+              } @else if (d.credits.freeLeft > 0) {
+                <span class="small st-muted">This uses your free interview.</span>
+              } @else {
+                <span class="small st-muted">This uses 1 of your {{ d.credits.paidBalance }} bought interview{{ d.credits.paidBalance === 1 ? '' : 's' }}.</span>
+              }
+            </div>
+            @if (starting()) { <p class="small st-muted mt-2 mb-0" aria-live="polite">The AI is reading the role and writing questions for you. This can take up to a minute.</p> }
+          </form>
+          <aside class="iv-side" aria-label="Your interview credits">
+            <div class="st-card iv-free" [class.ready]="d.credits.freeLeft > 0">
+              @if (d.credits.freeLeft > 0) {
+                <div class="iv-plan-head"><i class="bi bi-gift-fill"></i> Free interview ready</div>
+                <p class="small st-muted mb-0">You get one free interview every {{ d.credits.freeEveryDays }} days. Your next one unlocks {{ d.credits.freeEveryDays }} days after you finish this one.</p>
+              } @else if (countdown(); as c) {
+                <div class="iv-plan-head"><i class="bi bi-hourglass-split"></i> Next free interview in</div>
+                <div class="iv-timer" role="timer" aria-live="off" [attr.aria-label]="c.days + ' days ' + c.hours + ' hours ' + c.minutes + ' minutes'">
+                  <span><b>{{ c.days }}</b>days</span><span><b>{{ c.hours }}</b>hrs</span><span><b>{{ c.minutes }}</b>min</span><span><b>{{ c.seconds }}</b>sec</span>
+                </div>
+                <p class="small st-muted mb-0">Unlocks on {{ d.credits.nextFreeAt | date: 'd MMM, h:mm a' }}. One free interview every {{ d.credits.freeEveryDays }} days.</p>
+              } @else {
+                <div class="iv-plan-head"><i class="bi bi-hourglass-split"></i> Free interview in use</div>
+                <p class="small st-muted mb-0">The next one unlocks {{ d.credits.freeEveryDays }} days after you finish it.</p>
+              }
+            </div>
+            <div class="st-card iv-buy">
+              <div class="iv-buy-head">
+                <span class="iv-buy-icon" aria-hidden="true"><i class="bi bi-bag-plus-fill"></i></span>
+                <div class="flex-grow-1 min-w-0">
+                  <div class="iv-buy-title">Buy interviews</div>
+                  <div class="small st-muted">₹{{ d.credits.pricePerInterview }} per interview · never expire</div>
+                </div>
+                <div class="iv-balance" [attr.aria-label]="d.credits.paidBalance + ' bought interviews left'">
+                  <span class="iv-balance-n">{{ d.credits.paidBalance }}</span><span class="iv-balance-l">left</span>
                 </div>
               </div>
-            }
-          </div>
-          <ul class="iv-how small st-muted mb-3">
-            <li>About {{ minutes() }} minutes, exactly 6 questions: 5 planned and 1 follow-up on one of your answers. You can type instead of speaking.</li>
-            <li>Use Chrome or Edge, sit somewhere quiet and allow the camera and microphone when asked. After each question you get 10 seconds to think, then recording starts by itself.</li>
-            <li>You can skip a question, but a skipped or unanswered question scores 0. Scores are based only on what you answer.</li>
-          </ul>
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" id="iv-consent" name="consent" [ngModel]="consent()" (ngModelChange)="consent.set($event)" />
-            <label class="form-check-label small" for="iv-consent">I agree that my answers are recorded and evaluated by AI to give me feedback, and that my camera stays on during the interview for monitoring (video is not recorded or saved). My voice and answers may be processed by a third-party AI service for this. Recordings are deleted after 30 days; the transcript and scores stay in my account.</label>
-          </div>
-          <div class="d-flex align-items-center gap-2 flex-wrap">
-            <button class="btn btn-primary" [disabled]="starting() || !consent() || !d.credits.canStart || !servicesReady() || !!jdError()">
-              @if (starting()) { <span class="spinner-border spinner-border-sm me-1"></span> Preparing your questions… } @else { <i class="bi bi-mic-fill me-1"></i> Start interview }
-            </button>
-            @if (!d.credits.canStart) {
-              <span class="small st-muted">Your free interview is used. Wait for the timer, or buy an interview above for ₹{{ d.credits.pricePerInterview }}.</span>
-            } @else if (d.credits.freeLeft > 0) {
-              <span class="small st-muted">This uses your free interview.</span>
-            } @else {
-              <span class="small st-muted">This uses 1 of your {{ d.credits.paidBalance }} bought interview{{ d.credits.paidBalance === 1 ? '' : 's' }}.</span>
-            }
-          </div>
-          @if (starting()) { <p class="small st-muted mt-2 mb-0" aria-live="polite">The AI is reading the role and writing questions for you. This can take up to a minute.</p> }
-        </form>
+
+              @if (!d.credits.paymentsReady) {
+                <p class="small text-body-secondary mb-0 mt-3"><i class="bi bi-info-circle me-1"></i>Buying interviews is not available yet. It will open soon.</p>
+              } @else {
+                <div class="iv-checkout">
+                  <div class="iv-stepper" role="group" aria-label="Number of interviews">
+                    <button type="button" (click)="setQty(qty() - 1)" [disabled]="qty() <= 1 || buying()" aria-label="One less"><i class="bi bi-dash-lg"></i></button>
+                    <span class="iv-stepper-n" aria-live="polite">{{ qty() }}</span>
+                    <button type="button" (click)="setQty(qty() + 1)" [disabled]="qty() >= d.credits.maxPerPurchase || buying()" aria-label="One more"><i class="bi bi-plus-lg"></i></button>
+                  </div>
+                  <div class="iv-total">
+                    <span class="iv-total-l">Total</span>
+                    <span class="iv-total-n">₹{{ qty() * d.credits.pricePerInterview }}</span>
+                  </div>
+                  <button type="button" class="btn btn-success iv-pay-btn" (click)="buy()" [disabled]="buying()">
+                    @if (buying()) { <span class="spinner-border spinner-border-sm me-1"></span> Processing… } @else { <i class="bi bi-qr-code me-1"></i> Pay by UPI }
+                  </button>
+                </div>
+              }
+
+              @if (pendingPay(); as p) {
+                <div class="iv-alert iv-alert-action">
+                  <i class="bi bi-qr-code"></i>
+                  <span class="flex-grow-1">₹{{ p.amountRupees }} payment is waiting for its UTR.</span>
+                  <button type="button" class="btn btn-sm btn-primary" (click)="openPending(p)">Enter UTR</button>
+                </div>
+              } @else if (verifying() > 0) {
+                <div class="iv-alert iv-alert-wait">
+                  <i class="bi bi-hourglass-split"></i>
+                  <span>{{ verifying() }} payment{{ verifying() === 1 ? ' is' : 's are' }} being verified. Interviews are added once approved.</span>
+                </div>
+              }
+
+              <div class="iv-buy-foot">
+                <span class="small st-muted"><i class="bi bi-shield-check me-1"></i>UPI · GPay, PhonePe, Paytm · no extra charges</span>
+                @if (d.purchases.length) {
+                  <button type="button" class="btn btn-sm btn-outline-secondary iv-tx-btn" (click)="showTx.set(true)">
+                    <i class="bi bi-receipt me-1"></i> Transactions <span class="iv-tx-count">{{ d.purchases.length }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+          </aside>
+        </div>
       }
 
-      <h2 class="h6 st-h mt-4 mb-2">My interviews</h2>
-      @for (h of d.history; track h.id) {
-        <a class="st-row text-decoration-none iv-hist" [routerLink]="h.status === 'IN_PROGRESS' ? ['/student/interview-room', h.id] : ['/student/ai-interview/report', h.id]">
-          <span class="iv-hist-icon" aria-hidden="true"><i class="bi bi-person-video3"></i></span>
-          <span class="flex-grow-1 small min-w-0"><strong class="st-h">{{ typeLabels[h.type] }} · {{ h.companyName ? h.companyName + ' ' : '' }}{{ h.roleTitle }}</strong><br>
-            <span class="st-muted">{{ h.startedAt | date: 'medium' }} · {{ h.answered }} answer{{ h.answered === 1 ? '' : 's' }} · <span class="iv-lv" [attr.data-level]="h.difficulty">{{ levelLabels[h.difficulty] }}</span></span></span>
-          @switch (h.status) {
-            @case ('COMPLETED') {
-              <span class="iv-score" [class.good]="(h.overallScore ?? 0) >= 75" [class.mid]="(h.overallScore ?? 0) >= 55 && (h.overallScore ?? 0) < 75">{{ h.overallScore | number: '1.0-0' }}</span>
-              <span class="st-chip d-none d-sm-inline">{{ recLabels[h.recommendation!] }}</span>
-            }
-            @case ('EVALUATING') { <span class="st-chip">Scoring…</span> }
-            @case ('FAILED') { <span class="st-chip text-danger">Scoring failed</span> }
-            @default { <span class="st-chip text-danger">In progress</span> }
+      <!-- My interviews: collapsed until the student opens it (native <details>, no extra state) -->
+      @if (d.history.length) {
+        <details class="iv-history mt-4">
+          <summary>
+            <span class="iv-history-icon" aria-hidden="true"><i class="bi bi-person-video3"></i></span>
+            <span class="flex-grow-1 min-w-0">
+              <strong class="st-h d-block">My interviews</strong>
+              <span class="small st-muted">{{ d.history.length }} interview{{ d.history.length === 1 ? '' : 's' }} · reports and scores</span>
+            </span>
+            <span class="iv-history-btn"><span class="iv-when-closed">View interviews</span><span class="iv-when-open">Hide</span><i class="bi bi-chevron-down" aria-hidden="true"></i></span>
+          </summary>
+          <div class="iv-history-list">
+          @for (h of d.history; track h.id) {
+            <a class="st-row text-decoration-none iv-hist" [routerLink]="h.status === 'IN_PROGRESS' ? ['/student/interview-room', h.id] : ['/student/ai-interview/report', h.id]">
+              <span class="iv-hist-icon" aria-hidden="true"><i class="bi bi-person-video3"></i></span>
+              <span class="flex-grow-1 small min-w-0"><strong class="st-h">{{ typeLabels[h.type] }} · {{ h.companyName ? h.companyName + ' ' : '' }}{{ h.roleTitle }}</strong><br>
+                <span class="st-muted">{{ h.startedAt | date: 'medium' }} · {{ h.answered }} answer{{ h.answered === 1 ? '' : 's' }} · <span class="iv-lv" [attr.data-level]="h.difficulty">{{ levelLabels[h.difficulty] }}</span></span></span>
+              @switch (h.status) {
+                @case ('COMPLETED') {
+                  <span class="iv-score" [class.good]="(h.overallScore ?? 0) >= 75" [class.mid]="(h.overallScore ?? 0) >= 55 && (h.overallScore ?? 0) < 75">{{ h.overallScore | number: '1.0-0' }}</span>
+                  <span class="st-chip d-none d-sm-inline">{{ recLabels[h.recommendation!] }}</span>
+                }
+                @case ('EVALUATING') { <span class="st-chip">Scoring…</span> }
+                @case ('FAILED') { <span class="st-chip text-danger">Scoring failed</span> }
+                @default { <span class="st-chip text-danger">In progress</span> }
+              }
+              <i class="bi bi-chevron-right st-muted"></i>
+            </a>
           }
-          <i class="bi bi-chevron-right st-muted"></i>
-        </a>
-      } @empty {
+          </div>
+        </details>
+      } @else {
+        <h2 class="h6 st-h mt-4 mb-2">My interviews</h2>
         <pm-empty-state icon="bi-person-video3" title="No interviews yet" text="Your interview reports will appear here." />
       }
     }
     @if (showTx() && data(); as d) { <pm-payment-history [purchases]="d.purchases" (closed)="showTx.set(false)" (pay)="showTx.set(false); openPending($event)" /> }
     @if (upi(); as u) { <pm-upi-pay [pay]="u" (submitted)="upiSubmitted($event)" (closed)="closeUpi()" /> }`,
   styles: [`
-    .iv-hero { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;
-      background: linear-gradient(120deg, rgba(124,58,237,.10), rgba(11,92,255,.07)), var(--pm-card-bg); }
-    .iv-hero-icon { width: 3rem; height: 3rem; border-radius: 14px; display: grid; place-items: center; font-size: 1.35rem; color: #fff;
-      background: linear-gradient(135deg, #7c3aed, #0b5cff); flex-shrink: 0; }
-    .iv-credits { display: grid; text-align: center; padding: .4rem 1rem; border-radius: 12px; background: var(--pm-soft); }
-    .iv-num { font-size: 1.6rem; font-weight: 800; line-height: 1.1; color: var(--pm-heading); font-variant-numeric: tabular-nums; }
-    .iv-resume { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; border-color: rgba(225,29,72,.35); }
-    .iv-label { font-size: .75rem; font-weight: 700; color: var(--pm-label); margin-bottom: .35rem; display: block; }
+    :host { display: block; }
+
+    /* ---------- hero: quiet "AI" cues (dot grid, soft indigo/violet light), no glow effects ---------- */
+    .st-card.iv-hero { position: relative; overflow: hidden; display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; padding: 1.6rem 1.75rem;
+      border-color: rgba(99,102,241,.22);
+      background: radial-gradient(110% 150% at 100% 0%, rgba(124,58,237,.12), transparent 55%), linear-gradient(120deg, rgba(79,70,229,.06), transparent 60%), var(--pm-card-bg); }
+    .iv-hero::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(rgba(79,70,229,.16) 1px, transparent 1.2px); background-size: 18px 18px;
+      -webkit-mask-image: linear-gradient(100deg, transparent 45%, #000 85%); mask-image: linear-gradient(100deg, transparent 45%, #000 85%); }
+    .iv-hero > * { position: relative; z-index: 1; }
+    .iv-hero-main { flex: 1 1 380px; }
+    .iv-eyebrow { display: inline-flex; align-items: center; gap: .4rem; margin-bottom: .65rem; padding: .25rem .65rem; border-radius: 999px;
+      font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #6d28d9; background: rgba(124,58,237,.1); }
+    .iv-hero h2 { font-size: 1.35rem; letter-spacing: -.02em; }
+    .iv-hero-points { display: flex; flex-wrap: wrap; gap: .4rem; list-style: none; padding: 0; margin: .9rem 0 0; }
+    .iv-hero-points li { display: inline-flex; align-items: center; gap: .4rem; padding: .3rem .7rem; border-radius: 999px; font-size: .76rem; font-weight: 600;
+      color: var(--pm-label); background: var(--pm-card-bg); border: 1px solid var(--pm-card-border); }
+    .iv-hero-points i { color: var(--pm-accent, #4f46e5); }
+    .iv-credits { display: grid; gap: .1rem; text-align: center; min-width: 9rem; padding: .9rem 1.1rem; border-radius: 16px;
+      background: var(--pm-card-bg); border: 1px solid var(--pm-card-border); box-shadow: var(--pm-card-shadow); }
+    .iv-credits .small { font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .iv-num { font-size: 2rem; font-weight: 800; line-height: 1.05; letter-spacing: -.03em; font-variant-numeric: tabular-nums;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .iv-resume { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; border-color: rgba(225,29,72,.35);
+      background: linear-gradient(90deg, rgba(225,29,72,.06), transparent 50%), var(--pm-card-bg); }
+
+    /* ---------- layout: setup form + credits column ---------- */
+    .iv-layout { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+    @media (min-width: 1200px) { .iv-layout { grid-template-columns: minmax(0, 1fr) 360px; } }
+    .iv-side { display: grid; gap: 1rem; }
+    .iv-side > .st-card { margin: 0; }
+
+    /* ---------- setup form ---------- */
+    .st-card.iv-setup { padding: 1.5rem 1.6rem; }
+    .iv-setup-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap;
+      margin: -1.5rem -1.6rem 1.25rem; padding: 1rem 1.6rem; border-bottom: 1px solid var(--pm-divider); }
+    .iv-setup-head h3 { font-size: 1rem; }
+    .iv-duration { display: inline-flex; align-items: center; gap: .35rem; font-size: .76rem; font-weight: 600; color: var(--pm-label);
+      padding: .25rem .65rem; border-radius: 999px; background: var(--pm-soft); }
+    .iv-step { display: flex; align-items: center; gap: .55rem; margin-bottom: .6rem; }
+    .iv-step-n { width: 1.45rem; height: 1.45rem; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; font-size: .7rem; font-weight: 800;
+      color: var(--pm-accent-600, #4338ca); background: var(--pm-accent-soft, rgba(79,70,229,.08)); box-shadow: inset 0 0 0 1px var(--pm-accent-ring, rgba(79,70,229,.16)); }
+    .iv-label { font-size: .75rem; font-weight: 700; letter-spacing: .02em; color: var(--pm-label); margin-bottom: .35rem; display: block; }
+    .iv-step .iv-label { margin: 0; font-size: .8rem; color: var(--pm-heading); }
+
+    /* option tiles (type + level) */
     .iv-types { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .6rem; }
-    .iv-type { all: unset; box-sizing: border-box; display: grid; gap: .15rem; padding: .85rem 1rem; border-radius: 12px; cursor: pointer;
-      border: 1.5px solid var(--pm-card-border); background: var(--pm-card-bg); transition: border-color .12s, background .12s; }
-    .iv-type i { font-size: 1.15rem; color: var(--pm-link); }
-    .iv-type:hover { border-color: var(--pm-link); }
-    .iv-type:focus-visible { outline: 2px solid var(--pm-focus); outline-offset: 2px; }
-    .iv-type.sel { border-color: var(--pm-link); background: rgba(11,92,255,.08); }
-    .iv-how { padding-left: 1.1rem; display: grid; gap: .2rem; }
-    .iv-plan { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: .75rem; }
-    .iv-plan > .st-card { margin: 0; }
-    .iv-plan-head { font-weight: 700; color: var(--pm-heading); margin-bottom: .4rem; display: flex; gap: .45rem; align-items: center; }
-    .iv-free .iv-plan-head i { color: #d97706; } .iv-free.ready { border-color: rgba(22,163,74,.4); } .iv-free.ready .iv-plan-head i { color: #16a34a; }
+    .iv-type, .iv-level { all: unset; box-sizing: border-box; position: relative; display: grid; cursor: pointer; min-width: 0; border-radius: 14px;
+      border: 1.5px solid var(--pm-card-border); background: var(--pm-card-bg);
+      transition: border-color .16s ease, background-color .16s ease, box-shadow .2s ease, transform .2s ease; }
+    .iv-type { gap: .2rem; padding: .95rem 1rem; }
+    .iv-type i { width: 2.1rem; height: 2.1rem; border-radius: 10px; display: grid; place-items: center; margin-bottom: .35rem; font-size: 1.05rem;
+      color: var(--pm-accent, #4f46e5); background: var(--pm-accent-soft, rgba(79,70,229,.08)); transition: background-color .16s ease, color .16s ease; }
+    .iv-type:hover, .iv-level:hover { border-color: var(--pm-input-hover); transform: translateY(-1px); box-shadow: var(--pm-card-shadow-hover); }
+    .iv-type:focus-visible, .iv-level:focus-visible { outline: 2px solid var(--pm-focus); outline-offset: 2px; }
+    .iv-type.sel { border-color: var(--pm-accent, #4f46e5); background: var(--pm-accent-soft, rgba(79,70,229,.08)); box-shadow: 0 0 0 3px var(--pm-accent-soft, rgba(79,70,229,.08)); }
+    .iv-type.sel i { background: linear-gradient(135deg, #4f46e5, #6366f1); color: #fff; }
+    .iv-type.sel::after, .iv-level.sel::after { content: '\\f26a'; font-family: 'bootstrap-icons'; position: absolute; top: .6rem; right: .7rem; font-size: .95rem; line-height: 1; }
+    .iv-type.sel::after { color: var(--pm-accent, #4f46e5); }
+    .iv-levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; }
+    .iv-level { gap: .1rem; padding: .7rem .9rem; }
+    .iv-level.sel[data-level='EASY'] { border-color: #16a34a; background: rgba(22,163,74,.07); } .iv-level.sel[data-level='EASY']::after { color: #16a34a; }
+    .iv-level.sel[data-level='MEDIUM'] { border-color: #d97706; background: rgba(217,119,6,.07); } .iv-level.sel[data-level='MEDIUM']::after { color: #d97706; }
+    .iv-level.sel[data-level='HARD'] { border-color: #e11d48; background: rgba(225,29,72,.06); } .iv-level.sel[data-level='HARD']::after { color: #e11d48; }
+
+    /* before-you-start brief + consent */
+    .iv-brief { margin-bottom: 1rem; padding: .9rem 1rem; border-radius: 12px; background: var(--pm-surface-2, #fafbfd); border: 1px solid var(--pm-divider); }
+    .iv-brief-title { display: flex; align-items: center; gap: .45rem; margin-bottom: .45rem; font-size: .78rem; font-weight: 700; color: var(--pm-heading); }
+    .iv-brief-title i { color: var(--pm-accent, #4f46e5); }
+    .iv-how { padding-left: 1.1rem; display: grid; gap: .3rem; line-height: 1.5; }
+    .iv-consent { padding: .75rem .9rem .75rem 2.4rem; border-radius: 12px; border: 1px solid var(--pm-card-border); transition: border-color .16s ease, background-color .16s ease; }
+    .iv-consent:has(.form-check-input:checked) { border-color: var(--pm-accent-ring, rgba(79,70,229,.3)); background: var(--pm-accent-soft, rgba(79,70,229,.06)); }
+    .iv-consent .form-check-label { line-height: 1.5; color: var(--pm-label); }
+    .iv-setup .btn-primary { padding: .65rem 1.4rem; }
+
+    /* ---------- free interview + buy cards ---------- */
+    .iv-plan-head { font-weight: 700; color: var(--pm-heading); margin-bottom: .5rem; display: flex; gap: .5rem; align-items: center; }
+    .iv-plan-head i { width: 2rem; height: 2rem; border-radius: 10px; display: grid; place-items: center; background: rgba(217,119,6,.12); }
+    .iv-free .iv-plan-head i { color: #d97706; }
+    .iv-free.ready { border-color: rgba(22,163,74,.4); background: linear-gradient(120deg, rgba(22,163,74,.06), transparent 55%), var(--pm-card-bg); }
+    .iv-free.ready .iv-plan-head i { color: #16a34a; background: rgba(22,163,74,.12); }
+    .iv-timer { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .4rem; margin-bottom: .6rem; }
+    .iv-timer span { display: grid; text-align: center; padding: .45rem .3rem; border-radius: 10px; background: var(--pm-surface-2, #fafbfd); border: 1px solid var(--pm-divider);
+      font-size: .64rem; font-weight: 600; color: var(--pm-label); text-transform: uppercase; letter-spacing: .05em; }
+    .iv-timer b { font-size: 1.3rem; line-height: 1.15; color: var(--pm-heading); font-variant-numeric: tabular-nums; }
     .iv-buy { display: flex; flex-direction: column; }
     .iv-buy-head { display: flex; align-items: center; gap: .75rem; }
     .iv-buy-icon { width: 2.5rem; height: 2.5rem; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; font-size: 1.15rem;
-      color: #fff; background: linear-gradient(135deg, #16a34a, #0d9488); }
+      color: #fff; background: linear-gradient(135deg, #16a34a, #0d9488); box-shadow: 0 6px 14px -8px rgba(13,148,136,.8); }
     .iv-buy-title { font-weight: 700; color: var(--pm-heading); line-height: 1.2; }
-    .iv-balance { display: grid; text-align: center; padding: .3rem .75rem; border-radius: 12px; background: rgba(22,163,74,.10); flex-shrink: 0; }
+    .iv-balance { display: grid; text-align: center; padding: .35rem .75rem; border-radius: 12px; background: rgba(22,163,74,.1); flex-shrink: 0; }
     .iv-balance-n { font-size: 1.25rem; font-weight: 800; line-height: 1.1; color: #15803d; font-variant-numeric: tabular-nums; }
-    .iv-balance-l { font-size: .68rem; text-transform: uppercase; letter-spacing: .04em; color: var(--pm-label); }
-    .iv-checkout { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin-top: 1rem; padding: .6rem; border-radius: 12px;
-      border: 1px solid var(--pm-card-border); background: var(--pm-soft); }
-    .iv-stepper { display: inline-flex; align-items: center; border: 1px solid var(--pm-card-border); border-radius: 10px; background: var(--pm-card-bg); overflow: hidden; }
+    .iv-balance-l { font-size: .66rem; text-transform: uppercase; letter-spacing: .05em; color: var(--pm-label); }
+    .iv-checkout { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin-top: 1rem; padding: .65rem; border-radius: 12px;
+      border: 1px solid var(--pm-card-border); background: var(--pm-surface-2, #fafbfd); }
+    .iv-stepper { display: inline-flex; align-items: center; border: 1px solid var(--pm-card-border); border-radius: 10px; background: var(--pm-card-bg); overflow: hidden;
+      box-shadow: 0 1px 2px rgba(16,24,40,.05); }
     .iv-stepper button { all: unset; box-sizing: border-box; width: 2.1rem; height: 2.1rem; display: grid; place-items: center; cursor: pointer; color: var(--pm-heading); }
     .iv-stepper button:hover:not(:disabled) { background: var(--pm-soft); }
     .iv-stepper button:disabled { opacity: .35; cursor: not-allowed; }
@@ -253,35 +347,52 @@ import { PaymentHistory } from './payment-history';
     .iv-stepper-n { min-width: 2rem; text-align: center; font-weight: 700; color: var(--pm-heading); font-variant-numeric: tabular-nums;
       border-inline: 1px solid var(--pm-card-border); line-height: 2.1rem; }
     .iv-total { display: grid; line-height: 1.15; }
-    .iv-total-l { font-size: .68rem; text-transform: uppercase; letter-spacing: .04em; color: var(--pm-label); }
+    .iv-total-l { font-size: .66rem; text-transform: uppercase; letter-spacing: .05em; color: var(--pm-label); }
     .iv-total-n { font-size: 1.15rem; font-weight: 800; color: var(--pm-heading); font-variant-numeric: tabular-nums; }
     .iv-pay-btn { margin-left: auto; font-weight: 600; padding-inline: 1rem; }
-    .iv-alert { display: flex; align-items: center; gap: .6rem; margin-top: .75rem; padding: .55rem .75rem; border-radius: 10px; font-size: .82rem; }
-    .iv-alert-action { background: rgba(11,92,255,.08); color: var(--pm-heading); } .iv-alert-action > i { color: #0b5cff; }
-    .iv-alert-wait { background: rgba(217,119,6,.10); color: #b45309; }
-    .iv-buy-foot { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; margin-top: auto; padding-top: .85rem; }
+    .iv-alert { display: flex; align-items: center; gap: .6rem; margin-top: .75rem; padding: .6rem .75rem; border-radius: 10px; font-size: .82rem; }
+    .iv-alert-action { background: rgba(79,70,229,.08); color: var(--pm-heading); } .iv-alert-action > i { color: #4f46e5; }
+    .iv-alert-wait { background: rgba(217,119,6,.1); color: #b45309; }
+    .iv-buy-foot { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; margin-top: auto; padding-top: .9rem; }
     .iv-tx-btn { display: inline-flex; align-items: center; }
-    .iv-tx-count { margin-left: .4rem; min-width: 1.3rem; padding: 0 .35rem; border-radius: 999px; font-size: .7rem; font-weight: 700;
-      background: var(--pm-soft); color: var(--pm-heading); }
-    @media (max-width: 420px) { .iv-pay-btn { width: 100%; margin-left: 0; } }
-    .iv-timer { display: flex; gap: .5rem; margin-bottom: .5rem; }
-    .iv-timer span { display: grid; text-align: center; min-width: 3.4rem; padding: .35rem .4rem; border-radius: 10px; background: var(--pm-soft);
-      font-size: .7rem; color: var(--pm-label); text-transform: uppercase; letter-spacing: .03em; }
-    .iv-timer b { font-size: 1.35rem; line-height: 1.15; color: var(--pm-heading); font-variant-numeric: tabular-nums; }
-    .iv-levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
-    .iv-level { all: unset; box-sizing: border-box; display: grid; gap: .1rem; padding: .6rem .8rem; border-radius: 12px; cursor: pointer; min-width: 0;
-      border: 1.5px solid var(--pm-card-border); background: var(--pm-card-bg); }
-    .iv-level:focus-visible { outline: 2px solid var(--pm-focus); outline-offset: 2px; }
-    .iv-level:hover { border-color: var(--pm-link); }
-    .iv-level.sel[data-level='EASY'] { border-color: #16a34a; background: rgba(22,163,74,.08); }
-    .iv-level.sel[data-level='MEDIUM'] { border-color: #d97706; background: rgba(217,119,6,.08); }
-    .iv-level.sel[data-level='HARD'] { border-color: #e11d48; background: rgba(225,29,72,.08); }
+    .iv-tx-count { margin-left: .4rem; min-width: 1.3rem; padding: 0 .35rem; border-radius: 999px; font-size: .7rem; font-weight: 700; background: var(--pm-soft); color: var(--pm-heading); }
+
+    /* ---------- my interviews (collapsible) ---------- */
+    .iv-history { background: var(--pm-card-bg); border: 1px solid var(--pm-card-border); border-radius: 16px; box-shadow: var(--pm-card-shadow); overflow: hidden;
+      transition: box-shadow .25s ease; }
+    .iv-history[open] { box-shadow: var(--pm-card-shadow-hover); }
+    .iv-history > summary { list-style: none; display: flex; align-items: center; gap: .85rem; padding: .85rem 1.1rem; cursor: pointer; user-select: none;
+      transition: background-color .16s ease; }
+    .iv-history > summary::-webkit-details-marker { display: none; }
+    .iv-history > summary:hover { background: var(--pm-surface-2, #fafbfd); }
+    .iv-history > summary:focus-visible { outline: 2px solid var(--pm-focus); outline-offset: -2px; }
+    .iv-history-icon { width: 2.5rem; height: 2.5rem; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; font-size: 1.1rem;
+      color: #6d28d9; background: rgba(124,58,237,.1); }
+    .iv-history-btn { display: inline-flex; align-items: center; gap: .45rem; padding: .45rem .95rem; border-radius: 999px; flex-shrink: 0;
+      font-size: .8rem; font-weight: 600; color: var(--pm-heading); background: var(--pm-card-bg); border: 1px solid var(--pm-card-border);
+      box-shadow: 0 1px 2px rgba(16,24,40,.05); transition: background-color .16s ease, border-color .16s ease; }
+    .iv-history > summary:hover .iv-history-btn { border-color: var(--pm-input-hover); background: var(--pm-soft); }
+    .iv-history-btn i { transition: transform .25s ease; }
+    .iv-history[open] .iv-history-btn i { transform: rotate(180deg); }
+    .iv-when-open { display: none; }
+    .iv-history[open] .iv-when-open { display: inline; }
+    .iv-history[open] .iv-when-closed { display: none; }
+    .iv-history-list { display: grid; gap: .5rem; padding: 1rem; border-top: 1px solid var(--pm-divider); background: var(--pm-surface-2, #fafbfd); }
+    .iv-history[open] .iv-history-list { animation: ivOpen .28s cubic-bezier(.2,.8,.2,1); }
+    .iv-history-list .st-row { margin-bottom: 0; background: var(--pm-card-bg); }
+    @keyframes ivOpen { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+    /* ---------- history ---------- */
     .iv-lv { font-weight: 600; } .iv-lv[data-level='EASY'] { color: #16a34a; } .iv-lv[data-level='MEDIUM'] { color: #d97706; } .iv-lv[data-level='HARD'] { color: #e11d48; }
-    @media (max-width: 420px) { .iv-levels { grid-template-columns: 1fr; } .iv-timer span { min-width: 0; flex: 1; } }
-    .iv-hist:hover { border-color: var(--pm-link); }
-    .iv-hist-icon { width: 2.25rem; height: 2.25rem; border-radius: 10px; display: grid; place-items: center; background: var(--pm-soft); color: var(--pm-link); flex-shrink: 0; }
-    .iv-score { font-weight: 800; font-size: 1.1rem; font-variant-numeric: tabular-nums; color: #e11d48; min-width: 2.5rem; text-align: right; }
-    .iv-score.mid { color: #d97706; } .iv-score.good { color: #16a34a; }
+    .iv-hist:hover { border-color: var(--pm-accent, var(--pm-link)) !important; }
+    .iv-hist-icon { width: 2.4rem; height: 2.4rem; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0;
+      color: var(--pm-accent, #4f46e5); background: var(--pm-accent-soft, rgba(79,70,229,.08)); }
+    .iv-score { padding: .2rem .6rem; border-radius: 999px; min-width: 3rem; text-align: center; font-weight: 800; font-size: .95rem; font-variant-numeric: tabular-nums;
+      color: #e11d48; background: rgba(225,29,72,.09); }
+    .iv-score.mid { color: #d97706; background: rgba(217,119,6,.12); } .iv-score.good { color: #16a34a; background: rgba(22,163,74,.1); }
+
+    @media (max-width: 420px) { .iv-pay-btn { width: 100%; margin-left: 0; } .iv-levels { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { .iv-history[open] .iv-history-list { animation: none; } .iv-type, .iv-level { transition: none; } .iv-type:hover, .iv-level:hover { transform: none; } }
   `],
 })
 export class InterviewHome implements OnInit {

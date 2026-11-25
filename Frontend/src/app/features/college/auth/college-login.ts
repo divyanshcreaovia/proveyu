@@ -47,6 +47,7 @@ import { AuthShell } from './auth-shell';
         </button>
       </form>
       <p class="text-center small mt-4 mb-0">New college? <a routerLink="/college/register" class="fw-semibold">Register your placement cell</a></p>
+      <p class="text-center small mt-2 mb-0 text-body-secondary">Principal or director? <a routerLink="/cxo/login">Leadership sign in</a></p>
       <p class="text-center small mt-2 mb-0 text-body-secondary">Student? <a routerLink="/student/login">Student portal</a> · Recruiter? <a routerLink="/login">Sign in here</a></p>
     </pm-auth-shell>`,
 })

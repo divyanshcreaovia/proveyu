@@ -1,6 +1,6 @@
 /* TypeScript mirrors of the backend DTOs (com.proveyu.college.application.dto.* and auth DTOs). Keep in sync. */
 
-export type Role = 'CANDIDATE' | 'RECRUITER' | 'ORGANIZATION' | 'ADMIN' | 'COLLEGE_ADMIN' | 'COLLEGE_COORDINATOR' | 'COLLEGE_VIEWER';
+export type Role = 'CANDIDATE' | 'RECRUITER' | 'ORGANIZATION' | 'ADMIN' | 'COLLEGE_ADMIN' | 'COLLEGE_COORDINATOR' | 'COLLEGE_VIEWER' | 'CXO';
 export type MemberRole = 'COLLEGE_ADMIN' | 'COLLEGE_COORDINATOR' | 'COLLEGE_VIEWER';
 export type MemberStatus = 'ACTIVE' | 'REVOKED';
 export type ApprovalStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'SUSPENDED';

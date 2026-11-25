@@ -24,6 +24,6 @@ export class App {
   }
 
   private portal(url: string): boolean {
-    return /^\/(college|student|company|admin|forbidden)/.test(url);
+    return /^\/(college|student|company|admin|cxo|forbidden)/.test(url);
   }
 }

@@ -1,0 +1,40 @@
+// Shared Sass helpers for the portal UI modules (emit no CSS on their own).
+
+// Overlay components that render position:fixed dialogs. They never take part in entrance motion,
+// and no ancestor of theirs gets a lasting transform (that would re-anchor the dialog).
+$pm-overlays: 'pm-modal, pm-confirm-dialog, pm-payment-history, pm-proctor-log, pm-proctor-overlay, pm-proctor-precheck, pm-upi-pay';
+
+// Rules that belong to the light theme only (dark keeps Bootstrap / college-theme colours).
+@mixin light {
+  :host ::ng-deep .pm-shell:not([data-bs-theme='dark']) .pm-shell-content {
+    @content;
+  }
+}
+
+// Rules for everything rendered inside the portal content area (all routed pages, their modals and drawers).
+@mixin content {
+  :host ::ng-deep .pm-shell-content {
+    @content;
+  }
+}
+
+// Bootstrap-icons glyph used as a CSS-only avatar (chat contacts).
+@mixin icon-avatar($size: 2.25rem) {
+  content: '\f4da'; // bi-person-fill
+  font-family: 'bootstrap-icons';
+  position: absolute;
+  left: 0.6rem;
+  top: 50%;
+  width: $size;
+  height: $size;
+  margin-top: calc(#{$size} / -2);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--pm-accent);
+  background: var(--pm-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--pm-accent-ring);
+  transition: background-color var(--pm-fast) var(--pm-ease), color var(--pm-fast) var(--pm-ease);
+}

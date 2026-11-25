@@ -1,0 +1,21 @@
+// Preparation: student result page, college mock tests / exams / attempts. (Prep home owns its styles in prep-home.ts.)
+// The exam itself (test player) is not restyled beyond tokens: proctoring screens stay exactly as they are.
+@use '../vars' as *;
+
+@include content {
+  /* student prep home (hero, attempts, ladder, test cards) is styled in prep-home.ts itself */
+
+  /* ===================== student: result page ===================== */
+  .rs-hero { padding: 1.5rem 1.75rem; }
+  .rs-sec { border-radius: var(--pm-r); }
+  .rs-opt { transition: background-color var(--pm-fast) var(--pm-ease); }
+  .rs-num { color: var(--pm-accent); }
+  .rs-exp { background: var(--pm-accent-soft); }
+
+  /* ===================== college: mock tests, exams, attempts ===================== */
+  .mt-steps span { background: var(--pm-accent-grad); box-shadow: 0 3px 8px -3px rgba(79, 70, 229, 0.55); }
+  .mt-steps li { font-weight: 600; color: var(--pm-label); }
+  .mt-example { border: 1px solid var(--pm-divider); background: var(--pm-surface-2) !important; }
+  .ex-checks { padding: 0.5rem 0.75rem; border: 1px solid var(--pm-card-border); border-radius: var(--pm-r); background: var(--pm-surface-2); }
+  .ta-row:hover > td:first-child { color: var(--pm-accent-600); }
+}

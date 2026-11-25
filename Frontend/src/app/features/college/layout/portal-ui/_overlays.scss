@@ -1,0 +1,104 @@
+// Overlays: one look for every dialog and drawer in the student + college portals.
+//   pm-modal (modal + drawer variants, also the Help & support dialog), payment history, UPI pay,
+//   proctor screenshot viewer, camera/microphone precheck.
+// Look only: sizes, positions, z-indexes and stacking stay exactly as each component defines them.
+// (The app-wide confirm dialog lives outside the shell and carries the same look in confirm-dialog.ts.)
+
+$pm-dialog-shadow: 0 24px 64px -12px rgba(16, 24, 40, 0.3), 0 4px 12px -2px rgba(16, 24, 40, 0.08);
+
+/* ---------- backdrops ---------- */
+:host ::ng-deep {
+  .pm-modal-backdrop, .ph-backdrop, .up-backdrop, .pl-backdrop {
+    background: rgba(15, 23, 42, 0.42) !important;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    animation: pm-fade 0.2s ease-out backwards;
+  }
+  .proctor-pc { background: rgba(15, 23, 42, 0.5) !important; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); animation: pm-fade 0.2s ease-out backwards; }
+}
+
+/* ---------- panels ---------- */
+:host ::ng-deep {
+  .pm-modal, .ph-dialog, .up-dialog, .pl-dialog, .proctor-pc-card {
+    border: 1px solid var(--pm-card-border);
+    box-shadow: $pm-dialog-shadow !important;
+    color: var(--pm-text);
+  }
+  .pm-modal, .ph-dialog, .up-dialog, .pl-dialog { border-radius: 18px !important; }
+  .proctor-pc-card { border-radius: 18px !important; animation: pm-dialog-pop 0.24s var(--pm-ease) backwards; }
+
+  /* centred dialogs open with a soft zoom (their own translate(-50%, -50%) centring is kept) */
+  .pm-modal:not(.pm-modal-drawer), .ph-dialog, .up-dialog, .pl-dialog { animation: pm-modal-zoom 0.24s var(--pm-ease) backwards; }
+
+  /* drawer: full-height sheet from the right */
+  .pm-modal-drawer {
+    border-radius: 20px 0 0 20px !important;
+    border-right: 0;
+    box-shadow: -24px 0 64px -16px rgba(16, 24, 40, 0.3), -2px 0 8px rgba(16, 24, 40, 0.06) !important;
+    animation: pm-drawer-in 0.3s var(--pm-ease) backwards;
+  }
+}
+
+/* ---------- shared modal anatomy: header / body / footer ---------- */
+:host ::ng-deep .pm-modal {
+  overflow: hidden;
+  background: var(--pm-card-bg);
+
+  .pm-modal-head {
+    gap: 1rem;
+    padding: 1.05rem 1.25rem 1.05rem 1.5rem;
+    background: var(--pm-card-bg);
+    border-bottom: 1px solid var(--pm-divider);
+    h2 { font-size: 1.05rem; font-weight: 750 !important; letter-spacing: -0.015em; color: var(--pm-heading); }
+  }
+  .pm-modal-body {
+    padding: 1.4rem 1.5rem;
+    scrollbar-width: thin;
+    > h3.h6:first-child { margin-top: 0; }
+  }
+  .pm-modal-foot {
+    padding: 0.9rem 1.5rem;
+    gap: 0.5rem;
+    background: var(--pm-surface-2);
+    border-top: 1px solid var(--pm-divider);
+    .btn { min-width: 6rem; }
+  }
+  /* forms inside dialogs: labels and spacing match the pages */
+  .form-label { font-size: 0.8rem; font-weight: 600; color: var(--pm-label); }
+}
+/* drawer: a slightly larger header, the body scrolls under it */
+:host ::ng-deep .pm-modal-drawer {
+  .pm-modal-head { padding: 1.2rem 1.25rem 1.2rem 1.6rem; h2 { font-size: 1.15rem; } }
+  .pm-modal-body { padding: 1.4rem 1.6rem; }
+  .pm-modal-foot { padding: 0.9rem 1.6rem; }
+}
+
+/* ---------- close buttons (all dialogs) ---------- */
+:host ::ng-deep {
+  .pm-modal .btn-close, .ph-dialog .btn-close, .up-dialog .btn-close, .pl-dialog .btn-close {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    flex-shrink: 0;
+    border-radius: 9px;
+    background-size: 0.7rem;
+    opacity: 0.55;
+    transition: opacity var(--pm-fast) var(--pm-ease), background-color var(--pm-fast) var(--pm-ease);
+    &:hover { opacity: 1; background-color: var(--pm-soft); }
+    &:focus-visible { box-shadow: 0 0 0 3px var(--pm-accent-ring); opacity: 1; }
+  }
+}
+
+/* ---------- custom dialogs: headers line up with pm-modal ---------- */
+:host ::ng-deep {
+  .ph-head h2, .up-dialog h2, .proctor-pc-card h2 { font-size: 1.1rem; font-weight: 750 !important; letter-spacing: -0.015em; color: var(--pm-heading); }
+}
+
+/* ---------- keyframes ---------- */
+@keyframes pm-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pm-modal-zoom {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+@keyframes pm-drawer-in { from { opacity: 0.4; transform: translateX(32px); } to { opacity: 1; transform: none; } }
+@keyframes pm-dialog-pop { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }

@@ -1,0 +1,66 @@
+// College records & admin pages: students (+ drawer), companies (+ drawer), team, settings, reports, audit, import.
+@use '../vars' as *;
+
+@include content {
+  /* ===================== drawers (student / company detail) ===================== */
+  pm-student-drawer .pm-modal-body > .d-flex:first-child, pm-companies .pm-modal-drawer .pm-modal-body > .d-flex:first-child {
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem !important;
+    border-radius: var(--pm-r);
+    background: var(--pm-surface-2);
+    border: 1px solid var(--pm-divider);
+  }
+  .pm-modal-drawer .pm-modal-body h3.h6 {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--pm-muted);
+    margin-bottom: 0.6rem;
+  }
+  .pm-sd-doc {
+    padding: 0.7rem 0.85rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--pm-card-border) !important;
+    border-radius: var(--pm-r);
+    background: var(--pm-card-bg);
+    transition: box-shadow var(--pm-fast) var(--pm-ease), border-color var(--pm-fast) var(--pm-ease);
+    &:hover { box-shadow: var(--pm-card-shadow-hover); }
+  }
+  .pm-modal-drawer .border-bottom.py-2, .pm-modal-drawer .border-bottom.py-1 { padding-left: 0.35rem; padding-right: 0.35rem; border-radius: 6px; }
+  .pm-modal-drawer .border-bottom.py-2:hover, .pm-modal-drawer .border-bottom.py-1:hover { background: var(--pm-surface-2); }
+  pm-companies .pm-modal-drawer .text-warning .bi { filter: drop-shadow(0 1px 1px rgba(217, 119, 6, 0.25)); }
+
+  /* ===================== team ===================== */
+  .pm-tm-card .table td .text-body-secondary { font-size: 0.78rem; }
+  .pm-tm-card .bi-check-lg { font-size: 1rem; }
+
+  /* ===================== settings ===================== */
+  .pm-st-card { padding: 1.75rem; }
+  .pm-st-card h3.h6 { margin-top: 0.25rem; }
+  .pm-st-card .border-bottom.py-2 { padding-left: 0.4rem; padding-right: 0.4rem; border-radius: 8px; }
+  .pm-st-card .border-bottom.py-2:hover { background: var(--pm-surface-2); }
+  .pm-st-logo { border-radius: var(--pm-r); border: 1px solid var(--pm-card-border); box-shadow: var(--pm-card-shadow); background: #fff; padding: 0.35rem; }
+  .pm-st-card form > .col-12.text-end, .pm-st-card form > .col-12:last-child.text-end { padding-top: 0.5rem; }
+  pm-college-settings .pm-st-card fieldset .form-check {
+    padding: 0.6rem 0.85rem 0.6rem 2.3rem;
+    margin-bottom: 0.4rem;
+    border: 1px solid var(--pm-card-border);
+    border-radius: var(--pm-r);
+    transition: border-color var(--pm-fast) var(--pm-ease), background-color var(--pm-fast) var(--pm-ease);
+    &:hover { border-color: var(--pm-input-hover); }
+    &:has(.form-check-input:checked) { border-color: var(--pm-accent); background: var(--pm-accent-soft); }
+  }
+
+  /* ===================== reports ===================== */
+  .pm-rp-card .list-group-item { padding: 0.75rem 1rem; line-height: 1.4; }
+  .pm-rp-card .list-group-item strong { font-size: 0.875rem; margin-bottom: 0.1rem; }
+  .pm-rp-scroll { border: 1px solid var(--pm-divider); border-radius: var(--pm-r); }
+
+  /* ===================== student import ===================== */
+  .pm-imp-summary { border-radius: var(--pm-r); }
+  .pm-imp-scroll { border: 1px solid var(--pm-divider); border-radius: var(--pm-r); }
+
+  /* ===================== audit log ===================== */
+  pm-audit-log .pm-au-pre { font-family: var(--bs-font-monospace); font-size: 0.74rem !important; background: var(--pm-surface-2); border-radius: 6px; padding: 0.3rem 0.5rem; margin-top: 0.25rem; }
+}

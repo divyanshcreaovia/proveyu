@@ -1,0 +1,61 @@
+// Student portal list pages: applications, interviews, offers, documents, profile (+ shared .st-row / .st-chip look).
+@use '../vars' as *;
+
+@include content {
+  /* ===================== shared list row ===================== */
+  .st-row {
+    padding: 0.95rem 1.15rem;
+    border-radius: 14px;
+    transition: box-shadow var(--pm-med) var(--pm-ease), border-color var(--pm-fast) var(--pm-ease);
+    &:hover { box-shadow: var(--pm-card-shadow-hover); }
+    &:not(.st-row-unread):hover { border-color: var(--pm-input-hover); }
+    strong { color: var(--pm-heading); }
+  }
+  .st-chip { background: var(--pm-surface-2); }
+  .st-h { letter-spacing: -0.01em; }
+
+  /* ===================== interviews: date tile ===================== */
+  pm-student-interviews .st-row > .text-center:first-child {
+    padding: 0.4rem 0.5rem !important;
+    border-radius: var(--pm-r);
+    background: var(--pm-accent-soft);
+    box-shadow: inset 0 0 0 1px var(--pm-accent-ring);
+    .small { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pm-accent-600) !important; }
+    .h4 { color: var(--pm-accent-600) !important; font-weight: 800; letter-spacing: -0.02em; }
+  }
+  pm-student-interviews > h2.h6 { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pm-muted) !important; }
+
+  /* ===================== applications: round timeline (modal) ===================== */
+  .st-tl li { padding-bottom: 1.25rem; }
+  .st-tl-dot { width: 1.45rem; height: 1.45rem; box-shadow: 0 0 0 3px var(--pm-card-bg); }
+  .st-tl li::before { width: 2px; background: linear-gradient(var(--pm-divider), var(--pm-divider)); }
+  .st-tl-now { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18); animation: pm-pulse 2.4s ease-in-out infinite; }
+
+  /* ===================== offers ===================== */
+  pm-student-offers .st-row strong:last-of-type { color: var(--pm-ok); }
+
+  /* ===================== documents: file-type tile ===================== */
+  pm-student-documents .st-row > .bi.fs-4 {
+    width: 2.75rem;
+    height: 2.75rem;
+    flex-shrink: 0;
+    display: inline-grid;
+    place-items: center;
+    border-radius: var(--pm-r);
+    background: var(--pm-accent-soft);
+    color: var(--pm-accent);
+    font-size: 1.25rem !important;
+  }
+
+  /* ===================== profile ===================== */
+  pm-student-profile form.st-card .mb-3:last-of-type, pm-student-profile form.st-card .mb-4 { margin-bottom: 1.25rem !important; }
+  pm-student-profile form.st-card > .btn-primary { min-width: 160px; }
+
+  /* ===================== file upload drop zone ===================== */
+  .pm-upload {
+    border-color: var(--pm-input-border);
+    background: var(--pm-surface-2);
+    transition: border-color var(--pm-fast) var(--pm-ease), background-color var(--pm-fast) var(--pm-ease), box-shadow var(--pm-fast) var(--pm-ease);
+    &:hover, &.pm-upload-over { border-color: var(--pm-accent); background: var(--pm-accent-soft); box-shadow: 0 0 0 4px var(--pm-accent-soft); }
+  }
+}

@@ -1,0 +1,50 @@
+// Tables: Bootstrap .table and the shared pm-data-table.
+@use 'vars' as *;
+
+@include content {
+  .table, .pm-dt-table {
+    --bs-table-hover-bg: transparent; /* no row tint on hover */
+    --bs-table-striped-bg: var(--pm-surface-2);
+    thead th {
+      background: var(--pm-table-head);
+      color: var(--pm-muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--pm-divider);
+    }
+    tbody td { vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: 0; }
+    /* hover: a 3px accent bar painted on the first cell (fixed-width gradient, never fills the cell) */
+    tbody tr:hover > td:first-child {
+      background-image: linear-gradient(to right, var(--pm-row-accent) 0, var(--pm-row-accent) 3px, transparent 3px) !important;
+      background-repeat: no-repeat !important;
+    }
+    .fw-semibold, strong { color: var(--pm-heading); }
+    td .text-body-secondary, td .small.text-body-secondary { font-size: 0.8rem; }
+    td code { font-size: 0.75rem; padding: 0.15rem 0.45rem; border-radius: 6px; background: var(--pm-accent-soft); color: var(--pm-accent-600); }
+    td .btn-group-sm > .btn, td > .btn-sm { padding: 0.3rem 0.65rem; }
+  }
+
+  /* shared data table */
+  .pm-dt { border-color: var(--pm-card-border); box-shadow: var(--pm-card-shadow); transition: box-shadow var(--pm-med) var(--pm-ease); }
+  .pm-dt:hover { box-shadow: var(--pm-card-shadow-hover); }
+  .pm-dt-table thead th { padding-top: 0.8rem; padding-bottom: 0.8rem; }
+  .pm-dt-table tbody td { padding-top: 0.9rem; padding-bottom: 0.9rem; }
+  .pm-dt-clickable:focus-visible { outline: 2px solid var(--pm-accent); outline-offset: -2px; }
+  .pm-dt-sort { border-radius: 4px; transition: color var(--pm-fast) var(--pm-ease); }
+  .pm-dt-sort:hover { color: var(--pm-heading); }
+  .pm-dt-sort .bi { opacity: 0.55; transition: opacity var(--pm-fast) var(--pm-ease); }
+  .pm-dt-sort:hover .bi { opacity: 1; }
+  .pm-dt-foot { background: var(--pm-surface-2); border-top: 1px solid var(--pm-divider); }
+  .pm-dt-check { width: 2.75rem; }
+
+  /* stand-alone tables inside cards / bordered wrappers */
+  .table-responsive { scrollbar-width: thin; }
+  .table-responsive.border, .bg-body.border { transition: box-shadow var(--pm-med) var(--pm-ease); }
+  .table-responsive.border:hover, .bg-body.border:hover { box-shadow: var(--pm-card-shadow-hover); }
+  /* scrollable report / import previews keep their header visible */
+  .pm-rp-scroll thead th, .pm-imp-scroll thead th { position: sticky; top: 0; z-index: 1; }
+}
