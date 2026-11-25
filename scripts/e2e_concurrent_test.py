@@ -162,14 +162,23 @@ def main():
         v = call("POST", f"{PREP}/tests/{std['id']}/start", token=users[u])[1]["data"]
         q = next(q for q in v["questions"] if q["type"] == "CODING" and "digit" in (q.get("title") or "").lower())
         att[u] = (v["attemptId"], q["id"])
-    jobs = [(u, lang) for u in STUDENTS for lang in CODE]
     t0 = time.time()
 
     def run(job):
         u, lang = job
         aid, qid = att[u]
         return job, call("POST", f"{PREP}/attempts/{aid}/run", {"questionId": qid, "language": lang, "code": CODE[lang]}, token=users[u])
-    res = together(run, jobs)
+
+    # The four students run at the same moment. One student's own runs are spaced by the per-student Run limit
+    # (CODE_RUN_RATE_LIMIT_SECONDS, default 5 s), so each student runs its four languages one after another.
+    def run_student(u):
+        out = []
+        for i, lang in enumerate(CODE):
+            if i:
+                time.sleep(5.5)
+            out.append(run((u, lang)))
+        return out
+    res = [x for part in together(run_student, STUDENTS) for x in part]
     secs = time.time() - t0
     for (u, lang), (s, r) in res:
         d = r.get("data") or {}
@@ -178,6 +187,7 @@ def main():
             check(f"{u} {lang} compiles and passes the samples", False, (s, r.get("message"), d.get("compileError"), cases[:1]))
     passed = sum(1 for _, (s, r) in res if s == 200 and not (r.get("data") or {}).get("compileError") and all(c["passed"] for c in r["data"]["cases"]))
     check(f"all 16 runs compile and pass the samples ({passed}/16, {secs:.0f}s for all together)", passed == 16)
+    time.sleep(5.5)  # the same student's Run limit (5 s) before the next run
     s, r = call("POST", f"{PREP}/attempts/{att[STUDENTS[0]][0]}/run", {"questionId": att[STUDENTS[0]][1], "language": "java", "code": BROKEN_JAVA},
                 token=users[STUDENTS[0]])
     check("a Java syntax error is reported as a compile error", s == 200 and bool((r.get("data") or {}).get("compileError")), r.get("data"))

@@ -1,7 +1,7 @@
 # Deploy ProveYu on Google Cloud (e2-standard-4, free trial)
 
 One Compute Engine VM, **e2-standard-4 (4 vCPU, 16 GB)** in **Mumbai (`asia-south1`)**, runs everything: nginx (HTTPS, web app,
-reverse proxy), the backend, MySQL, Docker for the code runner and, optionally, the local AI backup (Ollama, Whisper, Piper). Only
+reverse proxy), the backend, MySQL and, optionally, the local AI backup (Ollama, Whisper, Piper, which use Docker). Mock-test code runs on a separate Judge0 VM (DEPLOY_CHECKLIST.md, section 6). Only
 ports 80 and 443 are open to the internet; you reach the VM over SSH through Google's IAP tunnel. The nginx, systemd and production
 `.env` files are in [deploy/](deploy/); the security checklist in [DEPLOY_EC2.md](DEPLOY_EC2.md#1-before-you-start-security-checklist)
 applies here unchanged.
@@ -86,7 +86,6 @@ sudo apt install -y nginx certbot python3-certbot-nginx mysql-server openjdk-21-
 sudo dpkg-reconfigure -plow unattended-upgrades          # automatic security updates
 
 sudo useradd --system --create-home --shell /usr/sbin/nologin proveyu
-sudo usermod -aG docker proveyu
 sudo mkdir -p /opt/proveyu /etc/proveyu /var/lib/proveyu/uploads /var/www/proveyu
 sudo chown -R proveyu:proveyu /opt/proveyu /var/lib/proveyu
 ```
@@ -124,10 +123,10 @@ mkdir -p ~/release && tar xzf ~/proveyu-release.tgz -C ~/release && cd ~/release
 
 sudo cp Backend/target/proveyu-backend-*.jar /opt/proveyu/proveyu-backend.jar
 sudo cp -r Frontend/dist/proveyu-frontend/browser/* /var/www/proveyu/
-sudo docker build -t proveyu-code-runner:1 Backend/runner          # mock-test code sandbox
+# mock-test code: set JUDGE0_URL (Judge0 VM internal IP) and JUDGE0_TOKEN in /etc/proveyu/backend.env (DEPLOY_CHECKLIST.md, section 6)
 
 sudo mysql proveyufinaldb < finaluseddbschema.sql                  # the schema; first line names its Flyway version
-head -5 finaluseddbschema.sql | grep -o "Flyway version [0-9]*"   # 42 -> SPRING_FLYWAY_BASELINE_VERSION=42
+head -5 finaluseddbschema.sql | grep -o "Flyway version [0-9]*"   # 44 -> SPRING_FLYWAY_BASELINE_VERSION=44
 ```
 
 ## 8. Optional: local AI backup (16 GB has room for it)

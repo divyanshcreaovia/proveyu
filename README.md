@@ -21,11 +21,11 @@ from the placement cell when they get an offer). The ProveYu team runs the platf
 |---|---|
 | Frontend | Angular 21 (standalone components, signals, zoneless), Bootstrap 5, TypeScript 5.9 |
 | Backend | Spring Boot 3.2.3 (Java 17+, runs on 21), Spring Security with JWT, JPA plus JdbcTemplate, Flyway |
-| Database | MySQL 8, database `proveyu_college`, migrations `V1`–`V42`, 54 tables in use (see [finaluseddbschema.sql](finaluseddbschema.sql)) |
+| Database | MySQL 8, database `proveyu_college`, migrations `V1`–`V44`, 58 tables in use (see [finaluseddbschema.sql](finaluseddbschema.sql)) |
 | AI interview | Groq cloud first (`gpt-oss-20b` for questions and scoring, `whisper-large-v3-turbo` for speech; several keys back each other up). Local fallback: Ollama `qwen3:1.7b` and whisper.cpp. Piper for the spoken voice |
 | Off-campus job feed | Careerjet job search API, imported every night at 12 (Internshala and similar sites forbid scraping) |
 | PDFs | Apache PDFBox (offer letters, reports, NOC on the college letterhead) |
-| Mock test code | Docker sandbox `proveyu-code-runner:1` (no network, read-only, time limit) |
+| Mock test code | Judge0 CE on its own VM (isolate sandbox: no network, CPU, memory and time limits) |
 | Mail | SMTP, sent in the background (`@Async`) |
 
 ## What runs where
@@ -38,11 +38,36 @@ from the placement cell when they get an offer). The ProveYu team runs the platf
 | Ollama | Docker (`ai-services`) | 11434 | AI interview when Groq is unavailable |
 | Whisper | Docker (`ai-services`) | 8178 | Speech-to-text when Groq is unavailable |
 | Piper | Docker (`ai-services`) | 5002 | Reading interview questions aloud |
-| Code runner | Docker image, started per run | – | Coding questions in mock tests |
+| Code runner | Judge0 CE on its own VM (dev: SSH tunnel to `localhost:2358`) | 2358 | Coding questions in mock tests |
 | Groq | Internet | – | First choice for the AI interview (`GROQ_API_KEY`) |
 | Careerjet | Internet | – | Nightly off-campus job import (`CAREERJET_API_KEY`, `CAREERJET_REFERER`) |
 
 ---
+
+## Judge0 (coding questions in mock tests)
+
+Coding questions run on **Judge0 CE**, an open-source code execution API. Each program runs inside Judge0's isolate sandbox
+(no network, CPU, memory and time limits) on its own VM. The backend never runs student code itself. Run and Submit of coding
+questions need Judge0; the rest of the platform works without it.
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `JUDGE0_URL` | `http://localhost:2358` | Judge0 base URL. Production: `http://<Judge0 VM internal IP>:2358` |
+| `JUDGE0_TOKEN` | empty | sent in the `X-Auth-Token` header (or `JUDGE0_AUTH_HEADER`). Never logged |
+| `JUDGE0_POLL_INTERVAL_MS`, `JUDGE0_POLL_TIMEOUT_MS` | `300`, `30000` | how often and how long the backend waits for a result |
+| `JUDGE0_MAX_PARALLEL` | `4` | runs sent to Judge0 at once; more wait in the backend queue |
+| `JUDGE0_CONNECT_TIMEOUT_MS`, `JUDGE0_READ_TIMEOUT_MS` | `3000`, `15000` | HTTP timeouts |
+| `JUDGE0_CPU_TIME_LIMIT_SECONDS`, `JUDGE0_WALL_TIME_LIMIT_SECONDS`, `JUDGE0_MEMORY_LIMIT_KB` | `3`, `8`, `262144` | limits per test (capped in `application.yml`) |
+
+Language ids (Judge0 `language_id`) are in `code.execution.languages` in `Backend/src/main/resources/application.yml`
+(Python 3 = 71, C = 50, C++ = 54, Java = 62, JavaScript = 63). Check them with `GET /languages` on your Judge0.
+
+- **Local:** open an SSH tunnel to the Judge0 VM and keep it open: `ssh -N -L 2358:<JUDGE0_VM_INTERNAL_IP>:2358 <user>@<VM>`.
+  The default `JUDGE0_URL=http://localhost:2358` then reaches it.
+- **Production:** `JUDGE0_URL=http://<Judge0 VM internal IP>:2358`. The VM accepts port 2358 only from the backend's network.
+  Moving from local to production changes only these env vars.
+- **Health:** admin endpoint `GET /api/v1/admin/code-runner/health`. The backend also logs `[CODE RUNNER]` at startup.
+- **Legacy:** `CODE_EXECUTION_PROVIDER=docker` switches back to the old Docker sandbox (needs Docker on the app host). Not the default.
 
 ## Repository structure
 
@@ -70,12 +95,12 @@ proveyu/
 │   ├── support/              # Help & support requests
 │   ├── chat/  notification/  # one-to-one chat (WebSocket) and the notification bell
 │   └── shared/               # security, settings, audit, e-mail, storage, errors
-├── Backend/runner/           # Dockerfile of the mock test code sandbox
+├── Backend/runner/           # legacy Docker sandbox, only for CODE_EXECUTION_PROVIDER=docker
 ├── ai-services/              # docker-compose for Ollama, Whisper and Piper
 ├── scripts/                  # run scripts, demo seed data, end-to-end tests, run_all_tests.sh, gen_docs.py
 ├── docs/COLLEGE_PORTAL.md    # detailed guide: modules, proctoring, admin portal, support, off-campus, NOC
 ├── RUN_AND_TEST.md           # full runbook and the end-to-end test checklist for every portal
-└── finaluseddbschema.sql     # structure of the 54 tables the code uses (Flyway baseline 42)
+└── finaluseddbschema.sql     # structure of the 58 tables the code uses (Flyway baseline 44)
 ```
 
 ---
@@ -83,7 +108,7 @@ proveyu/
 ## Run it locally
 
 ### Prerequisites
-Java 17+ (21 recommended), Maven 3.8+, Node.js 20+ with npm, MySQL 8, Docker.
+Java 17+ (21 recommended), Maven 3.8+, Node.js 20+ with npm, MySQL 8, Docker (for the AI services and the Docker MySQL; coding questions need Judge0, see above).
 
 ### One-time setup
 ```bash
@@ -94,8 +119,7 @@ cp Backend/.env.example Backend/.env
 # 2. Frontend packages
 cd Frontend && npm install && cd ..
 
-# 3. Mock test code sandbox
-docker build -t proveyu-code-runner:1 Backend/runner
+# 3. Judge0 for coding questions: open the SSH tunnel to the Judge0 VM (see the Judge0 section above)
 
 # 4. Local AI services (fallback when Groq fails) and the local model
 cd ai-services && docker compose up -d --build && docker compose exec ollama ollama pull qwen3:1.7b && cd ..
@@ -177,7 +201,7 @@ withdraw, round-by-round tracking, interviews, offers and offer letters, documen
 test ladder (MCQ and coding, proctored with screen share, tab-switch screenshots and auto-submit), AI mock interviews from a
 drive's JD or the student's own JD (voice or typed answers, scored report, free and paid credits via UPI), off-campus jobs and
 internships filtered by the fields the student picks (software, data, mechanical, ...) with eligibility reasons, an
-applied → interviewing → offer tracker and NOC requests.
+applied → interviewing → offer tracker and NOC requests. Under Preparation, **Code ground** is a plain compiler: type a program, give an input and see the output (Python, Java, C++ or JavaScript, run on Judge0; nothing is scored or saved).
 
 **Admin portal:** dashboard, colleges (approve, suspend, reactivate), users (search, block, password reset, credits), admins,
 payments (verify, export), mock tests, proctoring, off-campus jobs (post with eligibility and field, review the nightly Careerjet
@@ -220,7 +244,7 @@ portal: [RUN_AND_TEST.md](RUN_AND_TEST.md).
 - Every college's data is separated: another college's ids return 404. Students see only their own records.
 - Blocking a user ends their session immediately (chat included). Suspending a college stops its placement team.
 - Rate limiting: 60 requests/min per IP on sign-in routes, 120/min per user elsewhere.
-- Student code runs in Docker with no network, a read-only file system, an unprivileged user and a time limit.
+- Student code runs in Judge0's isolate sandbox on a separate VM: no network, CPU, memory and time limits. The backend sends only the code and the input; a student cannot change the Judge0 URL, headers or limits. Runs are rate-limited per student.
 - College and admin actions are written to audit logs.
 
 Deploying to a server: start with the one-page [DEPLOY_CHECKLIST.md](DEPLOY_CHECKLIST.md), then follow [DEPLOY_EC2.md](DEPLOY_EC2.md) (AWS) or [DEPLOY_GCP.md](DEPLOY_GCP.md) (Google Cloud, e2-standard-4 on the free trial) (ready-made nginx, systemd and production `.env` files in

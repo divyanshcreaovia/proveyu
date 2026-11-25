@@ -1,6 +1,6 @@
 """End-to-end test of the mock test path (scripts/mocktests): unlock rule (first open, next opens only above 50%), the server
 refusing locked tests, and every test scoring full marks with the answer key and the reference solutions. The coding problems run
-in the real Docker code runner, so this also proves every hidden test passes within the time limit.
+in the real code runner (Judge0), so this also proves every hidden test passes within the time limit.
 
     python3 scripts/e2e_prep_ladder_test.py [base_url]
 
@@ -58,7 +58,13 @@ def attempt(t, test_id, ans):
     if s != 200:
         return s, r
     aid = r["data"]["attemptId"]
-    return call("POST", f"{B}/attempts/{aid}/submit", ans, token=t)
+    # The backend allows one Submit per student every few seconds (CODE_RUN_RATE_LIMIT_SECONDS): wait and retry.
+    for _ in range(6):
+        s, r = call("POST", f"{B}/attempts/{aid}/submit", ans, token=t)
+        if s != 429:
+            return s, r
+        time.sleep(6)
+    return s, r
 
 
 def main():
@@ -102,7 +108,7 @@ def main():
           [x["locked"] for x in lad[:3]])
     check("best score shown as a percentage", lad[0]["bestPercent"] == (n_mcq // 2 + 1) * 100 // n_mcq, lad[0]["bestPercent"])
 
-    print("== Whole path with the answer key and reference solutions (coding runs in Docker)")
+    print("== Whole path with the answer key and reference solutions (coding runs in Judge0)")
     for i in range(1, 20):
         x = lad[i]
         d = defs[x["title"]]

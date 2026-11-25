@@ -7,7 +7,7 @@
 #   bash scripts/run_all_tests.sh --check         # only check that every service is up
 #   BASE_URL=http://localhost:8080 BACKEND_LOG=/path/backend.log bash scripts/run_all_tests.sh
 #
-# Needs the backend (dev profile, APP_DEV_EXPOSE_TOKENS=true), MySQL, Docker (code runner image) and the AI services running,
+# Needs the backend (dev profile, APP_DEV_EXPOSE_TOKENS=true), MySQL, a reachable Judge0 (code runner) and the AI services running,
 # demo data seeded (seed_demo.py, seed_student_portal.py, seed_drive_room_demo.py) and mock tests loaded. The script checks the
 # ports first and stops if something is missing. The AI interview suites use Groq tokens.
 set -uo pipefail
@@ -44,7 +44,14 @@ if [ "${LOCAL_AI:-true}" = "false" ]; then
 else
   check_port 5002 "Piper (voice)" || ok=0
 fi
-docker image inspect proveyu-code-runner:1 >/dev/null 2>&1 && echo "  ok       code runner image" || { echo "  MISSING  docker image proveyu-code-runner:1"; ok=0; }
+JUDGE0_CHECK_URL=$(grep -E "^JUDGE0_URL=" Backend/.env 2>/dev/null | cut -d= -f2- | tr -d "'\" ")
+JUDGE0_CHECK_URL=${JUDGE0_CHECK_URL:-http://localhost:2358}
+JUDGE0_CHECK_TOKEN=$(grep -E "^JUDGE0_TOKEN=" Backend/.env 2>/dev/null | cut -d= -f2- | tr -d "'\" ")
+if curl -fs -m 8 ${JUDGE0_CHECK_TOKEN:+-H "X-Auth-Token: $JUDGE0_CHECK_TOKEN"} "$JUDGE0_CHECK_URL/languages" >/dev/null 2>&1; then
+  echo "  ok       code runner (Judge0 at $JUDGE0_CHECK_URL)"
+else
+  echo "  MISSING  Judge0 at $JUDGE0_CHECK_URL (open the SSH tunnel, see RUN_AND_TEST.md, section 2.2)"; ok=0
+fi
 curl -fs "$BASE_URL/actuator/health" | grep -q '"UP"' && echo "  ok       backend health" || { echo "  MISSING  $BASE_URL/actuator/health is not UP"; ok=0; }
 if [ "$ok" = 0 ]; then echo "Start the missing services (RUN_AND_TEST.md, section 3) and run again."; exit 1; fi
 if [ "$CHECK_ONLY" = 1 ]; then echo "All services are up."; exit 0; fi

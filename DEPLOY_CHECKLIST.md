@@ -11,11 +11,11 @@ Both guides set up the same thing on one Ubuntu server:
 Internet ──443──► nginx ──► /var/www/proveyu        (Angular app, static files)
                     └─────► 127.0.0.1:8080 backend   (Spring Boot jar, systemd)
                                 ├──► 127.0.0.1:3306 MySQL 8
-                                ├──► Docker: code runner sandbox (no network)
+                                ├──► Judge0 CE on its own VM (code runner, internal network only)
                                 └──► Groq, Careerjet, SMTP  (outbound only)
 ```
 
-Only ports 80 and 443 are open to the internet. MySQL, 8080 and Docker are never exposed.
+Only ports 80 and 443 are open to the internet. MySQL, 8080 and Judge0 are never exposed.
 
 ---
 
@@ -24,13 +24,13 @@ Only ports 80 and 443 are open to the internet. MySQL, 8080 and Docker are never
 | What | File / value | Notes |
 |---|---|---|
 | Code | the latest commit on the branch you were given | build from a clean checkout |
-| Database schema + data | [finaluseddbschema.sql](finaluseddbschema.sql) | Flyway version **42**, 54 tables, the 20 mock tests and one complete college (LTCE) |
-| Flyway baseline | `SPRING_FLYWAY_BASELINE_VERSION=42` | must equal the version on line 4 of the schema file |
+| Database schema + data | [finaluseddbschema.sql](finaluseddbschema.sql) | Flyway version **44**, 58 tables, the 20 mock tests and one complete college (LTCE) |
+| Flyway baseline | `SPRING_FLYWAY_BASELINE_VERSION=44` | must equal the version on line 4 of the schema file |
 | Backend settings | [deploy/backend.env.production.example](deploy/backend.env.production.example) → `/etc/proveyu/backend.env` | fill in every empty value |
 | Backend service | [deploy/proveyu-backend.service](deploy/proveyu-backend.service) → `/etc/systemd/system/` | runs the jar as user `proveyu` |
 | Web server | [deploy/nginx-proveyu.conf](deploy/nginx-proveyu.conf) → `/etc/nginx/sites-available/proveyu` | replace `proveyu.example.com` with the real domain |
 | Code runner image | `Backend/runner/Dockerfile` → image **`proveyu-code-runner:1`** | the backend uses this exact name |
-| Mock tests (20) | already in `finaluseddbschema.sql` | `scripts/mocktests/load.py` only for a database made without that file |
+| Mock tests (20) | `scripts/mocktests/out/*.json`, loaded with `scripts/mocktests/load.py` | the schema has no data, so load them once |
 
 Do not use `Backend/.env` or `Backend/src/main/resources/application-dev.yml` on the server. They are for local development.
 
@@ -55,9 +55,9 @@ Create these yourself on the server (new values, never the development ones):
 
 - [ ] Ubuntu 24.04, at least 4 vCPU / 16 GB / 60 GB disk (GCP `e2-standard-4` or a similar EC2 size).
 - [ ] Firewall: 80 and 443 open to everyone; 22 only from your IP or Google IAP; nothing else.
-- [ ] Software installed: `nginx certbot mysql-server openjdk-21-jre-headless docker.io unattended-upgrades`.
+- [ ] Software installed: `nginx certbot mysql-server openjdk-21-jre-headless unattended-upgrades` (no Docker needed on this server).
 - [ ] Automatic security updates on; SSH with a key only.
-- [ ] User `proveyu` created **and added to the `docker` group**. Without the group, coding questions fail with "The code runner is not available".
+- [ ] User `proveyu` created. Coding questions use the Judge0 VM, so this user needs no extra group.
 - [ ] Folders created: `/opt/proveyu`, `/etc/proveyu`, `/var/lib/proveyu/uploads`, `/var/www/proveyu`.
 
 ## 4. Database
@@ -66,9 +66,9 @@ Create these yourself on the server (new values, never the development ones):
 - [ ] `CREATE DATABASE proveyufinaldb CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;`
 - [ ] App user `proveyu_app@127.0.0.1` with rights **on `proveyufinaldb` only**. Never use root.
 - [ ] Load the schema **into the empty database**, once: `mysql proveyufinaldb < finaluseddbschema.sql`
-- [ ] `SPRING_FLYWAY_BASELINE_VERSION=42` is in `/etc/proveyu/backend.env`.
+- [ ] `SPRING_FLYWAY_BASELINE_VERSION=44` is in `/etc/proveyu/backend.env`.
 
-How Flyway works here: on the first start it records the database as version 42 and runs nothing old. On every later start it runs
+How Flyway works here: on the first start it records the database as version 44 and runs nothing old. On every later start it runs
 only new files (`V43__...`, `V44__...`) from `Backend/src/main/resources/db/migration`.
 
 **Never:**
@@ -90,21 +90,16 @@ cd Frontend && npm ci && npx ng build && cd ..         # Frontend/dist/proveyu-f
 
 The production frontend calls the API on the same domain (`/api/...`) through nginx, so nothing in the frontend needs changing.
 
-## 6. Code runner sandbox (mock-test coding questions)
+## 6. Code runner: Judge0 (mock-test coding questions)
 
-On the server:
+Judge0 CE runs on its own VM (the Judge0 instance from the code runner setup, Ubuntu 22.04). The backend reaches it over the
+internal network only. Nothing to build on this server.
 
-```bash
-sudo docker build -t proveyu-code-runner:1 Backend/runner
-sudo docker images | grep proveyu-code-runner          # must show tag 1
-```
-
-- [ ] The image is built with exactly the name `proveyu-code-runner:1`.
-- [ ] User `proveyu` is in the `docker` group, and the service file has `SupplementaryGroups=docker`.
-- [ ] Nothing else is needed. The backend starts one short-lived container per run with no network, a read-only file system,
-      256 MB RAM, 1 CPU and a time limit. 4 runs at a time; more wait in a queue.
-
-The image installs Python, Node, Java 21 and g++ (Alpine). Rebuild it only if `Backend/runner/Dockerfile` changes.
+- [ ] `JUDGE0_URL=http://<Judge0 VM internal IP>:2358` in `/etc/proveyu/backend.env` (the internal IP, never the public one).
+- [ ] `JUDGE0_TOKEN` set to the same token the Judge0 VM requires (`X-Auth-Token`). It is never logged.
+- [ ] The Judge0 VM's firewall allows port 2358 only from this server's internal address.
+- [ ] Check after start: `GET /api/v1/admin/code-runner/health` as admin, or the `[CODE RUNNER] ... ready` line in the backend log.
+- [ ] Language ids in `application.yml` (`code.execution.languages`) match the VM's `GET /languages`.
 
 ## 7. Backend settings: `/etc/proveyu/backend.env`
 
@@ -129,7 +124,7 @@ Start from [deploy/backend.env.production.example](deploy/backend.env.production
 | `CORS_ALLOWED_ORIGINS`, `APP_FRONTEND_URL`, `CAREERJET_REFERER` | `https://<domain>` (mail links use `APP_FRONTEND_URL`) |
 | `SPRING_DATASOURCE_PASSWORD` | the MySQL app user password |
 | `JWT_SECRET` | the new random secret |
-| `SPRING_FLYWAY_BASELINE_VERSION` | `42` |
+| `SPRING_FLYWAY_BASELINE_VERSION` | `44` |
 | `ADMIN_BOOTSTRAP_EMAIL`, `ADMIN_BOOTSTRAP_PASSWORD` | first admin; **delete the password line after the first start** |
 | `SPRING_MAIL_*` | SMTP for `info@proveyu.com` |
 | `SUPPORT_INBOX_EMAIL` | `support@proveyu.com` (support tickets and pricing enquiries are e-mailed here) |
@@ -141,7 +136,7 @@ Start from [deploy/backend.env.production.example](deploy/backend.env.production
 ## 8. Start, HTTPS, nginx
 
 - [ ] `sudo systemctl enable --now proveyu-backend`, then `journalctl -u proveyu-backend -f` until "Started".
-- [ ] The log shows Flyway baseline 42 and no errors.
+- [ ] The log shows Flyway baseline 44 and no errors.
 - [ ] Remove `ADMIN_BOOTSTRAP_PASSWORD` from the env file, then `sudo systemctl restart proveyu-backend`.
 - [ ] DNS A record → server IP.
 - [ ] Certificate with certbot (standalone, with the stop/start hooks in the guide), then `sudo certbot renew --dry-run` works.
@@ -208,5 +203,5 @@ sudo systemctl start proveyu-backend        # Flyway runs any new V40+ migration
 ```
 
 - No SQL by hand. Take a database dump before every update.
-- Rebuild the runner image only if `Backend/runner/Dockerfile` changed.
+- Judge0 needs no change on a backend update.
 - Users should hard-refresh (Ctrl+Shift+R) once after a frontend update.

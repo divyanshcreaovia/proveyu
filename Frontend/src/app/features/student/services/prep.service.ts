@@ -70,6 +70,8 @@ export interface CollegeAttempt {
 }
 export interface CaseResult { index: number; passed: boolean; input?: string; expected?: string; actual?: string; error?: string; timedOut: boolean; }
 export interface RunResponse { compileError?: string; cases: CaseResult[]; }
+/** Code ground: one run with your own input. exitCode null when it did not compile. */
+export interface PlaygroundResult { compileError?: string; stdout: string; stderr: string; exitCode?: number | null; timedOut: boolean; }
 export interface QuestionResult {
   id: string; type: 'MCQ' | 'CODING' | 'TEXT'; section: string; title?: string; text: string; options?: string[]; yourOption?: number; correctOption?: number;
   explanation?: string; language?: PrepLanguage; code?: string; testsPassed?: number; testsTotal?: number; compileError?: string;
@@ -134,6 +136,10 @@ export class PrepService {
   save(id: string, answers: Record<string, PrepAnswer>): Observable<unknown> { return this.http.put(api(`${S}/attempts/${id}/answers`), answers); }
   run(id: string, questionId: string, language: PrepLanguage, code: string): Observable<RunResponse> {
     return this.http.post<ApiResponse<RunResponse>>(api(`${S}/attempts/${id}/run`), { questionId, language, code }).pipe(map(r => r.data));
+  }
+  /** Code ground: runs the code once with the given input. Nothing is saved or scored. */
+  playground(language: PrepLanguage, code: string, stdin: string): Observable<PlaygroundResult> {
+    return this.http.post<ApiResponse<PlaygroundResult>>(api(`${S}/playground/run`), { language, code, stdin }).pipe(map(r => r.data));
   }
   submit(id: string, answers: Record<string, PrepAnswer>): Observable<AttemptResult> {
     return this.http.post<ApiResponse<AttemptResult>>(api(`${S}/attempts/${id}/submit`), answers).pipe(map(r => r.data));

@@ -87,6 +87,7 @@ export const routes: Routes = [
       { path: 'prep', title: 'Preparation', loadComponent: () => import('./features/student/prep/prep-home').then(m => m.PrepHome) },
       { path: 'college-tests', title: 'College tests', data: { tab: 'college' }, loadComponent: () => import('./features/student/prep/prep-home').then(m => m.PrepHome) },
       { path: 'prep/result/:id', title: 'Test result', loadComponent: () => import('./features/student/prep/prep-result').then(m => m.PrepResult) },
+      { path: 'code-ground', title: 'Code ground', loadComponent: () => import('./features/student/prep/code-ground').then(m => m.CodeGround) },
       { path: 'ai-interview', title: 'AI interview', loadComponent: () => import('./features/student/interview/interview-home').then(m => m.InterviewHome) },
       { path: 'ai-interview/report/:id', title: 'Interview report', loadComponent: () => import('./features/student/interview/interview-report').then(m => m.InterviewReport) },
     ],

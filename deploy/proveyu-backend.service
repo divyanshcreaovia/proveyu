@@ -3,14 +3,13 @@
 # The jar comes from: cd Backend && mvn -DskipTests package  ->  copy target/proveyu-backend-*.jar to /opt/proveyu/proveyu-backend.jar
 [Unit]
 Description=ProveYu backend
-After=network-online.target mysql.service docker.service
+After=network-online.target mysql.service
 Wants=network-online.target
 
 [Service]
 User=proveyu
 Group=proveyu
-# the mock-test code runner starts Docker containers: the proveyu user is in the docker group (see DEPLOY_EC2.md, section 5)
-SupplementaryGroups=docker
+# mock-test code runs on the Judge0 VM (JUDGE0_URL in /etc/proveyu/backend.env): no Docker on this server
 WorkingDirectory=/opt/proveyu
 EnvironmentFile=/etc/proveyu/backend.env
 ExecStart=/usr/bin/java -Xms512m -Xmx1536m -jar /opt/proveyu/proveyu-backend.jar

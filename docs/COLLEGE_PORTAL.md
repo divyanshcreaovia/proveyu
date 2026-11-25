@@ -47,7 +47,7 @@ Error body for every failure: `{success:false, timestamp, status, code, errorCod
 
 The full, current runbook (setup, start order, every service, accounts, all tests) is [RUN_AND_TEST.md](../RUN_AND_TEST.md). Short version:
 
-Prerequisites: JDK 17+, Maven 3.8+, Node 20+, Docker, Python 3.
+Prerequisites: JDK 17+, Maven 3.8+, Node 20+, Docker (AI services and the Docker MySQL), Python 3. Coding questions need Judge0 (see README).
 
 ```bash
 ./scripts/start-db.sh                                # MySQL 8 on 127.0.0.1:3310 (or use a system MySQL on 3306)
@@ -246,7 +246,7 @@ no question repeated anywhere:
   because the code runner keeps at most 64 KB of output.
 
 **Test.** `scripts/e2e_prep_ladder_test.py` (49 checks) walks a fresh student through the whole path: the lock and 50% rule, then
-every test with the answer key and the reference solutions run in the real Docker runner (full marks on all 20).
+every test with the answer key and the reference solutions run on the real code runner (Judge0), with full marks on all 20.
 
 ## 10. Things to know
 

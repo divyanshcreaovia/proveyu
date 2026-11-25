@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 End-to-end test of mock tests: admin uploads + publishes, a student starts, runs code (all 4 languages),
-autosaves, submits, and the server-side score is checked. Needs the backend (dev) and the code-runner image.
+autosaves, submits, and the server-side score is checked. Needs the backend (dev) and a reachable Judge0 (JUDGE0_URL, default localhost:2358 via the SSH tunnel).
 
   python3 scripts/e2e_prep_test.py [admin_email admin_password student_email student_password]
 """
@@ -29,6 +29,16 @@ public class Main { public static void main(String[] x) { Scanner sc = new Scann
   TreeSet<Long> s = new TreeSet<>(); for (int i = 0; i < n; i++) s.add(sc.nextLong());
   s.pollLast(); System.out.println(s.isEmpty() ? -1 : s.last()); } }
 """
+
+
+def run_code(aid, payload, token):
+    """POST .../run, waiting out the per-student Run limit (429) the backend applies to code runs."""
+    for _ in range(6):
+        s, r = call("POST", f"/api/v1/college/student/prep/attempts/{aid}/run", payload, token)
+        if s != 429:
+            return s, r
+        time.sleep(6)
+    return s, r
 
 
 def login(email, password):
@@ -76,14 +86,14 @@ def main():
     print("== Run code (samples) in all 4 languages")
     for lang, code in SUM_DIGITS.items():
         t0 = time.time()
-        s, r = call("POST", f"/api/v1/college/student/prep/attempts/{aid}/run", {"questionId": coding[0]["id"], "language": lang, "code": code}, stu)
+        s, r = run_code(aid, {"questionId": coding[0]["id"], "language": lang, "code": code}, stu)
         cases = (r.get("data") or {}).get("cases", [])
         check(f"{lang}: samples pass ({time.time() - t0:.1f}s)", s == 200 and len(cases) == 2 and all(c["passed"] for c in cases), r)
-    s, r = call("POST", f"/api/v1/college/student/prep/attempts/{aid}/run", {"questionId": coding[0]["id"], "language": "cpp", "code": "int main( {"}, stu)
+    s, r = run_code(aid, {"questionId": coding[0]["id"], "language": "cpp", "code": "int main( {"}, stu)
     check("compile error is reported", s == 200 and r["data"]["compileError"], r)
-    s, r = call("POST", f"/api/v1/college/student/prep/attempts/{aid}/run", {"questionId": coding[0]["id"], "language": "python", "code": "while True: pass"}, stu)
+    s, r = run_code(aid, {"questionId": coding[0]["id"], "language": "python", "code": "while True: pass"}, stu)
     check("infinite loop stopped with time limit", s == 200 and all(c["timedOut"] for c in r["data"]["cases"]), r)
-    s, r = call("POST", f"/api/v1/college/student/prep/attempts/{aid}/run", {"questionId": coding[0]["id"], "language": "python",
+    s, r = run_code(aid, {"questionId": coding[0]["id"], "language": "python",
                                                                           "code": "import urllib.request\nprint(urllib.request.urlopen('http://example.com', timeout=2).status)"}, stu)
     check("sandbox has no network", s == 200 and not any(c["passed"] for c in r["data"]["cases"]) and r["data"]["cases"][0]["error"], r)
 

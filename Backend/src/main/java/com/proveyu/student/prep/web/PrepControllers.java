@@ -126,6 +126,12 @@ public final class PrepControllers {
             return ApiResponse.success(service.run(uid(auth), id, body));
         }
 
+        /** Code ground: run any code with one stdin (no test, no score). */
+        @PostMapping("/playground/run")
+        public ApiResponse<PlaygroundResult> playground(Authentication auth, @RequestBody PlaygroundRequest body) {
+            return ApiResponse.success(service.playground(uid(auth), body));
+        }
+
         @PostMapping("/attempts/{id}/submit")
         public ApiResponse<AttemptResult> submit(Authentication auth, @PathVariable UUID id, @RequestBody(required = false) Map<String, Answer> answers) {
             return ApiResponse.success(service.submit(uid(auth), id, answers), "Test submitted");

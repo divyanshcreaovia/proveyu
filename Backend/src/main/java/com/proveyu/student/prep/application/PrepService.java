@@ -35,7 +35,9 @@ public class PrepService {
 
     private final PrepTestRepository testRepository;
     private final PrepAttemptRepository attemptRepository;
-    private final DockerCodeRunner runner;
+    /** The configured code runner (Judge0 by default; the Docker runner when code.execution.provider=docker). */
+    private final CodeExecutionService runner;
+    private final CodeRunRateLimiter rateLimiter;
     private final ObjectMapper json;
     private final com.proveyu.college.infrastructure.CollegeStudentRepository students;
     private final com.proveyu.student.prep.infrastructure.PrepProctorEventRepository proctorEvents;
@@ -299,10 +301,24 @@ public class PrepService {
 
     /** "Run" button: runs the student's code against the visible sample cases only. */
     public RunResponse run(UUID userId, UUID attemptId, RunRequest r) {
+        rateLimiter.check(userId, CodeRunRateLimiter.Action.RUN);
         PrepAttempt a = openAttempt(userId, attemptId);
         Question q = question(test(a.getTestId()), r.questionId());
         if (!CODING.equals(q.type())) throw new DomainException("Not a coding question", HttpStatus.BAD_REQUEST, "NOT_CODING");
         return execute(q.samples() == null ? List.of() : q.samples(), r.language(), r.code(), false);
+    }
+
+    /** Code ground: runs the student's program once with the given stdin. Nothing is stored and nothing is scored. */
+    public PlaygroundResult playground(UUID userId, PlaygroundRequest r) {
+        rateLimiter.check(userId, CodeRunRateLimiter.Action.PLAYGROUND);
+        String stdin = r.stdin() == null ? "" : r.stdin();
+        if (stdin.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 65_536) {
+            throw new DomainException("The input is too large (max 64 KB)", HttpStatus.BAD_REQUEST, "INPUT_TOO_LARGE");
+        }
+        CodeExecutionService.Result res = runner.run(r.language(), r.code(), List.of(stdin));
+        if (res.compileError() != null) return new PlaygroundResult(res.compileError(), "", "", null, false);
+        CodeExecutionService.Output o = res.outputs().get(0);
+        return new PlaygroundResult(null, o.stdout(), o.stderr(), o.exitCode(), o.timedOut());
     }
 
     @Transactional
@@ -312,9 +328,13 @@ public class PrepService {
         if (answers != null && Instant.now().isBefore(a.getDeadlineAt().plus(GRACE))) {
             Map<String, Answer> merged = answers(a);
             merged.putAll(answers);
+            // Only a Submit that runs student code uses the judge, so only that one is spaced out (MCQ-only submits are free).
+            if (merged.values().stream().anyMatch(x -> x != null && x.code() != null && !x.code().isBlank())) {
+                rateLimiter.check(userId, CodeRunRateLimiter.Action.SUBMIT);
+            }
             a.setAnswersJson(write(merged));
         }
-        grade(a);
+        grade(a, true);
         return result(userId, attemptId);
     }
 
@@ -384,14 +404,19 @@ public class PrepService {
     void autoSubmit(PrepAttempt a, String reason) {
         if (a.getSubmittedAt() != null) return;
         a.setAutoSubmitReason(reason);
-        grade(a);
+        grade(a, false);
     }
 
     private void autoSubmitIfExpired(PrepAttempt a) {
-        if (a.getSubmittedAt() == null && Instant.now().isAfter(a.getDeadlineAt().plus(GRACE))) grade(a);
+        if (a.getSubmittedAt() == null && Instant.now().isAfter(a.getDeadlineAt().plus(GRACE))) grade(a, false);
     }
 
-    private void grade(PrepAttempt a) {
+    /**
+     * Scores the attempt. interactive = the student pressed Submit: if the code judge is down, the error goes back to the
+     * student (nothing is saved, so they can press Submit again). Auto-submits have no student waiting, so an unavailable
+     * judge is recorded as that question's failure and the attempt still closes.
+     */
+    private void grade(PrepAttempt a, boolean interactive) {
         PrepTest t = test(a.getTestId());
         TestDefinition def = definition(t);
         Map<String, Answer> ans = answers(a);
@@ -431,6 +456,9 @@ public class PrepService {
                             RunResponse rr = execute(q.tests(), lang, code, true);
                             compileError = rr.compileError();
                             passed = (int) rr.cases().stream().filter(CaseResult::passed).count();
+                        } catch (CodeRunnerUnavailableException e) {
+                            if (interactive) throw e;
+                            compileError = e.getMessage();
                         } catch (DomainException e) {
                             compileError = e.getMessage();
                         }
@@ -466,12 +494,12 @@ public class PrepService {
 
     /** Runs code against cases. Hidden cases never echo their input or expected output back to the student. */
     private RunResponse execute(List<IoCase> cases, String language, String code, boolean hidden) {
-        DockerCodeRunner.Result r = runner.run(language, code, cases.stream().map(IoCase::input).toList());
+        CodeExecutionService.Result r = runner.run(language, code, cases.stream().map(IoCase::input).toList());
         if (r.compileError() != null) return new RunResponse(r.compileError(), List.of());
         List<CaseResult> out = new ArrayList<>();
         for (int i = 0; i < cases.size(); i++) {
-            DockerCodeRunner.Output o = r.outputs().get(i);
-            boolean passed = !o.timedOut() && o.exitCode() == 0 && DockerCodeRunner.sameOutput(cases.get(i).output(), o.stdout());
+            CodeExecutionService.Output o = r.outputs().get(i);
+            boolean passed = !o.timedOut() && o.exitCode() == 0 && CodeExecutionService.sameOutput(cases.get(i).output(), o.stdout());
             String error = o.timedOut() ? "Time limit exceeded" : o.exitCode() != 0 ? (o.stderr().isBlank() ? "Exited with code " + o.exitCode() : o.stderr()) : null;
             out.add(hidden ? new CaseResult(i + 1, passed, null, null, null, null, o.timedOut())
                     : new CaseResult(i + 1, passed, cases.get(i).input(), cases.get(i).output(), o.stdout(), error, o.timedOut()));

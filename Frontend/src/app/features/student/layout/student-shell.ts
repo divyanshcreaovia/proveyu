@@ -16,26 +16,35 @@ interface NavItem { label: string; icon: string; route: string; badge?: 'announc
 
 const NAV: { section: string; items: NavItem[] }[] = [
   { section: 'Overview', items: [{ label: 'Dashboard', icon: 'bi-speedometer2', route: '/student/dashboard' }] },
-  { section: 'Placements', items: [
-    { label: 'Campus drives', icon: 'bi-briefcase', route: '/student/drives' },
-    { label: 'Off-campus jobs', icon: 'bi-globe2', route: '/student/off-campus' },
-    { label: 'My applications', icon: 'bi-list-check', route: '/student/applications' },
-    { label: 'Interviews', icon: 'bi-calendar3', route: '/student/interviews' },
-    { label: 'Offers', icon: 'bi-award', route: '/student/offers' },
-  ] },
-  { section: 'Preparation', items: [
-    { label: 'Mock tests', icon: 'bi-journal-code', route: '/student/prep' },
-    { label: 'College tests', icon: 'bi-building-check', route: '/student/college-tests' },
-    { label: 'AI interview', icon: 'bi-mic', route: '/student/ai-interview' },
-  ] },
-  { section: 'College', items: [
-    { label: 'Announcements', icon: 'bi-megaphone', route: '/student/announcements', badge: 'announcements' },
-    { label: 'Chat with placement cell', icon: 'bi-chat-dots', route: '/student/chat', badge: 'chat' },
-  ] },
-  { section: 'Me', items: [
-    { label: 'Document locker', icon: 'bi-folder2-open', route: '/student/documents' },
-    { label: 'My profile', icon: 'bi-person-circle', route: '/student/profile' },
-  ] },
+  {
+    section: 'Placements', items: [
+      { label: 'Campus drives', icon: 'bi-briefcase', route: '/student/drives' },
+      { label: 'Off-campus jobs', icon: 'bi-globe2', route: '/student/off-campus' },
+      { label: 'My applications', icon: 'bi-list-check', route: '/student/applications' },
+      { label: 'Interviews', icon: 'bi-calendar3', route: '/student/interviews' },
+      { label: 'Offers', icon: 'bi-award', route: '/student/offers' },
+    ]
+  },
+  {
+    section: 'Preparation', items: [
+      { label: 'Mock tests', icon: 'bi-journal-code', route: '/student/prep' },
+      { label: 'College tests', icon: 'bi-building-check', route: '/student/college-tests' },
+      { label: 'Code ground', icon: 'bi-terminal', route: '/student/code-ground' },
+      { label: 'AI interview', icon: 'bi-mic', route: '/student/ai-interview' },
+    ]
+  },
+  {
+    section: 'College', items: [
+      { label: 'Announcements', icon: 'bi-megaphone', route: '/student/announcements', badge: 'announcements' },
+      { label: 'Chat with placement cell', icon: 'bi-chat-dots', route: '/student/chat', badge: 'chat' },
+    ]
+  },
+  {
+    section: 'Me', items: [
+      { label: 'Document locker', icon: 'bi-folder2-open', route: '/student/documents' },
+      { label: 'My profile', icon: 'bi-person-circle', route: '/student/profile' },
+    ]
+  },
 ];
 
 /** Student portal layout: same look and theme tokens as the college shell. */

@@ -3,6 +3,7 @@ package com.proveyu.student.prep.application;
 import com.proveyu.shared.error.DomainException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -19,17 +20,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
- * Runs student code in a throwaway Docker container: no network, read-only root, 256 MB RAM, 1 CPU, 64 processes,
- * unprivileged user, a per-test time limit and capped output. One container compiles once and runs every input.
- * shortcut: docker-per-run on the app host is fine for pilots; move to a dedicated Judge0 / gVisor pool before large drives.
+ * Legacy code runner (code.execution.provider=docker): runs student code in a throwaway Docker container: no network,
+ * read-only root, 256 MB RAM, 1 CPU, 64 processes, unprivileged user, a per-test time limit and capped output.
+ * One container compiles once and runs every input. Not used by default any more: the default is {@link Judge0CodeExecutionService}.
+ * It needs the Docker socket on the app host, which is why the default path no longer uses it.
  */
 @Slf4j
 @Component
-public class DockerCodeRunner {
-
-    public record Output(String stdout, String stderr, int exitCode, boolean timedOut) {}
-
-    public record Result(String compileError, List<Output> outputs) {}
+@ConditionalOnProperty(name = "code.execution.provider", havingValue = "docker")
+public class DockerCodeRunner implements CodeExecutionService {
 
     private static final int MAX_OUTPUT_BYTES = 65_536;
 
@@ -45,6 +44,7 @@ public class DockerCodeRunner {
         this.slots = new Semaphore(maxParallel, true);
     }
 
+    @Override
     public Result run(String language, String code, List<String> inputs) {
         Lang lang = Lang.of(language);
         if (code == null || code.isBlank()) throw new DomainException("Write some code first", HttpStatus.BAD_REQUEST, "EMPTY_CODE");
@@ -54,7 +54,7 @@ public class DockerCodeRunner {
         String name = "prep-run-" + UUID.randomUUID();
         try {
             acquired = slots.tryAcquire(20, TimeUnit.SECONDS);
-            if (!acquired) throw new DomainException("The code runner is busy. Try again in a few seconds.", HttpStatus.SERVICE_UNAVAILABLE, "RUNNER_BUSY");
+            if (!acquired) throw new CodeRunnerUnavailableException(CodeRunnerUnavailableException.Reason.BUSY);
             dir = Files.createTempDirectory("prep-run-", PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx")));
             Files.setPosixFilePermissions(dir, PosixFilePermissions.fromString("rwxrwxrwx")); // umask may strip bits; the container user must write here
             Files.writeString(dir.resolve(lang.file), code, StandardCharsets.UTF_8);
@@ -82,10 +82,10 @@ public class DockerCodeRunner {
             return new Result(null, outs);
         } catch (IOException e) {
             log.error("[PREP RUNNER] docker run failed", e);
-            throw new DomainException("The code runner is not available right now", HttpStatus.SERVICE_UNAVAILABLE, "RUNNER_UNAVAILABLE");
+            throw new CodeRunnerUnavailableException(CodeRunnerUnavailableException.Reason.UNREACHABLE);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new DomainException("Run interrupted", HttpStatus.SERVICE_UNAVAILABLE, "RUNNER_UNAVAILABLE");
+            throw new CodeRunnerUnavailableException(CodeRunnerUnavailableException.Reason.BUSY);
         } finally {
             if (acquired) slots.release();
             if (dir != null) deleteQuietly(dir);
@@ -113,16 +113,6 @@ public class DockerCodeRunner {
         } catch (IOException ignored) {
             // temp dir; the OS cleans /tmp eventually
         }
-    }
-
-    /** Output comparison that ignores trailing spaces and trailing blank lines (what students expect from online judges). */
-    public static boolean sameOutput(String expected, String actual) {
-        return normalize(expected).equals(normalize(actual));
-    }
-
-    static String normalize(String s) {
-        if (s == null) return "";
-        return s.replace("\r\n", "\n").lines().map(String::stripTrailing).reduce((a, b) -> a + "\n" + b).orElse("").stripTrailing();
     }
 
     enum Lang {

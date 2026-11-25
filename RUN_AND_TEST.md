@@ -24,7 +24,7 @@ for what a person should click through before a release.
 | Maven | 3.8+ (or the wrapper in `~/.m2/wrapper`) | `mvn -v` |
 | Node.js + npm | 20+ | `node -v` |
 | MySQL | 8 (system install on 3306, or `scripts/start-db.sh` on 3310) | `mysql --version` |
-| Docker | any recent, running | `docker ps` |
+| Docker | any recent, running (for the AI services and the Docker MySQL; coding questions use Judge0, section 2.3) | `docker ps` |
 | Python | 3.10+ (test and seed scripts, standard library only) | `python3 --version` |
 
 Ports used: **4300** frontend, **8080** backend, **3306** MySQL, **11434** Ollama, **8178** Whisper, **5002** Piper.
@@ -59,11 +59,22 @@ Fill in `Backend/.env` (it is git-ignored; never commit it):
 
 ```bash
 cd Frontend && npm install && cd ..                                  # frontend packages
-docker build -t proveyu-code-runner:1 Backend/runner                 # sandbox for mock test code (Python, Java, C++, JS)
 cd ai-services && docker compose up -d --build                       # Ollama, Whisper, Piper (Piper image is built here)
 docker compose exec ollama ollama pull qwen3:1.7b && cd ..           # local fallback model
 python3 scripts/mocktests/build.py                                   # builds the 20-test mock test ladder into scripts/mocktests/out
 ```
+
+### 2.3 Judge0 (coding questions in mock tests)
+
+Coding questions run on Judge0 CE on its own VM, not in this machine. Locally, open the SSH tunnel and keep it running:
+
+```bash
+ssh -N -L 2358:<JUDGE0_VM_INTERNAL_IP>:2358 <user>@<VM>     # terminal of its own; localhost:2358 is then the Judge0 VM
+curl -s -H "X-Auth-Token: $JUDGE0_TOKEN" http://localhost:2358/languages | head -c 300    # must print a JSON list
+```
+
+In `Backend/.env` (see `Backend/.env.example`): `JUDGE0_URL=http://localhost:2358` and `JUDGE0_TOKEN=<the token of the VM>`.
+Nothing else is needed. The full list of `JUDGE0_*` settings is in the README, section "Judge0".
 
 ---
 
@@ -276,6 +287,7 @@ Tick each row. "Expected" is what must happen; anything else is a bug. Use the a
 | M1 | Mock tests → ladder: only test 1 open | tests 2+ locked until the previous one is above 50% |
 | M2 | Start a test: screen share required, timer runs | cannot start without sharing the screen |
 | M3 | Answer MCQs; coding question → Run (sample cases) in Python, Java, C++, JavaScript | output and pass/fail per case; compile errors shown |
+| M3a | Preparation → Code ground: language Python, paste `a, b = map(int, input().split())` / `a = a + b` / `b = a - b` / `a = a - b` / `print(a, b)`, input `5 9`, Run | output `9 5`; a second Run within 5 seconds says "running code too fast" |
 | M4 | Switch tab / minimise | warning with a screenshot; after the allowed warnings the test auto-submits |
 | M5 | Stop screen share | counted as leaving the test |
 | M6 | Submit | result page: section scores, hidden test results (inputs hidden), time taken |
@@ -354,7 +366,8 @@ Nightly import: runs at 12 every night (Asia/Kolkata). To test the schedule with
 | The page has no new feature (e.g. no Off-campus menu) | you opened port 4200 (another project); use **4300** |
 | Backend does not start: `Backend/.env missing` | section 2.1 |
 | Backend starts but a migration fails | check MySQL is up and the user can `ALTER`; the log names the migration |
-| Code "Run" says the runner is unavailable | Docker running? `docker image inspect proveyu-code-runner:1`; build it (section 2.2) |
+| Code "Run" says the code judge is not available | Is the SSH tunnel to Judge0 open? `curl -s http://localhost:2358/languages`. Check `JUDGE0_URL` and `JUDGE0_TOKEN` in `Backend/.env` (section 2.3); the backend log has a `[JUDGE0]` line with the reason (401 = wrong token) |
+| Code "Run" says the judge is busy or you are running code too fast | normal under load or when clicking quickly; wait a few seconds |
 | AI interview slow or "not reachable" | Groq key valid? (section 6, A1–A2); local fallback needs Ollama and Whisper up |
 | "The AI interviewer is busy" | raise `INTERVIEW_CLOUD_MAX_PARALLEL` |
 | Careerjet import: `Undeclared referrer` | set `CAREERJET_REFERER` to the website declared in the Careerjet publisher account, restart |

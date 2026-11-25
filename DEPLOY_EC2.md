@@ -1,12 +1,12 @@
 # Deploy ProveYu on one EC2 server, securely
 
-One Ubuntu EC2 instance runs everything: nginx (HTTPS, the web app, the reverse proxy), the Spring Boot backend, MySQL, and Docker
-for the mock-test code runner. Only nginx is reachable from the internet. Ready-made files are in [deploy/](deploy/). On Google Cloud instead, follow [DEPLOY_GCP.md](DEPLOY_GCP.md).
+One Ubuntu EC2 instance runs nginx (HTTPS, the web app, the reverse proxy), the Spring Boot backend and MySQL. The mock-test code
+runs on a separate Judge0 VM (internal network only). Only nginx is reachable from the internet. Ready-made files are in [deploy/](deploy/). On Google Cloud instead, follow [DEPLOY_GCP.md](DEPLOY_GCP.md).
 
 ```text
 Internet ──443──► nginx ──► /var/www/proveyu (Angular app)
                     └──────► 127.0.0.1:8080 backend ──► 127.0.0.1:3306 MySQL
-                                                   ├──► Docker (code runner, no network)
+                                                   ├──► Judge0 CE on its own VM (code runner, internal IP)
                                                    └──► Groq, Careerjet, SMTP (outbound only)
 ```
 
@@ -33,11 +33,10 @@ Tick every line before the platform goes live. Each one was checked in the secur
 
 ```bash
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y nginx certbot python3-certbot-nginx mysql-server openjdk-21-jre-headless docker.io unattended-upgrades
+sudo apt install -y nginx certbot python3-certbot-nginx mysql-server openjdk-21-jre-headless unattended-upgrades
 sudo dpkg-reconfigure -plow unattended-upgrades
 
 sudo useradd --system --create-home --shell /usr/sbin/nologin proveyu
-sudo usermod -aG docker proveyu
 sudo mkdir -p /opt/proveyu /etc/proveyu /var/lib/proveyu/uploads /var/www/proveyu
 sudo chown -R proveyu:proveyu /opt/proveyu /var/lib/proveyu
 ```
@@ -50,8 +49,8 @@ CREATE USER 'proveyu_app'@'127.0.0.1' IDENTIFIED BY '<long random password>';
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, REFERENCES, DROP ON proveyufinaldb.* TO 'proveyu_app'@'127.0.0.1';
 ```
 
-Load the schema once into the empty database: `mysql proveyufinaldb < finaluseddbschema.sql`, then set `SPRING_FLYWAY_BASELINE_VERSION=42`
-(the version written at the top of that file) in the backend env file. On the first start Flyway records the database as version 42 and
+Load the schema once into the empty database: `mysql proveyufinaldb < finaluseddbschema.sql`, then set `SPRING_FLYWAY_BASELINE_VERSION=44`
+(the version written at the top of that file) in the backend env file. On the first start Flyway records the database as version 44 and
 runs nothing old; from then on every deploy runs only the new migrations (V43, V44, ...) automatically. Never edit a `V__` file that
 already ran, and never run the old migrations on an empty production database (V15 needs data that only exists in dev).
 
@@ -61,7 +60,6 @@ already ran, and never run the old migrations on an empty production database (V
 # on your machine or the server
 cd Backend && mvn -DskipTests package && cd ..
 cd Frontend && npm ci && npx ng build && cd ..
-docker build -t proveyu-code-runner:1 Backend/runner
 
 sudo cp Backend/target/proveyu-backend-*.jar /opt/proveyu/proveyu-backend.jar
 sudo cp -r Frontend/dist/proveyu-frontend/browser/* /var/www/proveyu/
@@ -89,10 +87,9 @@ curl -s -X POST https://proveyu.example.com/api/v1/auth/forgot-password -H 'Cont
 
 ## 5. Known limits (accepted for now)
 
-- **Code runner on the same server.** The backend starts Docker containers, so the `proveyu` user is in the `docker` group, which is
-  as powerful as root. Student code itself runs with no network, a read-only file system, no Linux capabilities, an unprivileged
-  user, 256 MB RAM, 1 CPU, 64 processes and a time limit. If the backend itself were compromised, the attacker would get the
-  server. For large drives move the runner to its own instance (see the scaling notes in the architecture doc).
+- **Code runner on its own VM.** Student code runs in Judge0's isolate sandbox on a separate Judge0 VM, reached over the internal
+  network with a token. The backend no longer needs Docker or the `docker` group, so a compromised backend cannot start containers
+  on this server.
 - **Tokens in the browser.** The sign-in token is kept in browser storage, the normal pattern for this kind of app. The
   Content-Security-Policy from nginx blocks injected scripts, and Angular escapes all data it displays.
 - **One address, many students.** A college lab often shares one public address; 60 sign-ins a minute per address apply.

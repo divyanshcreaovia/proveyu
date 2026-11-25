@@ -11,7 +11,7 @@ and for feature details [../docs/COLLEGE_PORTAL.md](../docs/COLLEGE_PORTAL.md).
 Browser (Angular 21, :4300) ──HTTPS/JSON──► Spring Boot 3.2 backend (:8080) ──JDBC──► MySQL 8 (proveyu_college)
         │                                  │  ├─ WebSocket /ws/chat (live chat)
         └──── WebSocket ───────────────────┘  ├─ uploads/ on disk (documents, offer letters, NOCs, chat files, audio, screenshots)
-                                              ├─ Docker: proveyu-code-runner (mock test code, one container per run)
+                                              ├─ Judge0 CE on its own VM (mock test code, internal network only)
                                               ├─ Groq API (AI interview LLM + speech-to-text)  ──fallback──► Ollama + whisper.cpp (local)
                                               ├─ Piper (local text-to-speech for interview questions)
                                               ├─ Careerjet API (nightly off-campus job import)
@@ -57,8 +57,9 @@ always apply the same rules. Data access is JPA for entities and `JdbcTemplate` 
 - **Rate limiting:** `RateLimitingFilter`, sliding window: 60 requests a minute per IP on sign-in routes, 120 a minute per user elsewhere.
 - **Uploads:** size and extension limits, and the file's first bytes must match its extension. Files are stored under random names
   and served only through authorised endpoints (never a public folder).
-- **Student code:** runs in Docker with no network, a read-only root, 256 MB RAM, 1 CPU, 64 processes, an unprivileged user, a per-test
-  time limit and capped output (`DockerCodeRunner`).
+- **Student code:** runs in Judge0 CE's isolate sandbox on a separate VM: no network, CPU, memory and wall-time limits, capped output.
+  The backend talks to it through `Judge0Client` (token in a header, never logged). The old Docker runner stays behind
+  `code.execution.provider=docker`.
 - **Audit:** college staff actions go to `college_audit_logs`, admin actions to `admin_audit_logs`.
 - **Dev only:** `APP_DEV_EXPOSE_TOKENS=true` returns OTPs and invite tokens in responses for the test scripts. Must be `false` in production.
 
@@ -66,7 +67,7 @@ always apply the same rules. Data access is JPA for entities and `JdbcTemplate` 
 
 Every JSON response is `ApiResponse<T>`: `{ success, message, data }`. Failures go through `GlobalExceptionHandler`:
 `{ success: false, timestamp, status, code, errorCode, message, fieldErrors }`. Business rules throw `DomainException` with an HTTP
-status and a stable error code (for example `NOT_ELIGIBLE`, `NOC_EXISTS`, `RUNNER_BUSY`). Each request is logged with its path,
+status and a stable error code (for example `NOT_ELIGIBLE`, `NOC_EXISTS`, `RUNNER_BUSY`; the code runner also uses `RUNNER_UNREACHABLE`, `RUNNER_TIMEOUT`, `RUNNER_AUTH`, `RUNNER_INTERNAL`, `RATE_LIMITED` and `INPUT_TOO_LARGE`). Each request is logged with its path,
 status and duration (`ApiLoggingFilter`).
 
 ## 5. AI interview pipeline
@@ -88,7 +89,7 @@ Credits: one free interview every `free-every-days`, more bought by UPI and appr
 ## 6. Mock tests and proctoring
 
 `student/prep`: tests are JSON (sections, MCQs, coding questions with sample and hidden cases). The 20-test ladder unlocks the next
-test above a score threshold. Coding answers run in the Docker code runner: compile once, run every case, compare output (trailing
+test above a score threshold. Coding answers run on Judge0 (one batch per answer, one submission per case); the backend compares output (trailing
 spaces ignored). The student must share the whole screen; leaving the test (tab switch, other window, share stopped) is reported
 with a screenshot, and after the allowed warnings the attempt is submitted (`ProctorService`). Scoring is done on the server.
 
@@ -135,6 +136,7 @@ shared features (`support`, `offcampus`). Pages talk to the backend only through
 - The app is stateless apart from the chat WebSocket sessions and in-memory semaphores; run several instances behind a load
   balancer with sticky sessions for `/ws/chat`, or move chat fan-out to a broker first.
 - `uploads/` is local disk: with more than one instance, move it to shared or object storage.
-- The Docker code runner allows 4 runs at a time per backend (`prep.runner.max-parallel`). For large drives, move code execution
-  to a dedicated worker pool behind a queue and evaluate submissions asynchronously.
+- Judge0 runs are limited per backend to `JUDGE0_MAX_PARALLEL` (default 4); extra runs queue for up to 20 s, then "judge busy". Students
+  get one code run per 5 s each for Run, Code ground and Submit (`CODE_RUN_RATE_LIMIT_SECONDS`). A Submit with only MCQ answers is not
+  limited. Admin test inputs can be up to 1 MB; Code ground input is capped at 64 KB. For large drives, add Judge0 workers and move grading to a queue.
 - Groq throughput is bounded by the account's rate limits; a paid tier or a second provider is the way to scale interviews.

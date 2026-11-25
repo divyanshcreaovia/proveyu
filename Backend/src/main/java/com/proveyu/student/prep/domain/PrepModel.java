@@ -102,6 +102,12 @@ public final class PrepModel {
 
     public record RunRequest(String questionId, String language, String code) {}
 
+    /** Code ground: run any code with one stdin, no test, no score. */
+    public record PlaygroundRequest(String language, String code, String stdin) {}
+
+    /** compileError set = did not compile; otherwise what the program printed and how it ended. */
+    public record PlaygroundResult(String compileError, String stdout, String stderr, Integer exitCode, boolean timedOut) {}
+
     public record CaseResult(int index, boolean passed, String input, String expected, String actual, String error, boolean timedOut) {}
 
     public record RunResponse(String compileError, List<CaseResult> cases) {}
