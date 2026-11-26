@@ -193,7 +193,7 @@ code:
       token: ${JUDGE0_TOKEN:}                            # sent in the auth header; never logged
       auth-header: ${JUDGE0_AUTH_HEADER:X-Auth-Token}
       poll-interval-ms: ${JUDGE0_POLL_INTERVAL_MS:300}
-      poll-timeout-ms: ${JUDGE0_POLL_TIMEOUT_MS:30000}
+      poll-timeout-ms: ${JUDGE0_POLL_TIMEOUT_MS:60000}   # Java / C++ on several tests can pass 30 s when the judge is busy
       max-parallel: ${JUDGE0_MAX_PARALLEL:4}             # concurrent runs this backend sends to Judge0
       connect-timeout-ms: ${JUDGE0_CONNECT_TIMEOUT_MS:3000}
       read-timeout-ms: ${JUDGE0_READ_TIMEOUT_MS:15000}

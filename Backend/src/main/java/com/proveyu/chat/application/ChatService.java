@@ -38,6 +38,7 @@ public class ChatService {
     private final UserRepository userRepository;
     private final FileStorageService fileStorageService;
     private final ChatWebSocketHandler chatWebSocketHandler;
+    private final ChatAccess chatAccess;
 
     @Transactional
     public ChatMessageResponse sendTextMessage(UUID senderId, SendTextMessageRequest request) {
@@ -52,6 +53,8 @@ public class ChatService {
         if (!userRepository.existsById(request.getReceiverId())) {
             throw new DomainException("Receiver user does not exist", HttpStatus.NOT_FOUND, "USER_NOT_FOUND");
         }
+
+        chatAccess.check(senderId, request.getReceiverId());
 
         if (!StringUtils.hasText(request.getMessage())) {
             throw new DomainException("Message text cannot be empty", HttpStatus.BAD_REQUEST, "EMPTY_MESSAGE");
@@ -92,6 +95,8 @@ public class ChatService {
         if (!userRepository.existsById(receiverId)) {
             throw new DomainException("Receiver user does not exist", HttpStatus.NOT_FOUND, "USER_NOT_FOUND");
         }
+
+        chatAccess.check(senderId, receiverId);
 
         if (file == null || file.isEmpty()) {
             throw new DomainException("Chat file is required and cannot be empty", HttpStatus.BAD_REQUEST, "EMPTY_FILE");

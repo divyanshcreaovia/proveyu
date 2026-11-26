@@ -23,6 +23,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
     { label: 'Payments', icon: 'bi-currency-rupee', route: '/admin/payments', badge: 'payments' },
     { label: 'Off-campus jobs', icon: 'bi-globe2', route: '/admin/off-campus' },
     { label: 'Mock tests', icon: 'bi-journal-code', route: '/admin/mock-tests' },
+    { label: 'Code ground', icon: 'bi-terminal', route: '/admin/code-ground' },
     { label: 'Proctoring', icon: 'bi-shield-check', route: '/admin/proctoring' },
   ] },
   { section: 'Platform', items: [

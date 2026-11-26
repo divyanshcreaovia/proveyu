@@ -48,6 +48,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final com.proveyu.shared.security.UserBlockList userBlockList;
     private final PayloadDecryptionUtils payloadDecryptionUtils;
     private final EmailService emailService;
     private final TokenBlacklistService tokenBlacklistService;
@@ -202,6 +203,7 @@ public class AuthService {
         // Completing an OTP reset proves mailbox ownership.
         if (user.getEmailVerifiedAt() == null) user.setEmailVerifiedAt(Instant.now());
         userRepository.save(user);
+        userBlockList.passwordChanged(user.getId()); // anyone still signed in with the old password is signed out
         otpFailures.remove(normalizeEmail(request.getEmail()));
         log.info("[AUTH RESET_PASSWORD] Password updated for user id=[{}]", user.getId());
     }

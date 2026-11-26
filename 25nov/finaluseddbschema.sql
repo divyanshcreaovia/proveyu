@@ -1,7 +1,8 @@
 -- =====================================================================================================
 -- finaluseddbschema.sql : ProveYu database (MySQL 8, utf8mb4): schema + showcase data
--- Flyway version 44 (V1..V44 applied). 58 tables. Load into an EMPTY database and set SPRING_FLYWAY_BASELINE_VERSION=44;
--- Flyway then runs only newer migrations (V45, ...) on start.
+-- Flyway version 49 (V1..V49 applied). 66 tables. Load into an EMPTY database and set SPRING_FLYWAY_BASELINE_VERSION=49;
+-- Flyway then runs only newer migrations (V50, ...) on start. Tables of V45..V49 (Code ground, password_changed_at) are here, empty:
+-- the showcase data below is unchanged.
 --
 -- Data (made through the app by scripts/seed_college.py and scripts/seed_ltce_years.py, with mail switched off):
 --   * the 20 platform mock tests (placement test path)
@@ -235,6 +236,109 @@ CREATE TABLE `chat_messages` (
   KEY `idx_chat_receiver_status` (`receiver_id`,`status`),
   CONSTRAINT `fk_chat_receiver` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_chat_sender` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `code_ground_daily`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `code_ground_daily` (
+  `user_id` char(36) NOT NULL,
+  `day` date NOT NULL,
+  `problem_key` varchar(80) NOT NULL,
+  `points` int NOT NULL,
+  `solved_at` datetime NOT NULL,
+  PRIMARY KEY (`user_id`,`day`),
+  CONSTRAINT `fk_cgdl_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `code_ground_drafts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `code_ground_drafts` (
+  `user_id` char(36) NOT NULL,
+  `problem_key` varchar(80) NOT NULL,
+  `language` varchar(12) NOT NULL,
+  `code` mediumtext NOT NULL,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`user_id`,`problem_key`,`language`),
+  CONSTRAINT `fk_cgd_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `code_ground_hidden`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `code_ground_hidden` (
+  `problem_key` varchar(80) NOT NULL,
+  PRIMARY KEY (`problem_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `code_ground_problems`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `code_ground_problems` (
+  `problem_key` varchar(60) NOT NULL,
+  `topic_key` varchar(60) NOT NULL,
+  `spec` mediumtext NOT NULL,
+  `published_spec` mediumtext,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`problem_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `code_ground_progress`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `code_ground_progress` (
+  `user_id` char(36) NOT NULL,
+  `item_type` varchar(10) NOT NULL,
+  `item_key` varchar(80) NOT NULL,
+  `attempts` int NOT NULL DEFAULT '0',
+  `done_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`user_id`,`item_type`,`item_key`),
+  CONSTRAINT `fk_cgp_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `code_ground_schedule`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `code_ground_schedule` (
+  `day` date NOT NULL,
+  `problem_key` varchar(80) NOT NULL,
+  `auto` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`day`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `code_ground_submissions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `code_ground_submissions` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` char(36) NOT NULL,
+  `problem_key` varchar(80) NOT NULL,
+  `language` varchar(12) NOT NULL,
+  `code` mediumtext NOT NULL,
+  `verdict` varchar(20) NOT NULL,
+  `passed_count` int NOT NULL,
+  `total_count` int NOT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_cgs_user_problem` (`user_id`,`problem_key`,`id`),
+  CONSTRAINT `fk_cgs_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `code_ground_topics`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `code_ground_topics` (
+  `topic_key` varchar(60) NOT NULL,
+  `title` varchar(120) NOT NULL,
+  `summary` varchar(300) NOT NULL,
+  `guide` mediumtext NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`topic_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `college_announcement_recipients`;
@@ -1369,6 +1473,7 @@ CREATE TABLE `users` (
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `reset_token` varchar(100) DEFAULT NULL,
   `reset_token_expires_at` datetime DEFAULT NULL,
+  `password_changed_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_users_email` (`email`),
   UNIQUE KEY `uq_users_phone` (`phone`),

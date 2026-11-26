@@ -1,0 +1,591 @@
+{
+ "key": "strings",
+ "title": "Strings",
+ "summary": "Palindromes, sliding window, expand around centre, minimum window",
+ "guide": [
+  {
+   "tag": "Why it matters",
+   "title": "Text is everywhere",
+   "points": [
+    "Names, messages, URLs, logs and code itself are strings. Interviewers love string questions because they test careful indexing.",
+    "Palindromes, anagrams and \"longest substring\" questions appear in almost every company set."
+   ],
+   "code": null
+  },
+  {
+   "tag": "Real-world use",
+   "title": "Where string skills are used",
+   "points": [
+    "Search boxes and autocomplete match what you type against stored text.",
+    "Form validation: PAN, IFSC, e-mail and phone formats are string checks.",
+    "Spell check and plagiarism tools compare texts; genome tools search patterns in DNA strings (A, C, G, T).",
+    "Search result snippets highlight the shortest part of a page that contains all your words: the \"minimum window\" problem."
+   ],
+   "code": null
+  },
+  {
+   "tag": "Core idea",
+   "title": "A sequence of characters",
+   "points": [
+    "A string works like an array of characters: s[i] is one character, length is the count.",
+    "In JavaScript, Java and Python strings cannot be changed in place; build a new one (or an array / StringBuilder) instead. C++ std::string can be changed.",
+    "Characters have codes: \"a\" is 97. Subtract \"a\" to map letters to 0–25 for counting."
+   ],
+   "code": null
+  },
+  {
+   "tag": "Syntax",
+   "title": "Length, characters, reverse",
+   "points": [],
+   "code": {
+    "javascript": "const s = 'campus';\nconst rev = s.split('').reverse().join('');\nfor (const ch of s) { /* one character */ }\nconsole.log(s.length, rev, s[0]);   // 6 supmac c",
+    "python": "s = 'campus'\nrev = s[::-1]\nfor ch in s:\n    pass  # one character\nprint(len(s), rev, s[0])   # 6 supmac c",
+    "java": "String s = \"campus\";\nString rev = new StringBuilder(s).reverse().toString();\nfor (char ch : s.toCharArray()) { /* one character */ }\nSystem.out.println(s.length() + \" \" + rev + \" \" + s.charAt(0));",
+    "cpp": "string s = \"campus\";\nstring rev(s.rbegin(), s.rend());\nfor (char ch : s) { /* one character */ }\ncout << s.size() << \" \" << rev << \" \" << s[0];"
+   }
+  },
+  {
+   "tag": "Pattern",
+   "title": "Two pointers for palindromes",
+   "points": [
+    "Compare the first and last characters, then move both inwards. Stop at the first mismatch.",
+    "O(n) time and no extra memory; clean the text first if case and punctuation should be ignored."
+   ],
+   "code": {
+    "javascript": "let l = 0, r = s.length - 1, ok = true;\nwhile (l < r) {\n  if (s[l] !== s[r]) { ok = false; break; }\n  l++; r--;\n}",
+    "python": "l, r, ok = 0, len(s) - 1, True\nwhile l < r:\n    if s[l] != s[r]:\n        ok = False\n        break\n    l += 1\n    r -= 1",
+    "java": "int l = 0, r = s.length() - 1;\nboolean ok = true;\nwhile (l < r) {\n    if (s.charAt(l) != s.charAt(r)) { ok = false; break; }\n    l++; r--;\n}",
+    "cpp": "int l = 0, r = (int)s.size() - 1;\nbool ok = true;\nwhile (l < r) {\n    if (s[l] != s[r]) { ok = false; break; }\n    l++; r--;\n}"
+   }
+  },
+  {
+   "tag": "Pattern",
+   "title": "Sliding window on text",
+   "points": [
+    "Move the right edge to take a character in; move the left edge while the window breaks the rule (a repeat, a missing letter).",
+    "A map of counts or last positions tells you when the window is valid. Each character enters and leaves once: O(n).",
+    "Expand around the centre: every palindrome grows from a centre, so try all 2n − 1 centres for the longest one."
+   ],
+   "code": {
+    "javascript": "// longest substring without repeating characters\nconst last = new Map();\nlet l = 0, best = 0;\nfor (let r = 0; r < s.length; r++) {\n  if (last.has(s[r]) && last.get(s[r]) >= l) l = last.get(s[r]) + 1;\n  last.set(s[r], r);\n  best = Math.max(best, r - l + 1);\n}",
+    "python": "# longest substring without repeating characters\nlast, l, best = {}, 0, 0\nfor r, ch in enumerate(s):\n    if last.get(ch, -1) >= l:\n        l = last[ch] + 1\n    last[ch] = r\n    best = max(best, r - l + 1)",
+    "java": "// longest substring without repeating characters\nMap<Character, Integer> last = new HashMap<>();\nint l = 0, best = 0;\nfor (int r = 0; r < s.length(); r++) {\n    char ch = s.charAt(r);\n    if (last.getOrDefault(ch, -1) >= l) l = last.get(ch) + 1;\n    last.put(ch, r);\n    best = Math.max(best, r - l + 1);\n}",
+    "cpp": "// longest substring without repeating characters\nunordered_map<char, int> last;\nint l = 0, best = 0;\nfor (int r = 0; r < (int)s.size(); r++) {\n    if (last.count(s[r]) && last[s[r]] >= l) l = last[s[r]] + 1;\n    last[s[r]] = r;\n    best = max(best, r - l + 1);\n}"
+   }
+  },
+  {
+   "tag": "Common mistakes",
+   "title": "What breaks string code",
+   "points": [
+    "Building a string with += in a loop: O(n²) in Java. Use StringBuilder (Java) or collect pieces and join.",
+    "Java: compare strings with equals(), never ==.",
+    "Upper and lower case are different characters; spaces and punctuation count too.",
+    "substring / slice end index is exclusive: s.substring(1, 3) has 2 characters."
+   ],
+   "code": null
+  },
+  {
+   "tag": "Going further",
+   "title": "For advanced learners and interviews",
+   "points": [
+    "Ask about the character set first: lowercase only (use a 26-size array), ASCII, or Unicode?",
+    "Pattern search: KMP and the Z-function find a pattern in O(n + m); rolling hashes (Rabin-Karp) compare substrings in O(1).",
+    "Longest palindromic substring in O(n) exists (Manacher), but expand-around-centre O(n²) is what interviews expect.",
+    "Next step: Hashing, which makes \"have I seen this?\" instant."
+   ],
+   "code": null
+  }
+ ],
+ "problems": [
+  {
+   "key": "count-vowels",
+   "title": "Count the vowels",
+   "difficulty": "EASY",
+   "statement": "Return how many vowels (a, e, i, o, u in either case) the string has.",
+   "inputFormat": [
+    "s: a string (may contain spaces)"
+   ],
+   "hint": "Check each character against \"aeiou\".",
+   "note": null,
+   "args": [
+    {
+     "name": "s",
+     "type": "str"
+    }
+   ],
+   "returnType": "int",
+   "starters": {
+    "javascript": "function solve(s) {\n  // Write your code here and return the answer\n  \n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nconst lines = require('fs').readFileSync(0, 'utf8').replace(/\\r/g, '').split('\\n');\nlet at = 0;\nconst readLine = () => lines[at++] || '';\nconst s = readLine();\nconst answer = solve(s);\nconsole.log('\\n##PROVEYU-ANSWER##');\nconsole.log(Array.isArray(answer) ? (answer.some(Array.isArray) ? answer.map(r => r.join(' ')).join('\\n') : answer.join(' ')) : String(answer));\n",
+    "python": "def solve(s):\n    # Write your code here and return the answer\n    pass\n\n\n# ----- Input is read and the answer is printed for you: no need to change below -----\nimport sys\n_lines = sys.stdin.read().replace('\\r', '').split('\\n')\n_at = 0\n\n\ndef _line():\n    global _at\n    s = _lines[_at] if _at < len(_lines) else ''\n    _at += 1\n    return s\n\n\ndef _int():\n    s = _line().strip()\n    return int(s) if s else 0\n\n\ndef _ints():\n    return [int(x) for x in _line().split()]\n\n\ndef _words():\n    return _line().split()\n\n\ndef _rows():\n    return [_ints() for _ in range(_int())]\n\n\ndef _tree():\n    return [None if w == 'null' else int(w) for w in _words()]\n\n\ndef _fmt(v):\n    if isinstance(v, bool):\n        return 'true' if v else 'false'\n    if isinstance(v, float):\n        return str(int(v)) if v == int(v) and abs(v) < 1e15 else repr(v)\n    return str(v)\n\n\ndef _show(v):\n    if isinstance(v, (list, tuple)):\n        if any(isinstance(x, (list, tuple)) for x in v):\n            return '\\n'.join(' '.join(_fmt(x) for x in row) for row in v)\n        return ' '.join(_fmt(x) for x in v)\n    return _fmt(v)\n\n\ns = _line()\n_answer = solve(s)\nprint('\\n##PROVEYU-ANSWER##')\nprint(_show(_answer))\n",
+    "java": "import java.util.*;\nimport java.io.*;\n\npublic class Main {\n\n    static int solve(String s) {\n        // Write your code here and return the answer\n        return 0;\n    }\n\n    // ----- Input is read and the answer is printed for you: no need to change below -----\n    static List<String> lines = new ArrayList<>();\n    static int at = 0;\n\n    public static void main(String[] args) throws IOException {\n        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));\n        for (String l = in.readLine(); l != null; l = in.readLine()) lines.add(l);\n        String s = readLine();\n        int output_ = solve(s);\n        System.out.println(\"\\n##PROVEYU-ANSWER##\");\n        System.out.println(show(output_));\n    }\n\n    static String readLine() { return at < lines.size() ? lines.get(at++) : \"\"; }\n    static int readInt() { String s = readLine().trim(); return s.isEmpty() ? 0 : Integer.parseInt(s); }\n    static String[] readWords() { String s = readLine().trim(); return s.isEmpty() ? new String[0] : s.split(\"\\\\s+\"); }\n    static int[] readInts() { String[] w = readWords(); int[] a = new int[w.length]; for (int i = 0; i < w.length; i++) a[i] = Integer.parseInt(w[i]); return a; }\n    static int[][] readRows() { int k = readInt(); int[][] r = new int[k][]; for (int i = 0; i < k; i++) r[i] = readInts(); return r; }\n    static Integer[] readTree() { String[] w = readWords(); Integer[] t = new Integer[w.length]; for (int i = 0; i < w.length; i++) t[i] = w[i].equals(\"null\") ? null : Integer.valueOf(w[i]); return t; }\n\n    static String show(int v) { return String.valueOf(v); }\n    static String show(long v) { return String.valueOf(v); }\n    static String show(boolean v) { return String.valueOf(v); }\n    static String show(String v) { return String.valueOf(v); }\n    static String show(double v) { return v == Math.rint(v) && Math.abs(v) < 1e15 ? String.valueOf((long) v) : java.math.BigDecimal.valueOf(v).stripTrailingZeros().toPlainString(); }\n    static String show(int[] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \" \" : \"\").append(v[i]); return b.toString(); }\n    static String show(String[] v) { return String.join(\" \", v); }\n    static String show(int[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n    static String show(String[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n}\n",
+    "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nint solve(string s) {\n    // Write your code here and return the answer\n    return 0;\n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nvector<string> LINES;\nsize_t AT = 0;\nstring readLine() { return AT < LINES.size() ? LINES[AT++] : string(); }\nint readInt() { stringstream s(readLine()); int v = 0; s >> v; return v; }\nvector<string> readWords() { stringstream s(readLine()); vector<string> v; string w; while (s >> w) v.push_back(w); return v; }\nvector<int> readInts() { vector<int> v; for (const string& w : readWords()) v.push_back(stoi(w)); return v; }\nvector<vector<int>> readRows() { int k = readInt(); vector<vector<int>> r; for (int i = 0; i < k; i++) r.push_back(readInts()); return r; }\nvector<int> readTree() { vector<int> t; for (const string& w : readWords()) t.push_back(w == \"null\" ? INT_MIN : stoi(w)); return t; }\n\nstring show(int v) { return to_string(v); }\nstring show(long long v) { return to_string(v); }\nstring show(bool v) { return v ? \"true\" : \"false\"; }\nstring show(const string& v) { return v; }\nstring show(double v) { ostringstream o; o << setprecision(15) << v; return o.str(); }\ntemplate <class T> string show(const vector<T>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \" \" : \"\") + show(v[i]);\n    return out;\n}\ntemplate <class T> string show(const vector<vector<T>>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \"\\n\" : \"\") + show(v[i]);\n    return out;\n}\n\nint main() {\n    for (string l; getline(cin, l);) { if (!l.empty() && l.back() == '\\r') l.pop_back(); LINES.push_back(l); }\n    string s = readLine();\n    int output_ = solve(s);\n    fflush(stdout); // what you printed with printf comes first\n    cout << \"\\n##PROVEYU-ANSWER##\\n\" << show(output_) << endl;\n    return 0;\n}\n"
+   },
+   "tests": [
+    {
+     "input": "Placement Drive",
+     "output": "5"
+    },
+    {
+     "input": "rhythm",
+     "output": "0"
+    },
+    {
+     "input": "AEIOU",
+     "output": "5"
+    },
+    {
+     "input": "a",
+     "output": "1"
+    },
+    {
+     "input": "Campus 2026",
+     "output": "2"
+    }
+   ],
+   "hiddenTests": [
+    {
+     "input": "my gym",
+     "output": "0"
+    },
+    {
+     "input": "aeIOUuoiea",
+     "output": "10"
+    },
+    {
+     "input": "Hello World, 2026!",
+     "output": "3"
+    }
+   ]
+  },
+  {
+   "key": "reverse-words",
+   "title": "Reverse the words",
+   "difficulty": "EASY",
+   "statement": "Return the words of the sentence in reverse order, separated by single spaces.",
+   "inputFormat": [
+    "s: a string (may contain spaces)"
+   ],
+   "hint": "Split on spaces and drop empty pieces.",
+   "note": null,
+   "args": [
+    {
+     "name": "s",
+     "type": "str"
+    }
+   ],
+   "returnType": "string",
+   "starters": {
+    "javascript": "function solve(s) {\n  // Write your code here and return the answer\n  \n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nconst lines = require('fs').readFileSync(0, 'utf8').replace(/\\r/g, '').split('\\n');\nlet at = 0;\nconst readLine = () => lines[at++] || '';\nconst s = readLine();\nconst answer = solve(s);\nconsole.log('\\n##PROVEYU-ANSWER##');\nconsole.log(Array.isArray(answer) ? (answer.some(Array.isArray) ? answer.map(r => r.join(' ')).join('\\n') : answer.join(' ')) : String(answer));\n",
+    "python": "def solve(s):\n    # Write your code here and return the answer\n    pass\n\n\n# ----- Input is read and the answer is printed for you: no need to change below -----\nimport sys\n_lines = sys.stdin.read().replace('\\r', '').split('\\n')\n_at = 0\n\n\ndef _line():\n    global _at\n    s = _lines[_at] if _at < len(_lines) else ''\n    _at += 1\n    return s\n\n\ndef _int():\n    s = _line().strip()\n    return int(s) if s else 0\n\n\ndef _ints():\n    return [int(x) for x in _line().split()]\n\n\ndef _words():\n    return _line().split()\n\n\ndef _rows():\n    return [_ints() for _ in range(_int())]\n\n\ndef _tree():\n    return [None if w == 'null' else int(w) for w in _words()]\n\n\ndef _fmt(v):\n    if isinstance(v, bool):\n        return 'true' if v else 'false'\n    if isinstance(v, float):\n        return str(int(v)) if v == int(v) and abs(v) < 1e15 else repr(v)\n    return str(v)\n\n\ndef _show(v):\n    if isinstance(v, (list, tuple)):\n        if any(isinstance(x, (list, tuple)) for x in v):\n            return '\\n'.join(' '.join(_fmt(x) for x in row) for row in v)\n        return ' '.join(_fmt(x) for x in v)\n    return _fmt(v)\n\n\ns = _line()\n_answer = solve(s)\nprint('\\n##PROVEYU-ANSWER##')\nprint(_show(_answer))\n",
+    "java": "import java.util.*;\nimport java.io.*;\n\npublic class Main {\n\n    static String solve(String s) {\n        // Write your code here and return the answer\n        return \"\";\n    }\n\n    // ----- Input is read and the answer is printed for you: no need to change below -----\n    static List<String> lines = new ArrayList<>();\n    static int at = 0;\n\n    public static void main(String[] args) throws IOException {\n        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));\n        for (String l = in.readLine(); l != null; l = in.readLine()) lines.add(l);\n        String s = readLine();\n        String output_ = solve(s);\n        System.out.println(\"\\n##PROVEYU-ANSWER##\");\n        System.out.println(show(output_));\n    }\n\n    static String readLine() { return at < lines.size() ? lines.get(at++) : \"\"; }\n    static int readInt() { String s = readLine().trim(); return s.isEmpty() ? 0 : Integer.parseInt(s); }\n    static String[] readWords() { String s = readLine().trim(); return s.isEmpty() ? new String[0] : s.split(\"\\\\s+\"); }\n    static int[] readInts() { String[] w = readWords(); int[] a = new int[w.length]; for (int i = 0; i < w.length; i++) a[i] = Integer.parseInt(w[i]); return a; }\n    static int[][] readRows() { int k = readInt(); int[][] r = new int[k][]; for (int i = 0; i < k; i++) r[i] = readInts(); return r; }\n    static Integer[] readTree() { String[] w = readWords(); Integer[] t = new Integer[w.length]; for (int i = 0; i < w.length; i++) t[i] = w[i].equals(\"null\") ? null : Integer.valueOf(w[i]); return t; }\n\n    static String show(int v) { return String.valueOf(v); }\n    static String show(long v) { return String.valueOf(v); }\n    static String show(boolean v) { return String.valueOf(v); }\n    static String show(String v) { return String.valueOf(v); }\n    static String show(double v) { return v == Math.rint(v) && Math.abs(v) < 1e15 ? String.valueOf((long) v) : java.math.BigDecimal.valueOf(v).stripTrailingZeros().toPlainString(); }\n    static String show(int[] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \" \" : \"\").append(v[i]); return b.toString(); }\n    static String show(String[] v) { return String.join(\" \", v); }\n    static String show(int[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n    static String show(String[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n}\n",
+    "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nstring solve(string s) {\n    // Write your code here and return the answer\n    return \"\";\n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nvector<string> LINES;\nsize_t AT = 0;\nstring readLine() { return AT < LINES.size() ? LINES[AT++] : string(); }\nint readInt() { stringstream s(readLine()); int v = 0; s >> v; return v; }\nvector<string> readWords() { stringstream s(readLine()); vector<string> v; string w; while (s >> w) v.push_back(w); return v; }\nvector<int> readInts() { vector<int> v; for (const string& w : readWords()) v.push_back(stoi(w)); return v; }\nvector<vector<int>> readRows() { int k = readInt(); vector<vector<int>> r; for (int i = 0; i < k; i++) r.push_back(readInts()); return r; }\nvector<int> readTree() { vector<int> t; for (const string& w : readWords()) t.push_back(w == \"null\" ? INT_MIN : stoi(w)); return t; }\n\nstring show(int v) { return to_string(v); }\nstring show(long long v) { return to_string(v); }\nstring show(bool v) { return v ? \"true\" : \"false\"; }\nstring show(const string& v) { return v; }\nstring show(double v) { ostringstream o; o << setprecision(15) << v; return o.str(); }\ntemplate <class T> string show(const vector<T>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \" \" : \"\") + show(v[i]);\n    return out;\n}\ntemplate <class T> string show(const vector<vector<T>>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \"\\n\" : \"\") + show(v[i]);\n    return out;\n}\n\nint main() {\n    for (string l; getline(cin, l);) { if (!l.empty() && l.back() == '\\r') l.pop_back(); LINES.push_back(l); }\n    string s = readLine();\n    string output_ = solve(s);\n    fflush(stdout); // what you printed with printf comes first\n    cout << \"\\n##PROVEYU-ANSWER##\\n\" << show(output_) << endl;\n    return 0;\n}\n"
+   },
+   "tests": [
+    {
+     "input": "learn to code",
+     "output": "code to learn"
+    },
+    {
+     "input": "  hello   world  ",
+     "output": "world hello"
+    },
+    {
+     "input": "one",
+     "output": "one"
+    },
+    {
+     "input": "a b c d",
+     "output": "d c b a"
+    },
+    {
+     "input": "we are hiring",
+     "output": "hiring are we"
+    }
+   ],
+   "hiddenTests": [
+    {
+     "input": "solo",
+     "output": "solo"
+    },
+    {
+     "input": "  spaced   out  words ",
+     "output": "words out spaced"
+    },
+    {
+     "input": "v w x y z",
+     "output": "z y x w v"
+    }
+   ]
+  },
+  {
+   "key": "valid-palindrome",
+   "title": "Valid palindrome",
+   "difficulty": "EASY",
+   "statement": "Considering only letters and digits and ignoring case, return true if the string is a palindrome.",
+   "inputFormat": [
+    "s: a string (may contain spaces)"
+   ],
+   "hint": "Remove other characters, then use two pointers.",
+   "note": null,
+   "args": [
+    {
+     "name": "s",
+     "type": "str"
+    }
+   ],
+   "returnType": "bool",
+   "starters": {
+    "javascript": "function solve(s) {\n  // Write your code here and return the answer\n  \n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nconst lines = require('fs').readFileSync(0, 'utf8').replace(/\\r/g, '').split('\\n');\nlet at = 0;\nconst readLine = () => lines[at++] || '';\nconst s = readLine();\nconst answer = solve(s);\nconsole.log('\\n##PROVEYU-ANSWER##');\nconsole.log(Array.isArray(answer) ? (answer.some(Array.isArray) ? answer.map(r => r.join(' ')).join('\\n') : answer.join(' ')) : String(answer));\n",
+    "python": "def solve(s):\n    # Write your code here and return the answer\n    pass\n\n\n# ----- Input is read and the answer is printed for you: no need to change below -----\nimport sys\n_lines = sys.stdin.read().replace('\\r', '').split('\\n')\n_at = 0\n\n\ndef _line():\n    global _at\n    s = _lines[_at] if _at < len(_lines) else ''\n    _at += 1\n    return s\n\n\ndef _int():\n    s = _line().strip()\n    return int(s) if s else 0\n\n\ndef _ints():\n    return [int(x) for x in _line().split()]\n\n\ndef _words():\n    return _line().split()\n\n\ndef _rows():\n    return [_ints() for _ in range(_int())]\n\n\ndef _tree():\n    return [None if w == 'null' else int(w) for w in _words()]\n\n\ndef _fmt(v):\n    if isinstance(v, bool):\n        return 'true' if v else 'false'\n    if isinstance(v, float):\n        return str(int(v)) if v == int(v) and abs(v) < 1e15 else repr(v)\n    return str(v)\n\n\ndef _show(v):\n    if isinstance(v, (list, tuple)):\n        if any(isinstance(x, (list, tuple)) for x in v):\n            return '\\n'.join(' '.join(_fmt(x) for x in row) for row in v)\n        return ' '.join(_fmt(x) for x in v)\n    return _fmt(v)\n\n\ns = _line()\n_answer = solve(s)\nprint('\\n##PROVEYU-ANSWER##')\nprint(_show(_answer))\n",
+    "java": "import java.util.*;\nimport java.io.*;\n\npublic class Main {\n\n    static boolean solve(String s) {\n        // Write your code here and return the answer\n        return false;\n    }\n\n    // ----- Input is read and the answer is printed for you: no need to change below -----\n    static List<String> lines = new ArrayList<>();\n    static int at = 0;\n\n    public static void main(String[] args) throws IOException {\n        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));\n        for (String l = in.readLine(); l != null; l = in.readLine()) lines.add(l);\n        String s = readLine();\n        boolean output_ = solve(s);\n        System.out.println(\"\\n##PROVEYU-ANSWER##\");\n        System.out.println(show(output_));\n    }\n\n    static String readLine() { return at < lines.size() ? lines.get(at++) : \"\"; }\n    static int readInt() { String s = readLine().trim(); return s.isEmpty() ? 0 : Integer.parseInt(s); }\n    static String[] readWords() { String s = readLine().trim(); return s.isEmpty() ? new String[0] : s.split(\"\\\\s+\"); }\n    static int[] readInts() { String[] w = readWords(); int[] a = new int[w.length]; for (int i = 0; i < w.length; i++) a[i] = Integer.parseInt(w[i]); return a; }\n    static int[][] readRows() { int k = readInt(); int[][] r = new int[k][]; for (int i = 0; i < k; i++) r[i] = readInts(); return r; }\n    static Integer[] readTree() { String[] w = readWords(); Integer[] t = new Integer[w.length]; for (int i = 0; i < w.length; i++) t[i] = w[i].equals(\"null\") ? null : Integer.valueOf(w[i]); return t; }\n\n    static String show(int v) { return String.valueOf(v); }\n    static String show(long v) { return String.valueOf(v); }\n    static String show(boolean v) { return String.valueOf(v); }\n    static String show(String v) { return String.valueOf(v); }\n    static String show(double v) { return v == Math.rint(v) && Math.abs(v) < 1e15 ? String.valueOf((long) v) : java.math.BigDecimal.valueOf(v).stripTrailingZeros().toPlainString(); }\n    static String show(int[] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \" \" : \"\").append(v[i]); return b.toString(); }\n    static String show(String[] v) { return String.join(\" \", v); }\n    static String show(int[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n    static String show(String[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n}\n",
+    "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nbool solve(string s) {\n    // Write your code here and return the answer\n    return false;\n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nvector<string> LINES;\nsize_t AT = 0;\nstring readLine() { return AT < LINES.size() ? LINES[AT++] : string(); }\nint readInt() { stringstream s(readLine()); int v = 0; s >> v; return v; }\nvector<string> readWords() { stringstream s(readLine()); vector<string> v; string w; while (s >> w) v.push_back(w); return v; }\nvector<int> readInts() { vector<int> v; for (const string& w : readWords()) v.push_back(stoi(w)); return v; }\nvector<vector<int>> readRows() { int k = readInt(); vector<vector<int>> r; for (int i = 0; i < k; i++) r.push_back(readInts()); return r; }\nvector<int> readTree() { vector<int> t; for (const string& w : readWords()) t.push_back(w == \"null\" ? INT_MIN : stoi(w)); return t; }\n\nstring show(int v) { return to_string(v); }\nstring show(long long v) { return to_string(v); }\nstring show(bool v) { return v ? \"true\" : \"false\"; }\nstring show(const string& v) { return v; }\nstring show(double v) { ostringstream o; o << setprecision(15) << v; return o.str(); }\ntemplate <class T> string show(const vector<T>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \" \" : \"\") + show(v[i]);\n    return out;\n}\ntemplate <class T> string show(const vector<vector<T>>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \"\\n\" : \"\") + show(v[i]);\n    return out;\n}\n\nint main() {\n    for (string l; getline(cin, l);) { if (!l.empty() && l.back() == '\\r') l.pop_back(); LINES.push_back(l); }\n    string s = readLine();\n    bool output_ = solve(s);\n    fflush(stdout); // what you printed with printf comes first\n    cout << \"\\n##PROVEYU-ANSWER##\\n\" << show(output_) << endl;\n    return 0;\n}\n"
+   },
+   "tests": [
+    {
+     "input": "A man, a plan, a canal: Panama",
+     "output": "true"
+    },
+    {
+     "input": "race a car",
+     "output": "false"
+    },
+    {
+     "input": "",
+     "output": "true"
+    },
+    {
+     "input": "0P",
+     "output": "false"
+    },
+    {
+     "input": "No lemon, no melon",
+     "output": "true"
+    }
+   ],
+   "hiddenTests": [
+    {
+     "input": "hello, olleh!",
+     "output": "true"
+    },
+    {
+     "input": "Was it a car or a cat I saw?",
+     "output": "true"
+    },
+    {
+     "input": "1a2",
+     "output": "false"
+    }
+   ]
+  },
+  {
+   "key": "is-anagram",
+   "title": "Anagram check",
+   "difficulty": "EASY",
+   "statement": "Return true if b is a rearrangement of the letters of a (exact characters).",
+   "inputFormat": [
+    "a: a string (may contain spaces)",
+    "b: a string (may contain spaces)"
+   ],
+   "hint": "Count characters, or sort both strings.",
+   "note": null,
+   "args": [
+    {
+     "name": "a",
+     "type": "str"
+    },
+    {
+     "name": "b",
+     "type": "str"
+    }
+   ],
+   "returnType": "bool",
+   "starters": {
+    "javascript": "function solve(a, b) {\n  // Write your code here and return the answer\n  \n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nconst lines = require('fs').readFileSync(0, 'utf8').replace(/\\r/g, '').split('\\n');\nlet at = 0;\nconst readLine = () => lines[at++] || '';\nconst a = readLine();\nconst b = readLine();\nconst answer = solve(a, b);\nconsole.log('\\n##PROVEYU-ANSWER##');\nconsole.log(Array.isArray(answer) ? (answer.some(Array.isArray) ? answer.map(r => r.join(' ')).join('\\n') : answer.join(' ')) : String(answer));\n",
+    "python": "def solve(a, b):\n    # Write your code here and return the answer\n    pass\n\n\n# ----- Input is read and the answer is printed for you: no need to change below -----\nimport sys\n_lines = sys.stdin.read().replace('\\r', '').split('\\n')\n_at = 0\n\n\ndef _line():\n    global _at\n    s = _lines[_at] if _at < len(_lines) else ''\n    _at += 1\n    return s\n\n\ndef _int():\n    s = _line().strip()\n    return int(s) if s else 0\n\n\ndef _ints():\n    return [int(x) for x in _line().split()]\n\n\ndef _words():\n    return _line().split()\n\n\ndef _rows():\n    return [_ints() for _ in range(_int())]\n\n\ndef _tree():\n    return [None if w == 'null' else int(w) for w in _words()]\n\n\ndef _fmt(v):\n    if isinstance(v, bool):\n        return 'true' if v else 'false'\n    if isinstance(v, float):\n        return str(int(v)) if v == int(v) and abs(v) < 1e15 else repr(v)\n    return str(v)\n\n\ndef _show(v):\n    if isinstance(v, (list, tuple)):\n        if any(isinstance(x, (list, tuple)) for x in v):\n            return '\\n'.join(' '.join(_fmt(x) for x in row) for row in v)\n        return ' '.join(_fmt(x) for x in v)\n    return _fmt(v)\n\n\na = _line()\nb = _line()\n_answer = solve(a, b)\nprint('\\n##PROVEYU-ANSWER##')\nprint(_show(_answer))\n",
+    "java": "import java.util.*;\nimport java.io.*;\n\npublic class Main {\n\n    static boolean solve(String a, String b) {\n        // Write your code here and return the answer\n        return false;\n    }\n\n    // ----- Input is read and the answer is printed for you: no need to change below -----\n    static List<String> lines = new ArrayList<>();\n    static int at = 0;\n\n    public static void main(String[] args) throws IOException {\n        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));\n        for (String l = in.readLine(); l != null; l = in.readLine()) lines.add(l);\n        String a = readLine();\n        String b = readLine();\n        boolean output_ = solve(a, b);\n        System.out.println(\"\\n##PROVEYU-ANSWER##\");\n        System.out.println(show(output_));\n    }\n\n    static String readLine() { return at < lines.size() ? lines.get(at++) : \"\"; }\n    static int readInt() { String s = readLine().trim(); return s.isEmpty() ? 0 : Integer.parseInt(s); }\n    static String[] readWords() { String s = readLine().trim(); return s.isEmpty() ? new String[0] : s.split(\"\\\\s+\"); }\n    static int[] readInts() { String[] w = readWords(); int[] a = new int[w.length]; for (int i = 0; i < w.length; i++) a[i] = Integer.parseInt(w[i]); return a; }\n    static int[][] readRows() { int k = readInt(); int[][] r = new int[k][]; for (int i = 0; i < k; i++) r[i] = readInts(); return r; }\n    static Integer[] readTree() { String[] w = readWords(); Integer[] t = new Integer[w.length]; for (int i = 0; i < w.length; i++) t[i] = w[i].equals(\"null\") ? null : Integer.valueOf(w[i]); return t; }\n\n    static String show(int v) { return String.valueOf(v); }\n    static String show(long v) { return String.valueOf(v); }\n    static String show(boolean v) { return String.valueOf(v); }\n    static String show(String v) { return String.valueOf(v); }\n    static String show(double v) { return v == Math.rint(v) && Math.abs(v) < 1e15 ? String.valueOf((long) v) : java.math.BigDecimal.valueOf(v).stripTrailingZeros().toPlainString(); }\n    static String show(int[] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \" \" : \"\").append(v[i]); return b.toString(); }\n    static String show(String[] v) { return String.join(\" \", v); }\n    static String show(int[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n    static String show(String[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n}\n",
+    "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nbool solve(string a, string b) {\n    // Write your code here and return the answer\n    return false;\n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nvector<string> LINES;\nsize_t AT = 0;\nstring readLine() { return AT < LINES.size() ? LINES[AT++] : string(); }\nint readInt() { stringstream s(readLine()); int v = 0; s >> v; return v; }\nvector<string> readWords() { stringstream s(readLine()); vector<string> v; string w; while (s >> w) v.push_back(w); return v; }\nvector<int> readInts() { vector<int> v; for (const string& w : readWords()) v.push_back(stoi(w)); return v; }\nvector<vector<int>> readRows() { int k = readInt(); vector<vector<int>> r; for (int i = 0; i < k; i++) r.push_back(readInts()); return r; }\nvector<int> readTree() { vector<int> t; for (const string& w : readWords()) t.push_back(w == \"null\" ? INT_MIN : stoi(w)); return t; }\n\nstring show(int v) { return to_string(v); }\nstring show(long long v) { return to_string(v); }\nstring show(bool v) { return v ? \"true\" : \"false\"; }\nstring show(const string& v) { return v; }\nstring show(double v) { ostringstream o; o << setprecision(15) << v; return o.str(); }\ntemplate <class T> string show(const vector<T>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \" \" : \"\") + show(v[i]);\n    return out;\n}\ntemplate <class T> string show(const vector<vector<T>>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \"\\n\" : \"\") + show(v[i]);\n    return out;\n}\n\nint main() {\n    for (string l; getline(cin, l);) { if (!l.empty() && l.back() == '\\r') l.pop_back(); LINES.push_back(l); }\n    string a = readLine();\n    string b = readLine();\n    bool output_ = solve(a, b);\n    fflush(stdout); // what you printed with printf comes first\n    cout << \"\\n##PROVEYU-ANSWER##\\n\" << show(output_) << endl;\n    return 0;\n}\n"
+   },
+   "tests": [
+    {
+     "input": "listen\nsilent",
+     "output": "true"
+    },
+    {
+     "input": "rat\ncar",
+     "output": "false"
+    },
+    {
+     "input": "aab\nabb",
+     "output": "false"
+    },
+    {
+     "input": "x\nx",
+     "output": "true"
+    },
+    {
+     "input": "abc\nabcd",
+     "output": "false"
+    }
+   ],
+   "hiddenTests": [
+    {
+     "input": "abb\nbaa",
+     "output": "false"
+    },
+    {
+     "input": "triangle\nintegral",
+     "output": "true"
+    },
+    {
+     "input": "ab\nabab",
+     "output": "false"
+    }
+   ]
+  },
+  {
+   "key": "longest-unique",
+   "title": "Longest substring without repeats",
+   "difficulty": "MEDIUM",
+   "statement": "Return the length of the longest substring with no repeated character.",
+   "inputFormat": [
+    "s: a string (may contain spaces)"
+   ],
+   "hint": "Remember the last position of each character and move the left edge past it.",
+   "note": null,
+   "args": [
+    {
+     "name": "s",
+     "type": "str"
+    }
+   ],
+   "returnType": "int",
+   "starters": {
+    "javascript": "function solve(s) {\n  // Write your code here and return the answer\n  \n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nconst lines = require('fs').readFileSync(0, 'utf8').replace(/\\r/g, '').split('\\n');\nlet at = 0;\nconst readLine = () => lines[at++] || '';\nconst s = readLine();\nconst answer = solve(s);\nconsole.log('\\n##PROVEYU-ANSWER##');\nconsole.log(Array.isArray(answer) ? (answer.some(Array.isArray) ? answer.map(r => r.join(' ')).join('\\n') : answer.join(' ')) : String(answer));\n",
+    "python": "def solve(s):\n    # Write your code here and return the answer\n    pass\n\n\n# ----- Input is read and the answer is printed for you: no need to change below -----\nimport sys\n_lines = sys.stdin.read().replace('\\r', '').split('\\n')\n_at = 0\n\n\ndef _line():\n    global _at\n    s = _lines[_at] if _at < len(_lines) else ''\n    _at += 1\n    return s\n\n\ndef _int():\n    s = _line().strip()\n    return int(s) if s else 0\n\n\ndef _ints():\n    return [int(x) for x in _line().split()]\n\n\ndef _words():\n    return _line().split()\n\n\ndef _rows():\n    return [_ints() for _ in range(_int())]\n\n\ndef _tree():\n    return [None if w == 'null' else int(w) for w in _words()]\n\n\ndef _fmt(v):\n    if isinstance(v, bool):\n        return 'true' if v else 'false'\n    if isinstance(v, float):\n        return str(int(v)) if v == int(v) and abs(v) < 1e15 else repr(v)\n    return str(v)\n\n\ndef _show(v):\n    if isinstance(v, (list, tuple)):\n        if any(isinstance(x, (list, tuple)) for x in v):\n            return '\\n'.join(' '.join(_fmt(x) for x in row) for row in v)\n        return ' '.join(_fmt(x) for x in v)\n    return _fmt(v)\n\n\ns = _line()\n_answer = solve(s)\nprint('\\n##PROVEYU-ANSWER##')\nprint(_show(_answer))\n",
+    "java": "import java.util.*;\nimport java.io.*;\n\npublic class Main {\n\n    static int solve(String s) {\n        // Write your code here and return the answer\n        return 0;\n    }\n\n    // ----- Input is read and the answer is printed for you: no need to change below -----\n    static List<String> lines = new ArrayList<>();\n    static int at = 0;\n\n    public static void main(String[] args) throws IOException {\n        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));\n        for (String l = in.readLine(); l != null; l = in.readLine()) lines.add(l);\n        String s = readLine();\n        int output_ = solve(s);\n        System.out.println(\"\\n##PROVEYU-ANSWER##\");\n        System.out.println(show(output_));\n    }\n\n    static String readLine() { return at < lines.size() ? lines.get(at++) : \"\"; }\n    static int readInt() { String s = readLine().trim(); return s.isEmpty() ? 0 : Integer.parseInt(s); }\n    static String[] readWords() { String s = readLine().trim(); return s.isEmpty() ? new String[0] : s.split(\"\\\\s+\"); }\n    static int[] readInts() { String[] w = readWords(); int[] a = new int[w.length]; for (int i = 0; i < w.length; i++) a[i] = Integer.parseInt(w[i]); return a; }\n    static int[][] readRows() { int k = readInt(); int[][] r = new int[k][]; for (int i = 0; i < k; i++) r[i] = readInts(); return r; }\n    static Integer[] readTree() { String[] w = readWords(); Integer[] t = new Integer[w.length]; for (int i = 0; i < w.length; i++) t[i] = w[i].equals(\"null\") ? null : Integer.valueOf(w[i]); return t; }\n\n    static String show(int v) { return String.valueOf(v); }\n    static String show(long v) { return String.valueOf(v); }\n    static String show(boolean v) { return String.valueOf(v); }\n    static String show(String v) { return String.valueOf(v); }\n    static String show(double v) { return v == Math.rint(v) && Math.abs(v) < 1e15 ? String.valueOf((long) v) : java.math.BigDecimal.valueOf(v).stripTrailingZeros().toPlainString(); }\n    static String show(int[] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \" \" : \"\").append(v[i]); return b.toString(); }\n    static String show(String[] v) { return String.join(\" \", v); }\n    static String show(int[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n    static String show(String[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n}\n",
+    "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nint solve(string s) {\n    // Write your code here and return the answer\n    return 0;\n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nvector<string> LINES;\nsize_t AT = 0;\nstring readLine() { return AT < LINES.size() ? LINES[AT++] : string(); }\nint readInt() { stringstream s(readLine()); int v = 0; s >> v; return v; }\nvector<string> readWords() { stringstream s(readLine()); vector<string> v; string w; while (s >> w) v.push_back(w); return v; }\nvector<int> readInts() { vector<int> v; for (const string& w : readWords()) v.push_back(stoi(w)); return v; }\nvector<vector<int>> readRows() { int k = readInt(); vector<vector<int>> r; for (int i = 0; i < k; i++) r.push_back(readInts()); return r; }\nvector<int> readTree() { vector<int> t; for (const string& w : readWords()) t.push_back(w == \"null\" ? INT_MIN : stoi(w)); return t; }\n\nstring show(int v) { return to_string(v); }\nstring show(long long v) { return to_string(v); }\nstring show(bool v) { return v ? \"true\" : \"false\"; }\nstring show(const string& v) { return v; }\nstring show(double v) { ostringstream o; o << setprecision(15) << v; return o.str(); }\ntemplate <class T> string show(const vector<T>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \" \" : \"\") + show(v[i]);\n    return out;\n}\ntemplate <class T> string show(const vector<vector<T>>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \"\\n\" : \"\") + show(v[i]);\n    return out;\n}\n\nint main() {\n    for (string l; getline(cin, l);) { if (!l.empty() && l.back() == '\\r') l.pop_back(); LINES.push_back(l); }\n    string s = readLine();\n    int output_ = solve(s);\n    fflush(stdout); // what you printed with printf comes first\n    cout << \"\\n##PROVEYU-ANSWER##\\n\" << show(output_) << endl;\n    return 0;\n}\n"
+   },
+   "tests": [
+    {
+     "input": "abcabcbb",
+     "output": "3"
+    },
+    {
+     "input": "bbbbb",
+     "output": "1"
+    },
+    {
+     "input": "pwwkew",
+     "output": "3"
+    },
+    {
+     "input": "",
+     "output": "0"
+    },
+    {
+     "input": "abba",
+     "output": "2"
+    }
+   ],
+   "hiddenTests": [
+    {
+     "input": "zzzzzz",
+     "output": "1"
+    },
+    {
+     "input": "dvdf",
+     "output": "3"
+    },
+    {
+     "input": "tmmzuxt",
+     "output": "5"
+    }
+   ]
+  },
+  {
+   "key": "longest-palindrome",
+   "title": "Longest palindromic substring",
+   "difficulty": "MEDIUM",
+   "statement": "Return the longest substring that is a palindrome. If there are several of that length, return the one that starts first.",
+   "inputFormat": [
+    "s: a string (may contain spaces)"
+   ],
+   "hint": "Expand around each centre.",
+   "note": null,
+   "args": [
+    {
+     "name": "s",
+     "type": "str"
+    }
+   ],
+   "returnType": "string",
+   "starters": {
+    "javascript": "function solve(s) {\n  // Write your code here and return the answer\n  \n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nconst lines = require('fs').readFileSync(0, 'utf8').replace(/\\r/g, '').split('\\n');\nlet at = 0;\nconst readLine = () => lines[at++] || '';\nconst s = readLine();\nconst answer = solve(s);\nconsole.log('\\n##PROVEYU-ANSWER##');\nconsole.log(Array.isArray(answer) ? (answer.some(Array.isArray) ? answer.map(r => r.join(' ')).join('\\n') : answer.join(' ')) : String(answer));\n",
+    "python": "def solve(s):\n    # Write your code here and return the answer\n    pass\n\n\n# ----- Input is read and the answer is printed for you: no need to change below -----\nimport sys\n_lines = sys.stdin.read().replace('\\r', '').split('\\n')\n_at = 0\n\n\ndef _line():\n    global _at\n    s = _lines[_at] if _at < len(_lines) else ''\n    _at += 1\n    return s\n\n\ndef _int():\n    s = _line().strip()\n    return int(s) if s else 0\n\n\ndef _ints():\n    return [int(x) for x in _line().split()]\n\n\ndef _words():\n    return _line().split()\n\n\ndef _rows():\n    return [_ints() for _ in range(_int())]\n\n\ndef _tree():\n    return [None if w == 'null' else int(w) for w in _words()]\n\n\ndef _fmt(v):\n    if isinstance(v, bool):\n        return 'true' if v else 'false'\n    if isinstance(v, float):\n        return str(int(v)) if v == int(v) and abs(v) < 1e15 else repr(v)\n    return str(v)\n\n\ndef _show(v):\n    if isinstance(v, (list, tuple)):\n        if any(isinstance(x, (list, tuple)) for x in v):\n            return '\\n'.join(' '.join(_fmt(x) for x in row) for row in v)\n        return ' '.join(_fmt(x) for x in v)\n    return _fmt(v)\n\n\ns = _line()\n_answer = solve(s)\nprint('\\n##PROVEYU-ANSWER##')\nprint(_show(_answer))\n",
+    "java": "import java.util.*;\nimport java.io.*;\n\npublic class Main {\n\n    static String solve(String s) {\n        // Write your code here and return the answer\n        return \"\";\n    }\n\n    // ----- Input is read and the answer is printed for you: no need to change below -----\n    static List<String> lines = new ArrayList<>();\n    static int at = 0;\n\n    public static void main(String[] args) throws IOException {\n        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));\n        for (String l = in.readLine(); l != null; l = in.readLine()) lines.add(l);\n        String s = readLine();\n        String output_ = solve(s);\n        System.out.println(\"\\n##PROVEYU-ANSWER##\");\n        System.out.println(show(output_));\n    }\n\n    static String readLine() { return at < lines.size() ? lines.get(at++) : \"\"; }\n    static int readInt() { String s = readLine().trim(); return s.isEmpty() ? 0 : Integer.parseInt(s); }\n    static String[] readWords() { String s = readLine().trim(); return s.isEmpty() ? new String[0] : s.split(\"\\\\s+\"); }\n    static int[] readInts() { String[] w = readWords(); int[] a = new int[w.length]; for (int i = 0; i < w.length; i++) a[i] = Integer.parseInt(w[i]); return a; }\n    static int[][] readRows() { int k = readInt(); int[][] r = new int[k][]; for (int i = 0; i < k; i++) r[i] = readInts(); return r; }\n    static Integer[] readTree() { String[] w = readWords(); Integer[] t = new Integer[w.length]; for (int i = 0; i < w.length; i++) t[i] = w[i].equals(\"null\") ? null : Integer.valueOf(w[i]); return t; }\n\n    static String show(int v) { return String.valueOf(v); }\n    static String show(long v) { return String.valueOf(v); }\n    static String show(boolean v) { return String.valueOf(v); }\n    static String show(String v) { return String.valueOf(v); }\n    static String show(double v) { return v == Math.rint(v) && Math.abs(v) < 1e15 ? String.valueOf((long) v) : java.math.BigDecimal.valueOf(v).stripTrailingZeros().toPlainString(); }\n    static String show(int[] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \" \" : \"\").append(v[i]); return b.toString(); }\n    static String show(String[] v) { return String.join(\" \", v); }\n    static String show(int[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n    static String show(String[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n}\n",
+    "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nstring solve(string s) {\n    // Write your code here and return the answer\n    return \"\";\n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nvector<string> LINES;\nsize_t AT = 0;\nstring readLine() { return AT < LINES.size() ? LINES[AT++] : string(); }\nint readInt() { stringstream s(readLine()); int v = 0; s >> v; return v; }\nvector<string> readWords() { stringstream s(readLine()); vector<string> v; string w; while (s >> w) v.push_back(w); return v; }\nvector<int> readInts() { vector<int> v; for (const string& w : readWords()) v.push_back(stoi(w)); return v; }\nvector<vector<int>> readRows() { int k = readInt(); vector<vector<int>> r; for (int i = 0; i < k; i++) r.push_back(readInts()); return r; }\nvector<int> readTree() { vector<int> t; for (const string& w : readWords()) t.push_back(w == \"null\" ? INT_MIN : stoi(w)); return t; }\n\nstring show(int v) { return to_string(v); }\nstring show(long long v) { return to_string(v); }\nstring show(bool v) { return v ? \"true\" : \"false\"; }\nstring show(const string& v) { return v; }\nstring show(double v) { ostringstream o; o << setprecision(15) << v; return o.str(); }\ntemplate <class T> string show(const vector<T>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \" \" : \"\") + show(v[i]);\n    return out;\n}\ntemplate <class T> string show(const vector<vector<T>>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \"\\n\" : \"\") + show(v[i]);\n    return out;\n}\n\nint main() {\n    for (string l; getline(cin, l);) { if (!l.empty() && l.back() == '\\r') l.pop_back(); LINES.push_back(l); }\n    string s = readLine();\n    string output_ = solve(s);\n    fflush(stdout); // what you printed with printf comes first\n    cout << \"\\n##PROVEYU-ANSWER##\\n\" << show(output_) << endl;\n    return 0;\n}\n"
+   },
+   "tests": [
+    {
+     "input": "babad",
+     "output": "bab"
+    },
+    {
+     "input": "cbbd",
+     "output": "bb"
+    },
+    {
+     "input": "a",
+     "output": "a"
+    },
+    {
+     "input": "abcde",
+     "output": "a"
+    },
+    {
+     "input": "forgeeksskeegfor",
+     "output": "geeksskeeg"
+    }
+   ],
+   "hiddenTests": [
+    {
+     "input": "xyzzyq",
+     "output": "yzzy"
+    },
+    {
+     "input": "banana",
+     "output": "anana"
+    },
+    {
+     "input": "abacdfgdcaba",
+     "output": "aba"
+    }
+   ]
+  },
+  {
+   "key": "count-palindromes",
+   "title": "Count palindromic substrings",
+   "difficulty": "MEDIUM",
+   "statement": "Return how many substrings are palindromes. Substrings at different positions count separately.",
+   "inputFormat": [
+    "s: a string (may contain spaces)"
+   ],
+   "hint": "Every successful expansion step is one more palindrome.",
+   "note": null,
+   "args": [
+    {
+     "name": "s",
+     "type": "str"
+    }
+   ],
+   "returnType": "int",
+   "starters": {
+    "javascript": "function solve(s) {\n  // Write your code here and return the answer\n  \n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nconst lines = require('fs').readFileSync(0, 'utf8').replace(/\\r/g, '').split('\\n');\nlet at = 0;\nconst readLine = () => lines[at++] || '';\nconst s = readLine();\nconst answer = solve(s);\nconsole.log('\\n##PROVEYU-ANSWER##');\nconsole.log(Array.isArray(answer) ? (answer.some(Array.isArray) ? answer.map(r => r.join(' ')).join('\\n') : answer.join(' ')) : String(answer));\n",
+    "python": "def solve(s):\n    # Write your code here and return the answer\n    pass\n\n\n# ----- Input is read and the answer is printed for you: no need to change below -----\nimport sys\n_lines = sys.stdin.read().replace('\\r', '').split('\\n')\n_at = 0\n\n\ndef _line():\n    global _at\n    s = _lines[_at] if _at < len(_lines) else ''\n    _at += 1\n    return s\n\n\ndef _int():\n    s = _line().strip()\n    return int(s) if s else 0\n\n\ndef _ints():\n    return [int(x) for x in _line().split()]\n\n\ndef _words():\n    return _line().split()\n\n\ndef _rows():\n    return [_ints() for _ in range(_int())]\n\n\ndef _tree():\n    return [None if w == 'null' else int(w) for w in _words()]\n\n\ndef _fmt(v):\n    if isinstance(v, bool):\n        return 'true' if v else 'false'\n    if isinstance(v, float):\n        return str(int(v)) if v == int(v) and abs(v) < 1e15 else repr(v)\n    return str(v)\n\n\ndef _show(v):\n    if isinstance(v, (list, tuple)):\n        if any(isinstance(x, (list, tuple)) for x in v):\n            return '\\n'.join(' '.join(_fmt(x) for x in row) for row in v)\n        return ' '.join(_fmt(x) for x in v)\n    return _fmt(v)\n\n\ns = _line()\n_answer = solve(s)\nprint('\\n##PROVEYU-ANSWER##')\nprint(_show(_answer))\n",
+    "java": "import java.util.*;\nimport java.io.*;\n\npublic class Main {\n\n    static int solve(String s) {\n        // Write your code here and return the answer\n        return 0;\n    }\n\n    // ----- Input is read and the answer is printed for you: no need to change below -----\n    static List<String> lines = new ArrayList<>();\n    static int at = 0;\n\n    public static void main(String[] args) throws IOException {\n        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));\n        for (String l = in.readLine(); l != null; l = in.readLine()) lines.add(l);\n        String s = readLine();\n        int output_ = solve(s);\n        System.out.println(\"\\n##PROVEYU-ANSWER##\");\n        System.out.println(show(output_));\n    }\n\n    static String readLine() { return at < lines.size() ? lines.get(at++) : \"\"; }\n    static int readInt() { String s = readLine().trim(); return s.isEmpty() ? 0 : Integer.parseInt(s); }\n    static String[] readWords() { String s = readLine().trim(); return s.isEmpty() ? new String[0] : s.split(\"\\\\s+\"); }\n    static int[] readInts() { String[] w = readWords(); int[] a = new int[w.length]; for (int i = 0; i < w.length; i++) a[i] = Integer.parseInt(w[i]); return a; }\n    static int[][] readRows() { int k = readInt(); int[][] r = new int[k][]; for (int i = 0; i < k; i++) r[i] = readInts(); return r; }\n    static Integer[] readTree() { String[] w = readWords(); Integer[] t = new Integer[w.length]; for (int i = 0; i < w.length; i++) t[i] = w[i].equals(\"null\") ? null : Integer.valueOf(w[i]); return t; }\n\n    static String show(int v) { return String.valueOf(v); }\n    static String show(long v) { return String.valueOf(v); }\n    static String show(boolean v) { return String.valueOf(v); }\n    static String show(String v) { return String.valueOf(v); }\n    static String show(double v) { return v == Math.rint(v) && Math.abs(v) < 1e15 ? String.valueOf((long) v) : java.math.BigDecimal.valueOf(v).stripTrailingZeros().toPlainString(); }\n    static String show(int[] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \" \" : \"\").append(v[i]); return b.toString(); }\n    static String show(String[] v) { return String.join(\" \", v); }\n    static String show(int[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n    static String show(String[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n}\n",
+    "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nint solve(string s) {\n    // Write your code here and return the answer\n    return 0;\n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nvector<string> LINES;\nsize_t AT = 0;\nstring readLine() { return AT < LINES.size() ? LINES[AT++] : string(); }\nint readInt() { stringstream s(readLine()); int v = 0; s >> v; return v; }\nvector<string> readWords() { stringstream s(readLine()); vector<string> v; string w; while (s >> w) v.push_back(w); return v; }\nvector<int> readInts() { vector<int> v; for (const string& w : readWords()) v.push_back(stoi(w)); return v; }\nvector<vector<int>> readRows() { int k = readInt(); vector<vector<int>> r; for (int i = 0; i < k; i++) r.push_back(readInts()); return r; }\nvector<int> readTree() { vector<int> t; for (const string& w : readWords()) t.push_back(w == \"null\" ? INT_MIN : stoi(w)); return t; }\n\nstring show(int v) { return to_string(v); }\nstring show(long long v) { return to_string(v); }\nstring show(bool v) { return v ? \"true\" : \"false\"; }\nstring show(const string& v) { return v; }\nstring show(double v) { ostringstream o; o << setprecision(15) << v; return o.str(); }\ntemplate <class T> string show(const vector<T>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \" \" : \"\") + show(v[i]);\n    return out;\n}\ntemplate <class T> string show(const vector<vector<T>>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \"\\n\" : \"\") + show(v[i]);\n    return out;\n}\n\nint main() {\n    for (string l; getline(cin, l);) { if (!l.empty() && l.back() == '\\r') l.pop_back(); LINES.push_back(l); }\n    string s = readLine();\n    int output_ = solve(s);\n    fflush(stdout); // what you printed with printf comes first\n    cout << \"\\n##PROVEYU-ANSWER##\\n\" << show(output_) << endl;\n    return 0;\n}\n"
+   },
+   "tests": [
+    {
+     "input": "abc",
+     "output": "3"
+    },
+    {
+     "input": "aaa",
+     "output": "6"
+    },
+    {
+     "input": "a",
+     "output": "1"
+    },
+    {
+     "input": "abba",
+     "output": "6"
+    },
+    {
+     "input": "racecar",
+     "output": "10"
+    }
+   ],
+   "hiddenTests": [
+    {
+     "input": "aaaa",
+     "output": "10"
+    },
+    {
+     "input": "noon",
+     "output": "6"
+    },
+    {
+     "input": "level",
+     "output": "7"
+    }
+   ]
+  },
+  {
+   "key": "min-window",
+   "title": "Minimum window substring",
+   "difficulty": "HARD",
+   "statement": "Return the shortest substring of s that contains every character of t (with repeats). Print NONE if there is none. If several are shortest, return the leftmost.",
+   "inputFormat": [
+    "s: a string (may contain spaces)",
+    "t: a string (may contain spaces)"
+   ],
+   "hint": "Count what is still missing; shrink the window whenever nothing is missing.",
+   "note": null,
+   "args": [
+    {
+     "name": "s",
+     "type": "str"
+    },
+    {
+     "name": "t",
+     "type": "str"
+    }
+   ],
+   "returnType": "string",
+   "starters": {
+    "javascript": "function solve(s, t) {\n  // Write your code here and return the answer\n  \n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nconst lines = require('fs').readFileSync(0, 'utf8').replace(/\\r/g, '').split('\\n');\nlet at = 0;\nconst readLine = () => lines[at++] || '';\nconst s = readLine();\nconst t = readLine();\nconst answer = solve(s, t);\nconsole.log('\\n##PROVEYU-ANSWER##');\nconsole.log(Array.isArray(answer) ? (answer.some(Array.isArray) ? answer.map(r => r.join(' ')).join('\\n') : answer.join(' ')) : String(answer));\n",
+    "python": "def solve(s, t):\n    # Write your code here and return the answer\n    pass\n\n\n# ----- Input is read and the answer is printed for you: no need to change below -----\nimport sys\n_lines = sys.stdin.read().replace('\\r', '').split('\\n')\n_at = 0\n\n\ndef _line():\n    global _at\n    s = _lines[_at] if _at < len(_lines) else ''\n    _at += 1\n    return s\n\n\ndef _int():\n    s = _line().strip()\n    return int(s) if s else 0\n\n\ndef _ints():\n    return [int(x) for x in _line().split()]\n\n\ndef _words():\n    return _line().split()\n\n\ndef _rows():\n    return [_ints() for _ in range(_int())]\n\n\ndef _tree():\n    return [None if w == 'null' else int(w) for w in _words()]\n\n\ndef _fmt(v):\n    if isinstance(v, bool):\n        return 'true' if v else 'false'\n    if isinstance(v, float):\n        return str(int(v)) if v == int(v) and abs(v) < 1e15 else repr(v)\n    return str(v)\n\n\ndef _show(v):\n    if isinstance(v, (list, tuple)):\n        if any(isinstance(x, (list, tuple)) for x in v):\n            return '\\n'.join(' '.join(_fmt(x) for x in row) for row in v)\n        return ' '.join(_fmt(x) for x in v)\n    return _fmt(v)\n\n\ns = _line()\nt = _line()\n_answer = solve(s, t)\nprint('\\n##PROVEYU-ANSWER##')\nprint(_show(_answer))\n",
+    "java": "import java.util.*;\nimport java.io.*;\n\npublic class Main {\n\n    static String solve(String s, String t) {\n        // Write your code here and return the answer\n        return \"\";\n    }\n\n    // ----- Input is read and the answer is printed for you: no need to change below -----\n    static List<String> lines = new ArrayList<>();\n    static int at = 0;\n\n    public static void main(String[] args) throws IOException {\n        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));\n        for (String l = in.readLine(); l != null; l = in.readLine()) lines.add(l);\n        String s = readLine();\n        String t = readLine();\n        String output_ = solve(s, t);\n        System.out.println(\"\\n##PROVEYU-ANSWER##\");\n        System.out.println(show(output_));\n    }\n\n    static String readLine() { return at < lines.size() ? lines.get(at++) : \"\"; }\n    static int readInt() { String s = readLine().trim(); return s.isEmpty() ? 0 : Integer.parseInt(s); }\n    static String[] readWords() { String s = readLine().trim(); return s.isEmpty() ? new String[0] : s.split(\"\\\\s+\"); }\n    static int[] readInts() { String[] w = readWords(); int[] a = new int[w.length]; for (int i = 0; i < w.length; i++) a[i] = Integer.parseInt(w[i]); return a; }\n    static int[][] readRows() { int k = readInt(); int[][] r = new int[k][]; for (int i = 0; i < k; i++) r[i] = readInts(); return r; }\n    static Integer[] readTree() { String[] w = readWords(); Integer[] t = new Integer[w.length]; for (int i = 0; i < w.length; i++) t[i] = w[i].equals(\"null\") ? null : Integer.valueOf(w[i]); return t; }\n\n    static String show(int v) { return String.valueOf(v); }\n    static String show(long v) { return String.valueOf(v); }\n    static String show(boolean v) { return String.valueOf(v); }\n    static String show(String v) { return String.valueOf(v); }\n    static String show(double v) { return v == Math.rint(v) && Math.abs(v) < 1e15 ? String.valueOf((long) v) : java.math.BigDecimal.valueOf(v).stripTrailingZeros().toPlainString(); }\n    static String show(int[] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \" \" : \"\").append(v[i]); return b.toString(); }\n    static String show(String[] v) { return String.join(\" \", v); }\n    static String show(int[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n    static String show(String[][] v) { StringBuilder b = new StringBuilder(); for (int i = 0; i < v.length; i++) b.append(i > 0 ? \"\\n\" : \"\").append(show(v[i])); return b.toString(); }\n}\n",
+    "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nstring solve(string s, string t) {\n    // Write your code here and return the answer\n    return \"\";\n}\n\n// ----- Input is read and the answer is printed for you: no need to change below -----\nvector<string> LINES;\nsize_t AT = 0;\nstring readLine() { return AT < LINES.size() ? LINES[AT++] : string(); }\nint readInt() { stringstream s(readLine()); int v = 0; s >> v; return v; }\nvector<string> readWords() { stringstream s(readLine()); vector<string> v; string w; while (s >> w) v.push_back(w); return v; }\nvector<int> readInts() { vector<int> v; for (const string& w : readWords()) v.push_back(stoi(w)); return v; }\nvector<vector<int>> readRows() { int k = readInt(); vector<vector<int>> r; for (int i = 0; i < k; i++) r.push_back(readInts()); return r; }\nvector<int> readTree() { vector<int> t; for (const string& w : readWords()) t.push_back(w == \"null\" ? INT_MIN : stoi(w)); return t; }\n\nstring show(int v) { return to_string(v); }\nstring show(long long v) { return to_string(v); }\nstring show(bool v) { return v ? \"true\" : \"false\"; }\nstring show(const string& v) { return v; }\nstring show(double v) { ostringstream o; o << setprecision(15) << v; return o.str(); }\ntemplate <class T> string show(const vector<T>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \" \" : \"\") + show(v[i]);\n    return out;\n}\ntemplate <class T> string show(const vector<vector<T>>& v) {\n    string out;\n    for (size_t i = 0; i < v.size(); i++) out += (i ? \"\\n\" : \"\") + show(v[i]);\n    return out;\n}\n\nint main() {\n    for (string l; getline(cin, l);) { if (!l.empty() && l.back() == '\\r') l.pop_back(); LINES.push_back(l); }\n    string s = readLine();\n    string t = readLine();\n    string output_ = solve(s, t);\n    fflush(stdout); // what you printed with printf comes first\n    cout << \"\\n##PROVEYU-ANSWER##\\n\" << show(output_) << endl;\n    return 0;\n}\n"
+   },
+   "tests": [
+    {
+     "input": "ADOBECODEBANC\nABC",
+     "output": "BANC"
+    },
+    {
+     "input": "a\na",
+     "output": "a"
+    },
+    {
+     "input": "a\naa",
+     "output": "NONE"
+    },
+    {
+     "input": "aaflslflsldkabc\naaa",
+     "output": "aaflslflsldka"
+    },
+    {
+     "input": "this is a test string\ntist",
+     "output": "t stri"
+    }
+   ],
+   "hiddenTests": [
+    {
+     "input": "ab\nabc",
+     "output": "NONE"
+    },
+    {
+     "input": "cabwefgewcwaefgcf\ncae",
+     "output": "cwae"
+    },
+    {
+     "input": "bba\nab",
+     "output": "ba"
+    }
+   ]
+  }
+ ]
+}

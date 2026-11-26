@@ -87,7 +87,7 @@ Open three terminals in the project folder.
 scripts/start-db.sh                      # only if you use the Docker MySQL instead of a system MySQL
 cd ai-services && docker compose up -d && cd ..
 
-# terminal 2: backend on :8080 (applies new Flyway migrations on start; schema file = V42)
+# terminal 2: backend on :8080 (applies new Flyway migrations on start; schema file = V49)
 bash scripts/run-backend.sh
 
 # terminal 3: frontend on :4300
@@ -287,7 +287,13 @@ Tick each row. "Expected" is what must happen; anything else is a bug. Use the a
 | M1 | Mock tests → ladder: only test 1 open | tests 2+ locked until the previous one is above 50% |
 | M2 | Start a test: screen share required, timer runs | cannot start without sharing the screen |
 | M3 | Answer MCQs; coding question → Run (sample cases) in Python, Java, C++, JavaScript | output and pass/fail per case; compile errors shown |
-| M3a | Preparation → Code ground: language Python, paste `a, b = map(int, input().split())` / `a = a + b` / `b = a - b` / `a = a - b` / `print(a, b)`, input `5 9`, Run | output `9 5`; a second Run within 5 seconds says "running code too fast" |
+| M3a | Code ground → Free compiler: language Python, type `a, b = map(int, input().split())` / `a = a + b` / `b = a - b` / `a = a - b` / `print(a, b)`, input `5 9`, Run | output `9 5`; a second Run within 5 seconds says "running code too fast"; each language shows its own sample when chosen |
+| M3b | Code ground → Practice: open Basics → Sum of first N numbers, Run (example) then Submit with a correct solution | Run shows the example passed; Submit shows Accepted 8 / 8; the problem is ticked and progress moves |
+| M3c | Same problem: hard-code the five example answers and Submit | Wrong Answer, 5 / 8, the three hidden tests failed (no input or answer shown) |
+| M3d | Same problem: print something while debugging, Run | "Printed by your code" shows it apart from the answer |
+| M3e | In the editor: Ctrl+V, Ctrl+C, drag text in | nothing happens and a message says copy and paste are off; typing works; the locked input/print code cannot be edited |
+| M3f | Code ground → Leaderboard, My submissions; open the problem of the day and Submit it | rank and points; submissions listed by day with filters; solving the daily problem adds its bonus and today's square turns green |
+| M3g | Admin → Code ground → upload the sample file, Publish | the question appears for students after the reference solution passes on the judge; a wrong expected output is refused with the failing test |
 | M4 | Switch tab / minimise | warning with a screenshot; after the allowed warnings the test auto-submits |
 | M5 | Stop screen share | counted as leaving the test |
 | M6 | Submit | result page: section scores, hidden test results (inputs hidden), time taken |

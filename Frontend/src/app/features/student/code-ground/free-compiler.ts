@@ -1,18 +1,48 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { LANGUAGE_LABELS, PlaygroundResult, PrepLanguage, PrepService } from '../services/prep.service';
+import { PlaygroundResult, PrepLanguage, PrepService } from '../services/prep.service';
 
 const DRAFT_KEY = 'pm-code-ground-draft';
 
+/** What each language starts with: read two numbers and print their sum. Must run on the judge's versions (Node 12, Java 13). */
+const STARTERS: Record<PrepLanguage, string> = {
+  python: 'a, b = map(int, input().split())\nprint(a + b)\n',
+  java: `import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        int a = in.nextInt(), b = in.nextInt();
+        System.out.println(a + b);
+    }
+}
+`,
+  cpp: `#include <iostream>
+using namespace std;
+
+int main() {
+    int a, b;
+    cin >> a >> b;
+    cout << a + b << endl;
+    return 0;
+}
+`,
+  javascript: `const [a, b] = require('fs').readFileSync(0, 'utf8').trim().split(/\\s+/).map(Number);
+console.log(a + b);
+`,
+};
+
+interface Draft { language: PrepLanguage; codes: Record<PrepLanguage, string>; }
+
 /**
- * Code ground: a plain compiler. Type a program, give it an input, press Run and see what it prints. Nothing is scored.
+ * Code ground > Free compiler: a plain compiler. Type a program, give it an input, press Run and see what it prints. Nothing is scored.
  */
 @Component({
-  selector: 'pm-code-ground',
+  selector: 'pm-free-compiler',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: '../student-pages.scss',
   template: `
     <section class="st-card mb-3">
-      <h2 class="h5 st-h mb-1">Code ground</h2>
+      <h2 class="h5 st-h mb-1">Free compiler</h2>
       <p class="small st-muted mb-0">Write a program, give it an input and run it. It is practice only: nothing is scored and nothing is saved on the server.
         Read the input with <code>input()</code> (Python), <code>Scanner</code> (Java), <code>cin</code> (C++) or <code>readFileSync(0)</code> (JavaScript).</p>
     </section>
@@ -20,8 +50,8 @@ const DRAFT_KEY = 'pm-code-ground-draft';
     <section class="st-card mb-3" aria-label="Editor">
       <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
         <label for="cg-lang" class="small st-muted mb-0">Language</label>
-        <select id="cg-lang" class="form-select form-select-sm w-auto" [value]="language()" (change)="setLanguage($any($event.target).value)">
-          @for (l of languages; track l) { <option [value]="l">{{ labels[l] }}</option> }
+        <select id="cg-lang" class="form-select form-select-sm w-auto" (change)="setLanguage($any($event.target).value)">
+          @for (l of languages; track l) { <option [value]="l" [selected]="l === language()">{{ labels[l] }}</option> }
         </select>
         <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" (click)="clearCode()">Clear</button>
       </div>
@@ -76,32 +106,36 @@ const DRAFT_KEY = 'pm-code-ground-draft';
     .cg-err { color: var(--bs-danger); }
   `],
 })
-export class CodeGround {
+export class FreeCompiler {
   private prep = inject(PrepService);
 
-  readonly labels = LANGUAGE_LABELS;
-  readonly languages = Object.keys(LANGUAGE_LABELS) as PrepLanguage[];
+  readonly labels: Record<PrepLanguage, string> = { python: 'Python 3.8', java: 'Java 13', cpp: 'C++ (GCC 9)', javascript: 'JavaScript (Node.js 12)' };
+  readonly languages = Object.keys(STARTERS) as PrepLanguage[];
 
-  language = signal<PrepLanguage>(this.loadDraft().language);
-  code = signal<string>(this.loadDraft().code);
+  private draft = this.loadDraft();
+  language = signal<PrepLanguage>(this.draft.language);
+  /** The chosen language's program: each language has its own. */
+  code = signal<string>(this.draft.codes[this.draft.language]);
   stdin = signal<string>('');
   running = signal(false);
   result = signal<PlaygroundResult | null>(null);
 
   setLanguage(value: string): void {
     this.language.set(value as PrepLanguage);
+    this.code.set(this.draft.codes[this.language()]);
+    this.result.set(null);
     this.saveDraft();
   }
 
   setCode(value: string): void {
     this.code.set(value);
+    this.draft.codes[this.language()] = value;
     this.saveDraft();
   }
 
   clearCode(): void {
-    this.code.set('');
+    this.setCode('');
     this.result.set(null);
-    this.saveDraft();
   }
 
   onKey(e: KeyboardEvent): void {
@@ -121,22 +155,26 @@ export class CodeGround {
     });
   }
 
-  // The last code is kept in this browser so a refresh does not lose it. Storage can be blocked, so every access is guarded.
-  private loadDraft(): { language: PrepLanguage; code: string } {
-    const fallback = { language: 'python' as PrepLanguage, code: 'a, b = map(int, input().split())\nprint(a + b)\n' };
+  // The code of every language is kept in this browser so a refresh does not lose it. Storage can be blocked, so every access is guarded.
+  private loadDraft(): Draft {
+    const draft: Draft = { language: 'python', codes: { ...STARTERS } };
     try {
       const raw = localStorage.getItem(DRAFT_KEY);
-      if (!raw) return fallback;
-      const d = JSON.parse(raw) as { language?: PrepLanguage; code?: string };
-      return { language: d.language && d.language in LANGUAGE_LABELS ? d.language : fallback.language, code: d.code ?? fallback.code };
+      if (!raw) return draft;
+      const d = JSON.parse(raw) as { language?: PrepLanguage; codes?: Partial<Record<PrepLanguage, string>>; code?: string };
+      if (d.language && d.language in STARTERS) draft.language = d.language;
+      Object.assign(draft.codes, d.codes);
+      // saved before each language had its own; the untouched Python sample left under another language is not worth keeping
+      if (!d.codes && d.code !== undefined && d.code !== STARTERS.python) draft.codes[draft.language] = d.code;
+      return draft;
     } catch {
-      return fallback;
+      return draft;
     }
   }
 
   private saveDraft(): void {
     try {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify({ language: this.language(), code: this.code() }));
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ language: this.language(), codes: this.draft.codes }));
     } catch {
       /* storage blocked: the code simply is not kept */
     }

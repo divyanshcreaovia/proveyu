@@ -49,10 +49,11 @@ CREATE USER 'proveyu_app'@'127.0.0.1' IDENTIFIED BY '<long random password>';
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, REFERENCES, DROP ON proveyufinaldb.* TO 'proveyu_app'@'127.0.0.1';
 ```
 
-Load the schema once into the empty database: `mysql proveyufinaldb < finaluseddbschema.sql`, then set `SPRING_FLYWAY_BASELINE_VERSION=44`
-(the version written at the top of that file) in the backend env file. On the first start Flyway records the database as version 44 and
-runs nothing old; from then on every deploy runs only the new migrations (V43, V44, ...) automatically. Never edit a `V__` file that
-already ran, and never run the old migrations on an empty production database (V15 needs data that only exists in dev).
+Load the schema once into the empty database: `mysql proveyufinaldb < finaluseddbschema.sql` (schema only; `25nov/finaluseddbschema.sql` has the
+showcase data too), then set `SPRING_FLYWAY_BASELINE_VERSION=49` (the version written at the top of that file) in the backend env file. On the
+first start Flyway records the database as version 49 and runs nothing old; from then on every deploy runs only the new migrations (V50, ...)
+automatically. Never edit a `V__` file that already ran, and never run the old migrations on an empty production database (V15 needs data
+that only exists in dev). A database that already has Flyway history needs no baseline.
 
 ## 3. Build and install
 

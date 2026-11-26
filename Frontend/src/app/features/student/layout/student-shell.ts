@@ -48,6 +48,9 @@ const NAV: { section: string; items: NavItem[] }[] = [
 ];
 
 /** Student portal layout: same look and theme tokens as the college shell. */
+const FULL_WIDTH = '/student/code-ground';
+const DESKTOP = 992; // below this the menu is a slide-over drawer with labels
+
 @Component({
   selector: 'pm-student-shell',
   imports: [SupportDialog, RouterOutlet, RouterLink, RouterLinkActive, NotificationPanel, EmptyState],
@@ -63,7 +66,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
         @for (g of nav; track g.section) {
           @if (!collapsed()) { <div class="pm-shell-section">{{ g.section }}</div> }
           @for (i of g.items; track i.route) {
-            <a [routerLink]="i.route" routerLinkActive="pm-shell-active" class="pm-shell-link" (click)="mobileOpen.set(false)" [attr.title]="collapsed() ? i.label : null">
+            <a [routerLink]="i.route" routerLinkActive="pm-shell-active" class="pm-shell-link" (click)="navClick(i)" [attr.title]="collapsed() ? i.label : null">
               <i class="bi {{ i.icon }}" aria-hidden="true"></i>@if (!collapsed()) { <span class="flex-grow-1">{{ i.label }}</span> }
               @if (badgeCount(i); as n) {
                 <span class="pm-nav-badge" [class.pm-nav-badge-chat]="i.badge === 'chat'" [class.pm-nav-badge-dot]="collapsed()"
@@ -218,6 +221,8 @@ export class StudentShell implements OnInit {
   private route = inject(ActivatedRoute);
   nav = NAV;
   collapsed = signal(false);
+  /** The menu as it was before a full-width page folded it; null when not on such a page. */
+  private beforeFullWidth: boolean | null = null;
   /** Help & support popup. */
   support = signal(false);
   mobileOpen = signal(false);
@@ -228,17 +233,48 @@ export class StudentShell implements OnInit {
   initials = computed(() => (this.portal.me()?.name ?? '?').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase());
 
   constructor() {
-    this.router.events.pipe(filter(e => e instanceof NavigationEnd), takeUntilDestroyed()).subscribe(() => this.updateTitle());
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd), takeUntilDestroyed()).subscribe(() => { this.updateTitle(); this.fitMenu(); this.fitTheme(); });
   }
 
   ngOnInit(): void {
     this.updateTitle();
+    this.fitMenu();
+    this.fitTheme();
+    this.destroyRef.onDestroy(() => this.theme.release()); // e.g. signing out from Code ground
     this.portal.profile().subscribe({ error: (e: AppError) => this.notLinked.set(e.code === 'NOT_A_COLLEGE_STUDENT') });
     this.notifications.load().subscribe();
     // live chat socket for the whole portal session, so unread badges update on every page
     this.chat.connect();
     const poll = setInterval(() => this.chat.refreshUnread(), 60_000); // fallback if the socket is down
     this.destroyRef.onDestroy(() => { clearInterval(poll); this.chat.disconnect(); });
+  }
+
+  navClick(i: NavItem): void {
+    this.mobileOpen.set(false);
+    // clicked again while already there, after the student had opened the menu
+    if (i.route === FULL_WIDTH && this.beforeFullWidth !== null && window.innerWidth >= DESKTOP) this.collapsed.set(true);
+  }
+
+  /** Code ground needs the room: the menu folds to icons on the way in and comes back as it was on the way out. Desktop only. */
+  private fitMenu(): void {
+    const there = this.router.url.split('?')[0] === FULL_WIDTH;
+    if (there && this.beforeFullWidth === null && window.innerWidth >= DESKTOP) {
+      this.beforeFullWidth = this.collapsed();
+      this.collapsed.set(true);
+    } else if (!there && this.beforeFullWidth !== null) {
+      this.collapsed.set(this.beforeFullWidth);
+      this.beforeFullWidth = null;
+    }
+  }
+
+  private onCodeGround = false;
+
+  /** Code ground opens in dark mode; the toggle still works there. */
+  private fitTheme(): void {
+    const there = this.router.url.split('?')[0] === FULL_WIDTH;
+    if (there === this.onCodeGround) return;
+    this.onCodeGround = there;
+    if (there) this.theme.forceDark(); else this.theme.release();
   }
 
   badgeCount(i: NavItem): number {

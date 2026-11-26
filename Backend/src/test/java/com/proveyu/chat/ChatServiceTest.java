@@ -58,6 +58,9 @@ class ChatServiceTest {
     @Mock
     private ChatWebSocketHandler chatWebSocketHandler;
 
+    @Mock
+    private com.proveyu.chat.application.ChatAccess chatAccess;
+
     @InjectMocks
     private ChatService chatService;
 

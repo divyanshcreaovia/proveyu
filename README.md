@@ -2,7 +2,7 @@
 
 ProveYu connects a college's placement cell with its students. The college runs drives, rounds and offers. Students apply, track
 results, prepare with proctored mock tests and AI mock interviews, and apply to off-campus jobs picked for their field (with a NOC
-from the placement cell when they get an offer). The ProveYu team runs the platform from an admin portal.
+from the placement cell when they get an offer). The ProveYu team runs the platform from an admin portal, and college leadership gets AI-planned dashboards in a CXO portal.
 
 | Portal | URL (dev) | Who uses it |
 |---|---|---|
@@ -11,6 +11,7 @@ from the placement cell when they get an offer). The ProveYu team runs the platf
 | College portal | `/college/login` | TPO, placement coordinators, viewers |
 | Student portal | `/student/login` | Students of a registered college |
 | Drive Room | `/company/login` | Company HR and interview panels invited to a drive |
+| Leadership (CXO) | `/cxo/login` | College leadership: AI-planned dashboards of the college's own data. Accounts are created by an admin |
 | Admin portal | `/admin/login` | ProveYu team. There is no admin sign-up; only an admin can create another admin |
 
 ---
@@ -21,7 +22,7 @@ from the placement cell when they get an offer). The ProveYu team runs the platf
 |---|---|
 | Frontend | Angular 21 (standalone components, signals, zoneless), Bootstrap 5, TypeScript 5.9 |
 | Backend | Spring Boot 3.2.3 (Java 17+, runs on 21), Spring Security with JWT, JPA plus JdbcTemplate, Flyway |
-| Database | MySQL 8, database `proveyu_college`, migrations `V1`–`V44`, 58 tables in use (see [finaluseddbschema.sql](finaluseddbschema.sql)) |
+| Database | MySQL 8, database `proveyu_college`, migrations `V1`–`V49`, 66 tables in use (see [finaluseddbschema.sql](finaluseddbschema.sql); `25nov/finaluseddbschema.sql` is the same with showcase data) |
 | AI interview | Groq cloud first (`gpt-oss-20b` for questions and scoring, `whisper-large-v3-turbo` for speech; several keys back each other up). Local fallback: Ollama `qwen3:1.7b` and whisper.cpp. Piper for the spoken voice |
 | Off-campus job feed | Careerjet job search API, imported every night at 12 (Internshala and similar sites forbid scraping) |
 | PDFs | Apache PDFBox (offer letters, reports, NOC on the college letterhead) |
@@ -54,7 +55,7 @@ questions need Judge0; the rest of the platform works without it.
 |---|---|---|
 | `JUDGE0_URL` | `http://localhost:2358` | Judge0 base URL. Production: `http://<Judge0 VM internal IP>:2358` |
 | `JUDGE0_TOKEN` | empty | sent in the `X-Auth-Token` header (or `JUDGE0_AUTH_HEADER`). Never logged |
-| `JUDGE0_POLL_INTERVAL_MS`, `JUDGE0_POLL_TIMEOUT_MS` | `300`, `30000` | how often and how long the backend waits for a result |
+| `JUDGE0_POLL_INTERVAL_MS`, `JUDGE0_POLL_TIMEOUT_MS` | `300`, `60000` | how often and how long the backend waits for a result |
 | `JUDGE0_MAX_PARALLEL` | `4` | runs sent to Judge0 at once; more wait in the backend queue |
 | `JUDGE0_CONNECT_TIMEOUT_MS`, `JUDGE0_READ_TIMEOUT_MS` | `3000`, `15000` | HTTP timeouts |
 | `JUDGE0_CPU_TIME_LIMIT_SECONDS`, `JUDGE0_WALL_TIME_LIMIT_SECONDS`, `JUDGE0_MEMORY_LIMIT_KB` | `3`, `8`, `262144` | limits per test (capped in `application.yml`) |
@@ -99,8 +100,10 @@ proveyu/
 ├── ai-services/              # docker-compose for Ollama, Whisper and Piper
 ├── scripts/                  # run scripts, demo seed data, end-to-end tests, run_all_tests.sh, gen_docs.py
 ├── docs/COLLEGE_PORTAL.md    # detailed guide: modules, proctoring, admin portal, support, off-campus, NOC
+├── docs/CODE_GROUND.md       # Code ground: features, how the problems are made and checked, admin portal, settings, capacity
 ├── RUN_AND_TEST.md           # full runbook and the end-to-end test checklist for every portal
-└── finaluseddbschema.sql     # structure of the 58 tables the code uses (Flyway baseline 44)
+├── finaluseddbschema.sql     # structure of the 66 tables the code uses, no data (Flyway baseline 49)
+└── 25nov/finaluseddbschema.sql   # the same structure plus showcase data: 20 mock tests and one complete college (Flyway baseline 49)
 ```
 
 ---
@@ -201,10 +204,10 @@ withdraw, round-by-round tracking, interviews, offers and offer letters, documen
 test ladder (MCQ and coding, proctored with screen share, tab-switch screenshots and auto-submit), AI mock interviews from a
 drive's JD or the student's own JD (voice or typed answers, scored report, free and paid credits via UPI), off-campus jobs and
 internships filtered by the fields the student picks (software, data, mechanical, ...) with eligibility reasons, an
-applied → interviewing → offer tracker and NOC requests. Under Preparation, **Code ground** is a plain compiler: type a program, give an input and see the output (Python, Java, C++ or JavaScript, run on Judge0; nothing is scored or saved).
+applied → interviewing → offer tracker and NOC requests. **Code ground** is coding practice: a study plan of 10 topics with learning guides and 74 problems in JavaScript, Python, Java and C++ (run and checked on Judge0 with hidden tests), a problem of the day, a streak calendar, submission history, a college leaderboard, and a free compiler. See [docs/CODE_GROUND.md](docs/CODE_GROUND.md).
 
 **Admin portal:** dashboard, colleges (approve, suspend, reactivate), users (search, block, password reset, credits), admins,
-payments (verify, export), mock tests, proctoring, off-campus jobs (post with eligibility and field, review the nightly Careerjet
+payments (verify, export), mock tests, Code ground (topics, problems, upload, problem of the day), CXO accounts, proctoring, off-campus jobs (post with eligibility and field, review the nightly Careerjet
 import, bulk publish, responses per job), Help & support inbox, broadcast, settings and audit log.
 
 Both the college and student portals have **Help & support** in the side menu: a mail-style form whose requests and answers

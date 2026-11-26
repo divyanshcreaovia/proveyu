@@ -51,6 +51,10 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public Date getIssuedAtFromToken(String token) {
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().getIssuedAt();
+    }
+
     public String getUserIdFromToken(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(key)

@@ -41,7 +41,7 @@ public class WebSocketAuthInterceptor implements HandshakeInterceptor {
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             try {
                 String userIdStr = jwtTokenProvider.getUserIdFromToken(token);
-                if (blockList != null && blockList.isBlocked(userIdStr)) {
+                if (blockList != null && (blockList.isBlocked(userIdStr) || blockList.isOutdated(userIdStr, jwtTokenProvider.getIssuedAtFromToken(token)))) {
                     response.setStatusCode(HttpStatus.FORBIDDEN);
                     return false;
                 }

@@ -24,8 +24,9 @@ Only ports 80 and 443 are open to the internet. MySQL, 8080 and Judge0 are never
 | What | File / value | Notes |
 |---|---|---|
 | Code | the latest commit on the branch you were given | build from a clean checkout |
-| Database schema + data | [finaluseddbschema.sql](finaluseddbschema.sql) | Flyway version **44**, 58 tables, the 20 mock tests and one complete college (LTCE) |
-| Flyway baseline | `SPRING_FLYWAY_BASELINE_VERSION=44` | must equal the version on line 4 of the schema file |
+| Database, schema only | [finaluseddbschema.sql](finaluseddbschema.sql) | Flyway version **49**, 66 tables, no data (the platform admin is made by `ADMIN_BOOTSTRAP_*` on the first start) |
+| Database, schema + showcase data | [25nov/finaluseddbschema.sql](25nov/finaluseddbschema.sql) | the same 66 tables (Flyway version **49**) with the 20 mock tests and one complete college (LTCE); use it only to show the product |
+| Flyway baseline | `SPRING_FLYWAY_BASELINE_VERSION=49` | must equal the "Flyway version" written at the top of the file you loaded |
 | Backend settings | [deploy/backend.env.production.example](deploy/backend.env.production.example) → `/etc/proveyu/backend.env` | fill in every empty value |
 | Backend service | [deploy/proveyu-backend.service](deploy/proveyu-backend.service) → `/etc/systemd/system/` | runs the jar as user `proveyu` |
 | Web server | [deploy/nginx-proveyu.conf](deploy/nginx-proveyu.conf) → `/etc/nginx/sites-available/proveyu` | replace `proveyu.example.com` with the real domain |
@@ -65,15 +66,20 @@ Create these yourself on the server (new values, never the development ones):
 - [ ] MySQL listens on `127.0.0.1` only (the default).
 - [ ] `CREATE DATABASE proveyufinaldb CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;`
 - [ ] App user `proveyu_app@127.0.0.1` with rights **on `proveyufinaldb` only**. Never use root.
-- [ ] Load the schema **into the empty database**, once: `mysql proveyufinaldb < finaluseddbschema.sql`
-- [ ] `SPRING_FLYWAY_BASELINE_VERSION=44` is in `/etc/proveyu/backend.env`.
+- [ ] Load the schema **into the empty database**, once: `mysql proveyufinaldb < finaluseddbschema.sql` (or `25nov/finaluseddbschema.sql` for the showcase data)
+- [ ] `SPRING_FLYWAY_BASELINE_VERSION=49` is in `/etc/proveyu/backend.env`.
 
-How Flyway works here: on the first start it records the database as version 44 and runs nothing old. On every later start it runs
-only new files (`V43__...`, `V44__...`) from `Backend/src/main/resources/db/migration`.
+How Flyway works here: the dump has no Flyway history, so on the first start Flyway records the database as version 49 and runs
+nothing old. On every later start it runs only new files (`V50__...` and later) from `Backend/src/main/resources/db/migration`.
+The baseline matters only that first time; once `flyway_schema_history` exists it is ignored.
+
+A database that already has data and was made from an older dump (for example the first 25 Nov dump, version 44) is **not reloaded**:
+set the baseline to the version that dump had (`44`) and start the backend; it applies V45 onwards by itself. Take a backup first (MySQL does
+not undo a migration that fails half way). If `SHOW TABLES LIKE 'flyway_schema_history'` already finds the table, change nothing.
 
 **Never:**
 - load the schema into a database that already has tables
-- start the backend on an empty database without the baseline (it then tries V1 onwards and fails at V15)
+- start the backend on a loaded dump without the baseline, or with a baseline higher than the dump's real version (it then tries V1 onwards and fails at V15, or skips migrations and the new tables are missing)
 - edit a `V__` file that already ran
 
 ## 5. Build
@@ -100,6 +106,7 @@ internal network only. Nothing to build on this server.
 - [ ] The Judge0 VM's firewall allows port 2358 only from this server's internal address.
 - [ ] Check after start: `GET /api/v1/admin/code-runner/health` as admin, or the `[CODE RUNNER] ... ready` line in the backend log.
 - [ ] Language ids in `application.yml` (`code.execution.languages`) match the VM's `GET /languages`.
+- [ ] For a class using Code ground (practice problems), set `JUDGE0_MAX_PARALLEL=10`, `CODE_QUEUE_WAIT_MS=90000` and `JUDGE0_POLL_TIMEOUT_MS=60000`, and give the Judge0 VM enough workers (`COUNT` in `judge0.conf`). Measured numbers are in [docs/CODE_GROUND.md](docs/CODE_GROUND.md). The two timeouts also apply to mock tests.
 
 ## 7. Backend settings: `/etc/proveyu/backend.env`
 
@@ -124,7 +131,7 @@ Start from [deploy/backend.env.production.example](deploy/backend.env.production
 | `CORS_ALLOWED_ORIGINS`, `APP_FRONTEND_URL`, `CAREERJET_REFERER` | `https://<domain>` (mail links use `APP_FRONTEND_URL`) |
 | `SPRING_DATASOURCE_PASSWORD` | the MySQL app user password |
 | `JWT_SECRET` | the new random secret |
-| `SPRING_FLYWAY_BASELINE_VERSION` | `44` |
+| `SPRING_FLYWAY_BASELINE_VERSION` | `49` (the version at the top of the dump you loaded) |
 | `ADMIN_BOOTSTRAP_EMAIL`, `ADMIN_BOOTSTRAP_PASSWORD` | first admin; **delete the password line after the first start** |
 | `SPRING_MAIL_*` | SMTP for `info@proveyu.com` |
 | `SUPPORT_INBOX_EMAIL` | `support@proveyu.com` (support tickets and pricing enquiries are e-mailed here) |
@@ -136,7 +143,8 @@ Start from [deploy/backend.env.production.example](deploy/backend.env.production
 ## 8. Start, HTTPS, nginx
 
 - [ ] `sudo systemctl enable --now proveyu-backend`, then `journalctl -u proveyu-backend -f` until "Started".
-- [ ] The log shows Flyway baseline 44 and no errors.
+- [ ] The log shows `Successfully baselined schema with version: 49` and `No migration necessary`, and no errors.
+- [ ] Optional check: `SELECT version, description FROM flyway_schema_history ORDER BY installed_rank;` ends with `49 password changed at`, and `SHOW TABLES LIKE 'code_ground%';` lists 8 tables.
 - [ ] Remove `ADMIN_BOOTSTRAP_PASSWORD` from the env file, then `sudo systemctl restart proveyu-backend`.
 - [ ] DNS A record → server IP.
 - [ ] Certificate with certbot (standalone, with the stop/start hooks in the guide), then `sudo certbot renew --dry-run` works.
@@ -144,7 +152,7 @@ Start from [deploy/backend.env.production.example](deploy/backend.env.production
 
 ## 9. Data that comes with the schema
 
-`finaluseddbschema.sql` already holds the 20 mock tests and one complete college for showing the product:
+`25nov/finaluseddbschema.sql` (not the schema-only file in the repository root) already holds the 20 mock tests and one complete college for showing the product:
 Lokmanya Tilak College of Engineering (`ltce.in`), with its team, 60 students, drives in every stage, offers, a scheduled
 exam, off-campus jobs and notifications. The college passwords are not in the repository; the owner has them.
 
@@ -199,7 +207,7 @@ By hand in the browser:
 sudo systemctl stop proveyu-backend
 sudo cp proveyu-backend-*.jar /opt/proveyu/proveyu-backend.jar
 sudo rm -rf /var/www/proveyu/* && sudo cp -r browser/* /var/www/proveyu/
-sudo systemctl start proveyu-backend        # Flyway runs any new V40+ migration by itself
+sudo systemctl start proveyu-backend        # Flyway runs any new migration by itself
 ```
 
 - No SQL by hand. Take a database dump before every update.

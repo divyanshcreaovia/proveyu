@@ -1,0 +1,42 @@
+{
+  "topics": [
+    {
+      "key": "greedy",
+      "title": "Greedy",
+      "summary": "Take the best step now and never look back",
+      "guide": [
+        {
+          "tag": "Why it matters",
+          "title": "Simple choices, fast programs",
+          "points": [
+            "A greedy solution picks the best option at each step.",
+            "It is correct only when a local best always leads to a global best."
+          ]
+        }
+      ],
+      "problems": [
+        {
+          "key": "max-two-sum",
+          "title": "Largest pair sum",
+          "difficulty": "EASY",
+          "statement": "Return the largest sum of two different elements of the array. The array has at least two numbers.",
+          "args": [{ "name": "nums", "type": "ints" }],
+          "returnType": "int",
+          "hint": "You only need the two largest values.",
+          "tests": [
+            { "input": "3 9 2 7", "output": "16" },
+            { "input": "5 5", "output": "10" }
+          ],
+          "hiddenTests": [
+            { "input": "-4 -1 -9", "output": "-5" },
+            { "input": "1 2 3 4 100", "output": "104" }
+          ],
+          "solution": {
+            "language": "python",
+            "code": "def solve(nums):\n    a, b = sorted(nums)[-2:]\n    return a + b"
+          }
+        }
+      ]
+    }
+  ]
+}

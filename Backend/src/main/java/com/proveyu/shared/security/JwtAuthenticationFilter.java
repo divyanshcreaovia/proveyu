@@ -32,7 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             String userId = tokenProvider.getUserIdFromToken(jwt);
-            if (!tokenBlacklistService.isBlacklisted(jwt) && !userBlockList.isBlocked(userId)) {
+            if (!tokenBlacklistService.isBlacklisted(jwt) && !userBlockList.isBlocked(userId)
+                    && !userBlockList.isOutdated(userId, tokenProvider.getIssuedAtFromToken(jwt))) {
                 String role = tokenProvider.getRoleFromToken(jwt);
 
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);

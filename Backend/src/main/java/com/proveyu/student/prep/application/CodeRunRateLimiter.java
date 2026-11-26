@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CodeRunRateLimiter {
 
     /** Run and Submit have separate buckets: Submit right after a Run is allowed. */
-    public enum Action { RUN, SUBMIT, PLAYGROUND }
+    public enum Action { RUN, SUBMIT, PLAYGROUND, CODE_GROUND, CODE_GROUND_SUBMIT }
 
     private static final int PRUNE_AT = 10_000;
 
