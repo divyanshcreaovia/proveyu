@@ -34,6 +34,7 @@ public class OfferService {
             OfferStatus.REVOKED, EnumSet.noneOf(OfferStatus.class));
 
     private final CollegeOfferRepository offerRepository;
+    private final com.proveyu.college.infrastructure.CollegeStudentRepository studentRows;
     private final CollegeApplicationRepository applicationRepository;
     private final CollegeDirectory directory;
     private final StudentService studentService;
@@ -65,8 +66,10 @@ public class OfferService {
                 .toList();
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public OfferResponse create(CollegeContext ctx, OfferRequest r) {
+        studentRows.lockRow(r.studentId().toString(), ctx.collegeId().toString()); // double clicks wait here, then see the first offer
+        requireDateOrder(r.offerDate() == null ? LocalDate.now() : r.offerDate(), r.joiningDate());
         CollegeStudent s = studentService.scoped(ctx, r.studentId());
         CollegeCompany company = directory.company(ctx.collegeId(), r.companyId());
         CollegeDrive drive = r.driveId() == null ? null : directory.drive(ctx.collegeId(), r.driveId());
@@ -113,6 +116,7 @@ public class OfferService {
 
     @Transactional
     public OfferResponse update(CollegeContext ctx, UUID id, OfferRequest r) {
+        requireDateOrder(r.offerDate(), r.joiningDate());
         CollegeOffer o = directory.offer(ctx.collegeId(), id);
         studentService.scoped(ctx, o.getStudentId());
         o.setRoleTitle(r.roleTitle());
@@ -129,8 +133,9 @@ public class OfferService {
         return one(ctx, o);
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public OfferResponse changeStatus(CollegeContext ctx, UUID id, OfferStatusRequest r) {
+        offerRepository.studentIdOf(id, ctx.collegeId()).ifPresent(sid -> studentRows.lockRow(sid.toString(), ctx.collegeId().toString()));
         CollegeOffer o = directory.offer(ctx.collegeId(), id);
         CollegeStudent s = studentService.scoped(ctx, o.getStudentId());
         return transition(ctx.collegeId(), ctx.userId(), ctx.actorName(), o, s, r.status(), r.remarks());
@@ -175,6 +180,12 @@ public class OfferService {
     public CollegeFile letter(UUID collegeId, CollegeOffer o) {
         if (o.getOfferLetterFileId() == null) throw CollegeDirectory.notFound("Offer letter");
         return fileService.get(collegeId, o.getOfferLetterFileId());
+    }
+
+    private static void requireDateOrder(LocalDate offerDate, LocalDate joiningDate) {
+        if (offerDate != null && joiningDate != null && joiningDate.isBefore(offerDate)) {
+            throw new DomainException("Joining date cannot be before the offer date", HttpStatus.BAD_REQUEST, "BAD_JOINING_DATE");
+        }
     }
 
     // ---------------------------------------------------------------- mapping

@@ -124,6 +124,10 @@ public class StudentImportService {
             if (phone != null) seenPhone.put(phone, p.row());
 
             CollegeStudent existing = studentRepository.findByCollegeIdAndRollNumberIgnoreCase(ctx.collegeId(), v.get("roll_number")).orElse(null);
+            if (accountService.enrolledElsewhere(ctx.collegeId(), email)) {
+                errors.add(new RowIssue(p.row(), "email", "E-mail is already a student of another college"));
+                continue;
+            }
             var emailOwner = studentRepository.findByCollegeIdAndEmailIgnoreCase(ctx.collegeId(), email);
             if (emailOwner.isPresent() && (existing == null || !emailOwner.get().getId().equals(existing.getId()))) {
                 duplicates.add(new RowIssue(p.row(), "email", "E-mail already used by student " + emailOwner.get().getRollNumber()));
@@ -151,7 +155,7 @@ public class StudentImportService {
                 if (row.existing() == null) {
                     CollegeStudent s = CollegeStudent.builder().collegeId(ctx.collegeId()).build();
                     fill(s, row.v(), row.branch());
-                    var account = accountService.ensureCandidate(s.getEmail(), CollegeDirectory.fullName(s), s.getPhone());
+                    var account = accountService.ensureCandidate(ctx.collegeId(), s.getEmail(), CollegeDirectory.fullName(s), s.getPhone());
                     s.setUserId(account.userId());
                     s = studentRepository.save(s);
                     studentService.sendWelcome(ctx.collegeId(), s);
@@ -160,7 +164,7 @@ public class StudentImportService {
                     CollegeStudent s = row.existing();
                     boolean emailChanged = !s.getEmail().equalsIgnoreCase(row.v().get("email"));
                     fill(s, row.v(), row.branch());
-                    if (emailChanged) s.setUserId(accountService.ensureCandidate(s.getEmail(), CollegeDirectory.fullName(s), s.getPhone()).userId());
+                    if (emailChanged) s.setUserId(accountService.ensureCandidate(ctx.collegeId(), s.getEmail(), CollegeDirectory.fullName(s), s.getPhone()).userId());
                     s.setDeletedAt(null);
                     studentRepository.save(s);
                     updated++;

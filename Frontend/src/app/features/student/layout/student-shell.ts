@@ -121,7 +121,12 @@ const DESKTOP = 992; // below this the menu is a slide-over drawer with labels
           </div>
         </header>
         <main class="pm-shell-content" (click)="menu.set(false); bell.set(false)">
-          @if (notLinked()) {
+          @if (suspended()) {
+            <div class="mx-auto mt-4 p-4 rounded-4" style="max-width: 560px; background: var(--pm-card-bg)">
+              <pm-empty-state icon="bi-slash-circle" title="Your college account is suspended" [text]="suspended()" />
+              <div class="text-center"><button class="btn btn-outline-secondary btn-sm" (click)="auth.logout('/student/login')">Sign out</button></div>
+            </div>
+          } @else if (notLinked()) {
             <div class="mx-auto mt-4 p-4 rounded-4" style="max-width: 560px; background: var(--pm-card-bg)">
               <pm-empty-state icon="bi-mortarboard" title="Your account isn't linked to a college yet"
                 text="Ask your placement cell to add you with this e-mail address. Everything appears here as soon as they do." />
@@ -230,6 +235,8 @@ export class StudentShell implements OnInit {
   bell = signal(false);
   title = signal('');
   notLinked = signal(false);
+  /** The server's reason while the college is suspended; empty otherwise. */
+  suspended = signal('');
   initials = computed(() => (this.portal.me()?.name ?? '?').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase());
 
   constructor() {
@@ -241,7 +248,10 @@ export class StudentShell implements OnInit {
     this.fitMenu();
     this.fitTheme();
     this.destroyRef.onDestroy(() => this.theme.release()); // e.g. signing out from Code ground
-    this.portal.profile().subscribe({ error: (e: AppError) => this.notLinked.set(e.code === 'NOT_A_COLLEGE_STUDENT') });
+    this.portal.profile().subscribe({ error: (e: AppError) => {
+      this.notLinked.set(e.code === 'NOT_A_COLLEGE_STUDENT');
+      if (e.code === 'COLLEGE_SUSPENDED') this.suspended.set(e.message);
+    } });
     this.notifications.load().subscribe();
     // live chat socket for the whole portal session, so unread badges update on every page
     this.chat.connect();

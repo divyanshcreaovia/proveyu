@@ -149,7 +149,7 @@ public class StudentService {
         CollegeBranch branch = directory.branch(ctx.collegeId(), r.branchId());
         requireBranch(ctx, branch.getId());
         assertUnique(ctx.collegeId(), null, r.rollNumber(), r.email());
-        var account = accountService.ensureCandidate(r.email(), (r.firstName() + " " + Objects.toString(r.lastName(), "")).trim(), r.phone());
+        var account = accountService.ensureCandidate(ctx.collegeId(), r.email(), (r.firstName() + " " + Objects.toString(r.lastName(), "")).trim(), r.phone());
         CollegeStudent s = CollegeStudent.builder().collegeId(ctx.collegeId()).userId(account.userId()).build();
         apply(s, r);
         s = studentRepository.save(s);
@@ -171,7 +171,7 @@ public class StudentService {
         requireBranch(ctx, r.branchId());
         assertUnique(ctx.collegeId(), id, r.rollNumber(), r.email());
         if (!s.getEmail().equalsIgnoreCase(r.email())) {
-            var account = accountService.ensureCandidate(r.email(), (r.firstName() + " " + Objects.toString(r.lastName(), "")).trim(), r.phone());
+            var account = accountService.ensureCandidate(ctx.collegeId(), r.email(), (r.firstName() + " " + Objects.toString(r.lastName(), "")).trim(), r.phone());
             s.setUserId(account.userId());
         }
         apply(s, r);
@@ -183,6 +183,7 @@ public class StudentService {
     @Transactional
     public void softDelete(CollegeContext ctx, UUID id) {
         CollegeStudent s = scoped(ctx, id);
+        if (s.getDeletedAt() != null) throw new DomainException("This student is already in the trash", HttpStatus.CONFLICT, "ALREADY_DELETED");
         s.setDeletedAt(Instant.now());
         studentRepository.save(s);
         auditService.log(ctx, "STUDENT_DELETED", "STUDENT", id, "Moved student " + s.getRollNumber() + " to trash", null);
@@ -191,6 +192,7 @@ public class StudentService {
     @Transactional
     public StudentResponse restore(CollegeContext ctx, UUID id) {
         CollegeStudent s = scoped(ctx, id);
+        if (s.getDeletedAt() == null) throw new DomainException("This student is not in the trash", HttpStatus.CONFLICT, "NOT_DELETED");
         assertUnique(ctx.collegeId(), id, s.getRollNumber(), s.getEmail());
         s.setDeletedAt(null);
         studentRepository.save(s);

@@ -97,6 +97,9 @@ public class ChatService {
         }
 
         chatAccess.check(senderId, receiverId);
+        if (messageText != null && messageText.length() > 10000) {
+            throw new com.proveyu.shared.error.DomainException("Message is too long (max 10000 characters)", org.springframework.http.HttpStatus.BAD_REQUEST, "MESSAGE_TOO_LONG");
+        }
 
         if (file == null || file.isEmpty()) {
             throw new DomainException("Chat file is required and cannot be empty", HttpStatus.BAD_REQUEST, "EMPTY_FILE");

@@ -80,6 +80,7 @@ public class AuthService {
         }
 
         String rawPassword = payloadDecryptionUtils.decryptPassword(request.getPassword());
+        com.proveyu.shared.security.PasswordRules.require(rawPassword);
         User savedUser = userRepository.save(User.builder()
                 .email(email)
                 .phone(request.getPhone() == null || request.getPhone().isBlank() ? null : request.getPhone())
@@ -197,6 +198,7 @@ public class AuthService {
     public void resetPassword(ResetPasswordRequest request) {
         User user = checkOtp(request.getEmail(), request.getResetToken());
         String newRawPassword = payloadDecryptionUtils.decryptPassword(request.getNewPassword());
+        com.proveyu.shared.security.PasswordRules.require(newRawPassword);
         user.setPasswordHash(passwordEncoder.encode(newRawPassword));
         user.setResetToken(null);
         user.setResetTokenExpiresAt(null);

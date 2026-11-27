@@ -54,8 +54,8 @@ public class CollegeCompanyController {
 
     @GetMapping("/recruiters")
     @PreAuthorize(CollegeAccess.WRITE)
-    public ApiResponse<List<RecruiterOption>> recruiters(@RequestParam String q) {
-        return ApiResponse.success(companyService.searchRecruiters(q));
+    public ApiResponse<List<RecruiterOption>> recruiters(CollegeContext ctx, @RequestParam String q) {
+        return ApiResponse.success(companyService.searchRecruiters(ctx, q));
     }
 
     @GetMapping("/{id}")

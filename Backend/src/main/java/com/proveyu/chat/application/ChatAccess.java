@@ -50,12 +50,14 @@ public class ChatAccess {
     }
 
     private List<Staff> staff(UUID user) {
-        return jdbc.query("select college_id, branch_scope from college_members where user_id = ? and status = 'ACTIVE'",
+        return jdbc.query("select m.college_id, m.branch_scope from college_members m join college_profiles cp on cp.college_id = m.college_id "
+                        + "where m.user_id = ? and m.status = 'ACTIVE' and cp.approval_status <> 'SUSPENDED'",
                 (rs, n) -> new Staff(rs.getString(1), rs.getString(2)), user.toString());
     }
 
     private List<Student> students(UUID user) {
-        return jdbc.query("select college_id, branch_id from college_students where user_id = ? and deleted_at is null",
+        return jdbc.query("select s.college_id, s.branch_id from college_students s join college_profiles cp on cp.college_id = s.college_id "
+                        + "where s.user_id = ? and s.deleted_at is null and cp.approval_status <> 'SUSPENDED'",
                 (rs, n) -> new Student(rs.getString(1), rs.getString(2)), user.toString());
     }
 

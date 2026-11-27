@@ -21,12 +21,23 @@ import java.util.UUID;
 public class StudentAccountService {
 
     private final UserRepository userRepository;
+    private final com.proveyu.college.infrastructure.CollegeStudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
 
     public record Account(UUID userId, boolean created) {}
 
+    /** True when this e-mail is a current student of a different college. */
+    public boolean enrolledElsewhere(java.util.UUID collegeId, String rawEmail) {
+        return userRepository.findByEmail(AuthService.normalizeEmail(rawEmail))
+                .map(u -> studentRepository.existsByUserIdAndCollegeIdNotAndDeletedAtIsNull(u.getId(), collegeId)).orElse(false);
+    }
+
+    /** collegeId: the college adding the student; null when the student is activating their own record. */
     @Transactional
-    public Account ensureCandidate(String rawEmail, String fullName, String phone) {
+    public Account ensureCandidate(java.util.UUID collegeId, String rawEmail, String fullName, String phone) {
+        if (collegeId != null && enrolledElsewhere(collegeId, rawEmail)) {
+            throw new DomainException("E-mail " + rawEmail + " is already a student of another college", HttpStatus.CONFLICT, "EMAIL_IN_OTHER_COLLEGE");
+        }
         String email = AuthService.normalizeEmail(rawEmail);
         var existing = userRepository.findByEmail(email);
         if (existing.isPresent()) {

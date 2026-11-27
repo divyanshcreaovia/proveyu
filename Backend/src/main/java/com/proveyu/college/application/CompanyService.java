@@ -111,6 +111,11 @@ public class CompanyService {
     @Transactional
     public void softDelete(CollegeContext ctx, UUID id) {
         CollegeCompany c = directory.company(ctx.collegeId(), id);
+        if (c.getDeletedAt() != null) throw new DomainException("This company is already in the trash", HttpStatus.CONFLICT, "ALREADY_DELETED");
+        if (driveRepository.findAll().stream().anyMatch(d -> ctx.collegeId().equals(d.getCollegeId()) && id.equals(d.getCompanyId()) && d.getDeletedAt() == null
+                && (d.getStatus() == com.proveyu.college.domain.CollegeEnums.DriveStatus.PUBLISHED || d.getStatus() == com.proveyu.college.domain.CollegeEnums.DriveStatus.ONGOING))) {
+            throw new DomainException("This company has a live drive. Complete or cancel the drive first.", HttpStatus.CONFLICT, "COMPANY_HAS_LIVE_DRIVE");
+        }
         c.setDeletedAt(Instant.now());
         companyRepository.save(c);
         auditService.log(ctx, "COMPANY_DELETED", "COMPANY", id, "Moved company " + c.getName() + " to trash", null);
@@ -119,6 +124,7 @@ public class CompanyService {
     @Transactional
     public CompanyResponse restore(CollegeContext ctx, UUID id) {
         CollegeCompany c = directory.company(ctx.collegeId(), id);
+        if (c.getDeletedAt() == null) throw new DomainException("This company is not in the trash", HttpStatus.CONFLICT, "NOT_DELETED");
         c.setDeletedAt(null);
         companyRepository.save(c);
         auditService.log(ctx, "COMPANY_RESTORED", "COMPANY", id, "Restored company " + c.getName(), null);
@@ -192,9 +198,9 @@ public class CompanyService {
 
     // ---- recruiter link / invite
     @Transactional(readOnly = true)
-    public List<RecruiterOption> searchRecruiters(String q) {
+    public List<RecruiterOption> searchRecruiters(CollegeContext ctx, String q) {
         if (q == null || q.trim().length() < 2) return List.of();
-        return userRepository.searchRecruiters(q.trim(), PageRequest.of(0, 10)).stream()
+        return userRepository.searchRecruiters(q.trim(), ctx.collegeId(), PageRequest.of(0, 10)).stream()
                 .map(u -> new RecruiterOption(u.getId(), u.getFullName(), u.getEmail())).toList();
     }
 

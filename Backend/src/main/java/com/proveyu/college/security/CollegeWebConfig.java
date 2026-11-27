@@ -11,6 +11,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CollegeWebConfig implements WebMvcConfigurer {
     private final CollegeContextResolver collegeContextResolver;
+    private final SuspendedStudentInterceptor suspendedStudentInterceptor;
+
+    @Override
+    public void addInterceptors(org.springframework.web.servlet.config.annotation.InterceptorRegistry registry) {
+        registry.addInterceptor(suspendedStudentInterceptor).addPathPatterns("/api/v1/college/student/**");
+    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {

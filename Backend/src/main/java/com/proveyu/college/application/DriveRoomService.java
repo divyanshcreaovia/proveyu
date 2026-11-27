@@ -171,7 +171,7 @@ public class DriveRoomService {
             if (user.getEmailVerifiedAt() == null) user.setEmailVerifiedAt(Instant.now()); // the invitation link proves the mailbox
             user = userRepository.save(user);
         } else {
-            if (password == null || password.length() < 8) throw new DomainException("Password must be at least 8 characters", HttpStatus.BAD_REQUEST, "WEAK_PASSWORD");
+            com.proveyu.shared.security.PasswordRules.require(password);
             user = userRepository.save(User.builder().email(a.getEmail()).role(Role.RECRUITER).active(true).emailVerifiedAt(Instant.now())
                     .fullName(r.fullName() == null || r.fullName().isBlank() ? a.getFullName() : r.fullName().trim())
                     .passwordHash(passwordEncoder.encode(password)).build());
@@ -190,10 +190,12 @@ public class DriveRoomService {
 
     @Transactional(readOnly = true)
     public List<RoomDriveCard> myDrives(UUID userId) {
-        return accessRepository.findAllByUserIdAndStatusOrderByCreatedAtDesc(userId, DriveRecruiter.Status.ACTIVE).stream()
+        var access = accessRepository.findAllByUserIdAndStatusOrderByCreatedAtDesc(userId, DriveRecruiter.Status.ACTIVE);
+        List<RoomDriveCard> cards = access.stream()
                 .map(a -> {
                     CollegeDrive d = directory.drive(a.getCollegeId(), a.getDriveId());
                     if (d.getDeletedAt() != null) return null;
+                    if (directory.profile(a.getCollegeId()).getApprovalStatus() == com.proveyu.college.domain.CollegeEnums.ApprovalStatus.SUSPENDED) return null;
                     var apps = applicationRepository.findAllByCollegeIdAndDriveId(a.getCollegeId(), d.getId());
                     long offers = offerRepository.findAllByCollegeIdAndDriveId(a.getCollegeId(), d.getId()).stream()
                             .filter(o -> o.getStatus() != OfferStatus.REVOKED).count();
@@ -204,6 +206,9 @@ public class DriveRoomService {
                                     && x.getStatus() != ApplicationStatus.REJECTED).count(),
                             apps.stream().filter(x -> x.getStatus() == ApplicationStatus.SELECTED).count(), offers);
                 }).filter(Objects::nonNull).toList();
+        // nothing to show only because of a suspension: say so, instead of "no drives yet"
+        if (cards.isEmpty()) access.forEach(a -> directory.requireNotSuspended(a.getCollegeId()));
+        return cards;
     }
 
     @Transactional
@@ -447,6 +452,7 @@ public class DriveRoomService {
                 .orElseThrow(() -> CollegeDirectory.notFound("Drive"));
         CollegeDrive d = directory.drive(a.getCollegeId(), driveId);
         if (d.getDeletedAt() != null) throw CollegeDirectory.notFound("Drive");
+        directory.requireNotSuspended(a.getCollegeId());
         CollegeCompany c = directory.company(a.getCollegeId(), d.getCompanyId());
         User u = userRepository.findById(userId).orElseThrow(() -> CollegeDirectory.notFound("User"));
         if (a.getLastAccessAt() == null || a.getLastAccessAt().isBefore(Instant.now().minus(Duration.ofMinutes(5)))) {

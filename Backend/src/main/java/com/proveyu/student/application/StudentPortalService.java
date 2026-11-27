@@ -169,8 +169,9 @@ public class StudentPortalService {
         return offerRepository.findAllByCollegeIdAndStudentId(s.getCollegeId(), s.getId()).stream().map(o -> offerService.one(s.getCollegeId(), o)).toList();
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public OfferResponse respond(UUID userId, UUID offerId, boolean accept) {
+        studentRepository.lockRowsOfUser(userId.toString()); // only one answer can win; the others then see the new status
         CollegeStudent s = me(userId);
         CollegeOffer o = directory.offer(s.getCollegeId(), offerId);
         if (!o.getStudentId().equals(s.getId())) throw CollegeDirectory.notFound("Offer");
@@ -315,7 +316,7 @@ public class StudentPortalService {
                 .orElseThrow(() -> new DomainException("No student record matches this e-mail and roll number. Check with your placement cell.",
                         HttpStatus.NOT_FOUND, "STUDENT_NOT_FOUND"));
         if (s.getUserId() == null) {
-            s.setUserId(accountService.ensureCandidate(email, CollegeDirectory.fullName(s), s.getPhone()).userId());
+            s.setUserId(accountService.ensureCandidate(null, email, CollegeDirectory.fullName(s), s.getPhone()).userId());
             studentRepository.save(s);
         }
         ForgotPasswordRequest req = new ForgotPasswordRequest();

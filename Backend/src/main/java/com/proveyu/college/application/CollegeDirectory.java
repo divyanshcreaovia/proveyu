@@ -98,4 +98,12 @@ public class CollegeDirectory {
     public static String fullName(CollegeStudent s) {
         return (s.getFirstName() + " " + (s.getLastName() == null ? "" : s.getLastName())).trim();
     }
+
+    /** Students and company people of a suspended college are stopped the same way its staff and leaders are. */
+    public void requireNotSuspended(java.util.UUID collegeId) {
+        if (profile(collegeId).getApprovalStatus() == com.proveyu.college.domain.CollegeEnums.ApprovalStatus.SUSPENDED) {
+            throw new com.proveyu.shared.error.DomainException("This college account is suspended by the PROVEYU team. Contact support.",
+                    org.springframework.http.HttpStatus.FORBIDDEN, "COLLEGE_SUSPENDED");
+        }
+    }
 }

@@ -11,4 +11,8 @@ public interface CollegeProfileRepository extends JpaRepository<CollegeProfile, 
     List<CollegeProfile> findAllByApprovalStatusOrderByCreatedAtDesc(ApprovalStatus status);
     List<CollegeProfile> findAllByOrderByCreatedAtDesc();
     boolean existsByAicteCodeIgnoreCase(String aicteCode);
+
+    /** Row lock: one interview booking at a time per college, so two requests cannot take the same slot. */
+    @org.springframework.data.jpa.repository.Query(value = "select college_id from college_profiles where college_id = ?1 for update", nativeQuery = true)
+    java.util.List<String> lockRow(String collegeId);
 }

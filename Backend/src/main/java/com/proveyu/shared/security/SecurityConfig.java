@@ -83,6 +83,14 @@ public class SecurityConfig {
                 // ---- role based ----
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/college/student/**").hasRole("CANDIDATE")
+                // writes: checked here so a role without permission gets 403 before the request body is looked at
+                .requestMatchers(HttpMethod.POST, "/api/v1/college/settings/**", "/api/v1/college/team/**").hasRole("COLLEGE_ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/v1/college/settings/**", "/api/v1/college/team/**").hasRole("COLLEGE_ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/college/settings/**", "/api/v1/college/team/**").hasRole("COLLEGE_ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/college/**").hasAnyRole("COLLEGE_ADMIN", "COLLEGE_COORDINATOR")
+                .requestMatchers(HttpMethod.PUT, "/api/v1/college/**").hasAnyRole("COLLEGE_ADMIN", "COLLEGE_COORDINATOR")
+                .requestMatchers(HttpMethod.PATCH, "/api/v1/college/**").hasAnyRole("COLLEGE_ADMIN", "COLLEGE_COORDINATOR")
+                .requestMatchers(HttpMethod.DELETE, "/api/v1/college/**").hasAnyRole("COLLEGE_ADMIN", "COLLEGE_COORDINATOR")
                 .requestMatchers("/api/v1/college/**").hasAnyRole(COLLEGE_ROLES)
                 // company Drive Room (/api/v1/recruiter/campus/**)
                 .requestMatchers("/api/v1/recruiter/**").hasAnyRole("RECRUITER", "ADMIN")

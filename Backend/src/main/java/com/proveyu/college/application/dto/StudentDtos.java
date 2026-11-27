@@ -16,7 +16,7 @@ public final class StudentDtos {
             @NotBlank @Size(max = 50) String rollNumber,
             @NotBlank @Size(max = 100) String firstName,
             @Size(max = 100) String lastName,
-            @NotBlank @Email @Size(max = 190) String email,
+            @NotBlank @Email @Pattern(regexp = "^[^@\\s]+@[^@\\s]+\\.[A-Za-z]{2,}$", message = "Enter a full e-mail address") @Size(max = 190) String email,
             @Pattern(regexp = "^[0-9+\\- ]{7,20}$", message = "Invalid phone number") String phone,
             @Size(max = 20) String gender,
             @Past LocalDate dob,
@@ -28,7 +28,7 @@ public final class StudentDtos {
             @DecimalMin("0.0") @DecimalMax("100.0") BigDecimal twelfthPercent,
             @Min(0) @Max(50) Integer activeBacklogs,
             @Min(0) @Max(20) Integer gapYears,
-            List<@Size(max = 60) String> skills,
+            @Size(max = 50, message = "At most 50 skills") List<@Size(max = 60) String> skills,
             @Size(max = 255) String linkedinUrl,
             @Size(max = 255) String githubUrl) {}
 

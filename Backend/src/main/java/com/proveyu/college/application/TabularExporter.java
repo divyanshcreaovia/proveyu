@@ -99,9 +99,15 @@ public class TabularExporter {
         out.write(new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF}); // BOM so Excel opens UTF-8 correctly
         try (CSVPrinter p = new CSVPrinter(new OutputStreamWriter(out, StandardCharsets.UTF_8), CSVFormat.DEFAULT)) {
             p.printRecord(t.headers());
-            for (List<Object> row : t.rows()) p.printRecord(row.stream().map(TabularExporter::text).toList());
+            for (List<Object> row : t.rows()) p.printRecord(row.stream().map(v -> v instanceof String s ? safeCell(s) : text(v)).toList());
         }
         return out.toByteArray();
+    }
+
+    /** A cell that a spreadsheet would run as a formula gets a leading apostrophe. Plain numbers and phone numbers are left alone. */
+    static String safeCell(String v) {
+        boolean risky = v.length() > 1 && "=+-@\t\r".indexOf(v.charAt(0)) >= 0 && !v.matches("[+\\-]?[0-9][0-9 .\\-]*%?");
+        return risky ? "'" + v : v;
     }
 
     public byte[] pdf(Table t) throws IOException {

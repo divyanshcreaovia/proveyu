@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DriveRoomService, RoomDriveCard } from './services/drive-room.service';
+import { AppError } from '../../core/api';
 import { StatusBadge } from '../../shared/ui/status-badge';
 import { EmptyState, Skeleton } from '../../shared/ui/states';
 
@@ -12,7 +13,9 @@ import { EmptyState, Skeleton } from '../../shared/ui/states';
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: '../student/student-pages.scss',
   template: `
-    @if (loading()) { <pm-skeleton [rows]="5" /> } @else {
+    @if (loading()) { <pm-skeleton [rows]="5" /> } @else if (suspended()) {
+      <pm-empty-state icon="bi-slash-circle" title="This college account is suspended" [text]="suspended()" />
+    } @else {
       <div class="row g-3">
         @for (d of drives(); track d.driveId) {
           <div class="col-md-6 col-xl-4"><a class="st-card h-100 d-flex flex-column text-decoration-none cd-card" [routerLink]="['/company/drives', d.driveId]">
@@ -43,6 +46,7 @@ import { EmptyState, Skeleton } from '../../shared/ui/states';
 export class CompanyDrives implements OnInit {
   private room = inject(DriveRoomService);
   loading = signal(true);
+  suspended = signal('');
   drives = signal<RoomDriveCard[]>([]);
-  ngOnInit(): void { this.room.drives().subscribe({ next: d => { this.drives.set(d); this.loading.set(false); }, error: () => this.loading.set(false) }); }
+  ngOnInit(): void { this.room.drives().subscribe({ next: d => { this.drives.set(d); this.loading.set(false); }, error: (e: AppError) => { if (e.code === 'COLLEGE_SUSPENDED') this.suspended.set(e.message); this.loading.set(false); } }); }
 }

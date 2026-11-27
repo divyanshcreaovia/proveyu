@@ -85,6 +85,9 @@ public class StudentPortalController {
     @PostMapping("/offers/{id}/respond")
     @PreAuthorize(CollegeAccess.STUDENT)
     public ApiResponse<OfferResponse> respond(Authentication auth, @PathVariable UUID id, @RequestBody Map<String, Boolean> body) {
+        if (body.get("accept") == null) {
+            throw new com.proveyu.shared.error.DomainException("Send accept: true or false", org.springframework.http.HttpStatus.BAD_REQUEST, "ACCEPT_REQUIRED");
+        }
         boolean accept = Boolean.TRUE.equals(body.get("accept"));
         return ApiResponse.success(portalService.respond(uid(auth), id, accept), accept ? "Offer accepted" : "Offer declined");
     }

@@ -248,7 +248,7 @@ public final class PrepControllers {
         @PreAuthorize(com.proveyu.college.security.CollegeAccess.WRITE)
         public ApiResponse<MonitorRow> extend(com.proveyu.college.security.CollegeContext ctx, @PathVariable UUID id, @PathVariable UUID attemptId,
                                               @RequestBody Map<String, Integer> body) {
-            int minutes = body.getOrDefault("minutes", 0) == null ? 0 : body.get("minutes");
+            int minutes = body.get("minutes") == null ? 0 : body.get("minutes"); // the service refuses 0
             MonitorRow r = exams.extend(ctx, id, attemptId, minutes);
             audit.log(ctx, "EXAM_TIME_EXTENDED", "PREP_ATTEMPT", attemptId, "Gave " + minutes + " extra minutes to " + r.studentName(), null);
             return ApiResponse.success(r, minutes + " minutes added");

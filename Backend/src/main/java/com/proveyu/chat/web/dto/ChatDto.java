@@ -24,6 +24,7 @@ public class ChatDto {
         private UUID receiverId;
 
         @NotBlank(message = "Message text cannot be empty")
+        @jakarta.validation.constraints.Size(max = 10000, message = "Message is too long (max 10000 characters)")
         private String message;
     }
 

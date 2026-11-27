@@ -98,6 +98,17 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, "Resource not found", "NOT_FOUND", null);
     }
 
+    @ExceptionHandler(org.springframework.web.HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMediaType(org.springframework.web.HttpMediaTypeNotSupportedException ex) {
+        return build(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getMessage(), "UNSUPPORTED_MEDIA_TYPE", null);
+    }
+
+    @ExceptionHandler(org.springframework.dao.PessimisticLockingFailureException.class)
+    public ResponseEntity<ApiResponse<Object>> handleLock(org.springframework.dao.PessimisticLockingFailureException ex) {
+        log.warn("[LOCK CONTENTION] {}", ex.getMessage());
+        return build(HttpStatus.CONFLICT, "Someone else is changing this right now. Please try again.", "BUSY_RETRY", null);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleGenericException(Exception ex) {
         log.error("[UNCAUGHT SYSTEM EXCEPTION] Unexpected error occurred: ", ex);

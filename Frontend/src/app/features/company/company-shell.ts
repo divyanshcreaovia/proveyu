@@ -151,7 +151,7 @@ export class CompanyShell implements OnInit {
 
   ngOnInit(): void {
     this.updateTitle();
-    this.room.drives().subscribe(d => this.drives.set(d));
+    this.room.drives().subscribe({ next: d => this.drives.set(d), error: () => this.drives.set([]) });
   }
 
   private updateTitle(): void {

@@ -22,4 +22,6 @@ public interface CollegeOfferRepository extends JpaRepository<CollegeOffer, UUID
     List<CollegeOffer> findAllByCollegeId(UUID collegeId);
     List<CollegeOffer> findAllByCollegeIdAndStudentId(UUID collegeId, UUID studentId);
     List<CollegeOffer> findAllByCollegeIdAndDriveId(UUID collegeId, UUID driveId);
+    @org.springframework.data.jpa.repository.Query("select o.studentId from CollegeOffer o where o.id = :id and o.collegeId = :collegeId")
+    Optional<UUID> studentIdOf(@org.springframework.data.repository.query.Param("id") UUID id, @org.springframework.data.repository.query.Param("collegeId") UUID collegeId);
 }

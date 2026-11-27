@@ -116,7 +116,8 @@ public class ApplicationService {
     @Transactional
     public CollegeApplication apply(CollegeStudent s, UUID driveId) {
         CollegeDrive drive = directory.drive(s.getCollegeId(), driveId);
-        if (drive.getDeletedAt() != null || drive.getStatus() != DriveStatus.PUBLISHED) {
+        if (drive.getDeletedAt() != null || drive.getStatus() != DriveStatus.PUBLISHED
+                || directory.company(s.getCollegeId(), drive.getCompanyId()).getDeletedAt() != null) {
             throw new DomainException("This drive is not open for registration", HttpStatus.CONFLICT, "DRIVE_CLOSED");
         }
         if (drive.getRegistrationDeadline() != null && drive.getRegistrationDeadline().isBefore(Instant.now())) {
@@ -153,6 +154,7 @@ public class ApplicationService {
         if (a.getStatus() == ApplicationStatus.SELECTED || a.getStatus() == ApplicationStatus.IN_PROCESS) {
             throw new DomainException("You cannot withdraw once the selection process has started. Contact your placement cell.", HttpStatus.CONFLICT, "CANNOT_WITHDRAW");
         }
+        if (a.getStatus() == ApplicationStatus.WITHDRAWN) throw new DomainException("You have already withdrawn this application", HttpStatus.CONFLICT, "ALREADY_WITHDRAWN");
         a.setStatus(ApplicationStatus.WITHDRAWN);
         auditService.log(s.getCollegeId(), s.getUserId(), CollegeDirectory.fullName(s), "STUDENT_WITHDREW", "APPLICATION", a.getId(), s.getRollNumber() + " withdrew", null);
         return applicationRepository.save(a);

@@ -72,6 +72,9 @@ public class CommunicationService {
     @Transactional
     public AnnouncementResponse announce(CollegeContext ctx, AnnouncementRequest r) {
         List<CollegeStudent> audience = audience(ctx, r.filter());
+        if (audience.isEmpty()) {
+            throw new com.proveyu.shared.error.DomainException("No students match this audience", org.springframework.http.HttpStatus.BAD_REQUEST, "EMPTY_AUDIENCE");
+        }
         String bodyHtml = "<h3>" + HtmlUtils.htmlEscape(r.title()) + "</h3><p>" + HtmlUtils.htmlEscape(r.body()).replace("\n", "<br>") + "</p>";
         Announcement a = announcementRepository.save(Announcement.builder().collegeId(ctx.collegeId()).title(r.title()).body(r.body())
                 .filterJson(toJson(r.filter())).recipientCount(audience.size()).sendEmail(r.sendEmail()).createdBy(ctx.userId()).build());

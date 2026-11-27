@@ -31,6 +31,7 @@ public class CampusInterviewService {
     private static final DateTimeFormatter WHEN = DateTimeFormatter.ofPattern("EEE dd MMM yyyy, hh:mm a").withZone(ZoneId.of("Asia/Kolkata"));
 
     private final InterviewSlotRepository slotRepository;
+    private final com.proveyu.college.infrastructure.CollegeProfileRepository profileRows;
     private final CollegeApplicationRepository applicationRepository;
     private final DriveRoundRepository roundRepository;
     private final CollegeDirectory directory;
@@ -84,8 +85,10 @@ public class CampusInterviewService {
         return out;
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public SlotResponse schedule(CollegeContext ctx, SlotRequest r) {
+        profileRows.lockRow(ctx.collegeId().toString()); // the conflict check below sees every booking made before this one
+        requireFuture(r.startsAt());
         CollegeDrive drive = directory.drive(ctx.collegeId(), r.driveId());
         CollegeApplication app = directory.application(ctx.collegeId(), r.applicationId());
         if (!app.getDriveId().equals(drive.getId())) throw new DomainException("Application does not belong to this drive", HttpStatus.BAD_REQUEST, "APP_MISMATCH");
@@ -103,8 +106,10 @@ public class CampusInterviewService {
     }
 
     /** Creates back-to-back slots for many applicants; returns created slots and skips conflicting ones. */
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public Map<String, Object> bulkSchedule(CollegeContext ctx, BulkSlotRequest r) {
+        profileRows.lockRow(ctx.collegeId().toString());
+        requireFuture(r.startAt());
         CollegeDrive drive = directory.drive(ctx.collegeId(), r.driveId());
         Instant cursor = r.startAt();
         Duration dur = Duration.ofMinutes(r.durationMinutes());
@@ -123,10 +128,12 @@ public class CampusInterviewService {
         return Map.of("created", created, "skipped", skipped);
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public SlotResponse reschedule(CollegeContext ctx, UUID slotId, SlotRequest r) {
+        profileRows.lockRow(ctx.collegeId().toString());
         InterviewSlot slot = slotRepository.findByIdAndCollegeId(slotId, ctx.collegeId()).orElseThrow(() -> CollegeDirectory.notFound("Interview"));
         if (slot.getStatus() != SlotStatus.SCHEDULED) throw new DomainException("Only scheduled interviews can be changed", HttpStatus.CONFLICT, "SLOT_CLOSED");
+        if (!slot.getStartsAt().equals(r.startsAt())) requireFuture(r.startsAt());
         var conflicts = conflicts(ctx.collegeId(), slotId, slot.getApplicationId(), r.panelName(), r.room(), r.startsAt(), r.endsAt());
         if (!conflicts.isEmpty()) throw new ConflictException(conflicts);
         boolean timeChanged = !slot.getStartsAt().equals(r.startsAt()) || !slot.getEndsAt().equals(r.endsAt());
@@ -186,6 +193,12 @@ public class CampusInterviewService {
             }
         }
         if (!due.isEmpty()) log.info("[INTERVIEW REMINDER] sent {} reminder(s)", due.size());
+    }
+
+    private static void requireFuture(Instant startsAt) {
+        if (startsAt.isBefore(Instant.now().minus(Duration.ofMinutes(5)))) {
+            throw new DomainException("Interview time is in the past", HttpStatus.BAD_REQUEST, "TIME_IN_PAST");
+        }
     }
 
     private void notifyStudent(UUID collegeId, InterviewSlot slot, CollegeDrive drive, String template) {

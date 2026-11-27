@@ -146,6 +146,9 @@ public class DriveService {
             }
             d.setPublishedAt(Instant.now());
         }
+        if (r.status() == DriveStatus.DRAFT && !applicationRepository.findAllByCollegeIdAndDriveId(ctx.collegeId(), id).isEmpty()) {
+            throw new DomainException("Students have already applied: this drive cannot go back to draft. Cancel it instead.", HttpStatus.CONFLICT, "DRIVE_HAS_APPLICATIONS");
+        }
         d.setStatus(r.status());
         driveRepository.save(d);
         auditService.log(ctx, "DRIVE_" + r.status(), "DRIVE", id, "Drive " + d.getTitle() + ": " + from + " -> " + r.status(), r.reason());
@@ -158,6 +161,11 @@ public class DriveService {
     @Transactional
     public void softDelete(CollegeContext ctx, UUID id) {
         CollegeDrive d = directory.drive(ctx.collegeId(), id);
+        if (d.getDeletedAt() != null) throw new DomainException("This drive is already in the trash", HttpStatus.CONFLICT, "ALREADY_DELETED");
+        if (d.getStatus() == DriveStatus.PUBLISHED && applicationRepository.findAllByCollegeIdAndDriveId(ctx.collegeId(), id).stream()
+                .anyMatch(a -> a.getStatus() != ApplicationStatus.WITHDRAWN)) {
+            throw new DomainException("Students have applied: cancel the drive before deleting it", HttpStatus.CONFLICT, "DRIVE_HAS_APPLICATIONS");
+        }
         if (d.getStatus() == DriveStatus.ONGOING) throw new DomainException("Complete or cancel an ongoing drive before deleting it", HttpStatus.CONFLICT, "DRIVE_ONGOING");
         d.setDeletedAt(Instant.now());
         driveRepository.save(d);
@@ -167,6 +175,7 @@ public class DriveService {
     @Transactional
     public DriveResponse restore(CollegeContext ctx, UUID id) {
         CollegeDrive d = directory.drive(ctx.collegeId(), id);
+        if (d.getDeletedAt() == null) throw new DomainException("This drive is not in the trash", HttpStatus.CONFLICT, "NOT_DELETED");
         d.setDeletedAt(null);
         driveRepository.save(d);
         auditService.log(ctx, "DRIVE_RESTORED", "DRIVE", id, "Restored drive " + d.getTitle(), null);

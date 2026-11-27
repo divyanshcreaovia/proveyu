@@ -95,7 +95,7 @@ public class CxoShareService {
                 select s.id, s.college_id, d.title, d.prompt, d.spec_json, s.expires_at, u.full_name, cp.college_name
                 from cxo_dashboard_shares s join cxo_dashboards d on d.id = s.dashboard_id join users u on u.id = d.user_id
                 join college_profiles cp on cp.college_id = s.college_id
-                where s.token_hash = ? and s.revoked_at is null and s.expires_at > utc_timestamp()""", hash(token));
+                where s.token_hash = ? and s.revoked_at is null and s.expires_at > utc_timestamp() and cp.approval_status <> 'SUSPENDED'""", hash(token));
         if (rows.isEmpty()) throw notFound();
         Map<String, Object> r = rows.get(0);
         UUID collegeId = UUID.fromString((String) r.get("college_id"));
