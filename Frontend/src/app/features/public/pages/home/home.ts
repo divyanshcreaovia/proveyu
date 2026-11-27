@@ -1,3 +1,4 @@
+import { ScrollAnimate } from '../../scroll-animate';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
@@ -30,7 +31,7 @@ export const FAQS: Faq[] = [
 
 @Component({
   selector: 'app-home',
-  imports: [RouterModule],
+  imports: [RouterModule, ScrollAnimate],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })

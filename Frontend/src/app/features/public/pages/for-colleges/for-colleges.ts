@@ -1,3 +1,4 @@
+import { ScrollAnimate } from '../../scroll-animate';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FAQS } from '../home/home';
@@ -7,7 +8,7 @@ interface FeatureGroup { icon: string; tone: string; title: string; text: string
 /** Public page: everything the College Placement Portal and the company Drive Room do. */
 @Component({
   selector: 'app-for-colleges',
-  imports: [RouterModule],
+  imports: [RouterModule, ScrollAnimate],
   templateUrl: './for-colleges.html',
   styleUrls: ['../home/home.scss'],
 })

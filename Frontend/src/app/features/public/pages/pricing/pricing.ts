@@ -1,3 +1,4 @@
+import { ScrollAnimate } from '../../scroll-animate';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -8,11 +9,11 @@ import { SUPPORT_EMAIL } from '../../../support/support.service';
 /** Public pricing page: pricing is custom, so the visitor leaves their details and the ProveYu team calls back. */
 @Component({
   selector: 'app-pricing',
-  imports: [RouterModule, ReactiveFormsModule],
+  imports: [RouterModule, ReactiveFormsModule, ScrollAnimate],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['../home/home.scss'],
   template: `
-  <div class="pr-page">
+  <div class="pr-page" appScrollAnimate>
     <section class="pr-wrap">
       <div class="container-custom">
         <!-- desktop: intro and details on the left, form on the right; phone: intro, form, details -->

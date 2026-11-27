@@ -1,3 +1,4 @@
+import { ScrollAnimate } from '../../scroll-animate';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FAQS, Point } from '../home/home';
@@ -5,7 +6,7 @@ import { FAQS, Point } from '../home/home';
 /** Public page: the student portal, the mock test path and the AI mock interview. */
 @Component({
   selector: 'app-for-students',
-  imports: [RouterModule],
+  imports: [RouterModule, ScrollAnimate],
   templateUrl: './for-students.html',
   styleUrls: ['../home/home.scss'],
 })

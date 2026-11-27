@@ -1,10 +1,11 @@
+import { ScrollAnimate } from '../../scroll-animate';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 /** Public page: the placement season from setup to reports, across the placement cell, students and companies. */
 @Component({
   selector: 'app-how-it-works',
-  imports: [RouterModule],
+  imports: [RouterModule, ScrollAnimate],
   templateUrl: './how-it-works.html',
   styleUrl: './how-it-works.scss',
 })
