@@ -1,0 +1,29 @@
+/*
+ * College portal, light theme: the same public-website look as the student portal, plus the college's own cards.
+ * Loaded last by college-shell only. Pure CSS: no template, binding or logic changes. Dark mode is untouched.
+ */
+@use '../../student/layout/student-theme';
+
+:host ::ng-deep .pm-shell:not([data-bs-theme='dark']) {
+  .pm-shell-content {
+    /* the cards of the college pages */
+    .pm-dash-card, .pm-cm-card, .pm-dd-card, .pm-df-card, .pm-rt-card, .pm-el-card, .pm-st-card, .pm-tm-card, .pm-rp-card, .pm-imp-card, .oc-kpi {
+      border-radius: 20px; border: 1px solid var(--pm-card-border); box-shadow: var(--pm-card-shadow); }
+    .pm-dash-card:hover, .pm-cm-card:hover, .pm-dd-card:hover, .pm-df-card:hover, .pm-rt-card:hover, .pm-el-card:hover, .pm-tm-card:hover, .pm-rp-card:hover, .pm-imp-card:hover, .oc-kpi:hover {
+      box-shadow: var(--pm-card-shadow-hover); }
+    .pm-dash-h, .pm-cm-card > h2.h6, .pm-tm-card h2.h6, .pm-rp-card h2.h6, .pm-dd-card h3.h6, .pm-el-card h3.h6, .pm-rt-card h3.h6, .pm-st-card h3.h6 {
+      font-size: 1.02rem; font-weight: 750; letter-spacing: -.02em; color: var(--pm-heading); }
+
+    /* drive header: the public site's white-to-blue wash */
+    .pm-dd-head {
+      border-radius: 20px;
+      background: radial-gradient(60% 140% at 100% 0%, rgba(0, 168, 255, .16), transparent 70%), linear-gradient(115deg, #ffffff 45%, #eaf2ff); }
+
+    /* tabs */
+    .nav-tabs .nav-link.active, .nav-underline .nav-link.active { color: #0057ff; border-bottom-color: #0057ff; }
+  }
+
+  /* global search in the top bar */
+  .pm-gs-trigger { border-radius: 999px; border-color: #dbe6fb; background: #fff; box-shadow: 0 12px 22px -18px rgba(10, 27, 63, .45); }
+  .pm-gs-trigger:hover { border-color: #0057ff; color: #0057ff; }
+}

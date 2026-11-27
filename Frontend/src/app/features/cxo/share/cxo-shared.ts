@@ -8,7 +8,7 @@ import { SharedBoard, WidgetData } from '../cxo.models';
   selector: 'pm-cxo-shared',
   imports: [CxoBoard],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: '../layout/cxo-theme.scss',
+  styleUrls: ['../layout/cxo-theme.scss', '../layout/cxo-public.scss'],
   template: `
     <div class="x-app">
       <main class="x-main" style="max-width: 1280px; margin: 0 auto; padding: 1.5rem 1rem">

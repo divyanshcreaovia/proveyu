@@ -55,7 +55,7 @@ const DESKTOP = 992; // below this the menu is a slide-over drawer with labels
   selector: 'pm-student-shell',
   imports: [SupportDialog, RouterOutlet, RouterLink, RouterLinkActive, NotificationPanel, EmptyState],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['../../college/layout/college-theme.scss', '../../college/layout/portal-refresh.scss'],
+  styleUrls: ['../../college/layout/college-theme.scss', '../../college/layout/portal-refresh.scss', './student-theme.scss'],
   template: `
     <div class="pm-shell" [attr.data-bs-theme]="theme.dark() ? 'dark' : 'light'" [class.pm-shell-collapsed]="collapsed()">
       <nav class="pm-shell-side" [class.pm-shell-side-open]="mobileOpen()" aria-label="Student navigation">

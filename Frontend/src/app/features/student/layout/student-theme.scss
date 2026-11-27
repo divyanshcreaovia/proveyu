@@ -1,0 +1,164 @@
+/*
+ * Student portal, light theme: the look of the public website (white, navy headings, blue accent, soft deep shadows).
+ * Loaded last by student-shell, test-player and interview-room only. Pure CSS: no template, binding or logic changes.
+ * Everything sits under .pm-shell:not([data-bs-theme='dark']), so dark mode and the college portal are untouched.
+ */
+
+:host ::ng-deep .pm-shell:not([data-bs-theme='dark']) {
+  /* ---------- tokens ---------- */
+  --pm-page-bg: #fbfcff;
+  --pm-card-bg: #ffffff;
+  --pm-card-border: #e4ecfb;
+  --pm-card-shadow: 0 1px 2px rgba(10, 27, 63, .04), 0 22px 40px -32px rgba(10, 27, 63, .38);
+  --pm-card-shadow-hover: 0 2px 4px rgba(10, 27, 63, .04), 0 30px 48px -28px rgba(0, 87, 255, .38);
+  --pm-pop-shadow: 0 30px 60px -24px rgba(10, 27, 63, .4);
+  --pm-heading: #0a1b3f;
+  --pm-text: #334155;
+  --pm-muted: #55647f;
+  --pm-label: #3d4a66;
+  --pm-input-bg: #f8fafd;
+  --pm-input-border: #dbe3ef;
+  --pm-input-hover: #aab9d6;
+  --pm-focus: #0057ff;
+  --pm-primary: #0057ff;
+  --pm-primary-hover: #0a1b3f;
+  --pm-primary-text: #ffffff;
+  --pm-link: #0057ff;
+  --pm-soft: #f1f5fd;
+  --pm-divider: #e9eefa;
+  --pm-table-head: #f6f9ff;
+  --pm-surface-2: #fafcff;
+  --pm-chat-bg: #f6f9ff;
+  --pm-accent: #0057ff;
+  --pm-accent-600: #0046d1;
+  --pm-accent-soft: rgba(0, 87, 255, .08);
+  --pm-accent-ring: rgba(0, 87, 255, .18);
+  --pm-accent-grad: linear-gradient(120deg, #0057ff, #00a8ff);
+  --pm-r-lg: 20px;
+  --pm-r: 14px;
+  --pm-r-sm: 10px;
+  --pm-side-bg: #ffffff;
+  --pm-side-border: #e4ecfb;
+  --pm-nav-text: #3d4a66;
+  --pm-nav-hover-bg: #f1f5fd;
+  --pm-nav-active-bg: rgba(0, 87, 255, .09);
+  --pm-nav-active-fg: #ffffff;
+  --pm-nav-active-bar: #ffffff;
+  --pm-row-hover: rgba(0, 87, 255, .04);
+  --pm-row-accent: #0057ff;
+  --bs-primary: #0057ff;
+  --bs-primary-rgb: 0, 87, 255;
+  --bs-link-color: #0057ff;
+  --bs-link-color-rgb: 0, 87, 255;
+  --bs-link-hover-color: #0a1b3f;
+  --bs-link-hover-color-rgb: 10, 27, 63;
+  --bs-border-color: #e4ecfb;
+
+  /* the grid background of the public pages */
+  background:
+    linear-gradient(rgba(0, 87, 255, .035) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(90deg, rgba(0, 87, 255, .035) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(150deg, #ffffff 40%, #eef4ff 100%);
+  -webkit-font-smoothing: antialiased;
+
+  h1, h2, h3, h4, h5, .st-h { letter-spacing: -.02em; }
+
+  /* ---------- sidebar ---------- */
+  .pm-shell-side { box-shadow: 14px 0 40px -34px rgba(10, 27, 63, .35); }
+  .pm-shell-section { font-weight: 700; letter-spacing: .12em; }
+  .pm-shell-link { border-radius: 12px; padding-top: .56rem; padding-bottom: .56rem; }
+  .pm-shell-link.pm-shell-active { background: linear-gradient(120deg, #0057ff, #0a7bff); color: #fff; font-weight: 600; box-shadow: 0 14px 22px -14px rgba(0, 87, 255, .85);
+    > i { color: #fff; }
+    &::before { display: none; } }
+  .pm-shell-link.pm-shell-active:hover { color: #fff; > i { color: #fff; } }
+
+  /* ---------- top bar ---------- */
+  .pm-shell-title { font-size: 1.9rem; font-weight: 800; letter-spacing: -.035em; }
+  .pm-shell-icon, .pm-shell-user { border-color: #dbe6fb; background: #fff; box-shadow: 0 12px 22px -18px rgba(10, 27, 63, .45); }
+  .pm-shell-icon:hover, .pm-shell-user:hover { border-color: #0057ff; color: #0057ff; box-shadow: 0 16px 24px -16px rgba(0, 87, 255, .5); }
+  .pm-shell-avatar { background: linear-gradient(135deg, #0057ff, #0a1b3f); }
+  .pm-shell-pop { border-radius: 18px; }
+  @media (max-width: 575.98px) { .pm-shell-title { font-size: 1.35rem; } }
+
+  /* ---------- cards ---------- */
+  .pm-shell-content, .tp-body {
+    .st-card, .pm-st-card, .ir-card, .oc-kpi, .pm-stat, .proctor-pc-card { border-radius: 20px; border: 1px solid var(--pm-card-border); box-shadow: var(--pm-card-shadow); }
+    .st-card:hover, .pm-st-card:hover, .oc-kpi:hover, .pm-stat:hover { box-shadow: var(--pm-card-shadow-hover); }
+    a .pm-stat, a .st-card { transition: translate .25s, box-shadow .25s; }
+    a:hover .pm-stat, a:hover .st-card { translate: 0 -4px; }
+    .st-row { border-radius: 16px; box-shadow: var(--pm-card-shadow); transition: translate .2s, box-shadow .2s, border-color .2s; }
+    .st-row:hover { translate: 0 -2px; border-color: #c6d8fb; box-shadow: var(--pm-card-shadow-hover); }
+    .st-row-unread { border-left: 4px solid #0057ff; }
+
+    /* headings and numbers */
+    .st-card h2.h4 { font-size: 1.6rem; font-weight: 800; letter-spacing: -.03em; }
+    .st-card h2.h6, .st-card h3.h6 { font-size: 1.02rem; font-weight: 750; color: var(--pm-heading); }
+    .pm-stat-label { color: #6b7280; font-weight: 700; letter-spacing: .1em; }
+    .pm-stat-value { font-size: 1.95rem; font-weight: 800; letter-spacing: -.03em; color: var(--pm-heading); }
+    .st-chip { background: #eef4ff; color: #0a1b3f; border: 1px solid #dbe6fb; }
+
+    /* ---------- buttons ---------- */
+    .btn { border-radius: 999px; font-weight: 600; }
+    .btn-primary { background: linear-gradient(120deg, #0057ff, #0a7bff); border-color: transparent; color: #fff; box-shadow: 0 14px 22px -14px rgba(0, 87, 255, .85);
+      &:hover:not(:disabled), &:focus-visible:not(:disabled) { background: #0a1b3f; color: #fff; box-shadow: 0 16px 24px -14px rgba(10, 27, 63, .7); }
+      &:disabled { background: #9dbcff; box-shadow: none; } }
+    .btn-outline-secondary { border-color: #dbe3ef; color: #3d4a66; background: #fff;
+      &:hover:not(:disabled):not(.active) { border-color: #0057ff; color: #0057ff; background: #f5f8ff; } }
+    .btn-check:checked + .btn, .btn-group > .btn.active, .btn.btn-outline-secondary.active { background: #0057ff; border-color: #0057ff; color: #fff; }
+
+    /* ---------- fields ---------- */
+    .form-control, .form-select, .input-group-text { border-color: var(--pm-input-border); border-radius: 12px; }
+    .input-group > :not(:first-child) { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+    .input-group > :not(:last-child) { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+    .form-control:focus, .form-select:focus { border-color: #0057ff; box-shadow: 0 0 0 4px rgba(0, 87, 255, .14); background-color: #fff; }
+    .form-check-input:checked { background-color: #0057ff; border-color: #0057ff; }
+    .form-label { color: var(--pm-heading); }
+    .pm-upload { border-radius: 16px; border-color: #c6d8fb; background: #f8fbff; }
+    .pm-upload:hover { border-color: #0057ff; background: #f1f6ff; }
+
+    /* ---------- tables ---------- */
+    .table thead th { font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #6b7280; }
+
+    /* ---------- page banners (tests, college tests, AI interview) ---------- */
+    .iv-eyebrow, .pr-eyebrow { color: #0057ff; background: rgba(0, 87, 255, .09); }
+    .iv-hero-points i { color: #0057ff; }
+    .iv-num { background: linear-gradient(135deg, #0057ff, #00a8ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .iv-type.sel, .iv-level.sel { border-color: #0057ff; background: rgba(0, 87, 255, .07); box-shadow: 0 0 0 3px rgba(0, 87, 255, .1); }
+    .iv-type.sel::after { color: #0057ff; }
+    .iv-type.sel i { background: linear-gradient(135deg, #0057ff, #00a8ff); color: #fff; }
+    .iv-alert-action { background: rgba(0, 87, 255, .08); > i { color: #0057ff; } }
+  }
+
+  /* ---------- page banners: the public site's white-to-blue wash ---------- */
+  .pm-shell-content {
+    .prep-hero.st-card, .iv-hero.st-card, .rs-hero, .rp-hero, pm-student-dashboard > section.st-card:first-of-type {
+      background: radial-gradient(60% 140% at 100% 0%, rgba(0, 168, 255, .16), transparent 70%), linear-gradient(115deg, #ffffff 45%, #eaf2ff); }
+
+    /* charts: the near-black first series becomes the site's blue */
+    .highcharts-container {
+      [fill='#16122b'] { fill: #0057ff; }
+      [stroke='#16122b'] { stroke: #0057ff; } }
+  }
+
+  /* phones: the dashboard numbers show their full label and hint instead of cutting them off */
+  @media (max-width: 767.98px) {
+    .pm-shell-content .pm-stat {
+      padding: 1rem;
+      .min-w-0 { flex: 1; }
+      .text-truncate { white-space: normal !important; overflow-wrap: anywhere; }
+      .pm-stat-label { letter-spacing: .04em; }
+      .pm-stat-value { font-size: 1.6rem; }
+      .pm-stat-icon { display: none; } }
+  }
+
+  /* ---------- dialogs ---------- */
+  .pm-modal, .pm-confirm { border-radius: 22px; box-shadow: var(--pm-pop-shadow); }
+  .pm-modal-drawer { border-radius: 22px 0 0 22px; }
+}
+
+/* the full-screen test player and interview room share the same top bar look */
+:host ::ng-deep .pm-shell.tp:not([data-bs-theme='dark']), :host ::ng-deep .pm-shell.ir:not([data-bs-theme='dark']) {
+  .tp-top, .ir-top { box-shadow: 0 14px 30px -26px rgba(10, 27, 63, .45); }
+  .tp-title, .ir-title { color: #0a1b3f; letter-spacing: -.02em; }
+  .btn { border-radius: 999px; }
+}

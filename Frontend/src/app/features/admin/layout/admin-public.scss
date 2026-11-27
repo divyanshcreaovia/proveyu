@@ -1,0 +1,38 @@
+/*
+ * Platform admin portal, light theme: the same public look as the student, college and leadership portals.
+ * Shared rules come from the student theme; this file adds the admin page containers.
+ * Loaded by admin-shell only. Pure CSS: no template, binding or logic changes. Dark mode is untouched.
+ */
+@use '../../student/layout/student-theme';
+
+:host ::ng-deep .pm-shell:not([data-bs-theme='dark']) .pm-shell-content {
+  /* panels and table wrappers (Bootstrap utilities, so their radius is set through the variable they read) */
+  .bg-body.border.rounded-3 { --bs-border-radius-lg: 20px; box-shadow: var(--pm-card-shadow); }
+
+  .nav-pills .nav-link { border-radius: 999px; font-weight: 600; }
+  .nav-pills .nav-link.active { background: #0057ff; color: #fff; box-shadow: 0 12px 20px -14px rgba(0, 87, 255, .85); }
+
+  /* dashboard */
+  .ad-kpis .pm-stat { height: 100%; }
+  .ad-todo-item { border-radius: 16px; }
+  a.ad-row { border-radius: 10px; }
+  a.ad-row:hover { background: #f1f5fd; }
+
+  /* phones show one card per row here, so the stat icons still fit */
+  @media (max-width: 575.98px) { .ad-kpis .pm-stat .pm-stat-icon { display: grid; } }
+
+  /* off-campus source switch */
+  .btn-group > .btn.btn-dark { background: #0057ff; border-color: #0057ff; color: #fff; }
+
+  /* off-campus, broadcast, support, settings */
+  .oc-stat { border-radius: 999px; }
+  .oc-import { background: #f6f9ff; --bs-border-radius-lg: 16px; }
+  .ab-opt { border-radius: 16px; background: #fff; transition: translate .2s, box-shadow .2s, border-color .2s; }
+  .ab-opt:hover { translate: 0 -2px; box-shadow: var(--pm-card-shadow-hover); }
+  .ab-opt i { color: #0057ff; }
+  .ab-opt.sel { border-color: #0057ff; background: #f1f6ff; box-shadow: 0 0 0 3px rgba(0, 87, 255, .12); }
+  .as-msg { border-radius: 14px; }
+  .as-reply { border-left-color: #0057ff; }
+  .as-bar { border-radius: 18px; box-shadow: var(--pm-pop-shadow); }
+  .alert { border-radius: 16px; }
+}

@@ -12,7 +12,7 @@ import { CxoService } from '../cxo.service';
   selector: 'pm-cxo-shell',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './cxo-theme.scss',
+  styleUrls: ['./cxo-theme.scss', './cxo-public.scss'],
   template: `
     <div class="x-app" data-bs-theme="dark" (click)="menu.set(false)">
       <header class="x-top">

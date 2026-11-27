@@ -1,0 +1,26 @@
+/*
+ * Recruiter portal, light theme: the same public look as the student, college and leadership portals.
+ * Shared rules come from the student theme; this file adds the drive list and Drive Room pieces.
+ * Loaded by company-shell only. Pure CSS: no template, binding or logic changes. Dark mode is untouched.
+ */
+@use '../student/layout/student-theme';
+
+:host ::ng-deep .pm-shell:not([data-bs-theme='dark']) {
+  /* the drive links carry a college name under the title: keep it readable on the blue active pill */
+  .pm-shell-link.pm-shell-active .cs-sub { color: rgba(255, 255, 255, .85); }
+
+  .pm-shell-content {
+    .cd-card:hover { translate: none; box-shadow: var(--pm-card-shadow-hover); border-color: #c6d8fb; }
+    /* long drive titles are cut with "…" instead of pushing the status badge off the card */
+    .cd-card .min-w-0 { min-width: 0; flex: 1; }
+    .cd-stats strong { font-weight: 800; letter-spacing: -.02em; }
+
+    /* Drive Room */
+    .dr-head { background: radial-gradient(60% 140% at 100% 0%, rgba(0, 168, 255, .16), transparent 70%), linear-gradient(115deg, #ffffff 45%, #eaf2ff); }
+    .dr-tile-n { font-size: 1.85rem; letter-spacing: -.03em; }
+    .dr-tile-l { font-weight: 600; }
+    .dr-seq { background: linear-gradient(135deg, #0057ff, #00a8ff); color: #fff; }
+    .dr-rate-btn.on { background: #0057ff; }
+    .alert { border-radius: 16px; }
+  }
+}
