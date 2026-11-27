@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CxoService } from '../cxo.service';
+import { CxoExport } from '../widgets/cxo-export';
 import { CxoBoard } from '../widgets/cxo-board';
 import { ToastService } from '../../../core/services/toast.service';
 import { BuildEvent, BuildStatus, Catalog, DashboardSpec, Insight, WidgetData } from '../cxo.models';
@@ -18,7 +19,7 @@ const DEFAULT_PROMPT = 'Give me a complete placement overview for this season: p
  */
 @Component({
   selector: 'pm-cxo-studio',
-  imports: [FormsModule, CxoBoard],
+  imports: [FormsModule, CxoBoard, CxoExport],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './cxo-studio.html',
   styleUrl: './cxo-studio.scss',
@@ -56,6 +57,7 @@ export class CxoStudio implements OnInit {
   lastUpdated = signal<number | null>(null);
   private now = signal(Date.now());
   private lastPrompt = '';
+  promptText = () => this.lastPrompt || null;
   /** The question the dashboard started from (saved with it; follow-ups do not replace it). */
   private basePrompt = '';
   private lastCurrent: DashboardSpec | null = null;

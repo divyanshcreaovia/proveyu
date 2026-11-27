@@ -41,14 +41,21 @@ public class DashboardPlanner {
     private final SpecSanitizer sanitizer;
     private final ObjectMapper json;
     private final CxoAiCache cache;
+    private final ScopeEnforcer scope;
 
     /**
      * The plan for a question: from the AI answer cache when the same question (on the same dashboard) was asked before, else from the
      * model (and cached), else from the keyword planner.
      */
     public Plan plan(UUID collegeId, String prompt, DashboardSpec current, CollegeRef ref) {
+        Plan p = planned(collegeId, prompt, current, ref);
+        // the years named in the question are applied here, to every plan whoever made it (model, cache or keywords)
+        return new Plan(scope.apply(p.spec(), prompt, ref), p.source(), p.cached());
+    }
+
+    private Plan planned(UUID collegeId, String prompt, DashboardSpec current, CollegeRef ref) {
         boolean refining = current != null && current.widgets() != null && !current.widgets().isEmpty();
-        String key = CxoAiCache.key("plan-v6", CxoAiCache.normalize(prompt), refining ? write(current) : "");
+        String key = CxoAiCache.key("plan-v7", CxoAiCache.normalize(prompt), refining ? write(current) : "");
         Optional<DashboardSpec> hit = cache.get(collegeId, CxoAiCache.Kind.PLAN, key).flatMap(this::read).map(s -> sanitizer.clean(s, ref));
         if (hit.isPresent() && !hit.get().widgets().isEmpty()) return new Plan(filled(hit.get(), prompt, refining, ref), "AI", true);
 
@@ -62,7 +69,7 @@ public class DashboardPlanner {
             }
         }
         DashboardSpec rules = sanitizer.clean(refining ? refine(prompt, sanitizer.clean(current, ref), ref) : rules(prompt, ref), ref);
-        return new Plan(COMPARE.matcher(prompt).find() ? comparable(rules, ref) : rules, "RULES", false);
+        return new Plan(timeCompare(prompt) ? comparable(rules, ref) : rules, "RULES", false);
     }
 
     static final int MIN_WIDGETS = 6;
@@ -91,7 +98,7 @@ public class DashboardPlanner {
      */
     private DashboardSpec filled(DashboardSpec spec, String prompt, boolean refining, CollegeRef ref) {
         if (!refining && !PERIOD.matcher(prompt).find()) spec = withoutDates(spec); // no period asked: the model must not invent one
-        if (COMPARE.matcher(prompt).find()) spec = comparable(spec, ref);
+        if (timeCompare(prompt)) spec = comparable(spec, ref);
         if (refining || spec.widgets().size() >= MIN_WIDGETS) return spec;
         List<WidgetSpec> out = new ArrayList<>(spec.widgets());
         long kpis = out.stream().filter(w -> w.type() == KPI).count();
@@ -109,6 +116,14 @@ public class DashboardPlanner {
     static final Pattern PERIOD = Pattern.compile("\\b(20\\d{2}|years?|yearly|annual|months?|monthly|quarters?|q[1-4]|weeks?|weekly|days?|today|yesterday|"
             + "since|last|past|recent|recently|season|semester|ytd|trend|trends|over time|timeline|jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|"
             + "january|february|march|april|june|july|august|september|october|november|december|saal|mahina|mahine|hafta|hafte|aaj|kal|pichhle|pichle)\\b",
+            Pattern.CASE_INSENSITIVE);
+
+    /** "vs", "compare" with a time word: "male vs female" is a comparison of groups, not of years. */
+    static boolean timeCompare(String prompt) {
+        return COMPARE.matcher(prompt).find() && TIME_WORDS.matcher(prompt).find();
+    }
+
+    private static final Pattern TIME_WORDS = Pattern.compile("\\b(20\\d{2}|years?|yearly|batch(es)?|saal|sal|growth|grew|improve\\w*|badha|ghata|month(s|ly)?|quarter\\w*|season|yoy)\\b",
             Pattern.CASE_INSENSITIVE);
 
     /** Questions that compare years ("vs last year", "pichhle saal se", "growth"). */
@@ -209,7 +224,7 @@ public class DashboardPlanner {
                   BAR for rankings (COMPANY, BRANCH, TEST, JOB, ANNOUNCEMENT); size lg for wide charts, md otherwise. TABLE when the user asks
                   for a list; names of students only with unplaced_list (dimension STUDENT, type TABLE), and only when asked for names or a list.
                 - A MONTH chart covers at most the last 24 months; leave from/to empty unless the user names a period.
-                - Filters only when the user asks: batchYear must be one of %s, branchCode one of %s. Dates relative to today, %s.
+                - Filters only when the user asks: batchYear is the graduating year the user names (use it even when it is not one of %s: the system then shows no data), branchCode one of %s. Dates relative to today, %s.
                 - Short business titles (max 6 words), no metric keys in titles. A title must say exactly what the metric and
                   dimension show (e.g. companies by STATUS is "Recruiters by MoU status", not "Top recruiters"). summary: one sentence on what the dashboard shows.
                 - Never use the same metric with the same dimension and filters twice. One widget shows one metric: never title it as a
@@ -239,41 +254,86 @@ public class DashboardPlanner {
 
     DashboardSpec rules(String prompt, CollegeRef ref) {
         String p = " " + prompt.toLowerCase(Locale.ROOT) + " ";
-        Integer batch = COMPARE.matcher(prompt).find() ? latestBatch(p, ref) : batch(p, ref);
+        Integer batch = timeCompare(prompt) ? latestBatch(p, ref) : batch(p, ref);
         String branch = branch(prompt, ref);
         List<WidgetSpec> w = new ArrayList<>();
         Set<String> topics = new LinkedHashSet<>();
-        if (has(p, "ctc", "package", "salary", "lpa", "pay")) topics.add("ctc");
-        if (has(p, "branch", "department", "stream")) topics.add("branch");
-        if (has(p, "company", "companies", "recruiter", "employer")) topics.add("company");
-        if (has(p, "trend", "month", "over time", "growth", "timeline")) topics.add("trend");
+        if (has(p, "ctc", "package", "salary", "lpa", " pay", "tankhwah", "kamai", "kitna mila", "median")) topics.add("ctc");
+        if (has(p, "branch", "department", "stream", "vibhag")) topics.add("branch");
+        if (has(p, "company", "companies", "recruiter", "employer", "kampani", "kampaniyan")) topics.add("company");
+        if (has(p, "trend", "month", "over time", "growth", "timeline", "mahine", "mahina")) topics.add("trend");
         if (has(p, "drive")) topics.add("drive");
         if (has(p, "application", "funnel", "pipeline", "shortlist", "selection")) topics.add("funnel");
-        if (has(p, "test", "mock", "exam", "assessment", "aptitude")) topics.add("tests");
+        if (has(p, " test", "mock", " exam", "assessment", "aptitude")) topics.add("tests");
         if (has(p, "ai interview", "mock interview", "interview practice", "ai mock")) topics.add("ai");
         else if (has(p, "interview")) topics.add("interviews");
         if (has(p, "off-campus", "off campus", "offcampus")) topics.add("offcampus");
         if (has(p, "selection rate", "conversion", "success rate", "hit rate")) topics.add("selection");
-        if (has(p, "unplaced", "not placed", "without offer", "without an offer", "jobless", "remaining")) topics.add("unplaced");
+        if (has(p, "unplaced", "not placed", "placed nahi", "nahi hue", "bina offer", "placement nahi", "job nahi", "nahi mili", "not yet placed", "yet to be placed", "without offer", "without an offer", "jobless", "remaining")) topics.add("unplaced");
         if (has(p, "mou", "partner", "tie-up", "tie up", "tieup")) topics.add("partners");
         if (topics.contains("unplaced") && has(p, "list", "name", "naam", "who ", "kaun", "which students", "students who")) topics.add("unplacedList");
-        if (has(p, "round", "aptitude", "coding round", "technical round", "hr round", "drop off", "drop-off", "dropoff")) topics.add("rounds");
+        if (has(p, " round", "aptitude", "coding round", "technical round", "hr round", "drop off", "drop-off", "dropoff")) topics.add("rounds");
         if (has(p, "accept", "decline", "declined", "acceptance", "joined", "reneg")) topics.add("acceptance");
         if (has(p, "announcement", "notice", "circular", "broadcast", " read ", "opened")) topics.add("announcements");
         if (has(p, "proctor", "cheat", "malpractice", "integrity", "flag", "tab switch")) topics.add("proctoring");
+        if (has(p, "code ground", "codeground", "coding practice", "practising code", "practicing code", "problems solved", "code submission", "programming language", "leetcode", " dsa ", "coders", "coding activity", "code practice")) topics.add("code");
+        if (has(p, "cgpa", "academic performance", "grades")) topics.add("cgpa");
+        if (has(p, "new placement", "newly placed", "recently placed", "placed this month", "placed so far", "placed per month", "placements per month")) topics.add("newPlaced");
+        if (has(p, "multiple offer", "more than one offer", "several offers", "multi offer", "multi-offer", "one offer")) topics.add("multiOffer");
+        if (has(p, "never applied", "not applied", "no application", "zero application", "haven't applied", "have not applied", "applied nahi", "apply nahi")) topics.add("noApply");
+        if (has(p, "document", "verification", "verified")) topics.add("documents");
+        if (has(p, "gender", "female", "women", "girls", " male ", "boys")) topics.add("gender");
         boolean onTopic = !topics.isEmpty() || has(p, "placement", "placed", "student", "offer", "college", "batch", "overview", "summary",
                 "dashboard", "performance", "report", "kpi", "progress", "status", "naukri", "job");
 
         // KPIs
-        if (topics.contains("proctoring")) {
+        if (topics.contains("newPlaced")) {
+            w.add(kpi("Students placed", "new_placements", batch, branch));
+            w.add(kpi("Placement rate", "placement_rate", batch, branch));
+            w.add(kpi("Offers", "offers", batch, branch));
+            w.add(kpi("Unplaced students", "unplaced_students", batch, branch));
+        } else if (topics.contains("multiOffer")) {
+            w.add(kpi("Students with several offers", "multi_offer_students", batch, branch));
+            w.add(kpi("Placed", "placed_students", batch, branch));
+            w.add(kpi("Offers", "offers", batch, branch));
+            w.add(kpi("Placement rate", "placement_rate", batch, branch));
+        } else if (topics.contains("noApply")) {
+            w.add(kpi("Students who never applied", "zero_application_students", batch, branch));
+            w.add(kpi("Unplaced students", "unplaced_students", batch, branch));
+            w.add(kpi("Applications", "applications", batch, branch));
+            w.add(kpi("Students", "students_total", batch, branch));
+        } else if (topics.contains("documents")) {
+            w.add(kpi("Student documents", "student_documents", batch, branch));
+            w.add(kpi("Students", "students_total", batch, branch));
+        } else if (topics.contains("code")) {
+            w.add(kpi("Students practising code", "code_active_coders", batch, branch));
+            w.add(kpi("Code submissions", "code_submissions", batch, branch));
+            w.add(kpi("Accepted rate", "code_accept_rate", batch, branch));
+            w.add(kpi("Code problems solved", "code_problems_solved", batch, branch));
+        } else if (topics.contains("cgpa")) {
+            w.add(kpi("Average CGPA", "avg_cgpa", batch, branch));
+            w.add(kpi("Students", "students_total", batch, branch));
+            w.add(kpi("Placed", "placed_students", batch, branch));
+            w.add(kpi("Placement rate", "placement_rate", batch, branch));
+        } else if (topics.contains("gender")) {
+            w.add(kpi("Students", "students_total", batch, branch));
+            w.add(kpi("Placed", "placed_students", batch, branch));
+            w.add(kpi("Placement rate", "placement_rate", batch, branch));
+            w.add(kpi("Average CTC", "avg_ctc", batch, branch));
+        } else if (topics.contains("drive") && topics.size() == 1) {
+            w.add(kpi("Placement drives", "drives", null, null));
+            w.add(kpi("Package on offer", "avg_drive_ctc", null, null));
+            w.add(kpi("Applications", "applications", batch, branch));
+            w.add(kpi("Selection rate", "selection_rate", batch, branch));
+        } else if (topics.contains("proctoring")) {
             w.add(kpi("Proctoring flags", "proctoring_flags", batch, branch));
             w.add(kpi("Flagged attempts", "flagged_attempts", batch, branch));
             w.add(kpi("Test attempts", "mock_test_attempts", batch, branch));
         } else if (topics.contains("ctc")) {
             w.add(kpi("Average CTC", "avg_ctc", batch, branch));
             w.add(kpi("Highest CTC", "highest_ctc", batch, branch));
-            w.add(kpi("Offers", "offers", batch, branch));
-            w.add(kpi("Placement rate", "placement_rate", batch, branch));
+            w.add(kpi("Median CTC", "median_ctc", batch, branch));
+            w.add(kpi("Lowest CTC", "lowest_ctc", batch, branch));
         } else if (topics.contains("tests")) {
             w.add(kpi("Test attempts", "mock_test_attempts", batch, branch));
             w.add(kpi("Average score", "mock_test_avg_score", batch, branch));
@@ -306,8 +366,14 @@ public class DashboardPlanner {
             w.add(kpi("Applications", "applications", batch, branch));
             w.add(kpi("Offers", "offers", batch, branch));
             w.add(kpi("Placement rate", "placement_rate", batch, branch));
+        } else if (topics.contains("company") && topics.size() == 1) {
+            w.add(kpi("Offers", "offers", batch, branch));
+            w.add(kpi("Companies that hired", "companies_hired", batch, branch));
+            w.add(kpi("Placed", "placed_students", batch, branch));
+            w.add(kpi("Average CTC", "avg_ctc", batch, branch));
         } else if (topics.contains("partners")) {
             w.add(kpi("Companies", "companies", null, null));
+            w.add(kpi("Companies that hired", "companies_hired", batch, branch));
             w.add(kpi("Drives", "drives", null, null));
             w.add(kpi("Offers", "offers", batch, branch));
             w.add(kpi("Average CTC", "avg_ctc", batch, branch));
@@ -319,13 +385,52 @@ public class DashboardPlanner {
         }
 
         // charts
+        if (topics.contains("code")) {
+            w.add(chart("Code submissions per month", AREA, "code_submissions", MONTH, batch, branch, "lg"));
+            w.add(chart("Submissions by language", DONUT, "code_submissions", LANGUAGE, batch, branch, "md"));
+            w.add(chart("Students practising by branch", BAR, "code_active_coders", BRANCH, batch, branch, "md"));
+            w.add(chart("Problems solved by branch", BAR, "code_problems_solved", BRANCH, batch, branch, "md"));
+            w.add(chart("Accepted rate by branch", BAR, "code_accept_rate", BRANCH, batch, branch, "md"));
+        }
+        if (topics.contains("newPlaced")) {
+            w.add(chart("Students placed per month", COLUMN, "new_placements", MONTH, batch, branch, "lg"));
+            w.add(chart("Students placed by branch", BAR, "new_placements", BRANCH, batch, branch, "md"));
+        }
+        if (topics.contains("multiOffer")) w.add(chart("Students with several offers by branch", BAR, "multi_offer_students", BRANCH, batch, branch, "md"));
+        if (topics.contains("noApply")) {
+            w.add(chart("Never applied by branch", BAR, "zero_application_students", BRANCH, batch, branch, "md"));
+            w.add(chart("Never applied by CGPA band", COLUMN, "zero_application_students", CGPA_BAND, batch, branch, "md"));
+        }
+        if (topics.contains("documents")) {
+            w.add(chart("Documents by status", DONUT, "student_documents", STATUS, batch, branch, "md"));
+            w.add(chart("Documents by type", BAR, "student_documents", TYPE, batch, branch, "md"));
+        }
+        if (topics.contains("cgpa")) {
+            w.add(chart("Placement rate by CGPA band", COLUMN, "placement_rate", CGPA_BAND, batch, branch, "md"));
+            w.add(chart("Average CGPA by branch", BAR, "avg_cgpa", BRANCH, batch, branch, "md"));
+            w.add(chart("Average CGPA by batch", COLUMN, "avg_cgpa", BATCH, null, branch, "md"));
+        }
+        if (topics.contains("gender")) {
+            w.add(chart("Students by gender", DONUT, "students_total", GENDER, batch, branch, "md"));
+            w.add(chart("Placement rate by gender", BAR, "placement_rate", GENDER, batch, branch, "md"));
+            w.add(chart("Average CTC by gender", BAR, "avg_ctc", GENDER, batch, branch, "md"));
+        }
         if (topics.contains("ctc")) {
             w.add(chart("Offers by package", DONUT, "offers_by_ctc", CTC_BAND, batch, branch, "md"));
             w.add(chart("Average CTC by branch", BAR, "avg_ctc", BRANCH, batch, branch, "md"));
             w.add(chart("Highest CTC by company", BAR, "highest_ctc", COMPANY, batch, branch, "lg"));
         }
-        if (topics.contains("branch")) w.add(chart("Placement rate by branch", BAR, "placement_rate", BRANCH, batch, branch, "md"));
-        if (topics.contains("company")) w.add(chart("Top recruiters by offers", BAR, "offers", COMPANY, batch, branch, "lg"));
+        if (topics.contains("branch")) {
+            w.add(chart("Placement rate by branch", BAR, "placement_rate", BRANCH, batch, branch, "md"));
+            w.add(chart("Unplaced students by branch", BAR, "unplaced_students", BRANCH, batch, branch, "md"));
+            w.add(chart("Placed students by branch", BAR, "placed_students", BRANCH, batch, branch, "md"));
+            w.add(chart("Average CTC by branch", BAR, "avg_ctc", BRANCH, batch, branch, "md"));
+        }
+        if (topics.contains("company")) {
+            w.add(chart("Top recruiters by offers", BAR, "offers", COMPANY, batch, branch, "lg"));
+            w.add(chart("Highest CTC by company", BAR, "highest_ctc", COMPANY, batch, branch, "md"));
+            w.add(chart("Selection rate by company", BAR, "selection_rate", COMPANY, batch, branch, "md"));
+        }
         if (topics.contains("trend")) w.add(chart("Offers per month", AREA, "offers", MONTH, batch, branch, "lg"));
         if (topics.contains("drive")) {
             w.add(chart("Drives by status", DONUT, "drives", STATUS, null, null, "md"));
@@ -386,7 +491,8 @@ public class DashboardPlanner {
             w.add(chart("Applications by status", DONUT, "applications", STATUS, batch, branch, "md"));
         }
         String scope = (batch != null ? " · batch " + batch : "") + (branch != null ? " · " + branch : "");
-        String title = topics.contains("rounds") ? "Selection rounds" : topics.contains("proctoring") ? "Test integrity"
+        String title = topics.size() == 1 && topics.contains("branch") ? "Branch-wise placement" : topics.size() == 1 && topics.contains("company") ? "Top recruiters" : topics.contains("newPlaced") ? "Placements so far" : topics.contains("multiOffer") ? "Students with several offers" : topics.contains("noApply") ? "Students who never applied" : topics.contains("documents") ? "Document verification" : topics.contains("code") ? "Code ground practice" : topics.contains("cgpa") ? "Academic profile" : topics.contains("gender") ? "Placement by gender"
+                : topics.contains("rounds") ? "Selection rounds" : topics.contains("proctoring") ? "Test integrity"
                 : topics.contains("announcements") ? "Announcement reach" : topics.contains("acceptance") ? "Offer acceptance"
                 : topics.contains("unplacedList") ? "Unplaced students" : topics.contains("ctc") ? "Packages and CTC" : topics.contains("tests") ? "Test performance"
                 : topics.contains("ai") ? "AI interview practice" : topics.contains("drive") ? "Drives overview" : "Placement overview";
@@ -399,7 +505,7 @@ public class DashboardPlanner {
     private DashboardSpec refine(String prompt, DashboardSpec current, CollegeRef ref) {
         String p = " " + prompt.toLowerCase(Locale.ROOT) + " ";
         String branch = branch(prompt, ref);
-        if (COMPARE.matcher(prompt).find()) {
+        if (timeCompare(prompt)) {
             // a comparison: tiles move to the later batch named (charts stay as they are; side-by-side charts are added afterwards)
             Integer later = latestBatch(p, ref);
             List<WidgetSpec> tiles = current.widgets().stream().filter(w -> w.type() == KPI).map(w -> later == null ? w

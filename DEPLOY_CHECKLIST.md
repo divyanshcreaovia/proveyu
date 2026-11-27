@@ -24,9 +24,9 @@ Only ports 80 and 443 are open to the internet. MySQL, 8080 and Judge0 are never
 | What | File / value | Notes |
 |---|---|---|
 | Code | the latest commit on the branch you were given | build from a clean checkout |
-| Database, schema only | [finaluseddbschema.sql](finaluseddbschema.sql) | Flyway version **49**, 66 tables, no data (the platform admin is made by `ADMIN_BOOTSTRAP_*` on the first start) |
-| Database, schema + showcase data | [25nov/finaluseddbschema.sql](25nov/finaluseddbschema.sql) | the same 66 tables (Flyway version **49**) with the 20 mock tests and one complete college (LTCE); use it only to show the product |
-| Flyway baseline | `SPRING_FLYWAY_BASELINE_VERSION=49` | must equal the "Flyway version" written at the top of the file you loaded |
+| Database, schema only | [finaluseddbschema.sql](finaluseddbschema.sql) | Flyway version **50**, 67 tables, no data (the platform admin is made by `ADMIN_BOOTSTRAP_*` on the first start) |
+| Database, schema + showcase data | [25nov/finaluseddbschema.sql](25nov/finaluseddbschema.sql) | the same 67 tables (Flyway version **50**) with the 20 mock tests and one complete college (LTCE); use it only to show the product |
+| Flyway baseline | `SPRING_FLYWAY_BASELINE_VERSION=50` | must equal the "Flyway version" written at the top of the file you loaded |
 | Backend settings | [deploy/backend.env.production.example](deploy/backend.env.production.example) → `/etc/proveyu/backend.env` | fill in every empty value |
 | Backend service | [deploy/proveyu-backend.service](deploy/proveyu-backend.service) → `/etc/systemd/system/` | runs the jar as user `proveyu` |
 | Web server | [deploy/nginx-proveyu.conf](deploy/nginx-proveyu.conf) → `/etc/nginx/sites-available/proveyu` | replace `proveyu.example.com` with the real domain |
@@ -67,10 +67,10 @@ Create these yourself on the server (new values, never the development ones):
 - [ ] `CREATE DATABASE proveyufinaldb CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;`
 - [ ] App user `proveyu_app@127.0.0.1` with rights **on `proveyufinaldb` only**. Never use root.
 - [ ] Load the schema **into the empty database**, once: `mysql proveyufinaldb < finaluseddbschema.sql` (or `25nov/finaluseddbschema.sql` for the showcase data)
-- [ ] `SPRING_FLYWAY_BASELINE_VERSION=49` is in `/etc/proveyu/backend.env`.
+- [ ] `SPRING_FLYWAY_BASELINE_VERSION=50` is in `/etc/proveyu/backend.env`.
 
-How Flyway works here: the dump has no Flyway history, so on the first start Flyway records the database as version 49 and runs
-nothing old. On every later start it runs only new files (`V50__...` and later) from `Backend/src/main/resources/db/migration`.
+How Flyway works here: the dump has no Flyway history, so on the first start Flyway records the database as version 50 and runs
+nothing old. On every later start it runs only new files (`V51__...` and later) from `Backend/src/main/resources/db/migration`.
 The baseline matters only that first time; once `flyway_schema_history` exists it is ignored.
 
 A database that already has data and was made from an older dump (for example the first 25 Nov dump, version 44) is **not reloaded**:

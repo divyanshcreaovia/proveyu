@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, injec
 import { Router, RouterLink } from '@angular/router';
 import { CxoService } from '../cxo.service';
 import { CxoBoard } from '../widgets/cxo-board';
+import { CxoExport } from '../widgets/cxo-export';
+import { CxoShare } from './cxo-share';
 import { DashboardDetail, Insight, WidgetData } from '../cxo.models';
 import { coverage } from '../cxo-coverage';
 import { ConfirmService } from '../../../shared/ui/confirm-dialog';
@@ -12,7 +14,7 @@ const LIVE_EVERY_MS = 30_000;
 /** A saved dashboard with live numbers (refreshes every 30 s); pin, open in Overview or delete. */
 @Component({
   selector: 'pm-cxo-dashboard-view',
-  imports: [RouterLink, CxoBoard],
+  imports: [RouterLink, CxoBoard, CxoExport, CxoShare],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (!d()) {
@@ -31,12 +33,15 @@ const LIVE_EVERY_MS = 30_000;
         </div>
         <div class="xv-actions">
           <button type="button" class="x-btn" [class.xv-on]="live()" (click)="toggleLive()" [attr.aria-pressed]="live()">{{ live() ? 'Live' : 'Go live' }}</button>
+          <pm-cxo-export [spec]="dash.spec" [prompt]="dash.prompt ?? null" [name]="dash.title" />
+          <button type="button" class="x-btn" (click)="sharing.set(true)">Share</button>
           <button type="button" class="x-btn" (click)="pin()">{{ dash.pinned ? 'Unpin' : 'Pin' }}</button>
           <a class="x-btn" routerLink="/cxo/studio" [queryParams]="{ d: dash.id }">Open in Overview</a>
           <button type="button" class="x-btn x-btn-danger" (click)="remove()">Delete</button>
         </div>
       </header>
       <pm-cxo-board [spec]="dash.spec" [data]="data()" [insight]="insight()" [insightPending]="summarizing()" />
+      @if (sharing()) { <pm-cxo-share [dashboardId]="dash.id" (closed)="sharing.set(false)" /> }
     }`,
   styles: [`
     :host { display: block; }
@@ -68,6 +73,7 @@ export class CxoDashboardView implements OnInit {
   insight = signal<Insight | null>(null);
   summarizing = signal(true);
   live = signal(true);
+  sharing = signal(false);
   refreshing = signal(false);
   lastUpdated = signal<number | null>(null);
   private now = signal(Date.now());

@@ -22,6 +22,9 @@ import { CxoService } from '../cxo.service';
         <nav class="x-nav" aria-label="Leadership">
           <a routerLink="/cxo/studio" routerLinkActive="x-on">Overview</a>
           <a routerLink="/cxo/dashboards" routerLinkActive="x-on">Saved</a>
+          <a routerLink="/cxo/changes" routerLinkActive="x-on">What changed</a>
+          <a routerLink="/cxo/forecast" routerLinkActive="x-on">Forecast</a>
+          <a routerLink="/cxo/benchmark" routerLinkActive="x-on">NIRF / NAAC</a>
         </nav>
         <div class="x-top-right">
           @if (cxo.me(); as m) { <span class="x-college" [title]="m.collegeName">{{ m.collegeName }}</span> }
@@ -58,6 +61,7 @@ export class CxoShell implements OnInit {
     .map(p => p[0]).slice(0, 2).join('').toUpperCase());
 
   ngOnInit(): void {
+    this.cxo.catalog().subscribe({ error: () => {} }); // metric definitions for the "how is this calculated" notes
     this.cxo.loadMe().subscribe({ error: (e: AppError) => this.failed.set(e.message || 'Your leadership access could not be loaded.') });
   }
 }

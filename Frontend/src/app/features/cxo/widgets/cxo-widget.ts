@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
 import type { Options, SeriesOptionsType } from 'highcharts';
 import { CXO_COLORS, CxoChart } from './cxo-chart';
+import { CxoDrill } from './cxo-drill';
+import { CxoService } from '../cxo.service';
 import { period } from '../cxo-coverage';
 import { Dimension, Unit, WidgetData, WidgetSpec } from '../cxo.models';
 
@@ -31,12 +33,14 @@ const TRACK = '#eef1f5';
  */
 @Component({
   selector: 'pm-cxo-widget',
-  imports: [CxoChart],
+  imports: [CxoChart, CxoDrill],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (spec().type === 'KPI') {
-      <article class="xk" [class.xk-hero]="hero()" [attr.aria-busy]="!data()">
-        <div class="xk-label">{{ spec().title }}</div>
+      <article class="xk" [class.xk-hero]="hero()" [class.xk-click]="canDrill()" [attr.aria-busy]="!data()"
+        (click)="canDrill() && data() && openDrill(null)">
+        <div class="xk-label">{{ spec().title }}@if (info()) { <button type="button" class="xw-info" (mouseenter)="showTip($event)" (mouseleave)="tip.set(null)" (focus)="showTip($event)" (blur)="tip.set(null)" (click)="$event.stopPropagation()" aria-label="What data is this?"><i class="bi bi-info-lg"></i></button> }</div>
+        @if (canDrill()) { <span class="xk-drill" title="Click to see the students behind this number"><i class="bi bi-people"></i></span> }
         @if (data()) {
           <div class="xk-row">
             <div class="xk-num">{{ shown() }}</div>
@@ -56,8 +60,11 @@ const TRACK = '#eef1f5';
     } @else {
       <article class="xw" [attr.aria-busy]="!data()">
         <header class="xw-head">
-          <h3>{{ spec().title }}</h3>
-          @if (headline(); as h) { <span class="xw-figure">{{ h }}</span> }
+          <h3>{{ spec().title }}@if (info()) { <button type="button" class="xw-info" (mouseenter)="showTip($event)" (mouseleave)="tip.set(null)" (focus)="showTip($event)" (blur)="tip.set(null)" aria-label="What data is this?"><i class="bi bi-info-lg"></i></button> }</h3>
+          <span class="xw-head-r">
+            @if (canDrill()) { <span class="xw-drill" title="Click a bar or slice to see its students"><i class="bi bi-people"></i></span> }
+            @if (headline(); as h) { <span class="xw-figure">{{ h }}</span> }
+          </span>
         </header>
         <div class="xw-scope">{{ caption() }}@if (scope()) { · {{ scope() }} }</div>
         <div class="xw-body">
@@ -85,8 +92,29 @@ const TRACK = '#eef1f5';
           }
         </div>
       </article>
-    }`,
+    }
+    @if (tip(); as t) {
+      <div class="xw-about xw-float" role="tooltip" [style.left.px]="t.x" [style.top.px]="t.y"><b>{{ info()?.label }}</b>{{ aboutText() }}<div class="xw-chips">@for (c of chips(); track c) { <span>{{ c }}</span> }</div></div>
+    }
+    @if (drill() !== null) { <pm-cxo-drill [spec]="spec()" [label]="drill()!.label" (closed)="drill.set(null)" /> }`,
   styles: [`
+    .xk-click { cursor: pointer; }
+    .xw-info { all: unset; cursor: pointer; margin-left: .45rem; width: 16px; height: 16px; border-radius: 50%; display: inline-grid; place-items: center; vertical-align: middle;
+      font-size: .58rem; color: var(--x-muted); background: rgba(15, 23, 42, .06); transition: background-color .15s ease, color .15s ease; }
+    .xw-info:hover, .xw-info:focus-visible { color: #fff; background: var(--x-accent, #2b59c3); }
+    .xw-info:focus-visible { outline: 2px solid var(--x-accent); outline-offset: 2px; }
+    .xw-about { padding: .65rem .8rem; border-radius: 12px; background: var(--x-panel-2); font-size: .74rem; line-height: 1.5; color: var(--x-muted); text-align: left; font-weight: 400; letter-spacing: 0; text-transform: none; }
+    .xw-float { position: fixed; z-index: 1040; width: 290px; pointer-events: none; background: #fff; border: 1px solid var(--x-line-2); box-shadow: 0 16px 40px -10px rgba(15, 23, 42, .28); animation: xwTip .14s ease backwards; }
+    @keyframes xwTip { from { opacity: 0; transform: translateY(4px); } }
+    .xw-about b { display: block; margin-bottom: .15rem; color: var(--x-text); font-size: .78rem; }
+    .xw-chips { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .45rem; }
+    .xw-chips span { padding: .1rem .5rem; border-radius: 999px; font-size: .68rem; font-weight: 600; color: var(--x-accent, #2b59c3); background: var(--x-accent-soft, rgba(43, 89, 195, .1)); }
+    .xk-drill, .xw-drill { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 9px; font-size: .8rem; color: var(--x-muted); background: rgba(15, 23, 42, .05); }
+    .xk-drill { position: absolute; top: .85rem; right: 1rem; }
+    .xk-hero .xk-drill { color: #fff; background: rgba(255, 255, 255, .18); }
+    .xk-hero .xw-info { color: #fff; background: rgba(255, 255, 255, .2); }
+    .xw-head-r { display: inline-flex; align-items: center; gap: .5rem; flex-shrink: 0; }
+    .xk-click { cursor: pointer; }
     :host { display: block; height: 100%; }
     /* ---------- KPI ---------- */
     .xk { position: relative; overflow: hidden; height: 100%; min-height: 128px; padding: 1.1rem 1.25rem; border-radius: var(--x-radius, 22px);
@@ -163,7 +191,7 @@ export class CxoWidget {
    */
   chartKey = computed(() => {
     const s = this.spec();
-    return [s.metric, s.dimension, s.type, s.batchYear, s.branchCode, s.from, s.to, s.limit].join('|');
+    return [s.metric, s.dimension, s.type, s.batchYear, (s.batches ?? []).join(','), s.branchCode, s.from, s.to, s.limit].join('|');
   });
   /** The first KPI of a dashboard is drawn as the mint hero tile. */
   hero = input(false);
@@ -171,9 +199,32 @@ export class CxoWidget {
   readonly colors = CXO_COLORS;
 
   shown = signal('–');
+
+  private cxo = inject(CxoService);
+  /** Where the hover note sits (under the i button): fixed to the screen so a card's edge never cuts it. */
+  tip = signal<{ x: number; y: number } | null>(null);
+  showTip(e: Event): void {
+    const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    this.tip.set({ x: Math.max(8, Math.min(r.left - 12, window.innerWidth - 306)), y: r.bottom + 8 });
+  }
+  /** A shared (public) board is read only: no student lists, no extra lookups. */
+  interactive = input(true);
+  drill = signal<{ label: string | null } | null>(null);
+  info = computed(() => (this.interactive() ? this.cxo.metrics()[this.spec().metric] : undefined));
+  /** What the number is: the metric's own definition. */
+  aboutText = computed(() => ' ' + (this.info()?.description ?? 'A number from this college\'s ProveYu records.'));
+  /** The data the card shows, as small tags: which batches, branch, period and split. */
+  chips = computed(() => {
+    const s = this.spec();
+    const out = [s.batches?.length ? `Batches ${s.batches.join(', ')}` : s.batchYear ? `Batch ${s.batchYear}` : 'All batches', s.branchCode ?? 'All branches', period(s.from, s.to)];
+    if (s.dimension !== 'NONE') out.push(`By ${s.dimension.toLowerCase().replace('_', ' ')}`);
+    return out.filter(Boolean);
+  });
+  canDrill = computed(() => this.interactive() && !!this.info()?.drillable && this.spec().dimension !== 'STUDENT');
+  openDrill(label: string | null): void { if (this.canDrill()) this.drill.set({ label }); }
   private raf = 0;
 
-  scope = computed(() => [this.spec().batchYear ? `Batch ${this.spec().batchYear}` : '', this.spec().branchCode ?? '',
+  scope = computed(() => [this.spec().batches?.length ? `Batches ${this.spec().batches!.join(', ')}` : this.spec().batchYear ? `Batch ${this.spec().batchYear}` : '', this.spec().branchCode ?? '',
     period(this.spec().from, this.spec().to)].filter(Boolean).join(' · '));
   empty = computed(() => {
     const d = this.data();
@@ -216,17 +267,18 @@ export class CxoWidget {
     const n = this.data()?.labels.length ?? 0;
     const noun: Record<string, string> = { BRANCH: 'branches', BATCH: 'batches', MONTH: 'months', COMPANY: 'companies', STATUS: 'statuses',
       TYPE: 'types', TIER: 'tiers', CTC_BAND: 'package bands', TEST: 'tests', DIFFICULTY: 'levels', STAGE: 'stages', ROUND: 'rounds',
-      STUDENT: 'students', ANNOUNCEMENT: 'announcements', JOB: 'jobs' };
+      STUDENT: 'students', ANNOUNCEMENT: 'announcements', JOB: 'jobs', YEAR: 'years', LANGUAGE: 'languages', GENDER: 'groups', CGPA_BAND: 'CGPA bands' };
     if (!this.data()) return 'Loading';
-    if (s.dimension === 'MONTH') return n ? `Last ${n} months` : 'Monthly';
+    if (s.dimension === 'MONTH') return n ? `${n} months` : 'Monthly';
     if (s.dimension === 'STAGE') return 'Eligible to placed';
     if (s.dimension === 'STUDENT') return n ? `${n} students · highest CGPA first` : 'No students';
     const plural = noun[s.dimension] ?? 'items';
-    const one: Record<string, string> = { branches: 'branch', batches: 'batch', statuses: 'status', companies: 'company' };
+    const one: Record<string, string> = { branches: 'branch', batches: 'batch', statuses: 'status', companies: 'company', groups: 'group' };
     return n ? `${n} ${n === 1 ? one[plural] ?? plural.replace(/s$/, '') : plural}` : 'No data yet';
   });
   subtitle = computed(() => {
     const u = this.data()?.unit;
+    if (this.spec().type === 'KPI' && this.data() && this.data()!.value === null) return 'No data for this period';
     return u === 'PERCENT' ? 'Percent' : u === 'LPA' ? 'Lakh per annum' : u === 'SCORE' ? 'Out of 100' : 'Total';
   });
   /** The figure beside a chart title: the sum for counts, the top value otherwise. */
@@ -259,7 +311,7 @@ export class CxoWidget {
         title: { text: d.unit === 'COUNT' ? fmt(total, 'COUNT') : '', verticalAlign: 'middle', y: 8,
           style: { color: '#0f172a', fontSize: '22px', fontWeight: '700' } },
         tooltip: { ...tooltip, pointFormat: '<b style="font-size:15px">{point.y}' + suffix + '</b> · {point.percentage:.0f}%' },
-        plotOptions: { pie: { innerSize: '76%', borderWidth: 3, borderColor: '#ffffff', borderRadius: 6, dataLabels: { enabled: false } } },
+        plotOptions: { pie: { innerSize: '76%', borderWidth: 3, borderColor: '#ffffff', borderRadius: 6, dataLabels: { enabled: false }, ...this.pointClick() } },
         series: [{ type: 'pie', name: s.title, data: cats.map((name, i) => ({ name, y: values[i] })) }],
       };
     }
@@ -295,7 +347,7 @@ export class CxoWidget {
       xAxis: { categories: cats, tickLength: 0, lineWidth: 0, labels: { style: { color: '#64748b', fontSize: '11px' } } },
       yAxis: { visible: !horizontal, gridLineDashStyle: 'Dot', labels: { format: '{value}' + suffix }, max: max || 1 },
       plotOptions: {
-        series: { grouping: false, borderWidth: 0, animation: { duration: 900 } },
+        series: { grouping: false, borderWidth: 0, animation: { duration: 900 }, ...this.pointClick() } as never,
         bar: { borderRadius: 7, pointPadding: 0.18, groupPadding: 0.06, maxPointWidth: 22 },
         column: { borderRadius: 8, pointPadding: 0.14, groupPadding: 0.1, maxPointWidth: 44 },
       },
@@ -309,6 +361,14 @@ export class CxoWidget {
       ] as SeriesOptionsType[],
     } as Options;
   });
+
+  /** Clicking a bar or slice lists its students (only where the number is counted over students). */
+  private pointClick(): Record<string, unknown> {
+    if (!this.canDrill() || this.spec().dimension === 'MONTH') return {};
+    const labels = this.data()?.labels ?? [];
+    const open = (i: number) => this.openDrill(labels[i] ?? null);
+    return { cursor: 'pointer', point: { events: { click(this: { index: number }) { open(this.index); } } } };
+  }
 
   constructor() {
     // KPI count-up whenever a new value arrives (first build or live refresh)

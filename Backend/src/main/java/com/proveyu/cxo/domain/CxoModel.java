@@ -19,7 +19,7 @@ public final class CxoModel {
     public enum WidgetType { KPI, BAR, COLUMN, LINE, AREA, DONUT, TABLE }
 
     /** What a widget is grouped by. NONE = a single number. */
-    public enum Dimension { NONE, BRANCH, BATCH, MONTH, COMPANY, STATUS, TYPE, TIER, CTC_BAND, TEST, DIFFICULTY, STAGE, ROUND, STUDENT, ANNOUNCEMENT, JOB }
+    public enum Dimension { NONE, BRANCH, BATCH, MONTH, COMPANY, STATUS, TYPE, TIER, CTC_BAND, TEST, DIFFICULTY, STAGE, ROUND, STUDENT, ANNOUNCEMENT, JOB, YEAR, LANGUAGE, GENDER, CGPA_BAND }
 
     public enum Unit { COUNT, PERCENT, LPA, SCORE, CGPA }
 
@@ -31,7 +31,17 @@ public final class CxoModel {
      * @param size sm (KPI tile), md (half row), lg (full row)
      */
     public record WidgetSpec(String id, String title, WidgetType type, String metric, Dimension dimension, Integer batchYear,
-                             String branchCode, LocalDate from, LocalDate to, Integer limit, String size) {}
+                             String branchCode, LocalDate from, LocalDate to, Integer limit, String size, List<Integer> batches) {
+        /** Without a set of years (the usual widget). */
+        public WidgetSpec(String id, String title, WidgetType type, String metric, Dimension dimension, Integer batchYear,
+                          String branchCode, LocalDate from, LocalDate to, Integer limit, String size) {
+            this(id, title, type, metric, dimension, batchYear, branchCode, from, to, limit, size, null);
+        }
+
+        public WidgetSpec withBatches(List<Integer> years) {
+            return new WidgetSpec(id, title, type, metric, dimension, batchYear, branchCode, from, to, limit, size, years);
+        }
+    }
 
     public record DashboardSpec(@Size(max = 200) String title, @Size(max = 500) String summary, @Valid @Size(max = 12) List<WidgetSpec> widgets) {}
 
@@ -51,6 +61,47 @@ public final class CxoModel {
 
     public record Insight(String headline, List<String> bullets) {}
 
+    // ------------------------------------------------------------------ drill-down, changes, forecast, benchmark, sharing
+
+    /** One student behind a number. */
+    public record DrillRow(String name, String roll, String branch, Integer batch, Double cgpa, String status, boolean placed) {}
+
+    /** @param truncated more students exist than are listed; @param note why there is no list (when there is none) */
+    public record Drill(List<DrillRow> rows, boolean truncated, String note) {}
+
+    public record DrillRequest(@NotNull @Valid WidgetSpec widget, @Size(max = 200) String label) {}
+
+    /** One number compared with the period before it. */
+    public record Change(String key, String label, Unit unit, Double current, Double previous, boolean higherIsBetter) {}
+
+    public record NameCount(String name, double count) {}
+
+    public record ChangeReport(int days, String from, String to, String previousFrom, String previousTo, List<Change> changes,
+                               List<NameCount> topCompanies, List<String> highlights) {}
+
+    public record ForecastPoint(String month, Integer placed, Integer low, Integer base, Integer high) {}
+
+    /**
+     * A rough projection of one batch's placements to a date. {@code confidence} is LOW when too few placements happened recently;
+     * {@code lastYear} says where the batch before it stood on the same date and where it ended.
+     */
+    public record Forecast(int batch, String asOf, String until, int eligible, int placed, double placedPercent, int recent30, int recent60, int recent90,
+                           double perMonthLow, double perMonthBase, double perMonthHigh, int projectedLow, int projectedBase, int projectedHigh,
+                           double projectedBasePercent, String confidence, List<ForecastPoint> series, String lastYear, List<String> notes) {}
+
+    public record BenchmarkRow(String label, List<String> values, String note) {}
+
+    public record Benchmark(int year, List<Integer> years, List<BenchmarkRow> rows, List<String> branchHeader, List<List<String>> branches,
+                            List<String> notes) {}
+
+    public record ShareRequest(@NotNull UUID dashboardId, Integer days) {}
+
+    public record ShareLink(UUID id, UUID dashboardId, String token, String path, Instant expiresAt, Instant createdAt, int views, boolean revoked) {}
+
+    /** What an outside reader sees: the board and its fresh numbers, never student names. */
+    public record SharedBoard(String title, String college, String sharedBy, DashboardSpec spec, List<WidgetData> data, Insight insight,
+                              Instant expiresAt, Instant generatedAt) {}
+
     /** Progress step shown while a dashboard is being built. */
     public record Status(String step, String message) {}
 
@@ -61,7 +112,7 @@ public final class CxoModel {
 
     // ------------------------------------------------------------------ catalog / profile
 
-    public record MetricInfo(String key, String label, String description, Unit unit, List<Dimension> dimensions) {}
+    public record MetricInfo(String key, String label, String description, Unit unit, List<Dimension> dimensions, boolean drillable) {}
 
     public record Catalog(List<MetricInfo> metrics, List<String> branches, List<Integer> batches, List<String> suggestions, boolean aiEnabled) {}
 

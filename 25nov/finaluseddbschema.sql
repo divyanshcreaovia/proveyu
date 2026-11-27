@@ -1,7 +1,7 @@
 -- =====================================================================================================
 -- finaluseddbschema.sql : ProveYu database (MySQL 8, utf8mb4): schema + showcase data
--- Flyway version 49 (V1..V49 applied). 66 tables. Load into an EMPTY database and set SPRING_FLYWAY_BASELINE_VERSION=49;
--- Flyway then runs only newer migrations (V50, ...) on start. Tables of V45..V49 (Code ground, password_changed_at) are here, empty:
+-- Flyway version 50 (V1..V50 applied). 67 tables. Load into an EMPTY database and set SPRING_FLYWAY_BASELINE_VERSION=50;
+-- Flyway then runs only newer migrations (V51, ...) on start. Tables of V45..V50 (Code ground, password_changed_at, CXO share links) are here, empty:
 -- the showcase data below is unchanged.
 --
 -- Data (made through the app by scripts/seed_college.py and scripts/seed_ltce_years.py, with mail switched off):
@@ -1023,6 +1023,30 @@ CREATE TABLE `cxo_ai_cache` (
   UNIQUE KEY `uq_cxo_cache` (`college_id`,`kind`,`cache_key`),
   KEY `idx_cxo_cache_age` (`created_at`),
   CONSTRAINT `fk_cxo_cache_college` FOREIGN KEY (`college_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `cxo_dashboard_shares`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cxo_dashboard_shares` (
+  `id` char(36) NOT NULL,
+  `dashboard_id` char(36) NOT NULL,
+  `college_id` char(36) NOT NULL,
+  `created_by` char(36) NOT NULL,
+  `token_hash` char(64) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `revoked_at` datetime DEFAULT NULL,
+  `views` int NOT NULL DEFAULT '0',
+  `last_viewed_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_cxo_share_token` (`token_hash`),
+  KEY `idx_cxo_share_dash` (`dashboard_id`),
+  KEY `fk_cxo_share_college` (`college_id`),
+  KEY `fk_cxo_share_user` (`created_by`),
+  CONSTRAINT `fk_cxo_share_college` FOREIGN KEY (`college_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_cxo_share_dash` FOREIGN KEY (`dashboard_id`) REFERENCES `cxo_dashboards` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_cxo_share_user` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `cxo_dashboards`;

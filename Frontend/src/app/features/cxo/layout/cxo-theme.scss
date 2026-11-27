@@ -79,6 +79,11 @@
 
 /* ---------- shared bits for every CXO page (reach child components) ---------- */
 :host ::ng-deep {
+  /* the shell carries Bootstrap's dark flag, which would turn plain form controls white-on-white: keep them dark-on-light */
+  .x-app { color-scheme: light; }
+  .x-app select, .x-app input, .x-app textarea { color: var(--x-text); }
+  .x-app select { min-width: 84px; background-color: #ffffff; cursor: pointer; }
+  .x-app select option { color: #0f172a; background: #ffffff; }
   .x-app ::selection { background: var(--x-accent); color: var(--x-accent-ink); }
   .x-app { scrollbar-color: #cbd2dc transparent; }
   .x-btn { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;

@@ -126,7 +126,7 @@ sudo cp -r Frontend/dist/proveyu-frontend/browser/* /var/www/proveyu/
 # mock-test code: set JUDGE0_URL (Judge0 VM internal IP) and JUDGE0_TOKEN in /etc/proveyu/backend.env (DEPLOY_CHECKLIST.md, section 6)
 
 sudo mysql proveyufinaldb < finaluseddbschema.sql                  # the schema (use 25nov/finaluseddbschema.sql for the showcase data); the header names its Flyway version
-head -5 finaluseddbschema.sql | grep -o "Flyway version [0-9]*"   # 49 -> SPRING_FLYWAY_BASELINE_VERSION=49
+head -5 finaluseddbschema.sql | grep -o "Flyway version [0-9]*"   # 50 -> SPRING_FLYWAY_BASELINE_VERSION=50
 ```
 
 ## 8. Optional: local AI backup (16 GB has room for it)

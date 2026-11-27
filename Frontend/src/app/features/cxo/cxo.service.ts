@@ -6,7 +6,8 @@ import { TokenStorageService } from '../../core/services/token-storage.service';
 import { AuthService } from '../../core/services/auth.service';
 import { SILENT_ERRORS } from '../../core/interceptors/error.interceptor';
 import {
-  BuildEvent, Catalog, CxoMe, DashboardDetail, DashboardSpec, DashboardSummary, Insight, Snapshot, WidgetData,
+  BuildEvent, Benchmark, Catalog, ChangeReport, CxoMe, DashboardDetail, DashboardSpec, DashboardSummary, Drill, Forecast, Insight, MetricInfo, ShareLink,
+  SharedBoard, Snapshot, WidgetData, WidgetSpec,
 } from './cxo.models';
 
 const C = '/api/v1/cxo';
@@ -21,8 +22,39 @@ export class CxoService {
   /** The signed-in CXO (loaded by the shell). */
   readonly me = signal<CxoMe | null>(null);
 
+  /** The metrics by key (loaded with the catalog): used to say how a number is worked out and whether its students can be listed. */
+  readonly metrics = signal<Record<string, MetricInfo>>({});
+
   loadMe(): Observable<CxoMe> { return this.get<CxoMe>('/me').pipe(tap(m => this.me.set(m))); }
-  catalog(): Observable<Catalog> { return this.get('/catalog'); }
+  catalog(): Observable<Catalog> {
+    return this.get<Catalog>('/catalog').pipe(tap(c => this.metrics.set(Object.fromEntries(c.metrics.map(m => [m.key, m])))));
+  }
+
+  drill(widget: WidgetSpec, label: string | null): Observable<Drill> {
+    return this.http.post<ApiResponse<Drill>>(api(`${C}/drill`), { widget, label }).pipe(map(r => r.data));
+  }
+  changes(days: number): Observable<ChangeReport> { return this.get(`/changes?days=${days}`); }
+  forecast(batch: number | null): Observable<Forecast> { return this.get(`/forecast${batch ? `?batch=${batch}` : ''}`); }
+  benchmark(year: number | null): Observable<Benchmark> { return this.get(`/benchmark${year ? `?year=${year}` : ''}`); }
+
+  /** The dashboard on screen as a board report; the browser saves the file. */
+  exportReport(format: 'pdf' | 'pptx', prompt: string | null, spec: DashboardSpec): Observable<Blob> {
+    return this.http.post(api(`${C}/dashboards/export?format=${format}`), { prompt, spec }, { responseType: 'blob' });
+  }
+  exportBenchmark(format: 'pdf' | 'pptx', year: number | null): Observable<Blob> {
+    return this.http.get(api(`${C}/benchmark/export?format=${format}${year ? `&year=${year}` : ''}`), { responseType: 'blob' });
+  }
+
+  createShare(dashboardId: string, days: number): Observable<ShareLink> {
+    return this.http.post<ApiResponse<ShareLink>>(api(`${C}/shares`), { dashboardId, days }).pipe(map(r => r.data));
+  }
+  shares(dashboardId: string): Observable<ShareLink[]> { return this.get(`/dashboards/${dashboardId}/shares`); }
+  revokeShare(id: string): Observable<unknown> { return this.http.delete(api(`${C}/shares/${id}`)); }
+  /** A shared board, opened with its link (no sign-in). */
+  openShared(token: string): Observable<SharedBoard> {
+    return this.http.get<ApiResponse<SharedBoard>>(api(`/api/v1/public/cxo/share/${encodeURIComponent(token)}`),
+      { context: new HttpContext().set(SILENT_ERRORS, true) }).pipe(map(r => r.data));
+  }
 
   dashboards(): Observable<DashboardSummary[]> { return this.get('/dashboards'); }
   dashboard(id: string): Observable<DashboardDetail> { return this.get(`/dashboards/${id}`); }

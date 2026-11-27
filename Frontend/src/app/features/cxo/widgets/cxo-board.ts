@@ -18,7 +18,7 @@ const GAP = 14;
     @if (kpis().length) {
       <div class="xb-kpis" [style.grid-template-columns]="kpiCols()">
         @for (w of kpis(); track w.id; let i = $index) {
-          <pm-cxo-widget [spec]="w" [data]="data()[w.id] ?? null" [hero]="i === 0" />
+          <pm-cxo-widget [spec]="w" [data]="data()[w.id] ?? null" [hero]="i === 0" [interactive]="interactive()" />
         }
       </div>
     }
@@ -41,7 +41,7 @@ const GAP = 14;
               }
             </article>
           } @else {
-            <pm-cxo-widget [spec]="c.w!" [data]="data()[c.w!.id] ?? null" [height]="chartH" />
+            <pm-cxo-widget [spec]="c.w!" [data]="data()[c.w!.id] ?? null" [height]="chartH" [interactive]="interactive()" />
           }
         </div>
       }
@@ -76,6 +76,8 @@ const GAP = 14;
   `],
 })
 export class CxoBoard {
+  /** False on a shared (public) board: read only, no student lists. */
+  interactive = input(true);
   spec = input.required<DashboardSpec>();
   data = input<Partial<Record<string, WidgetData>>>({});
   insight = input<Insight | null>(null);

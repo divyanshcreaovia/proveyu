@@ -30,7 +30,7 @@ final class TitleCheck {
     /** Words that only some metrics may use, with those metrics. */
     private static final Map<Pattern, Set<String>> OWNED = Map.ofEntries(
             Map.entry(words("flag|proctor|cheat|integrity|malpractice|violation"), Set.of("proctoring_flags", "flagged_attempts")),
-            Map.entry(words("ctc|package|salary|lpa|compensation"), Set.of("avg_ctc", "highest_ctc", "offers_by_ctc", "avg_drive_ctc")),
+            Map.entry(words("ctc|package|salary|lpa|compensation"), Set.of("avg_ctc", "highest_ctc", "lowest_ctc", "median_ctc", "offers_by_ctc", "avg_drive_ctc")),
             Map.entry(words("score|marks"), Set.of("mock_test_avg_score", "ai_interview_score")),
             Map.entry(words("unplaced|not placed|yet to be placed"), Set.of("unplaced_students", "unplaced_list")),
             Map.entry(words("funnel"), Set.of("placement_funnel")),
@@ -41,8 +41,15 @@ final class TitleCheck {
             Map.entry(words("mou|partner"), Set.of("companies")),
             Map.entry(words("ai interview|ai mock|mock interview"), Set.of("ai_interviews", "ai_interview_score")),
             Map.entry(words("highest|maximum|max\\b|peak"), Set.of("highest_ctc", "unplaced_list")),
-            Map.entry(words("average|avg\\b|mean"), Set.of("avg_ctc", "avg_drive_ctc", "mock_test_avg_score", "ai_interview_score")),
+            Map.entry(words("average|avg\\b|mean"), Set.of("avg_ctc", "avg_drive_ctc", "avg_cgpa", "mock_test_avg_score", "ai_interview_score")),
             Map.entry(words("selection rate|conversion"), Set.of("selection_rate", "placement_funnel")),
+            Map.entry(words("lowest|minimum|min\\b|least"), Set.of("lowest_ctc")),
+            Map.entry(words("median|middle"), Set.of("median_ctc")),
+            Map.entry(words("cgpa|gpa"), Set.of("avg_cgpa", "unplaced_list")),
+            Map.entry(words("more than one offer|multiple offers?|multi[- ]offer"), Set.of("multi_offer_students")),
+            Map.entry(words("never applied|no applications?|not applied|zero applications?"), Set.of("zero_application_students")),
+            Map.entry(words("documents?"), Set.of("student_documents")),
+            Map.entry(words("code ground|coding|coders?|submissions?|solved"), Set.of("code_submissions", "code_accept_rate", "code_active_coders", "code_problems_solved")),
             Map.entry(words("read rate|opened|read by"), Set.of("announcement_read_rate")));
 
     private static final Pattern COMPARISON = words("vs\\.?|versus|compared (to|with)");
@@ -63,6 +70,10 @@ final class TitleCheck {
             Map.entry(TIER, split("tiers?")),
             Map.entry(DIFFICULTY, split("difficulty|levels?")),
             Map.entry(TYPE, split("types?|kinds?")),
+            Map.entry(YEAR, split("years?|calendar years?")),
+            Map.entry(LANGUAGE, split("languages?")),
+            Map.entry(GENDER, split("gender|sex")),
+            Map.entry(CGPA_BAND, split("cgpa( bands?| ranges?)?|grades?")),
             Map.entry(ANNOUNCEMENT, split("announcements?|notices?")));
 
     private static Pattern split(String noun) {
@@ -76,6 +87,7 @@ final class TitleCheck {
         }
         if (unit == Unit.COUNT && (RATE.matcher(title).find() || PERCENT_SIGN.matcher(title).find())) return false;
         for (Map.Entry<Dimension, Pattern> e : SPLIT.entrySet()) {
+            if ((dim == BATCH && e.getKey() == YEAR) || (dim == YEAR && e.getKey() == BATCH)) continue; // "by year" and "by batch" mean the same here
             if (e.getKey() != dim && e.getValue().matcher(title).find()) {
                 // a CTC band chart may say "package"; a funnel shows stages; a list of students may say "branch" in its scope
                 if (dim == STUDENT || dim == STAGE) continue;

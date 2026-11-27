@@ -30,7 +30,7 @@ import static com.proveyu.cxo.domain.CxoModel.WidgetType.*;
 public class SpecSanitizer {
 
     static final int MAX_WIDGETS = 12;
-    private static final Set<Dimension> FEW_CATEGORIES = Set.of(STATUS, TYPE, CTC_BAND, DIFFICULTY, STAGE, TIER, ROUND);
+    private static final Set<Dimension> FEW_CATEGORIES = Set.of(STATUS, TYPE, CTC_BAND, DIFFICULTY, STAGE, TIER, ROUND, LANGUAGE, GENDER, CGPA_BAND);
 
     private final MetricCatalog catalog;
 
@@ -43,7 +43,7 @@ public class SpecSanitizer {
             widgets.add(new WidgetSpec(null, text(w, "title"), enumOf(WidgetType.class, text(w, "type")), text(w, "metric"),
                     enumOf(Dimension.class, text(w, "dimension")), w.path("batchYear").isNumber() ? w.path("batchYear").asInt() : null,
                     text(w, "branchCode"), date(text(w, "from")), date(text(w, "to")), w.path("limit").isNumber() ? w.path("limit").asInt() : null,
-                    text(w, "size")));
+                    text(w, "size"), years(w.path("batches"))));
         }
         return clean(new DashboardSpec(text(n, "title"), text(n, "summary"), widgets), ref);
     }
@@ -58,7 +58,7 @@ public class SpecSanitizer {
                 WidgetSpec c = widget(w, ref);
                 if (c == null) continue;
                 List<WidgetSpec> list = c.type() == KPI ? kpis : charts;
-                String sameData = c.metric() + '|' + c.dimension() + '|' + c.batchYear() + '|' + c.branchCode() + '|' + c.from() + '|' + c.to();
+                String sameData = c.metric() + '|' + c.dimension() + '|' + c.batchYear() + '|' + c.batches() + '|' + c.branchCode() + '|' + c.from() + '|' + c.to();
                 Integer at = seen.get(sameData);
                 if (at != null) {
                     WidgetSpec first = list.get(at);
@@ -76,7 +76,7 @@ public class SpecSanitizer {
         for (int i = 0; i < all.size(); i++) {
             WidgetSpec w = all.get(i);
             numbered.add(new WidgetSpec("w" + (i + 1), w.title(), w.type(), w.metric(), w.dimension(), w.batchYear(), w.branchCode(), w.from(), w.to(),
-                    w.limit(), w.size()));
+                    w.limit(), w.size(), w.batches()));
         }
         String title = trim(in.title(), 120);
         return new DashboardSpec(title == null ? "Placement overview" : title, trim(in.summary(), 400), numbered);
@@ -100,7 +100,7 @@ public class SpecSanitizer {
             if (c == null) continue;
             String id = w.id() != null && !w.id().isBlank() && ids.add(w.id()) ? w.id() : "w" + n;
             ids.add(id);
-            out.add(new WidgetSpec(id, c.title(), c.type(), c.metric(), c.dimension(), c.batchYear(), c.branchCode(), c.from(), c.to(), c.limit(), c.size()));
+            out.add(new WidgetSpec(id, c.title(), c.type(), c.metric(), c.dimension(), c.batchYear(), c.branchCode(), c.from(), c.to(), c.limit(), c.size(), c.batches()));
         }
         return out;
     }
@@ -125,8 +125,15 @@ public class SpecSanitizer {
         // Checked last, so it also applies to the type picked by default above.
         if (type == DONUT && (d.unit() != Unit.COUNT || catalog.isFunnel(d) || !FEW_CATEGORIES.contains(dim))) type = BAR;
 
-        // a chart by batch filtered to one batch would be a single bar: by batch always shows every batch side by side
-        Integer batch = dim != BATCH && w.batchYear() != null && ref.batches().contains(w.batchYear()) ? w.batchYear() : null;
+        // A year the user asked for is kept even when the college has no such batch: the numbers then come back empty ("no data"),
+        // never the other batches' numbers. Only an impossible year is dropped.
+        Integer batch = validYear(w.batchYear()) ? w.batchYear() : null;
+        List<Integer> batches = null;
+        if ((dim == BATCH || dim == YEAR) && w.batches() != null) {
+            batches = w.batches().stream().filter(SpecSanitizer::validYear).distinct().sorted().limit(8).toList();
+            if (batches.isEmpty()) batches = null;
+        }
+        if (batches != null) batch = null; // a set of years replaces a single one
         String branch = null;
         if (w.branchCode() != null) {
             for (String b : ref.branches()) if (b.equalsIgnoreCase(w.branchCode().trim())) branch = b;
@@ -134,7 +141,8 @@ public class SpecSanitizer {
         LocalDate from = w.from(), to = w.to();
         if (from != null && to != null && from.isAfter(to)) { LocalDate t = from; from = to; to = t; }
         // "up to today" would hide what is already scheduled (upcoming drives, interviews): an open end means "until now and beyond"
-        if (to != null && !to.isBefore(LocalDate.now()) && dim != MONTH) to = null;
+        // (a whole calendar year asked for keeps its end: "2026" must not show 2027's scheduled drives)
+        if (to != null && !to.isBefore(LocalDate.now()) && dim != MONTH && !(to.getMonthValue() == 12 && to.getDayOfMonth() == 31 && from != null)) to = null;
         if (dim == MONTH && from != null) { // a trend spans at most 24 months, so every month still fits on the axis
             LocalDate end = to != null ? to : LocalDate.now();
             if (from.isBefore(end.withDayOfMonth(1).minusMonths(23))) from = end.withDayOfMonth(1).minusMonths(23);
@@ -143,7 +151,7 @@ public class SpecSanitizer {
         String title = trim(w.title(), 80);
         if (title == null || !TitleCheck.fits(title, d.key(), d.unit(), dim)) title = autoTitle(d.label(), dim);
         return new WidgetSpec(null, title, type, d.key(), dim, batch, branch, from, to,
-                dim == NONE || dim == MONTH ? null : dim == STUDENT ? MetricCatalog.clamp(w.limit(), 3, 50, 50) : MetricCatalog.clamp(w.limit(), 3, 20, 10), size);
+                dim == NONE || dim == MONTH ? null : dim == STUDENT ? MetricCatalog.clamp(w.limit(), 3, 50, 50) : MetricCatalog.clamp(w.limit(), 3, 20, 10), size, batches);
     }
 
     private String autoTitle(WidgetSpec w) {
@@ -155,7 +163,7 @@ public class SpecSanitizer {
     }
 
     private static WidgetSpec withTitle(WidgetSpec w, String title) {
-        return new WidgetSpec(w.id(), title, w.type(), w.metric(), w.dimension(), w.batchYear(), w.branchCode(), w.from(), w.to(), w.limit(), w.size());
+        return new WidgetSpec(w.id(), title, w.type(), w.metric(), w.dimension(), w.batchYear(), w.branchCode(), w.from(), w.to(), w.limit(), w.size(), w.batches());
     }
 
     /** Half-width charts sit two to a row; one left alone (next to a full-width chart or at the end) becomes full width. */
@@ -171,7 +179,7 @@ public class SpecSanitizer {
     }
 
     private static WidgetSpec full(WidgetSpec w) {
-        return new WidgetSpec(w.id(), w.title(), w.type(), w.metric(), w.dimension(), w.batchYear(), w.branchCode(), w.from(), w.to(), w.limit(), "lg");
+        return new WidgetSpec(w.id(), w.title(), w.type(), w.metric(), w.dimension(), w.batchYear(), w.branchCode(), w.from(), w.to(), w.limit(), "lg", w.batches());
     }
 
     // ------------------------------------------------------------------ helpers
@@ -199,6 +207,17 @@ public class SpecSanitizer {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    static boolean validYear(Integer y) {
+        return y != null && y >= 2000 && y <= 2100;
+    }
+
+    private static List<Integer> years(JsonNode n) {
+        if (n == null || !n.isArray()) return null;
+        List<Integer> out = new ArrayList<>();
+        for (JsonNode y : n) if (y.isNumber()) out.add(y.asInt());
+        return out.isEmpty() ? null : out;
     }
 
     private static String trim(String s, int max) {

@@ -28,7 +28,7 @@
 .xs-ask-go:not(:disabled):hover { background: var(--x-accent); color: var(--x-accent-ink); }
 .xs-ask-go:disabled { opacity: 0.4; cursor: default; }
 .xs-ask-go:focus-visible { outline: 2px solid var(--x-accent); outline-offset: 2px; }
-.xs-suggest { position: absolute; left: 0; right: 0; top: calc(100% + 8px); z-index: 15; padding: 0.45rem; border-radius: 16px;
+.xs-suggest { max-height: min(340px, 52vh); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; position: absolute; left: 0; right: 0; top: calc(100% + 8px); z-index: 15; padding: 0.45rem; border-radius: 16px;
   background: var(--x-panel); border: 1px solid var(--x-line-2); box-shadow: 0 18px 44px -14px rgba(15, 23, 42, 0.22); animation: xsIn 0.16s var(--x-ease) backwards; }
 .xs-suggest-k { padding: 0.35rem 0.6rem 0.3rem; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--x-dim); }
 .xs-suggest button { all: unset; box-sizing: border-box; display: block; width: 100%; padding: 0.55rem 0.65rem; border-radius: 10px; cursor: pointer;

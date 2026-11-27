@@ -59,13 +59,15 @@ public class CxoDashboardService {
     private final JdbcTemplate jdbc;
     private final ObjectMapper json;
     private final long paceMs;
+    private final ReportExporter exporter;
     /** Users with a dashboard being built right now: one at a time per user. */
     private final Set<UUID> building = ConcurrentHashMap.newKeySet();
     private final ExecutorService pool;
 
     public CxoDashboardService(DashboardPlanner planner, SpecSanitizer sanitizer, QueryEngine engine, InsightWriter insights, MetricCatalog catalog,
                                CxoAiClient ai, CxoDashboardRepository dashboards, CxoMemberRepository members, JdbcTemplate jdbc, ObjectMapper json,
-                               @Value("${cxo.stream.pace-ms:220}") long paceMs, @Value("${cxo.stream.max-parallel:8}") int maxParallel) {
+                               ReportExporter exporter, @Value("${cxo.stream.pace-ms:220}") long paceMs, @Value("${cxo.stream.max-parallel:8}") int maxParallel) {
+        this.exporter = exporter;
         this.planner = planner;
         this.sanitizer = sanitizer;
         this.engine = engine;
@@ -99,13 +101,30 @@ public class CxoDashboardService {
 
     public Catalog catalog(CxoContext ctx) {
         CollegeRef ref = ref(ctx);
+        List<Integer> batches = ref.batches();
+        int now = java.time.LocalDate.now().getYear();
+        Integer current = batches.isEmpty() ? null : batches.contains(now) ? Integer.valueOf(now)
+                : batches.stream().filter(y -> y >= now).findFirst().orElse(batches.get(batches.size() - 1));
+        String season = current == null ? "this year" : "batch " + current;
+        String compare = current != null && batches.contains(current - 1) ? "Compare placements of batch " + (current - 1) + " and batch " + current
+                : "Compare placement across all years";
+        // the fifteen questions a leader asks most; each one is built and checked against the college's data
         List<String> suggestions = List.of(
-                "How is our placement season going this year?",
-                "Compare placement rate and average CTC across branches",
+                "How is our placement season going " + (current == null ? "this year?" : "for batch " + current + "?"),
+                "What is the placement status of " + season + "?",
+                compare,
+                "Placement rate by branch: which branch is behind?",
+                "Show the package distribution with average, median and highest CTC",
                 "Which companies hired the most of our students?",
-                "Show the package distribution and highest offers",
+                "List the students who are not placed yet",
+                "Where do students drop off in the placement funnel?",
+                "Which selection round has the lowest pass rate?",
+                "Offer acceptance rate by company",
+                "Placement rate by CGPA band and by gender",
+                "Which students never applied to any drive?",
+                "Monthly trend of offers and new placements",
                 "How are students doing in mock tests and AI interviews?",
-                "Monthly trend of offers and applications" + (ref.batches().isEmpty() ? "" : " for batch " + ref.batches().get(ref.batches().size() - 1)));
+                "Code ground practice: how many students practise and how much?");
         return new Catalog(catalog.infos(), ref.branches(), ref.batches(), suggestions, ai.enabled());
     }
 
@@ -173,7 +192,7 @@ public class CxoDashboardService {
             send(emitter, "status", new Status("insight", "Writing the key takeaways"));
             send(emitter, "insight", insights.write(ctx.collegeId(), prompt, spec, data));
             release.run(); // free the user before the client sees "done", so an immediate follow-up is accepted
-            spec = withoutMissingYears(spec, ref); // the title must not promise a year that is not on record
+            spec = withoutMissingYears(spec, ref, prompt); // the title must not promise a year that is not on record
             send(emitter, "done", new Done(spec, source, plan.cached(), System.currentTimeMillis() - t0, notices(prompt, spec, data, ref, ctx.collegeName())));
             emitter.complete();
             log(ctx, prompt, spec, plan.cached() ? "CACHE" : source, "OK", null, t0);
@@ -201,21 +220,21 @@ public class CxoDashboardService {
      */
     static List<String> notices(String prompt, DashboardSpec spec, Map<String, WidgetData> data, CollegeRef ref, String college) {
         List<String> out = new ArrayList<>();
-        java.util.TreeSet<Integer> missing = new java.util.TreeSet<>();
-        java.util.regex.Matcher m = YEAR.matcher(prompt);
-        while (m.find()) {
-            int y = Integer.parseInt(m.group(1));
-            if (!ref.batches().contains(y)) missing.add(y);
+        ScopeEnforcer.Scope scope = ScopeEnforcer.parse(prompt);
+        List<Integer> missing = ScopeEnforcer.missing(scope, ref);
+        if (scope.any()) {
+            out.add("Years: numbers about students (placed, offers, applications, tests...) are for the batch graduating that year; numbers that only have a date "
+                    + "(drives, interviews, announcements) are for that calendar year.");
         }
         if (!missing.isEmpty()) {
-            List<Integer> on = ref.batches().stream().sorted().toList();
-            String onRecord = on.isEmpty() ? "no batches yet"
-                    : on.size() == 1 ? "batch " + on.get(0)
-                    : "batches " + String.join(", ", on.subList(0, on.size() - 1).stream().map(String::valueOf).toList()) + " and " + on.get(on.size() - 1);
-            for (int y : missing) {
-                boolean dated = spec.widgets().stream().anyMatch(w -> w.from() != null && w.from().getYear() <= y && (w.to() == null || w.to().getYear() >= y));
-                out.add("There is no batch " + y + " in " + college + "'s records (on record: " + onRecord + "). "
-                        + (dated ? "Numbers dated " + y + " are shown where they exist." : "The dashboard below shows the batches on record instead."));
+            boolean side = spec.widgets().stream().anyMatch(w -> w.batches() != null);
+            String tail = side ? "left out of the charts; the other years are shown." : "Nothing is shown for it.";
+            if (missing.size() > 3) {
+                out.add("Years " + missing.get(0) + "–" + missing.get(missing.size() - 1) + " have no batch in " + college + "'s records (on record: "
+                        + ScopeEnforcer.list(ref.batches()) + "). " + (side ? "Years without a batch are left out; the others are shown." : "Nothing is shown for them."));
+            } else for (int y : missing) {
+                out.add("There is no batch " + y + " in " + college + "'s records (on record: " + ScopeEnforcer.list(ref.batches()) + "). "
+                        + (side ? "It is " + tail : tail));
             }
         }
         boolean nothing = !data.isEmpty() && data.values().stream().allMatch(d -> (d.value() == null || d.value() == 0)
@@ -225,11 +244,12 @@ public class CxoDashboardService {
     }
 
     /** The dashboard title without batch years that are not on record ("2025 Batch Placement Overview" -> "Batch Placement Overview"). */
-    static DashboardSpec withoutMissingYears(DashboardSpec spec, CollegeRef ref) {
+    static DashboardSpec withoutMissingYears(DashboardSpec spec, CollegeRef ref, String prompt) {
+        java.util.Set<Integer> asked = new java.util.HashSet<>(ScopeEnforcer.parse(prompt).years());
         String title = spec.title();
         java.util.regex.Matcher m = YEAR.matcher(title);
         StringBuilder out = new StringBuilder();
-        while (m.find()) m.appendReplacement(out, ref.batches().contains(Integer.parseInt(m.group(1))) ? m.group() : "");
+        while (m.find()) m.appendReplacement(out, ref.batches().contains(Integer.parseInt(m.group(1))) || asked.contains(Integer.parseInt(m.group(1))) ? m.group() : "");
         m.appendTail(out);
         String clean = out.toString().replaceAll("\\s{2,}", " ").replaceAll("^[\\s·\\-–]+|[\\s·\\-–]+$", "").trim();
         if (clean.equals(title)) return spec;
@@ -261,6 +281,44 @@ public class CxoDashboardService {
             Unit unit = catalog.find(w.metric()).map(MetricCatalog.Def::unit).orElse(Unit.COUNT);
             return new WidgetData(w.id(), unit, null, List.of(), List.of());
         }
+    }
+
+    // ------------------------------------------------------------------ drill-down and export
+
+    private static final int DRILL_MAX = 200;
+
+    /** The students behind one bar (or a KPI): the widget is checked against the catalog first, exactly as for live numbers. */
+    public Drill drill(CxoContext ctx, DrillRequest req) {
+        List<WidgetSpec> ok = sanitizer.forRun(new DashboardSpec("d", null, List.of(req.widget())), ref(ctx));
+        if (ok.isEmpty()) throw new DomainException("This widget cannot be listed", HttpStatus.BAD_REQUEST, "BAD_WIDGET");
+        log.info("CXO drill-down: college {} metric {} label '{}'", ctx.collegeId(), ok.get(0).metric(), req.label());
+        return engine.drill(ok.get(0), req.label(), ctx.collegeId(), DRILL_MAX);
+    }
+
+    /** The dashboard on screen as a board report: PDF or PowerPoint. Numbers are fresh; lists of student names are left out. */
+    public byte[] export(CxoContext ctx, SummaryRequest req, boolean pptx) {
+        DashboardSpec onScreen = req.spec();
+        CollegeRef ref = ref(ctx);
+        List<WidgetSpec> run = sanitizer.forRun(onScreen, ref);
+        if (run.isEmpty()) throw new DomainException("This dashboard has no valid widgets", HttpStatus.BAD_REQUEST, "EMPTY_DASHBOARD");
+        Map<String, WidgetData> data = new LinkedHashMap<>();
+        for (WidgetSpec w : run) data.put(w.id(), safeRun(w, ctx.collegeId()));
+        DashboardSpec spec = new DashboardSpec(onScreen.title(), onScreen.summary(), run);
+        Insight insight = null;
+        try {
+            insight = insights.write(ctx.collegeId(), req.prompt(), spec, data);
+        } catch (Exception e) {
+            log.warn("Report insight failed: {}", e.toString());
+        }
+        String scope = req.prompt() == null || req.prompt().isBlank() ? "" : "Question: " + req.prompt().strip();
+        List<String> notes = req.prompt() == null ? List.of() : notices(req.prompt(), spec, data, ref, ctx.collegeName());
+        ReportExporter.Report report = exporter.fromDashboard(ctx.collegeName(), spec, data, insight, notes, scope.length() > 140 ? scope.substring(0, 140) + "..." : scope);
+        return pptx ? exporter.pptx(report) : exporter.pdf(report);
+    }
+
+    public byte[] exportBenchmark(CxoContext ctx, Benchmark b, boolean pptx) {
+        ReportExporter.Report report = exporter.fromBenchmark(ctx.collegeName(), b);
+        return pptx ? exporter.pptx(report) : exporter.pdf(report);
     }
 
     // ------------------------------------------------------------------ saved dashboards

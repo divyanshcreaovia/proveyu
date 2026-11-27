@@ -1,0 +1,125 @@
+# question ;; scope ;; any of these metrics must be in the plan (comma separated, - for any)
+# scope: - none | Y2025 one year | M2024,2026 exactly these years side by side | ALL every batch on record
+placement overview ;; - ;; placement_rate,placed_students
+How is our placement season going this year? ;; Y2026 ;; placement_rate,placed_students
+How did the 2025 batch do on placements? ;; Y2025 ;; placed_students,placement_rate
+placement status of 2026 batch ;; Y2026 ;; placed_students,placement_rate
+2024 ka data dikhao ;; Y2024 ;; -
+2025 ka placement dikhao ;; Y2025 ;; placement_rate,placed_students
+2026 ke offers ;; Y2026 ;; offers
+2027 placement ;; Y2027 ;; placement_rate,placed_students
+placement in 2023 ;; Y2023 ;; placement_rate
+is saal ka placement ;; Y2026 ;; placement_rate,placed_students
+this year placement rate ;; Y2026 ;; placement_rate
+pichle saal ka placement ;; Y2025 ;; placement_rate,placed_students
+last year offers ;; Y2025 ;; offers
+compare 2025 and 2026 ;; M2025,2026 ;; -
+compare 2024 with 2026 placement ;; M2024,2026 ;; -
+2025 vs 2026 package ;; M2025,2026 ;; avg_ctc,highest_ctc
+2026 aur 2025 ka comparison ;; M2025,2026 ;; -
+2024 vs 2025 vs 2026 ;; M2024,2025,2026 ;; -
+compare all years ;; ALL ;; -
+placement in all years ;; ALL ;; placement_rate,placed_students
+sab saal ka comparison ;; ALL ;; -
+year on year growth ;; ALL ;; -
+batch wise placement ;; ALL ;; placement_rate,placed_students
+across all batches package ;; ALL ;; avg_ctc,highest_ctc
+every year offers ;; ALL ;; offers
+2026 vs last year placement ;; M2025,2026 ;; placement_rate
+this year vs last year ;; M2025,2026 ;; -
+is saal vs pichle saal placement ;; M2025,2026 ;; placement_rate
+from 2024 to 2026 placement ;; M2024,2025,2026 ;; placement_rate
+between 2025 and 2027 offers ;; M2025,2026,2027 ;; offers
+2025-2027 package trend ;; M2025,2026,2027 ;; avg_ctc,highest_ctc
+average package ;; - ;; avg_ctc
+highest package 2026 ;; Y2026 ;; highest_ctc
+lowest ctc ;; - ;; lowest_ctc
+median salary ;; - ;; median_ctc
+median ctc 2025 ;; Y2025 ;; median_ctc
+tankhwah kitni hai ;; - ;; avg_ctc,highest_ctc
+package distribution ;; - ;; offers_by_ctc
+salary bands 2026 ;; Y2026 ;; offers_by_ctc
+ctc of 2025 batch ;; Y2025 ;; avg_ctc,highest_ctc
+which companies hired the most ;; - ;; offers
+top recruiters 2026 ;; Y2026 ;; offers
+companies that came in 2025 ;; Y2025 ;; offers,companies_hired
+recruiters mou status ;; - ;; companies
+how many companies hired ;; - ;; companies_hired,offers
+kampani wise offers ;; - ;; offers
+branch wise placement ;; - ;; placement_rate
+placement by department 2025 ;; Y2025 ;; placement_rate
+which branch is behind ;; - ;; placement_rate
+COMP branch placement 2026 ;; Y2026 ;; placement_rate
+MECH placement ;; - ;; placement_rate
+average ctc by branch ;; - ;; avg_ctc
+unplaced students ;; - ;; unplaced_students
+who is not placed 2026 ;; Y2026 ;; unplaced_students
+kaun se students abhi tak placed nahi hue 2026 batch ;; Y2026 ;; unplaced_students
+unplaced students list ;; - ;; unplaced_list
+list of students without offer ;; - ;; unplaced_students,unplaced_list
+students placed nahi hue ;; - ;; unplaced_students
+students who never applied ;; - ;; zero_application_students
+applied nahi kiya kisne 2026 ;; Y2026 ;; zero_application_students
+students with multiple offers ;; - ;; multi_offer_students
+more than one offer 2025 ;; Y2025 ;; multi_offer_students
+placed this month ;; - ;; new_placements
+new placements per month 2026 ;; Y2026 ;; new_placements
+newly placed students ;; - ;; new_placements
+placement funnel ;; - ;; placement_funnel
+selection funnel 2026 ;; Y2026 ;; placement_funnel
+applications and shortlisting ;; - ;; applications
+selection rate by company ;; - ;; selection_rate
+conversion rate 2025 ;; Y2025 ;; selection_rate
+offer acceptance rate ;; - ;; offer_acceptance_rate
+how many offers were declined ;; - ;; offer_acceptance_rate,offers
+offers accepted by company 2026 ;; Y2026 ;; offer_acceptance_rate
+which round do students fail ;; - ;; round_pass_rate
+drop off in rounds 2025 ;; Y2025 ;; round_pass_rate
+aptitude round pass rate ;; - ;; round_pass_rate
+placement drives ;; - ;; drives
+drives in 2025 ;; Y2025 ;; drives
+drives per month ;; - ;; drives
+how many drives this year ;; Y2026 ;; drives
+drives status 2026 ;; Y2026 ;; drives
+interviews scheduled ;; - ;; interviews
+interviews in 2025 ;; Y2025 ;; interviews
+mock test performance ;; - ;; mock_test_attempts,mock_test_avg_score
+mock test scores 2026 ;; Y2026 ;; mock_test_attempts,mock_test_avg_score
+test attempts by branch ;; - ;; mock_test_attempts
+aptitude test average ;; - ;; mock_test_avg_score
+ai interview practice ;; - ;; ai_interviews,ai_interview_score
+ai mock interview scores 2026 ;; Y2026 ;; ai_interviews,ai_interview_score
+how many students took ai interviews ;; - ;; ai_interviews
+code ground practice ;; - ;; code_submissions,code_active_coders
+code ground usage 2026 ;; Y2026 ;; code_submissions,code_active_coders
+students practising code ;; - ;; code_active_coders
+problems solved on code ground ;; - ;; code_problems_solved
+coding practice by branch ;; - ;; code_active_coders,code_submissions
+code submissions by language ;; - ;; code_submissions
+cgpa of students ;; - ;; avg_cgpa
+average cgpa 2025 ;; Y2025 ;; avg_cgpa
+placement by cgpa band ;; - ;; placement_rate
+gender wise placement ;; - ;; placement_rate
+female students placement 2026 ;; Y2026 ;; placement_rate
+male vs female average ctc ;; - ;; avg_ctc
+off campus applications ;; - ;; offcampus_applications
+off-campus jobs 2026 ;; Y2026 ;; offcampus_applications
+announcements read rate ;; - ;; announcement_read_rate
+how many announcements were sent ;; - ;; announcement_read_rate,announcements
+circular reach 2025 ;; Y2025 ;; announcement_read_rate,announcements
+proctoring flags ;; - ;; proctoring_flags
+cheating in tests 2026 ;; Y2026 ;; proctoring_flags
+integrity report ;; - ;; proctoring_flags
+student documents verification ;; - ;; student_documents
+documents pending ;; - ;; student_documents
+monthly trend of offers ;; - ;; offers
+offers per month 2025 ;; Y2025 ;; offers
+mahine wise offers ;; - ;; offers
+trend of applications ;; - ;; applications
+students by status ;; - ;; students_total
+how many students are there ;; - ;; students_total,placed_students
+total students 2026 ;; Y2026 ;; students_total,placed_students
+batch 2025 summary ;; Y2025 ;; placement_rate,placed_students
+tell me about 2027 batch ;; Y2027 ;; placement_rate,placed_students
+what is the weather today ;; - ;; -
+hello ;; - ;; -

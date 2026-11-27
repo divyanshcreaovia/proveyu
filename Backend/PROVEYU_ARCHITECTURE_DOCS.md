@@ -136,7 +136,7 @@ E-mails are sent with `@Async`, so a slow SMTP server never slows a request.
   environment (`Backend/.env`, git-ignored; template `Backend/.env.example`). The app does not start without `JWT_SECRET`.
 - Runtime settings that the admin changes without a restart (interview price, UPI ID, limits, banner) live in `platform_settings`
   (`PlatformSettings`).
-- Flyway migrations `V1`..`V49` in `src/main/resources/db/migration` run on start (a database loaded from a dump needs `SPRING_FLYWAY_BASELINE_VERSION`, see `DEPLOY_CHECKLIST.md`). `ddl-auto: none`: Hibernate never changes the schema.
+- Flyway migrations `V1`..`V50` in `src/main/resources/db/migration` run on start (a database loaded from a dump needs `SPRING_FLYWAY_BASELINE_VERSION`, see `DEPLOY_CHECKLIST.md`). `ddl-auto: none`: Hibernate never changes the schema.
 - Redis and Redisson are on the classpath but switched off (their auto-configuration is excluded); nothing uses them.
 
 ## 10. Frontend

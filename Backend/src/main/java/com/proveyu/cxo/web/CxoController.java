@@ -1,6 +1,8 @@
 package com.proveyu.cxo.web;
 
+import com.proveyu.cxo.application.CxoAnalytics;
 import com.proveyu.cxo.application.CxoDashboardService;
+import com.proveyu.cxo.application.CxoShareService;
 import com.proveyu.cxo.domain.CxoModel.*;
 import com.proveyu.cxo.security.CxoContext;
 import com.proveyu.shared.response.ApiResponse;
@@ -28,6 +30,8 @@ import java.util.UUID;
 public class CxoController {
 
     private final CxoDashboardService service;
+    private final CxoAnalytics analytics;
+    private final CxoShareService shares;
 
     @GetMapping("/me")
     public ApiResponse<Me> me(CxoContext ctx) {
@@ -90,5 +94,73 @@ public class CxoController {
     public ApiResponse<Void> delete(CxoContext ctx, @PathVariable UUID id) {
         service.delete(ctx, id);
         return ApiResponse.success(null, "Dashboard deleted");
+    }
+
+    @Operation(summary = "The students behind a bar or a number")
+    @PostMapping("/drill")
+    public ApiResponse<Drill> drill(CxoContext ctx, @Valid @RequestBody DrillRequest req) {
+        return ApiResponse.success(service.drill(ctx, req), "OK");
+    }
+
+    @Operation(summary = "The dashboard on screen as a board report (format=pdf or pptx)")
+    @PostMapping("/dashboards/export")
+    public ResponseEntity<byte[]> export(CxoContext ctx, @Valid @RequestBody SummaryRequest req, @RequestParam(defaultValue = "pdf") String format) {
+        boolean pptx = "pptx".equalsIgnoreCase(format);
+        return file(service.export(ctx, req, pptx), req.spec().title(), pptx);
+    }
+
+    @Operation(summary = "What changed in the last N days compared with the N days before")
+    @GetMapping("/changes")
+    public ApiResponse<ChangeReport> changes(CxoContext ctx, @RequestParam(defaultValue = "30") int days) {
+        return ApiResponse.success(analytics.changes(ctx.collegeId(), days), "OK");
+    }
+
+    @Operation(summary = "Rough projection of a batch's placements to a date (default: end of this year)")
+    @GetMapping("/forecast")
+    public ApiResponse<Forecast> forecast(CxoContext ctx, @RequestParam(required = false) Integer batch,
+                                          @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate until) {
+        return ApiResponse.success(analytics.forecast(ctx.collegeId(), batch, until), "OK");
+    }
+
+    @Operation(summary = "NIRF / NAAC style placement figures for a batch and the two before it")
+    @GetMapping("/benchmark")
+    public ApiResponse<Benchmark> benchmark(CxoContext ctx, @RequestParam(required = false) Integer year) {
+        return ApiResponse.success(benchmarkOf(ctx, year), "OK");
+    }
+
+    @Operation(summary = "The NIRF / NAAC page as a PDF or PowerPoint")
+    @GetMapping("/benchmark/export")
+    public ResponseEntity<byte[]> benchmarkExport(CxoContext ctx, @RequestParam(required = false) Integer year, @RequestParam(defaultValue = "pdf") String format) {
+        boolean pptx = "pptx".equalsIgnoreCase(format);
+        return file(service.exportBenchmark(ctx, benchmarkOf(ctx, year), pptx), "NIRF NAAC placement figures", pptx);
+    }
+
+    @Operation(summary = "Create a read-only link to a saved dashboard (the secret is returned once)")
+    @PostMapping("/shares")
+    public ResponseEntity<ApiResponse<ShareLink>> share(CxoContext ctx, @Valid @RequestBody ShareRequest req) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(shares.create(ctx, req.dashboardId(), req.days()), "Link created"));
+    }
+
+    @GetMapping("/dashboards/{id}/shares")
+    public ApiResponse<List<ShareLink>> shareList(CxoContext ctx, @PathVariable UUID id) {
+        return ApiResponse.success(shares.list(ctx, id), "OK");
+    }
+
+    @DeleteMapping("/shares/{id}")
+    public ApiResponse<Void> revoke(CxoContext ctx, @PathVariable UUID id) {
+        shares.revoke(ctx, id);
+        return ApiResponse.success(null, "Link revoked");
+    }
+
+    private Benchmark benchmarkOf(CxoContext ctx, Integer year) {
+        return analytics.benchmark(ctx.collegeId(), year, service.catalog(ctx).branches());
+    }
+
+    private static ResponseEntity<byte[]> file(byte[] bytes, String title, boolean pptx) {
+        String name = (title == null ? "report" : title).replaceAll("[^A-Za-z0-9 _-]", "").trim().replace(' ', '_');
+        if (name.isEmpty()) name = "report";
+        return ResponseEntity.ok().header("Content-Disposition", "attachment; filename=\"" + name + (pptx ? ".pptx" : ".pdf") + "\"")
+                .header("Cache-Control", "no-store")
+                .contentType(MediaType.parseMediaType(pptx ? "application/vnd.openxmlformats-officedocument.presentationml.presentation" : "application/pdf")).body(bytes);
     }
 }

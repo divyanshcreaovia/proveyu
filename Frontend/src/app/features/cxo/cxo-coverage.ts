@@ -24,6 +24,13 @@ export function coverage(spec: DashboardSpec | null, data: Partial<Record<string
   if (!spec?.widgets?.length) return '';
   const ws = spec.widgets;
   const parts: string[] = [];
+  const side = [...new Set(ws.flatMap(w => w.batches ?? []))].sort();
+  if (side.length) { // a comparison: exactly the years asked for
+    const parts2: string[] = [`Batches ${side.join(', ')} side by side`];
+    const br = [...new Set(ws.map(w => w.branchCode).filter((b): b is string => !!b))];
+    parts2.push(br.length ? br.join(', ') : 'all branches');
+    return parts2.join(' · ');
+  }
   const batches = [...new Set(ws.filter(w => w.batchYear && w.dimension !== 'BATCH').map(w => w.batchYear as number))].sort();
   const all = [...onRecord].sort();
   if (batches.length) {

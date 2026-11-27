@@ -22,7 +22,7 @@
     @if (focused() && !question.trim() && catalog(); as c) {
       <div class="xs-suggest" role="listbox" aria-label="Suggestions">
         <div class="xs-suggest-k">{{ spec() ? 'Ask about' : 'Try' }}</div>
-        @for (s of c.suggestions.slice(0, 5); track s) {
+        @for (s of c.suggestions; track s) {
           <button type="button" role="option" (mousedown)="$event.preventDefault(); ask(s)">{{ s }}</button>
         }
       </div>
@@ -33,6 +33,7 @@
     @if (spec() && !building()) {
       <button type="button" class="x-btn" [class.xs-live-on]="live()" (click)="toggleLive()" [attr.aria-pressed]="live()">
         <span class="xs-live-dot" [class.xs-off]="!live()"></span>{{ live() ? 'Live' : 'Go live' }}</button>
+      <pm-cxo-export [spec]="spec()" [prompt]="promptText()" [name]="spec()!.title" />
       <button type="button" class="x-btn" (click)="save()" [disabled]="saving()">{{ savedId() ? 'Save changes' : 'Save' }}</button>
       <button type="button" class="x-btn" (click)="reset()">New</button>
     }

@@ -37,7 +37,7 @@ class DashboardPlannerTest {
     void setUp() {
         ai = mock(CxoAiClient.class);
         cache = mock(CxoAiCache.class); // Optional-returning methods answer Optional.empty() by default
-        planner = new DashboardPlanner(ai, catalog, sanitizer, json, cache);
+        planner = new DashboardPlanner(ai, catalog, sanitizer, json, cache, new ScopeEnforcer(catalog, sanitizer));
     }
 
     private void aiReplies(String reply) throws Exception {
@@ -147,7 +147,7 @@ class DashboardPlannerTest {
     void modelAnswerIsCachedUnderTheNormalizedQuestion() throws Exception {
         aiReplies("{\"title\": \"T\", \"widgets\": [{\"type\": \"KPI\", \"metric\": \"offers\", \"dimension\": \"NONE\"}]}");
         planner.plan(college, "Placement   OVERVIEW", null, ref);
-        String expected = CxoAiCache.key("plan-v6", CxoAiCache.normalize("placement overview"), "");
+        String expected = CxoAiCache.key("plan-v7", CxoAiCache.normalize("placement overview"), "");
         org.mockito.Mockito.verify(cache).put(org.mockito.ArgumentMatchers.eq(college), org.mockito.ArgumentMatchers.eq(CxoAiCache.Kind.PLAN),
                 org.mockito.ArgumentMatchers.eq(expected), anyString());
     }
@@ -206,7 +206,7 @@ class DashboardPlannerTest {
                   {"title": "Drives", "type": "KPI", "metric": "drives", "dimension": "NONE"},
                   {"title": "Drives by status", "type": "DONUT", "metric": "drives", "dimension": "STATUS"},
                   {"title": "Long trend", "type": "LINE", "metric": "offers", "dimension": "MONTH", "from": "2019-01-01"}]}""");
-        List<WidgetSpec> w = planner.plan(college, "status of placement drives since 2019", null, ref).spec().widgets();
+        List<WidgetSpec> w = planner.plan(college, "status of placement drives over the last years", null, ref).spec().widgets();
         assertThat(w.size()).isGreaterThanOrEqualTo(DashboardPlanner.MIN_WIDGETS);
         assertThat(w.subList(0, 4)).allMatch(x -> x.type() == WidgetType.KPI);
         assertThat(w).extracting(x -> x.metric() + x.dimension()).doesNotHaveDuplicates();
@@ -316,7 +316,7 @@ class DashboardPlannerTest {
     @Test
     void batchesAreListedInYearOrder() {
         WidgetSpec w = new WidgetSpec(null, "Placement rate by batch", WidgetType.BAR, "placement_rate", Dimension.BATCH, null, null, null, null, null, "md");
-        assertThat(catalog.build(catalog.find("placement_rate").orElseThrow(), w, college).sql()).contains("order by label asc");
+        assertThat(catalog.build(catalog.find("placement_rate").orElseThrow(), w, college).sql()).contains("order by 1 asc");
     }
 
     @Test
@@ -334,46 +334,78 @@ class DashboardPlannerTest {
     }
 
     @Test
-    void comparisonQuestionsGetKpisThatCanShowTheirChange() throws Exception {
+    void aComparisonOfNamedYearsShowsExactlyThoseYearsSideBySide() throws Exception {
         aiReplies("""
                 {"title": "Compare", "widgets": [
                   {"title": "2026 Placement Rate", "type": "KPI", "metric": "placement_rate", "dimension": "BATCH", "batchYear": 2026},
                   {"title": "Offers", "type": "KPI", "metric": "offers", "dimension": "NONE"},
-                  {"title": "Placed", "type": "KPI", "metric": "placed_students", "dimension": "NONE"},
+                  {"title": "Drives", "type": "KPI", "metric": "drives", "dimension": "NONE"},
+                  {"title": "Funnel", "type": "BAR", "metric": "placement_funnel", "dimension": "STAGE"},
                   {"title": "Placement rate by batch", "type": "BAR", "metric": "placement_rate", "dimension": "BATCH", "batchYear": 2026}]}""");
-        List<WidgetSpec> w = planner.plan(college, "2026 vs 2025 placement compare karo", null, ref).spec().widgets();
-        WidgetSpec rate = w.stream().filter(x -> x.title().equals("2026 Placement Rate")).findFirst().orElseThrow();
-        assertThat(rate.type()).isEqualTo(WidgetType.KPI);                 // a KPI stays a tile even when a split came with it
-        assertThat(rate.dimension()).isEqualTo(Dimension.NONE);
-        assertThat(rate.batchYear()).isEqualTo(2026);
-        WidgetSpec offers = w.stream().filter(x -> x.title().equals("Offers")).findFirst().orElseThrow();
-        assertThat(offers.from()).isEqualTo(java.time.LocalDate.now().withDayOfYear(1)); // dated metric: this year so far
-        WidgetSpec placed = w.stream().filter(x -> x.title().equals("Placed")).findFirst().orElseThrow();
-        assertThat(placed.batchYear()).isEqualTo(2026);                     // student metric: the newest batch (2025 exists before it)
-        WidgetSpec byBatch = w.stream().filter(x -> x.dimension() == Dimension.BATCH).findFirst().orElseThrow();
-        assertThat(byBatch.batchYear()).isNull();                           // by batch shows every batch side by side
+        List<WidgetSpec> w = planner.plan(college, "2024 vs 2026 placement compare karo", null, ref).spec().widgets();
+        assertThat(w).isNotEmpty().allMatch(x -> x.batches() != null && x.batches().equals(List.of(2024, 2026)));
+        assertThat(w).allMatch(x -> x.type() != WidgetType.KPI && x.batchYear() == null);
+        assertThat(w).extracting(WidgetSpec::metric).contains("placement_rate", "offers", "drives");
+        assertThat(w).filteredOn(x -> x.metric().equals("drives")).allMatch(x -> x.dimension() == Dimension.YEAR); // only has a date: calendar years
+        assertThat(w).filteredOn(x -> x.metric().equals("offers")).allMatch(x -> x.dimension() == Dimension.BATCH);
     }
 
     @Test
-    void comparisonsWorkWithoutTheModelTooAsANewDashboardAndAsAFollowUp() {
+    void oneYearAsksOnlyForThatYearEverywhere() throws Exception {
+        aiReplies("""
+                {"title": "T", "widgets": [
+                  {"title": "Offers", "type": "KPI", "metric": "offers", "dimension": "NONE", "batchYear": 2026},
+                  {"title": "Drives", "type": "KPI", "metric": "drives", "dimension": "NONE"},
+                  {"title": "Recruiters", "type": "KPI", "metric": "companies", "dimension": "NONE"},
+                  {"title": "By batch", "type": "BAR", "metric": "offers", "dimension": "BATCH"},
+                  {"title": "Offers by company", "type": "BAR", "metric": "offers", "dimension": "COMPANY", "from": "2020-01-01"}]}""");
+        List<WidgetSpec> w = planner.plan(college, "placement 2024", null, ref).spec().widgets(); // 2024 is not a batch of this college
+        assertThat(w).extracting(WidgetSpec::metric).doesNotContain("companies"); // cannot be limited to a year
+        assertThat(w).noneMatch(x -> x.dimension() == Dimension.BATCH);
+        for (WidgetSpec x : w) {
+            if (x.metric().equals("drives")) {
+                assertThat(x.batchYear()).isNull();
+                assertThat(x.from()).isEqualTo(java.time.LocalDate.of(2024, 1, 1));
+                assertThat(x.to()).isEqualTo(java.time.LocalDate.of(2024, 12, 31));
+            } else {
+                assertThat(x.batchYear()).isEqualTo(2024); // kept although not on record: it then has no numbers
+                assertThat(x.from()).isNull();
+            }
+        }
+    }
+
+    @Test
+    void allYearsMeansEveryBatchOnRecord() {
         when(ai.json(anyString(), anyString(), anyDouble())).thenReturn(Optional.empty());
-        // new dashboard: tiles on the later batch named, side-by-side charts by batch
-        DashboardSpec fresh = planner.plan(college, "2025 vs 2026 batch placement compare karo", null, ref).spec();
-        assertThat(fresh.widgets()).filteredOn(x -> x.type() == WidgetType.KPI && x.batchYear() != null).allMatch(x -> x.batchYear() == 2026);
-        assertThat(fresh.widgets()).anyMatch(x -> x.type() != WidgetType.KPI && x.dimension() == Dimension.BATCH);
-        // follow-up on an open dashboard filtered to 2025: tiles move to 2026, charts by batch are added, the title does not pile up
+        List<WidgetSpec> w = planner.plan(college, "compare placements across all years", null, ref).spec().widgets();
+        assertThat(w).isNotEmpty().allMatch(x -> x.batches() != null && x.batches().equals(List.of(2025, 2026)));
+        assertThat(planner.plan(college, "placement since 2025", null, ref).spec().widgets()).allMatch(x -> x.batches() != null && x.batches().contains(2025));
+        assertThat(planner.plan(college, "placement from 2024 to 2026", null, ref).spec().widgets())
+                .allMatch(x -> x.batches() != null && x.batches().equals(List.of(2024, 2025, 2026)));
+    }
+
+    @Test
+    void aQuestionWithoutAYearIsLeftAlone() {
+        when(ai.json(anyString(), anyString(), anyDouble())).thenReturn(Optional.empty());
+        assertThat(planner.plan(college, "placement overview", null, ref).spec().widgets()).allMatch(x -> x.batchYear() == null && x.batches() == null);
+    }
+
+    @Test
+    void followUpsKeepTheYearScopeOfWhatIsAsked() {
+        when(ai.json(anyString(), anyString(), anyDouble())).thenReturn(Optional.empty());
         DashboardSpec open = planner.plan(college, "placement overview batch 2025", null, ref).spec();
+        assertThat(open.widgets()).filteredOn(x -> x.metric().equals("students_total")).allMatch(x -> Integer.valueOf(2025).equals(x.batchYear()));
         DashboardSpec cmp = planner.plan(college, "compare 2025 vs 2026", open, ref).spec();
-        assertThat(cmp.widgets()).filteredOn(x -> x.type() == WidgetType.KPI).allMatch(x -> Integer.valueOf(2026).equals(x.batchYear()));
-        assertThat(cmp.widgets()).anyMatch(x -> x.dimension() == Dimension.BATCH);
-        assertThat(cmp.title()).isEqualTo("Placement overview · batch 2026");
+        assertThat(cmp.widgets()).allMatch(x -> x.batches() != null && x.batches().equals(List.of(2025, 2026)));
+        assertThat(cmp.title()).isEqualTo("Placement overview · batches 2025, 2026");
         DashboardSpec again = planner.plan(college, "only batch 2025", cmp, ref).spec();
         assertThat(again.title()).isEqualTo("Placement overview · batch 2025");
+        assertThat(again.widgets()).allMatch(x -> x.batches() == null);
     }
 
     @Test
     void liveNumbersKeepTheClientsWidgetIdsEvenWhenFiltersNoLongerApply() {
-        // batch 2030 is not a batch of this college: both widgets become "students, all batches", yet each keeps its own id
+        // a hack metric and a bad branch are dropped / cleared, and each widget keeps its own id
         DashboardSpec onScreen = new DashboardSpec("D", null, List.of(
                 new WidgetSpec("w1", "Students 2030", WidgetType.KPI, "students_total", Dimension.NONE, 2030, null, null, null, null, "sm"),
                 new WidgetSpec("w2", "Students", WidgetType.KPI, "students_total", Dimension.NONE, null, null, null, null, null, "sm"),
@@ -381,7 +413,7 @@ class DashboardPlannerTest {
                 new WidgetSpec("w4", "Offers", WidgetType.BAR, "offers", Dimension.COMPANY, null, "x' or '1'='1", null, null, null, "md")));
         List<WidgetSpec> run = sanitizer.forRun(onScreen, ref);
         assertThat(run).extracting(WidgetSpec::id).containsExactly("w1", "w2", "w4");
-        assertThat(run.get(0).batchYear()).isNull();
+        assertThat(run.get(0).batchYear()).isEqualTo(2030); // a year that is not on record is kept: it has no numbers, not all numbers
         assertThat(run.get(2).branchCode()).isNull();
     }
 }

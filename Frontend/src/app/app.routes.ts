@@ -100,6 +100,8 @@ export const routes: Routes = [
     path: 'cxo/forgot-password', data: { loginUrl: '/cxo/login', variant: 'cxo' },
     loadComponent: () => import('./features/college/auth/forgot-password').then(m => m.ForgotPassword),
   },
+  // a shared dashboard opens from its link, with no sign-in
+  { path: 'cxo/share/:token', title: 'Shared dashboard', loadComponent: () => import('./features/cxo/share/cxo-shared').then(m => m.CxoShared) },
   {
     path: 'cxo',
     canActivate: [authGuard, roleGuard], data: { roles: ['CXO'] },
@@ -109,6 +111,9 @@ export const routes: Routes = [
       { path: 'studio', title: 'AI Studio', loadComponent: () => import('./features/cxo/studio/cxo-studio').then(m => m.CxoStudio) },
       { path: 'dashboards', title: 'Saved dashboards', loadComponent: () => import('./features/cxo/dashboards/cxo-dashboards').then(m => m.CxoDashboards) },
       { path: 'dashboards/:id', title: 'Dashboard', loadComponent: () => import('./features/cxo/dashboards/cxo-dashboard-view').then(m => m.CxoDashboardView) },
+      { path: 'changes', title: 'What changed', loadComponent: () => import('./features/cxo/insights/cxo-changes').then(m => m.CxoChanges) },
+      { path: 'forecast', title: 'Forecast', loadComponent: () => import('./features/cxo/insights/cxo-forecast').then(m => m.CxoForecast) },
+      { path: 'benchmark', title: 'NIRF / NAAC figures', loadComponent: () => import('./features/cxo/insights/cxo-benchmark').then(m => m.CxoBenchmark) },
     ],
   },
 
