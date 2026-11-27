@@ -42,7 +42,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
   selector: 'pm-college-shell',
   imports: [SupportDialog, RouterOutlet, RouterLink, RouterLinkActive, NotificationPanel, GlobalSearch],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['./college-theme.scss', './portal-refresh.scss', './college-public.scss'],
+  styleUrls: ['./college-theme.scss', './portal-refresh.scss', './college-public.scss', './college-dark.scss'],
   template: `
     <div class="pm-shell" [attr.data-bs-theme]="theme.dark() ? 'dark' : 'light'" [class.pm-shell-collapsed]="collapsed()">
       <nav class="pm-shell-side" [class.pm-shell-side-open]="mobileOpen()" aria-label="College navigation">

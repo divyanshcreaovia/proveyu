@@ -1,0 +1,37 @@
+/*
+ * Platform admin portal, dark theme: the same dark look as the student portal, plus the admin page containers.
+ * Loaded last by admin-shell only. Pure CSS: no template, binding or logic changes. Light theme is untouched.
+ */
+@use '../../student/layout/student-dark';
+
+:host ::ng-deep .pm-shell[data-bs-theme='dark'] .pm-shell-content {
+  /* panels and table wrappers (Bootstrap utilities, so their radius is set through the variable they read) */
+  .bg-body.border.rounded-3 { --bs-border-radius-lg: 20px; box-shadow: var(--pm-card-shadow); }
+
+  .nav-pills .nav-link { border-radius: 999px; font-weight: 600; }
+  .nav-pills .nav-link.active { background: #0057ff; color: #fff; box-shadow: 0 6px 12px -10px rgba(0, 87, 255, .35); }
+
+  /* dashboard */
+  .ad-kpis .pm-stat { height: 100%; }
+  .ad-todo-item { border-radius: 16px; }
+  a.ad-row { border-radius: 10px; }
+  a.ad-row:hover { background: #182238; }
+
+  /* phones show one card per row here, so the stat icons still fit */
+  @media (max-width: 575.98px) { .ad-kpis .pm-stat .pm-stat-icon { display: grid; } }
+
+  /* off-campus source switch */
+  .btn-group > .btn.btn-dark { background: #0057ff; border-color: #0057ff; color: #fff; }
+
+  /* off-campus, broadcast, support, settings */
+  .oc-stat { border-radius: 999px; }
+  .oc-import { --bs-border-radius-lg: 16px; }
+  .ab-opt { border-radius: 16px; transition: translate .2s, box-shadow .2s, border-color .2s; }
+  .ab-opt:hover { translate: 0 -2px; box-shadow: var(--pm-card-shadow-hover); }
+  .ab-opt i { color: #7db0ff; }
+  .ab-opt.sel { border-color: #4d8dff; background: rgba(77, 141, 255, .12); box-shadow: 0 0 0 2px rgba(77, 141, 255, .1); }
+  .as-msg { border-radius: 14px; }
+  .as-reply { border-left-color: #4d8dff; }
+  .as-bar { border-radius: 18px; box-shadow: var(--pm-pop-shadow); }
+  .alert { border-radius: 16px; }
+}

@@ -40,7 +40,7 @@ const NAV: { section: string; items: NavItem[] }[] = [
   selector: 'pm-admin-shell',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['../../college/layout/college-theme.scss', './admin-public.scss'],
+  styleUrls: ['../../college/layout/college-theme.scss', './admin-public.scss', './admin-dark.scss'],
   template: `
     <div class="pm-shell" [attr.data-bs-theme]="theme.dark() ? 'dark' : 'light'" [class.pm-shell-collapsed]="collapsed()">
       <nav class="pm-shell-side" [class.pm-shell-side-open]="mobileOpen()" aria-label="Admin navigation">

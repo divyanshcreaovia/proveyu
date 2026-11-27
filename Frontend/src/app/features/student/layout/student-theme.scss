@@ -93,7 +93,7 @@
     /* headings and numbers */
     .st-card h2.h4 { font-size: 1.6rem; font-weight: 800; letter-spacing: -.03em; }
     .st-card h2.h6, .st-card h3.h6 { font-size: 1.02rem; font-weight: 750; color: var(--pm-heading); }
-    .pm-stat-label { color: #6b7280; font-weight: 700; letter-spacing: .1em; }
+    .pm-stat-label { color: #6b7280; font-weight: 700; letter-spacing: .06em; }
     .pm-stat-value { font-size: 1.95rem; font-weight: 800; letter-spacing: -.03em; color: var(--pm-heading); }
     .st-chip { background: #eef4ff; color: #0a1b3f; border: 1px solid #dbe6fb; }
 
@@ -139,6 +139,12 @@
       [fill='#16122b'] { fill: #0057ff; }
       [stroke='#16122b'] { stroke: #0057ff; } }
   }
+
+  /* narrow stat cards: long labels wrap onto a second line instead of pushing the icon out of the card */
+  .pm-shell-content .pm-stat {
+    .min-w-0 { flex: 1; min-width: 0; }
+    .text-truncate { white-space: normal !important; overflow-wrap: break-word; }
+    .pm-stat-icon { flex-shrink: 0; } }
 
   /* phones: the dashboard numbers show their full label and hint instead of cutting them off */
   @media (max-width: 767.98px) {
