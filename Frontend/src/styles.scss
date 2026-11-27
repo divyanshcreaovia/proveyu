@@ -1,3 +1,4 @@
+@use './app/features/public/theme/site';
 @use "bootstrap/scss/bootstrap" with ($body-color: #1e293b,
   $font-family-base: ('Inter', sans-serif));
 

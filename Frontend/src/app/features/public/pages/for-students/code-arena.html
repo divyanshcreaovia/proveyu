@@ -1,0 +1,53 @@
+<div class="arena">
+  <div class="side">
+    <p class="pv-pill">Code ground</p>
+    <h2 class="pv-h2">Your own <span>coding platform</span></h2>
+    <p class="pv-lead">Practise DSA inside the placement portal, in Python, Java, C++ or JavaScript.</p>
+    <div class="tabs" role="tablist" aria-label="Code ground features">
+      @for (t of tabs; track t.title; let i = $index) {
+        <button type="button" role="tab" [class.on]="at() === i" [attr.aria-selected]="at() === i" (click)="pick(i)">
+          <strong>{{ t.title }}</strong><span>{{ t.text }}</span>
+        </button>
+      }
+    </div>
+    <p class="mb-0"><a routerLink="/student/signup" class="pv-link">Activate your account and start coding</a></p>
+  </div>
+
+  <div class="window" role="img" [attr.aria-label]="tabs[at()].title + ' in Code ground, with sample data'">
+    <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span>{{ tabs[at()].file }}</span><small>Sample data</small></div>
+    <div class="screen" aria-hidden="true">
+      @switch (at()) {
+        @case (0) {
+          <div class="path">@for (t of topics; track t; let i = $index) { <span [class.done]="i < 1" [class.now]="i === 1">{{ t }}</span> }</div>
+          <pre><code style="--n: 1"><u>def</u> two_sum(nums, target):</code><code style="--n: 2">    seen = {{ '{' }}{{ '}' }}</code><code style="--n: 3">    <u>for</u> i, n <u>in</u> enumerate(nums):</code><code style="--n: 4">        <u>if</u> target - n <u>in</u> seen:</code><code style="--n: 5">            <u>return</u> [seen[target - n], i]</code><code style="--n: 6">        seen[n] = i</code></pre>
+          <div class="tests"><b style="--n: 7">✓ Sample test</b><b style="--n: 8">✓ Hidden tests</b><b style="--n: 9" class="solved">Solved · +10</b></div>
+        }
+        @case (1) {
+          <div class="daily"><small>Today's problem</small><strong>Decimal to binary</strong><div><em>Medium</em><em class="bonus">+20 bonus points</em></div></div>
+          <div class="heat">@for (d of days; track $index) { <i [class]="'l' + d" [style.--n]="$index"></i> }</div>
+          <div class="tests"><b style="--n: 4">🔥 Streak: 12 days</b><b style="--n: 6">Longest: 18</b></div>
+        }
+        @case (2) {
+          <div class="podium">
+            @for (p of board; track p.name) {
+              <div class="col" [class.first]="p.place === 1"><span class="who">{{ p.name }}</span><small>{{ p.points }} pts</small><span class="block" [style.height.%]="p.h">{{ p.place }}</span></div>
+            }
+          </div>
+          <div class="tests"><b style="--n: 3">College</b><b style="--n: 4">Branch</b><b style="--n: 5">Batch</b><b style="--n: 6" class="solved">Your rank: #4</b></div>
+        }
+        @default {
+          <pre><code style="--n: 1">a, b = map(int, input().split())</code><code style="--n: 2"><u>print</u>(a + b)</code></pre>
+          <div class="term"><small>Input</small><code style="--n: 3">5 9</code><small>Output</small><code style="--n: 6">14</code></div>
+          <div class="tests"><b style="--n: 7" class="solved">▶ Run finished</b></div>
+        }
+      }
+    </div>
+  </div>
+</div>
+
+<ul class="rules">
+  <li><strong>Judged on the server</strong>A problem is solved only when it passes every visible and hidden test.</li>
+  <li><strong>Learn, then solve</strong>Eight short lessons per topic, with code in all four languages.</li>
+  <li><strong>Your own work</strong>Copy and paste are off in the editor and every submission is saved.</li>
+  <li><strong>Pick up anywhere</strong>Your code is saved, and your placement cell can see your progress.</li>
+</ul>

@@ -1,67 +1,35 @@
+import { Scene } from '../../scene';
+import { PublicCta } from '../../cta';
 import { ScrollAnimate } from '../../scroll-animate';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FAQS } from '../home/home';
 
-interface FeatureGroup { icon: string; tone: string; title: string; text: string; points: string[]; }
+interface FeatureGroup { title: string; summary: string; }
 
 /** Public page: everything the College Placement Portal and the company Drive Room do. */
 @Component({
   selector: 'app-for-colleges',
-  imports: [RouterModule, ScrollAnimate],
+  imports: [RouterModule, ScrollAnimate, Scene, PublicCta],
   templateUrl: './for-colleges.html',
-  styleUrls: ['../home/home.scss'],
 })
 export class ForColleges {
   activeFaq: number | null = 0;
   readonly faqs = FAQS.slice(0, 4);
 
   readonly groups: FeatureGroup[] = [
-    {
-      icon: 'bi-people', tone: 'tone-blue', title: 'Students',
-      text: 'One clean student master for the whole batch.',
-      points: ['Import from Excel or CSV with a dry run and duplicate detection', 'Search, filters and sorting across the whole batch','Document vault with verification', 'Debarred and opted-out status, soft delete and restore'],
-    },
-    {
-      icon: 'bi-building', tone: 'tone-violet', title: 'Companies',
-      text: 'Your recruiter relationships, kept in one place.',
-      points: ['Contacts, MoU and visit history', 'Feedback and ratings after every drive', 'Invite company HR and panels to a drive', 'Export the full company list'],
-    },
-    {
-      icon: 'bi-briefcase', tone: 'tone-green', title: 'Drives & eligibility',
-      text: 'Publish a drive and let the rules do the filtering.',
-      points: ['Criteria on CGPA, 10th / 12th %, backlogs, gap years, branch and batch','Eligibility preview with the reason for every student', 'Audited include / exclude overrides', 'Clone a drive; draft, published, ongoing, completed'],
-    },
-    {
-      icon: 'bi-diagram-3', tone: 'tone-blue', title: 'Rounds & interviews',
-      text: 'Run every round without chasing anyone.',
-      points: ['Bulk shortlist, waitlist or reject', 'Round results typed in or uploaded from Excel / CSV', 'Passing students advance to the next round automatically', 'Interview calendar with student, panel and room clash checks, reminders 24 h ahead'],
-    },
-    {
-      icon: 'bi-award', tone: 'tone-amber', title: 'Offers & placement policy',
-      text: 'Offers recorded once, numbers always correct.',
-      points: ['One-offer, dream upgrade, maximum offers and minimum hike rules', 'Offer letters as PDF; students accept or decline online', 'Placed status and highest CTC worked out automatically', 'Off-campus offers reported by students, with NOCs issued on your letterhead', 'Every policy override is logged'],
-    },
-    {
-      icon: 'bi-megaphone', tone: 'tone-violet', title: 'Communication',
-      text: 'Reach exactly the students who need to know.',
-      points: ['Announcements to filtered groups, in-app and by e-mail', 'Read receipts for every announcement', 'Live chat between students and their coordinators', 'Global search across students, drives and companies'],
-    },
-    {
-      icon: 'bi-bar-chart-line', tone: 'tone-green', title: 'Reports & analytics',
-      text: 'The numbers management asks for, ready any day.',
-      points: ['Live dashboard with KPIs, charts and drive funnel', '7 reports incl. a NIRF / NAAC-style placement summary', 'Branch, company, CTC, drive, alumni and skill-gap reports', 'Excel, CSV or PDF, and scheduled e-mail reports'],
-    },
-    {
-      icon: 'bi-person-badge', tone: 'tone-blue', title: 'Team, roles & audit',
-      text: 'Give every coordinator the right access.',
-      points: ['Admin, coordinator and viewer roles', 'Branch scope, so a coordinator sees only their branches', 'Invite, change or revoke team members', 'Audit log of every change, by whom and when'],
-    },
-    {
-      icon: 'bi-journal-code', tone: 'tone-amber', title: 'Preparation for your students',
-      text: 'Students practise inside the same portal.',
-      points: ['20-test mock path from easy to hard', 'Upload your own drive-specific practice tests', 'AI mock interviews on the role or job description', 'A placement-readiness checklist on every student dashboard'],
-    },
+    { title: 'Students', summary: 'Import the batch from Excel or CSV with duplicate checks, verify documents and keep one clean record for every student.' },
+    { title: 'Companies', summary: 'Contacts, MoU, visit history and feedback in one place. Invite company HR and panels to a drive.' },
+    { title: 'Drives & eligibility', summary: 'Set the criteria once and see who is eligible, with the reason for every student. Overrides are audited.' },
+    { title: 'Rounds & interviews', summary: 'Shortlist in bulk, record round results and schedule interviews with clash checks and reminders.' },
+    { title: 'Offers & placement policy', summary: 'Record offers against your placement policy. Students accept online and placement status updates itself.' },
+    { title: 'Communication', summary: 'Announcements to filtered groups in-app and by e-mail, with read receipts and live chat.' },
+    { title: 'Reports & analytics', summary: 'A live dashboard and reports, including a NIRF / NAAC-style summary, in Excel, CSV or PDF.' },
+    { title: 'Team, roles & audit', summary: 'Admin, coordinator and viewer roles with branch scope, and a log of who changed what.' },
+    { title: 'Preparation for your students', summary: 'A 20-test mock path, your own practice tests, AI mock interviews and a readiness checklist.' },
+    { title: 'College tests & exams', summary: 'Upload tests and exams, set the window, monitor live, review proctoring logs and screenshots, and export the marks register.' },
+    { title: 'Code ground leaderboard', summary: 'See your students’ coding points, problems solved and streaks, filtered by branch and batch.' },
+    { title: 'Off-campus & NOC', summary: 'Follow off-campus applications and approve or reject NOC requests, issued as PDF on your college letterhead.' },
   ];
 
   readonly roomPoints = [
@@ -79,8 +47,4 @@ export class ForColleges {
     'Read every panel scorecard round by round',
     'Revoke access at any time',
   ];
-
-  toggleFaq(index: number) {
-    this.activeFaq = this.activeFaq === index ? null : index;
-  }
 }

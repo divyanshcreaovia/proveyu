@@ -1,3 +1,6 @@
+import { CodeArena } from './code-arena';
+import { PublicCta } from '../../cta';
+import { Scene } from '../../scene';
 import { ScrollAnimate } from '../../scroll-animate';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -6,9 +9,8 @@ import { FAQS, Point } from '../home/home';
 /** Public page: the student portal, the mock test path and the AI mock interview. */
 @Component({
   selector: 'app-for-students',
-  imports: [RouterModule, ScrollAnimate],
+  imports: [RouterModule, ScrollAnimate, Scene, PublicCta, CodeArena],
   templateUrl: './for-students.html',
-  styleUrls: ['../home/home.scss'],
 })
 export class ForStudents {
   activeFaq: number | null = 0;
@@ -25,6 +27,9 @@ export class ForStudents {
     { icon: 'bi-megaphone', title: 'Announcements & chat', text: 'Updates from the placement cell in one inbox, and live chat with your coordinator.' },
     { icon: 'bi-folder2-open', title: 'Document locker', text: 'Upload your resume, mark sheets and certificates once; the placement cell verifies them.' },
     { icon: 'bi-person-circle', title: 'Profile', text: 'Your academic record from the college, plus your skills, LinkedIn and GitHub.' },
+    { icon: 'bi-journal-check', title: 'Mock & college tests', text: '20 timed tests with MCQ and coding, plus exams and practice tests from your college, with results, history and proctoring.' },
+    { icon: 'bi-code-slash', title: 'Code ground', text: '10 topics and 74 problems in JavaScript, Python, Java and C++, with a problem of the day, streaks, a leaderboard and a free compiler.' },
+    { icon: 'bi-mic', title: 'AI mock interview', text: 'Answer by voice or typing, get a follow-up question and a scored report. One free interview every 15 days.' },
   ];
 
   readonly interviewSteps: Point[] = [
@@ -56,8 +61,4 @@ export class ForStudents {
     { title: 'Activate your account', text: 'Enter your college e-mail and roll number, then the 6-digit code we e-mail you.' },
     { title: 'Set a password and start', text: 'Complete your profile, upload documents and take your first mock test.' },
   ];
-
-  toggleFaq(index: number) {
-    this.activeFaq = this.activeFaq === index ? null : index;
-  }
 }

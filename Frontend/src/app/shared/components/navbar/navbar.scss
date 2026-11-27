@@ -18,13 +18,57 @@
 }
 
 .announce-bar {
-  background: linear-gradient(90deg, #0044cc 0%, #0077ff 100%);
+  position: relative; overflow: hidden; display: flex; justify-content: center; padding: .5rem 3rem; color: #e8eeff; font-size: .875rem;
+  background: radial-gradient(60% 220% at 50% 0%, rgba(0, 168, 255, .28), transparent 70%), linear-gradient(90deg, #07142f, #0a1b3f 50%, #07142f);
+  border-bottom: 1px solid rgba(120, 170, 255, .25);
+  /* a light that crosses the bar now and then */
+  &::after { content: ''; position: absolute; top: 0; bottom: 0; width: 22%; left: -25%; pointer-events: none;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .09), transparent); animation: announce-shine 7s ease-in-out infinite; }
 }
+.announce { display: flex; align-items: center; justify-content: center; gap: .85rem; min-width: 0; }
+.announce .tag { flex: none; display: inline-flex; align-items: center; gap: .4rem; border-radius: 999px; padding: .18rem .65rem; font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: #8fe9ff; background: rgba(0, 190, 255, .12); border: 1px solid rgba(110, 215, 255, .4);
+  i { width: 6px; height: 6px; border-radius: 50%; background: #2ee6a8; animation: announce-pulse 1.8s ease-out infinite; } }
+.announce-text { font-weight: 500; min-width: 0; }
+.announce .more { flex: none; position: relative; z-index: 1; display: inline-flex; gap: .35rem; border-radius: 999px; padding: .22rem .85rem; font-weight: 600; font-size: .8rem; text-decoration: none;
+  white-space: nowrap; background: #fff; color: #0a1b3f; transition: background-color .2s;
+  span { transition: translate .2s; }
+  &:hover { background: #dbe7ff; span { translate: 3px 0; } } }
+.announce-bar .close { position: absolute; z-index: 1; right: 1rem; top: 50%; translate: 0 -50%; width: 26px; height: 26px; border: 0; border-radius: 50%; background: transparent; color: #aebbe0;
+  font-size: 1.2rem; line-height: 1; transition: background-color .2s, color .2s;
+  &:hover { background: rgba(255, 255, 255, .12); color: #fff; } }
+.announce-bar a:focus-visible, .announce-bar button:focus-visible { outline: 2px solid #8fe9ff; outline-offset: 2px; }
+@keyframes announce-shine { 0%, 55% { left: -25%; } 100% { left: 110%; } }
+@keyframes announce-pulse { 0% { box-shadow: 0 0 0 0 rgba(46, 230, 168, .6); } 100% { box-shadow: 0 0 0 7px rgba(46, 230, 168, 0); } }
+@media (prefers-reduced-motion: reduce) { .announce-bar::after, .announce .tag i { animation: none; } }
 
 .logo-icon {
   background: linear-gradient(135deg, var(--proveyu-primary) 0%, #0099ff 100%);
 }
 
 @media (max-width: 767.98px) {
+  .announce-bar { padding: .5rem 2.4rem .5rem .75rem; font-size: .8rem; }
+  .announce { gap: .5rem; }
+  .announce .tag { display: none; }
   .announce-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-align: left; }
+  .announce-bar .close { right: .4rem; }
 }
+
+/* six links: keep the bar on one row on smaller laptops */
+@media (min-width: 992px) and (max-width: 1399.98px) {
+  .navbar-brand { margin-right: 1rem !important; img { height: 38px !important; } }
+  .navbar-nav { gap: .9rem !important; }
+  .nav-link { font-size: 13.5px; white-space: nowrap; }
+  .container-custom { padding-left: 2.5%; padding-right: 2.5%; }
+  #navbarNav > .d-flex { gap: .5rem !important; margin-left: .75rem !important; .btn { padding-left: .9rem !important; padding-right: .9rem !important; font-size: .85rem; white-space: nowrap; } }
+}
+
+/* header actions */
+.btn.nav-signin, .btn.nav-start { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; border-radius: 999px; padding: .55rem 1.35rem; font-weight: 600; font-size: .92rem; white-space: nowrap;
+  transition: translate .2s, box-shadow .2s, background-color .2s, border-color .2s, color .2s; }
+.btn.nav-signin { color: #0a1b3f; background: #fff; border: 1px solid #c9d6ee;
+  &:hover { color: #0057ff; border-color: #0057ff; background: #f5f8ff; translate: 0 -1px; } }
+.btn.nav-start { color: #fff; border: 1px solid transparent; background: linear-gradient(120deg, #0057ff, #0a7bff) border-box; box-shadow: 0 12px 22px -12px rgba(0, 87, 255, .85);
+  span { transition: translate .2s; }
+  &:hover { color: #fff; background: #0a1b3f; box-shadow: 0 14px 24px -12px rgba(10, 27, 63, .7); translate: 0 -1px; span { translate: 3px 0; } } }
+.btn.nav-signin:focus-visible, .btn.nav-start:focus-visible { outline: 3px solid #0057ff; outline-offset: 2px; }

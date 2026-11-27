@@ -12,6 +12,7 @@ export const routes: Routes = [
   { path: '', loadComponent: () => import('./features/public/pages/home/home').then(m => m.Home) },
   { path: 'for-colleges', title: 'For colleges', loadComponent: () => import('./features/public/pages/for-colleges/for-colleges').then(m => m.ForColleges) },
   { path: 'for-students', title: 'For students', loadComponent: () => import('./features/public/pages/for-students/for-students').then(m => m.ForStudents) },
+  { path: 'for-leadership', title: 'For leadership', loadComponent: () => import('./features/public/pages/for-leadership/for-leadership').then(m => m.ForLeadership) },
   { path: 'how-it-works', title: 'How it works', loadComponent: () => import('./features/public/pages/how-it-works/how-it-works').then(m => m.HowItWorks) },
   { path: 'pricing', title: 'Pricing', loadComponent: () => import('./features/public/pages/pricing/pricing').then(m => m.Pricing) },
   // old pages of the in-person assessment model: keep old links working
@@ -139,7 +140,7 @@ export const routes: Routes = [
   { path: 'college/login', canActivate: [guestGuard], loadComponent: () => import('./features/college/auth/college-login').then(m => m.CollegeLogin) },
   { path: 'college/register', canActivate: [guestGuard], loadComponent: () => import('./features/college/auth/college-register').then(m => m.CollegeRegister) },
   { path: 'college/verify-email', loadComponent: () => import('./features/college/auth/verify-email').then(m => m.VerifyEmail) },
-  { path: 'college/forgot-password', loadComponent: () => import('./features/college/auth/forgot-password').then(m => m.ForgotPassword) },
+  { path: 'college/forgot-password', data: { loginUrl: '/college/login', variant: 'college' }, loadComponent: () => import('./features/college/auth/forgot-password').then(m => m.ForgotPassword) },
   { path: 'college/accept-invite', loadComponent: () => import('./features/college/auth/accept-invite').then(m => m.AcceptInvite) },
   {
     path: 'college/pending-approval', canActivate: [authGuard, roleGuard], data: { roles: COLLEGE },

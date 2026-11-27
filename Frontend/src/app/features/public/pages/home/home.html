@@ -1,437 +1,87 @@
 <div class="bg-white" appScrollAnimate>
   <!-- HERO -->
-  <section class="hero-section">
-    <div class="container-custom">
-      <div class="hero-container">
+  <app-home-hero />
 
-        <div class="hero-text-col">
-          <h1 class="hero-title">
-            Run Placement Season<br>
-            <span class="gradient-text">on One Platform.</span>
-          </h1>
-
-          <p class="hero-subtitle">
-            ProveYu gives your Training &amp; Placement cell one place for students, companies, drives, rounds, interviews
-            and offers. Students apply, prepare with mock tests and AI interviews, and track every result. Companies
-            evaluate inside their own Drive Room.
-          </p>
-
-          <div class="d-flex flex-wrap gap-3 mb-4">
-            <a routerLink="/college/register"
-              class="btn btn-primary-custom d-flex align-items-center gap-2 px-4 py-3 text-decoration-none shadow">
-              <span>Register your college</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </a>
-            <a routerLink="/student/signup"
-              class="btn btn-outline-custom d-flex align-items-center gap-2 px-4 py-3 bg-white text-decoration-none">
-              <span>I'm a student: activate my account</span>
-            </a>
-          </div>
-
-          <div class="hero-trust-row">
-            <div class="trust-stat">
-              <span class="stat-num">End to end</span>
-              <span class="stat-lbl">From drive to offer letter</span>
-            </div>
-            <div class="trust-divider"></div>
-            <div class="trust-stat">
-              <span class="stat-num">20 + AI</span>
-              <span class="stat-lbl">Mock tests &amp; AI interviews</span>
-            </div>
-            <div class="trust-divider"></div>
-            <div class="trust-stat">
-              <span class="stat-num">Audited</span>
-              <span class="stat-lbl">Role-based access &amp; full log</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Flip card: placement cell dashboard (front) / student side (back) -->
-        <div class="hero-visual-col">
-          <div class="hero-flip-container" [class.flipped]="isHeroCardFlipped" (click)="toggleHeroFlip()"
-            (keydown.enter)="toggleHeroFlip()" tabindex="0" role="button"
-            [attr.aria-label]="isHeroCardFlipped ? 'Show the student portal':'Show the placement cell dashboard'">
-            <div class="hero-flip-inner">
-
-              <div class="hero-flip-front">
-                <div class="passport-preview-card h-100">
-                  <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-dashed">
-                    <div class="d-flex align-items-center gap-2 fw-extrabold text-primary fs-7 tracking-wide">
-                      <i class="bi bi-building fs-6" aria-hidden="true"></i>
-                      <span>PLACEMENT CELL DASHBOARD</span>
-                    </div>
-                    <span class="badge bg-light text-muted border rounded-pill px-3 py-1 fs-8 fw-semibold">Sample data</span>
-                  </div>
-
-                  <div class="row g-2 mb-4 text-center">
-                    <div class="col-4">
-                      <div class="kpi-tile"><span class="kpi-num">1,240</span><span class="kpi-lbl">Students</span></div>
-                    </div>
-                    <div class="col-4">
-                      <div class="kpi-tile"><span class="kpi-num">18</span><span class="kpi-lbl">Live drives</span></div>
-                    </div>
-                    <div class="col-4">
-                      <div class="kpi-tile"><span class="kpi-num text-success">412</span><span class="kpi-lbl">Placed</span></div>
-                    </div>
-                  </div>
-
-                  <div class="fs-8 fw-bold text-uppercase tracking-wide text-muted mb-2">Drive funnel · Infinite Analytics</div>
-                  <div class="d-flex flex-column gap-3 mb-4">
-                    @for (f of funnel; track f.label) {
-                      <div class="row align-items-center g-2 fs-7 fw-semibold text-navy">
-                        <div class="col-4">{{ f.label }}</div>
-                        <div class="col-6">
-                          <div class="progress" style="height: 8px;">
-                            <div class="progress-bar" [class]="f.bar" [style.width.%]="f.pct"></div>
-                          </div>
-                        </div>
-                        <div class="col-2 text-end text-primary fw-bold">{{ f.count }}</div>
-                      </div>
-                    }
-                  </div>
-
-                  <div class="p-3 bg-light-blue rounded-3 border border-primary border-opacity-25 mb-3 fs-7 text-navy">
-                    <strong>Next:</strong> Technical round · Tue 10:00 · 42 interviews scheduled, 0 clashes
-                  </div>
-
-                  <div class="d-flex align-items-center gap-2 text-primary fs-7 fw-bold">
-                    <span class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center p-1"
-                      style="width: 20px; height: 20px; font-size: 11px;" aria-hidden="true">✓</span>
-                    <span>Eligibility checked for every student · reminders sent 24 h ahead</span>
-                  </div>
-                  <div class="flip-hint fs-8 text-muted mt-3"><i class="bi bi-arrow-repeat me-1" aria-hidden="true"></i>Tap to see the student side</div>
-                </div>
-              </div>
-
-              <div class="hero-flip-back">
-                <div class="passport-preview-card h-100 p-0 overflow-hidden d-flex flex-column position-relative">
-                  <div class="position-absolute top-0 start-0 w-100 p-3 d-flex justify-content-between align-items-center"
-                    style="z-index: 5; background: linear-gradient(180deg, rgba(10,27,63,0.85) 0%, transparent 100%);">
-                    <span class="badge bg-success rounded-pill px-3 py-1 fs-8 fw-bold">Student portal</span>
-                    <span class="badge bg-white text-navy rounded-pill px-3 py-1 fs-8 fw-bold">Apply · Prepare · Get placed</span>
-                  </div>
-
-                  <img src="images/hero-woman-v3.png" alt="A student using the ProveYu student portal"
-                    class="w-100 h-100 object-fit-cover" style="border-radius: 18px; object-position: top center;">
-
-                  <div class="position-absolute bottom-0 start-0 w-100 p-3 text-white"
-                    style="z-index: 5; background: linear-gradient(0deg, rgba(10,27,63,0.92) 0%, transparent 100%);">
-                    <div class="fw-bold fs-6 mb-1">Eligible drives, one-click apply, AI interview practice</div>
-                    <div class="fs-8 opacity-75">Round-by-round results, interview slots and offer letters in one place</div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
+  <div class="pv">
+  <section class="pv-sec">
+    <div class="pv-wrap">
+      <div class="pv-head">
+        <p class="pv-pill">One platform</p>
+        <h2 class="pv-h2">Four connected <span>workspaces</span></h2>
+        <p class="pv-lead">Placement cell, students, companies and leadership work on the same live data.</p>
       </div>
-    </div>
-  </section>
-
-  <!-- THREE PRODUCTS -->
-  <section class="py-5 bg-light-blue position-relative overflow-hidden">
-    <svg class="position-absolute top-0 end-0 d-none d-lg-block pe-none" width="220" height="220" viewBox="0 0 220 220"
-      fill="none" style="z-index: 10; margin-top: 10px; margin-right: 10px;" aria-hidden="true">
-      <path d="M 205 15 Q 120 25 90 95 T 15 160" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none" opacity="0.45" />
-      <polygon points="23,150 10,165 26,166" fill="#0057ff" opacity="0.75" />
-    </svg>
-
-    <div class="container-custom py-4 position-relative" style="z-index: 1;">
-      <div class="text-center mb-5">
-        <div class="section-header-banner mx-auto">
-          <h2 class="h2 fw-bold text-navy mb-2">One Platform, Three Connected Workspaces</h2>
-          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
-            The placement cell, its students and visiting companies all work on the same live data, so nobody chases
-            spreadsheets, e-mails or WhatsApp groups again.
-          </p>
-        </div>
-      </div>
-
-      <div class="row g-4">
-        @for (p of products; track p.title) {
-          <div class="col-lg-4">
-            <div class="card card-shadow border-0 h-100 p-4 bg-white arch-card-hover d-flex flex-column">
-              <span class="feature-icon mb-3" [class]="p.tone" aria-hidden="true"><i class="bi" [class]="p.icon"></i></span>
-              <span class="point-pill-btn point-pill-primary me-auto mb-2">{{ p.tag }}</span>
-              <h3 class="h5 fw-bold text-navy mb-2">{{ p.title }}</h3>
-              <p class="text-muted-custom fs-7 mb-3">{{ p.text }}</p>
-              <ul class="check-list mb-4">
-                @for (b of p.points; track b) { <li>{{ b }}</li> }
-              </ul>
-              <a [routerLink]="p.link" [fragment]="p.fragment" class="btn btn-outline-custom mt-auto text-decoration-none text-center">{{ p.cta }} &rarr;</a>
-            </div>
-          </div>
+      <div class="pv-cards four workspaces">
+        @for (w of workspaces; track w.title) {
+          <a class="pv-tile" [routerLink]="w.link" [fragment]="w.fragment">
+            <span class="shot"><img [src]="images[w.scene]" alt="" width="1200" height="900" loading="lazy" referrerpolicy="no-referrer"></span>
+            <span class="body">
+              <span class="cat">{{ w.category }}</span>
+              <strong>{{ w.title }}</strong>
+              <span class="desc">{{ w.text }}</span>
+            </span>
+          </a>
         }
       </div>
     </div>
   </section>
 
-  <!-- BEFORE / AFTER -->
-  <section class="py-5 bg-white position-relative overflow-hidden">
-    <div class="container-custom py-4 position-relative" style="z-index: 1;">
-      <div class="text-center mb-5">
-        <div class="section-header-banner mx-auto">
-          <h2 class="h2 fw-bold text-navy mb-3">Placement Season Without the Chaos</h2>
-          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
-            Most placement cells still run drives on Excel sheets, mail threads and group chats. Here is what changes
-            when the whole season runs on ProveYu.
-          </p>
+  <section class="pv-sec pv-grid-bg">
+    <div class="pv-wrap">
+      <div class="pv-head"><h2 class="pv-h2">Placement season without the <span>chaos</span></h2></div>
+      <div class="pv-compare">
+        <div class="pv-messy">
+          <p class="pv-pill">The usual way</p>
+          @for (b of before; track b.title) { <div class="note"><b>{{ b.title }}</b><small>{{ b.text }}</small></div> }
         </div>
-      </div>
-
-      <div class="row g-4">
-        <div class="col-lg-6">
-          <div class="comparison-card card-shadow border rounded-4 bg-light p-3 p-md-4 h-100">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <h3 class="h5 fw-bold text-navy mb-0">The usual way</h3>
-              <span class="text-uppercase tracking-wide fs-8 fw-bold text-muted">Spreadsheets &amp; group chats</span>
-            </div>
-            <p class="text-muted-custom fs-7 mb-3 pb-2 border-bottom">Hours of manual work for the TPO, and students who find out too late.</p>
-            <div class="d-flex flex-column gap-2">
-              @for (b of before; track b.title; let i = $index) {
-                <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-white border">
-                  <div class="d-flex align-items-center gap-2 mb-1">
-                    <span class="point-pill-btn point-pill-danger">0{{ i + 1 }}</span>
-                    <h4 class="fs-7 fw-bold text-navy mb-0">{{ b.title }}</h4>
-                  </div>
-                  <p class="text-muted-custom fs-8 mb-0 ps-1">{{ b.text }}</p>
-                </div>
-              }
-            </div>
-          </div>
-        </div>
-
-        <div class="col-lg-6">
-          <div class="comparison-card card-shadow border rounded-4 bg-white p-3 p-md-4 h-100">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <h3 class="h5 fw-bold text-navy mb-0">With ProveYu</h3>
-              <span class="text-uppercase tracking-wide fs-8 fw-bold text-primary">One live system</span>
-            </div>
-            <p class="text-muted-custom fs-7 mb-3 pb-2 border-bottom">Rules, schedules and notifications run themselves; the TPO only decides.</p>
-            <div class="d-flex flex-column gap-2">
-              @for (b of after; track b.title; let i = $index) {
-                <div class="point-item-card p-2.5 p-md-3 rounded-3 bg-light-blue border">
-                  <div class="d-flex align-items-center gap-2 mb-1">
-                    <span class="point-pill-btn point-pill-success">0{{ i + 1 }}</span>
-                    <h4 class="fs-7 fw-bold text-navy mb-0">{{ b.title }}</h4>
-                  </div>
-                  <p class="text-muted-custom fs-8 mb-0 ps-1">{{ b.text }}</p>
-                </div>
-              }
-            </div>
-          </div>
+        <div class="pv-tidy">
+          <p class="pv-pill">With ProveYu</p>
+          @for (b of after; track b.title) { <div class="note"><span><b>{{ b.title }}</b><small>{{ b.text }}</small></span></div> }
         </div>
       </div>
     </div>
   </section>
 
-  <!-- COLLEGE PORTAL HIGHLIGHT -->
-  <section class="py-5 bg-white border-top border-bottom position-relative overflow-hidden">
-    <svg class="position-absolute top-0 start-0 d-none d-lg-block pe-none" width="230" height="230" viewBox="0 0 230 230"
-      fill="none" style="z-index: 10;" aria-hidden="true">
-      <path d="M 15 15 Q 95 25 125 105 T 210 180" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none" opacity="0.45" />
-      <polygon points="203,170 214,183 199,184" fill="#0057ff" opacity="0.75" />
-    </svg>
-
-    <div class="container-custom py-4 position-relative" style="z-index: 1;">
-      <div class="text-center mb-5">
-        <div class="section-header-banner mx-auto">
-          <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold mb-3">For Training &amp; Placement cells</span>
-          <h2 class="h2 fw-bold text-navy mb-3">Everything a Placement Cell Does, in One Portal</h2>
-          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
-            From importing the batch to the NIRF report at the end of the year: set the rules once and let the portal
-            check eligibility, avoid clashes, notify students and keep the numbers.
-          </p>
-        </div>
-      </div>
-
-      <div class="row g-5 align-items-center">
-        <div class="col-lg-6">
-          <div class="card card-shadow border p-4 rounded-4 bg-white mb-4">
-            <h4 class="fs-8 fw-extrabold text-uppercase tracking-wide text-primary mb-3">What your team gets</h4>
-            <div class="d-flex flex-column gap-3">
-              @for (b of collegeHighlights; track b.title; let i = $index) {
-                <div class="p-3 bg-light-blue rounded-3 border d-flex align-items-start gap-3">
-                  <span class="badge bg-primary bg-opacity-10 text-primary fw-extrabold rounded-pill px-2 py-1 fs-8" style="min-width: 34px; text-align: center;">0{{ i + 1 }}</span>
-                  <div>
-                    <h5 class="fs-7 fw-bold text-navy mb-1">{{ b.title }}</h5>
-                    <p class="text-muted-custom fs-8 mb-0">{{ b.text }}</p>
-                  </div>
-                </div>
-              }
-            </div>
+  <section class="pv-sec">
+    <div class="pv-wrap">
+      @for (s of stories; track s.pill; let odd = $odd) {
+        <div class="pv-split" [class.flip]="odd">
+          <div class="pv-copy">
+            <p class="pv-pill">{{ s.pill }}</p>
+            <h2 class="pv-h2">{{ s.title }} <span>{{ s.accent }}</span></h2>
+            <p class="pv-lead">{{ s.text }}</p>
+            <ul class="pv-points">@for (p of s.points; track p) { <li>{{ p }}</li> }</ul>
           </div>
-
-          <div class="d-flex flex-wrap align-items-center gap-3">
-            <a routerLink="/college/register" class="btn btn-primary-custom px-4 py-3 text-decoration-none shadow">Register your college &rarr;</a>
-            <a routerLink="/for-colleges" class="fw-semibold text-primary text-decoration-none fs-7">See every college feature &rarr;</a>
-          </div>
+          <app-scene [kind]="s.scene" />
         </div>
-
-        <div class="col-lg-6">
-          <div class="card card-shadow border-0 p-4 p-md-5 rounded-4 bg-white">
-            <h3 class="h5 fw-bold text-navy mb-4 text-center">One Drive, Start to Finish</h3>
-
-            <div class="college-timeline position-relative ps-4 mb-4">
-              @for (s of driveSteps; track s.title; let i = $index; let last = $last) {
-                <div class="timeline-step position-relative" [class.mb-4]="!last">
-                  <div class="step-badge rounded-circle text-white fw-bold d-flex align-items-center justify-content-center position-absolute"
-                    [class.bg-primary]="!last" [class.bg-success]="last"
-                    style="left: -41px; top: 0; width: 32px; height: 32px; font-size: 0.85rem;">{{ i + 1 }}</div>
-                  <h4 class="fs-7 fw-bold text-navy mb-1">{{ s.title }}</h4>
-                  <p class="text-muted-custom fs-8 mb-0">{{ s.text }}</p>
-                </div>
-              }
-            </div>
-
-            <div class="p-3 p-md-4 rounded-4 text-white text-center shadow" style="background: linear-gradient(135deg, #0a1b3f 0%, #0057ff 100%);">
-              <div class="row g-3">
-                <div class="col-4">
-                  <div class="h3 fw-extrabold mb-0">7</div>
-                  <div class="fs-8 text-white fw-medium">Ready reports, incl. NIRF / NAAC</div>
-                </div>
-                <div class="col-4 border-start border-end border-white border-opacity-25">
-                  <div class="h3 fw-extrabold mb-0">24 h</div>
-                  <div class="fs-8 text-white fw-medium">Automatic interview reminders</div>
-                </div>
-                <div class="col-4">
-                  <div class="h3 fw-extrabold mb-0">3</div>
-                  <div class="fs-8 text-white fw-medium">Team roles with branch scope</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      }
     </div>
   </section>
 
-  <!-- STUDENT PREPARATION -->
-  <section class="py-5 bg-light-blue position-relative overflow-hidden">
-    <div class="container-custom py-4 position-relative" style="z-index: 1;">
-      <div class="text-center mb-5">
-        <div class="section-header-banner mx-auto">
-          <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold mb-3">For students</span>
-          <h2 class="h2 fw-bold text-navy mb-3">Students Walk into Every Drive Prepared</h2>
-          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
-            Preparation is built into the student portal, so practice and real drives live side by side.
-          </p>
-        </div>
-      </div>
-
-      <div class="row g-4">
-        <div class="col-lg-6">
-          <div class="card card-shadow border-0 h-100 p-4 p-md-5 bg-white rounded-4">
-            <span class="feature-icon tone-violet mb-3" aria-hidden="true"><i class="bi bi-mic"></i></span>
-            <h3 class="h4 fw-bold text-navy mb-2">AI Mock Interview</h3>
-            <p class="text-muted-custom fs-7 mb-3">
-              An AI interviewer asks questions out loud, listens to spoken answers and asks a follow-up, like a real panel.
-              Paste a job description and the technical questions stay on its technologies.
-            </p>
-            <ul class="check-list mb-4">
-              <li>Technical, HR or mixed; easy, medium or hard</li>
-              <li>Every answer scored on content, relevance, communication and confidence</li>
-              <li>What a strong answer would include, for every question</li>
-              <li>One free interview every 15 days</li>
-            </ul>
-            <a routerLink="/for-students" fragment="ai-interview" class="fw-semibold text-primary text-decoration-none fs-7 mt-auto">How the AI interview works &rarr;</a>
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="card card-shadow border-0 h-100 p-4 p-md-5 bg-white rounded-4">
-            <span class="feature-icon tone-green mb-3" aria-hidden="true"><i class="bi bi-journal-code"></i></span>
-            <h3 class="h4 fw-bold text-navy mb-2">Mock Test Path</h3>
-            <p class="text-muted-custom fs-7 mb-3">
-              20 timed tests from easy to hard, each modelled on a real campus hiring test pattern: aptitude,
-              reasoning, verbal, technical and coding sections.
-            </p>
-            <ul class="check-list mb-4">
-              <li>Next test unlocks after scoring above 50% in the previous one</li>
-              <li>Write and run code in Python, Java, C++ or JavaScript</li>
-              <li>Section-wise score and every question explained</li>
-              <li>Colleges can upload their own drive-specific practice tests</li>
-            </ul>
-            <a routerLink="/for-students" fragment="mock-tests" class="fw-semibold text-primary text-decoration-none fs-7 mt-auto">Explore the mock tests &rarr;</a>
-          </div>
-        </div>
-      </div>
-    </div>
+  <section id="code-ground" class="pv-sec pv-grid-bg">
+    <div class="pv-wrap"><app-code-arena /></div>
   </section>
 
-  <!-- HOW IT WORKS -->
-  <section class="py-5 bg-white position-relative overflow-hidden">
-    <div class="container-custom py-4 position-relative" style="z-index: 1;">
-      <div class="text-center mb-5">
-        <div class="section-header-banner mx-auto">
-          <h2 class="h2 fw-bold text-navy mb-3">Live in Four Steps</h2>
-          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
-            No installation and no IT project: everything runs in the browser, for your team and your students.
-          </p>
-        </div>
-      </div>
-
-      <div class="row g-4">
-        @for (s of startSteps; track s.title; let i = $index; let last = $last) {
-          <div class="col-md-6 col-lg-3">
-            <div class="card card-shadow h-100 p-4 bg-white text-center" [class.border-0]="!last" [class.border]="last"
-              [class.border-primary]="last" [class.border-2]="last">
-              <span class="badge rounded-pill px-3 py-2 fw-bold mx-auto mb-3" [class.bg-primary]="!last" [class.bg-success]="last">Step 0{{ i + 1 }}</span>
-              <h3 class="h5 fw-bold text-navy mb-2">{{ s.title }}</h3>
-              <p class="text-muted-custom fs-7 mb-0">{{ s.text }}</p>
-            </div>
-          </div>
+  <section class="pv-sec">
+    <div class="pv-wrap">
+      <div class="pv-head"><h2 class="pv-h2">Live in four <span>steps</span></h2><p class="pv-lead">Everything runs in the browser, for your team and your students.</p></div>
+      <div class="pv-cards four pv-steps">
+        @for (s of startSteps; track s.title; let i = $index) {
+          <div class="pv-step"><span class="pv-num">{{ i + 1 }}</span><h3 class="pv-h3">{{ s.title }}</h3><p>{{ s.text }}</p></div>
         }
       </div>
-      <div class="text-center mt-4">
-        <a routerLink="/how-it-works" class="fw-semibold text-primary text-decoration-none fs-7">See the full placement flow &rarr;</a>
+      <p class="text-center mt-4 mb-0"><a routerLink="/how-it-works" class="pv-link">See the full placement flow</a></p>
+    </div>
+  </section>
+
+  <section class="pv-sec pv-grid-bg">
+    <div class="pv-wrap">
+      <div class="pv-head"><h2 class="pv-h2">Questions we get <span>asked</span></h2></div>
+      <div class="pv-faq">
+        @for (f of faqs; track f.q) { <details><summary>{{ f.q }}</summary><p>{{ f.a }}</p></details> }
       </div>
     </div>
   </section>
 
-  <!-- FAQ -->
-  <section class="py-5 bg-light-blue">
-    <div class="container-custom py-4">
-      <div class="text-center mb-4">
-        <div class="section-header-banner mx-auto">
-          <h2 class="h2 fw-bold text-navy mb-0">Questions We Get Asked</h2>
-        </div>
-      </div>
-      <div class="mx-auto d-flex flex-column gap-2" style="max-width: 860px;">
-        @for (f of faqs; track f.q; let i = $index) {
-          <div class="faq-item card-shadow bg-white rounded-4">
-            <button type="button" class="faq-q" (click)="toggleFaq(i)" [attr.aria-expanded]="activeFaq === i" [attr.aria-controls]="'faq-' + i">
-              <span>{{ f.q }}</span>
-              <i class="bi" [class.bi-plus-lg]="activeFaq !== i" [class.bi-dash-lg]="activeFaq === i" aria-hidden="true"></i>
-            </button>
-            @if (activeFaq === i) {
-              <div class="faq-a text-muted-custom fs-7" [id]="'faq-' + i">{{ f.a }}</div>
-            }
-          </div>
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- BOTTOM CTA -->
-  <section class="py-5 bg-white">
-    <div class="container-custom py-4">
-      <div class="card card-shadow border-0 text-center p-5 text-white"
-        style="background: linear-gradient(135deg, #0a1b3f 0%, #0057ff 100%); border-radius: 24px;">
-        <h2 class="display-6 fw-extrabold mb-3">Run Your Next Drive on ProveYu</h2>
-        <p class="lead text-white mx-auto mb-4" style="max-width: 640px;">
-          Register your placement cell, import your batch and publish your first drive. Your students get their portal,
-          mock tests and AI interviews the same day.
-        </p>
-        <div class="d-flex flex-wrap justify-content-center gap-3">
-          <a routerLink="/college/register" class="btn btn-light text-primary fw-bold px-4 py-3 rounded-pill text-decoration-none">Register your college &rarr;</a>
-          <a routerLink="/student/signup" class="btn btn-outline-light fw-bold px-4 py-3 rounded-pill text-decoration-none">Activate student account</a>
-        </div>
-        <p class="fs-7 text-white-50 mt-3 mb-0">Already on ProveYu? <a routerLink="/login" class="text-white fw-semibold">Sign in</a></p>
-      </div>
-    </div>
-  </section>
+  <app-public-cta />
+  </div>
 </div>

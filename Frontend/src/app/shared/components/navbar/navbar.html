@@ -1,18 +1,17 @@
 @if (showBanner() && banner(); as b) {
-  <div class="text-white text-center py-2 fs-7 announce-bar">
-    <div class="container-custom d-flex justify-content-center align-items-center gap-2">
-      <span class="badge bg-warning text-dark rounded-pill px-2 py-1" style="font-size: 0.7rem;">New</span>
-      <span class="fw-medium announce-text">{{ b.text }}</span>
+  <div class="announce-bar">
+    <div class="announce">
+      <span class="tag"><i aria-hidden="true"></i>New</span>
+      <span class="announce-text">{{ b.text }}</span>
       @if (b.link) {
         @if (external(b.link)) {
-          <a [href]="b.link" target="_blank" rel="noopener" class="text-white ms-2 text-decoration-none border-bottom border-white fw-semibold text-nowrap">See how &rarr;</a>
+          <a class="more" [href]="b.link" target="_blank" rel="noopener">See how <span aria-hidden="true">&rarr;</span></a>
         } @else {
-          <a [routerLink]="path(b.link)" [fragment]="fragment(b.link)" class="text-white ms-2 text-decoration-none border-bottom border-white fw-semibold text-nowrap">See how &rarr;</a>
+          <a class="more" [routerLink]="path(b.link)" [fragment]="fragment(b.link)">See how <span aria-hidden="true">&rarr;</span></a>
         }
       }
-      <button type="button" class="btn-close btn-close-white ms-auto" style="font-size: 0.6rem;" aria-label="Close announcement"
-        (click)="showBanner.set(false)"></button>
     </div>
+    <button type="button" class="close" aria-label="Close announcement" (click)="showBanner.set(false)">&times;</button>
   </div>
 }
 
@@ -39,6 +38,9 @@
           <a class="nav-link px-0" routerLink="/for-students" routerLinkActive="active" (click)="open.set(false)">For Students</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link px-0" routerLink="/for-leadership" routerLinkActive="active" (click)="open.set(false)">For Leadership</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link px-0" routerLink="/how-it-works" routerLinkActive="active" (click)="open.set(false)">How It Works</a>
         </li>
         <li class="nav-item">
@@ -47,8 +49,8 @@
       </ul>
 
       <div class="d-flex align-items-center gap-3 ms-lg-4 pb-3 pb-lg-0">
-        <a routerLink="/login" class="btn btn-outline-custom py-2 px-4 text-decoration-none" (click)="open.set(false)">Sign in</a>
-        <a routerLink="/select-role" class="btn btn-primary-custom py-2 px-4 text-decoration-none" (click)="open.set(false)">Get started</a>
+        <a routerLink="/login" class="btn nav-signin" (click)="open.set(false)">Sign in</a>
+        <a routerLink="/select-role" class="btn nav-start" (click)="open.set(false)">Get started <span aria-hidden="true">&rarr;</span></a>
       </div>
     </div>
   </div>

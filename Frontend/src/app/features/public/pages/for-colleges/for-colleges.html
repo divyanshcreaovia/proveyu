@@ -1,192 +1,69 @@
-<div class="bg-white" appScrollAnimate>
-  <!-- HEADER -->
-  <section class="hero-section">
-    <svg class="position-absolute top-0 start-0 d-none d-lg-block pe-none" width="220" height="220" viewBox="0 0 220 220"
-      fill="none" style="z-index: 10;" aria-hidden="true">
-      <path d="M 15 15 Q 95 25 125 105 T 205 175" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none" opacity="0.45" />
-      <polygon points="198,165 209,178 194,179" fill="#0057ff" opacity="0.75" />
-    </svg>
-    <div class="container-custom text-center position-relative" style="z-index: 1;">
-      <div class="pill-badge mx-auto">
-        <i class="bi bi-building" aria-hidden="true"></i>
-        <span>For Training &amp; Placement cells</span>
-      </div>
-      <h1 class="hero-title mx-auto" style="max-width: 900px;">
-        The College Placement Portal<br>
-        <span class="gradient-text">Your Whole Season, Organised.</span>
-      </h1>
-      <p class="hero-subtitle mx-auto">
-        Students, companies, drives, rounds, interviews, offers and reports in one portal, with your eligibility rules
-        and placement policy applied automatically. Your team decides; the portal does the follow-up.
-      </p>
-      <div class="d-flex flex-wrap justify-content-center gap-3">
-        <a routerLink="/college/register" class="btn btn-primary-custom px-4 py-3 text-decoration-none shadow">Register your college &rarr;</a>
-        <a routerLink="/college/login" class="btn btn-outline-custom px-4 py-3 bg-white text-decoration-none">College sign in</a>
+<div class="pv" appScrollAnimate>
+  <section class="pv-sec pv-grid-bg pv-hero">
+    <div class="pv-wrap">
+      <div class="pv-split">
+        <div class="pv-copy">
+          <p class="pv-pill">For Training &amp; Placement cells</p>
+          <h1 class="pv-title">Your whole season, <span>organised.</span></h1>
+          <p class="pv-lead">Students, companies, drives, rounds, interviews, offers and reports in one portal. Your team decides; the portal does the follow-up.</p>
+          <div class="pv-actions">
+            <a routerLink="/college/register" class="pv-btn">Register your college</a>
+            <a routerLink="/college/login" class="pv-btn alt">College sign in</a>
+          </div>
+        </div>
+        <app-scene kind="drive" />
       </div>
     </div>
   </section>
 
-  <!-- FEATURE GROUPS -->
-  <section class="py-5 bg-light-blue position-relative overflow-hidden">
-    <div class="container-custom py-4">
-      <div class="text-center mb-5">
-        <div class="section-header-banner mx-auto">
-          <h2 class="h2 fw-bold text-navy mb-2">Everything in One Place</h2>
-          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 750px;">
-            Nine connected modules your team uses every day of the placement season.
-          </p>
-        </div>
-      </div>
-
-      <div class="row g-4">
-        @for (g of groups; track g.title) {
-          <div class="col-md-6 col-xl-4">
-            <div class="card card-shadow border-0 h-100 p-4 bg-white arch-card-hover">
-              <div class="d-flex align-items-center gap-3 mb-3">
-                <span class="feature-icon" [class]="g.tone" aria-hidden="true"><i class="bi" [class]="g.icon"></i></span>
-                <div>
-                  <h3 class="h5 fw-bold text-navy mb-0">{{ g.title }}</h3>
-                  <span class="fs-8 text-muted-custom">{{ g.text }}</span>
-                </div>
-              </div>
-              <ul class="check-list">
-                @for (p of g.points; track p) { <li>{{ p }}</li> }
-              </ul>
-            </div>
-          </div>
+  <section class="pv-sec">
+    <div class="pv-wrap">
+      <div class="pv-head"><h2 class="pv-h2">Everything in one <span>place</span></h2><p class="pv-lead">Twelve connected modules your team uses through the placement season.</p></div>
+      <div class="pv-cards">
+        @for (g of groups; track g.title; let i = $index) {
+          <div class="pv-card"><span class="pv-num">{{ i + 1 }}</span><h3 class="pv-h3">{{ g.title }}</h3><p class="mb-0">{{ g.summary }}</p></div>
         }
       </div>
     </div>
   </section>
 
-  <!-- DRIVE ROOM -->
-  <section id="drive-room" class="py-5 bg-white border-top border-bottom position-relative overflow-hidden">
-    <svg class="position-absolute top-0 end-0 d-none d-lg-block pe-none" width="230" height="230" viewBox="0 0 230 230"
-      fill="none" style="z-index: 10;" aria-hidden="true">
-      <path d="M 215 15 Q 135 25 105 105 T 20 180" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none" opacity="0.45" />
-      <polygon points="27,170 16,183 31,184" fill="#0057ff" opacity="0.75" />
-    </svg>
-    <div class="container-custom py-4 position-relative" style="z-index: 1;">
-      <div class="text-center mb-5">
-        <div class="section-header-banner mx-auto">
-          <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold mb-3">Built into every drive</span>
-          <h2 class="h2 fw-bold text-navy mb-3">The Company Drive Room</h2>
-          <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 760px;">
-            Stop e-mailing Excel sheets to recruiters. Invite the company HR and interview panel into their own room for
-            one drive. Their shortlists, results and offers land directly in your portal.
-          </p>
+  <section id="drive-room" class="pv-sec pv-grid-bg">
+    <div class="pv-wrap">
+      <div class="pv-split flip">
+        <div class="pv-copy">
+          <p class="pv-pill">Company Drive Room</p>
+          <h2 class="pv-h2">Recruiters work on your <span>drive</span></h2>
+          <p class="pv-lead">Invite company HR and interview panels into a room for one drive. Their shortlists, results and offers land in your portal.</p>
+          <ul class="pv-points">@for (p of roomPoints; track p) { <li>{{ p }}</li> }</ul>
         </div>
+        <app-scene kind="company" />
       </div>
-
-      <div class="row g-4">
-        <div class="col-lg-7">
-          <div class="comparison-card card-shadow border rounded-4 bg-white p-3 p-md-4 h-100">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <h3 class="h5 fw-bold text-navy mb-0">What the company can do</h3>
-              <span class="text-uppercase tracking-wide fs-8 fw-bold text-primary">Inside one drive</span>
-            </div>
-            <p class="text-muted-custom fs-7 mb-3 pb-2 border-bottom">The same rules and data as your team: auto-advance, placement policy and student notifications all work the same way.</p>
-            <ul class="check-list">
-              @for (p of roomPoints; track p) { <li>{{ p }}</li> }
-            </ul>
-          </div>
-        </div>
-        <div class="col-lg-5">
-          <div class="comparison-card card-shadow border rounded-4 bg-light-blue p-3 p-md-4 h-100">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <h3 class="h5 fw-bold text-navy mb-0">What you control</h3>
-              <span class="text-uppercase tracking-wide fs-8 fw-bold text-muted">Placement cell</span>
-            </div>
-            <p class="text-muted-custom fs-7 mb-3 pb-2 border-bottom">The company sees only the drives you invite it to.</p>
-            <ul class="check-list">
-              @for (p of controlPoints; track p) { <li>{{ p }}</li> }
-            </ul>
-            <div class="p-3 bg-white rounded-3 border mt-4 fs-8 text-navy">
-              <strong class="text-primary">Audit trail:</strong> every company action is logged with the person's name and company,
-              for example "Neha Kapoor (TechNova Solutions) shortlisted 42 students".
-            </div>
-          </div>
-        </div>
+      <div class="pv-head mt-5"><h2 class="pv-h2">You stay in <span>control</span></h2></div>
+      <div class="pv-cards four">
+        @for (p of controlPoints; track p; let i = $index) { <div class="pv-card"><span class="pv-num">{{ i + 1 }}</span><p class="mb-0">{{ p }}</p></div> }
       </div>
     </div>
   </section>
 
-  <!-- TRUST -->
-  <section class="py-5 bg-light-blue">
-    <div class="container-custom py-4">
-      <div class="row g-4 text-center">
-        <div class="col-6 col-lg-3">
-          <div class="card card-shadow border-0 h-100 p-4 bg-white">
-            <i class="bi bi-shield-lock fs-2 text-primary mb-2" aria-hidden="true"></i>
-            <h3 class="h6 fw-bold text-navy mb-1">Your data stays yours</h3>
-            <p class="fs-8 text-muted-custom mb-0">Each college sees only its own students, drives and reports.</p>
-          </div>
-        </div>
-        <div class="col-6 col-lg-3">
-          <div class="card card-shadow border-0 h-100 p-4 bg-white">
-            <i class="bi bi-person-check fs-2 text-primary mb-2" aria-hidden="true"></i>
-            <h3 class="h6 fw-bold text-navy mb-1">Access by role</h3>
-            <p class="fs-8 text-muted-custom mb-0">Admin, coordinator and viewer, limited to their branches.</p>
-          </div>
-        </div>
-        <div class="col-6 col-lg-3">
-          <div class="card card-shadow border-0 h-100 p-4 bg-white">
-            <i class="bi bi-journal-text fs-2 text-primary mb-2" aria-hidden="true"></i>
-            <h3 class="h6 fw-bold text-navy mb-1">Full audit log</h3>
-            <p class="fs-8 text-muted-custom mb-0">Who changed what and when, including overrides.</p>
-          </div>
-        </div>
-        <div class="col-6 col-lg-3">
-          <div class="card card-shadow border-0 h-100 p-4 bg-white">
-            <i class="bi bi-download fs-2 text-primary mb-2" aria-hidden="true"></i>
-            <h3 class="h6 fw-bold text-navy mb-1">Export anything</h3>
-            <p class="fs-8 text-muted-custom mb-0">Excel, CSV or PDF from every list and report.</p>
-          </div>
-        </div>
+  <section class="pv-sec">
+    <div class="pv-wrap">
+      <div class="pv-cards four">
+        <div class="pv-card"><h3 class="pv-h3">Your data stays yours</h3><p class="mb-0">Each college sees only its own students, drives and reports.</p></div>
+        <div class="pv-card"><h3 class="pv-h3">Access by role</h3><p class="mb-0">Admin, coordinator and viewer, limited to their branches.</p></div>
+        <div class="pv-card"><h3 class="pv-h3">Full audit log</h3><p class="mb-0">Who changed what and when, including overrides.</p></div>
+        <div class="pv-card"><h3 class="pv-h3">Export your data</h3><p class="mb-0">Lists and reports go out as Excel, CSV or PDF.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- FAQ -->
-  <section class="py-5 bg-white">
-    <div class="container-custom py-4">
-      <div class="text-center mb-4">
-        <div class="section-header-banner mx-auto">
-          <h2 class="h2 fw-bold text-navy mb-0">Questions from Placement Cells</h2>
-        </div>
-      </div>
-      <div class="mx-auto d-flex flex-column gap-2" style="max-width: 860px;">
-        @for (f of faqs; track f.q; let i = $index) {
-          <div class="faq-item card-shadow bg-white rounded-4">
-            <button type="button" class="faq-q" (click)="toggleFaq(i)" [attr.aria-expanded]="activeFaq === i" [attr.aria-controls]="'cfaq-' + i">
-              <span>{{ f.q }}</span>
-              <i class="bi" [class.bi-plus-lg]="activeFaq !== i" [class.bi-dash-lg]="activeFaq === i" aria-hidden="true"></i>
-            </button>
-            @if (activeFaq === i) { <div class="faq-a text-muted-custom fs-7" [id]="'cfaq-' + i">{{ f.a }}</div> }
-          </div>
-        }
+  <section class="pv-sec pv-grid-bg">
+    <div class="pv-wrap">
+      <div class="pv-head"><h2 class="pv-h2">Questions we get <span>asked</span></h2></div>
+      <div class="pv-faq">
+        @for (f of faqs; track f.q) { <details><summary>{{ f.q }}</summary><p>{{ f.a }}</p></details> }
       </div>
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="py-5 bg-white">
-    <div class="container-custom py-4">
-      <div class="card card-shadow border-0 text-center p-5 text-white"
-        style="background: linear-gradient(135deg, #0a1b3f 0%, #0057ff 100%); border-radius: 24px;">
-        <h2 class="display-6 fw-extrabold mb-3">Bring Your Placement Cell onto ProveYu</h2>
-        <p class="lead text-white mx-auto mb-4" style="max-width: 620px;">
-          Register in a few minutes, import your batch and publish your first drive. Your students get their own portal the same day.
-        </p>
-        <div class="d-flex flex-wrap justify-content-center gap-3">
-          <a routerLink="/college/register" class="btn btn-light text-primary fw-bold px-4 py-3 rounded-pill text-decoration-none">Register your college &rarr;</a>
-          <a routerLink="/how-it-works" class="btn btn-outline-light fw-bold px-4 py-3 rounded-pill text-decoration-none">See how it works</a>
-        </div>
-        <p class="text-white mt-4 mb-0 fs-7" style="opacity: 0.9;">
-          Questions before you register? Write to
-          <a href="mailto:support@proveyu.com" class="text-white fw-bold">support&#64;proveyu.com</a>
-        </p>
-      </div>
-    </div>
-  </section>
+  <app-public-cta heading="Bring your placement cell onto ProveYu" />
 </div>

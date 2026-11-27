@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 /** Two-column layout shared by the college auth pages. */
 @Component({
@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
   imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="pm-auth">
+    <div class="pm-auth" [class.pm-login]="signInPage" [attr.data-v]="variant()">
       <aside class="pm-auth-brand d-none d-lg-flex" [class.pm-auth-cxo]="variant() === 'cxo'">
         @if (variant() === 'student') {
           <a routerLink="/" class="pm-auth-logo"><img src="images/proveyu-mark.png" alt="" /><span>ProveYu</span><em>Student</em></a>
@@ -100,8 +100,11 @@ import { RouterLink } from '@angular/router';
     .pm-auth-card { width: 100%; max-width: 440px; background: var(--bs-body-bg); border-radius: 1rem; padding: 1.75rem; box-shadow: 0 10px 40px rgba(15,23,42,.08); }
     .pm-auth-wide { max-width: 760px; }
   `],
+  styleUrl: './auth-login-skins.scss',
 })
 export class AuthShell {
+  /** Sign-in, college registration and student sign-up get their own look; password and invite pages stay plain. */
+  readonly signInPage = /^((college|student|company|cxo|admin)\/login|college\/register|student\/signup)$/.test(inject(ActivatedRoute, { optional: true })?.snapshot?.routeConfig?.path ?? '');
   heading = input('');
   sub = input('');
   wide = input(false);

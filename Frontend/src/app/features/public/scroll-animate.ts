@@ -4,7 +4,7 @@ import { afterNextRender, DestroyRef, Directive, ElementRef, inject } from '@ang
 const BLOCKS = [
   '.hero-text-col > *', '.hero-visual-col', '.hero-section > .container-custom > :not(.hero-container)',
   '.section-header-banner', '.card', '.row > [class*="col-"] > .p-3', '.timeline-step', '.timeline-item', '.faq-item',
-  '.pr-intro > *', '.pr-details > *', '.pr-form',
+  '.pr-intro > *', '.pr-details > *', '.pr-form', '.pr-points li', '.pv-head', '.pv-tile', '.pv-copy > *', 'app-scene', '.pv-card', '.pv-step', '.pv-messy .note', '.pv-tidy .note', '.pv-faq details', '.pv-cta', '.pv-photo',
 ].join(',');
 
 /**

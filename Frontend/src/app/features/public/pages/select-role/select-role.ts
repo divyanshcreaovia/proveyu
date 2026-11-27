@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { PUBLIC_IMAGES } from '../../public-images';
 
 /** "Get started": choose the college or the student portal. Companies join a drive by invitation. */
 @Component({
@@ -7,6 +8,8 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [RouterModule],
   templateUrl: './select-role.html',
-  styleUrl: './select-role.scss',
+  styleUrl: '../portal-choice.scss',
 })
-export class SelectRole {}
+export class SelectRole {
+  readonly images = PUBLIC_IMAGES;
+}

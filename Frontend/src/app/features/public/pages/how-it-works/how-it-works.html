@@ -1,87 +1,34 @@
-<div class="bg-white" appScrollAnimate>
-  <!-- Header Banner -->
-  <section class="py-5 bg-white position-relative overflow-hidden">
-    <svg class="position-absolute top-0 start-0 d-none d-lg-block pe-none" width="220" height="220" viewBox="0 0 220 220"
-      fill="none" style="z-index: 10;" aria-hidden="true">
-      <path d="M 15 15 Q 95 25 125 105 T 205 175" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none" opacity="0.45" />
-      <polygon points="198,165 209,178 194,179" fill="#0057ff" opacity="0.75" />
-    </svg>
-
-    <div class="container-custom py-4 text-center">
-      <div class="section-header-banner mx-auto">
-        <h1 class="h2 fw-bold text-navy mb-3">How a Placement Season Runs on ProveYu</h1>
-        <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 720px;">
-          From setting up your placement cell to the final NIRF report: five connected steps, with the placement cell,
-          students and companies each working in their own space on the same data.
-        </p>
-      </div>
-      <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
-        <span class="point-pill-btn point-pill-primary"><i class="bi bi-building me-1" aria-hidden="true"></i>Placement cell</span>
-        <span class="point-pill-btn point-pill-primary"><i class="bi bi-mortarboard me-1" aria-hidden="true"></i>Students</span>
-        <span class="point-pill-btn point-pill-primary"><i class="bi bi-briefcase me-1" aria-hidden="true"></i>Companies</span>
+<div class="pv" appScrollAnimate>
+  <section class="pv-sec pv-grid-bg pv-hero">
+    <div class="pv-wrap">
+      <div class="pv-split">
+        <div class="pv-copy">
+          <p class="pv-pill">How it works</p>
+          <h1 class="pv-title">From setup to the <span>final report.</span></h1>
+          <p class="pv-lead">Five connected steps, with the placement cell, students and companies each working in their own space on the same data.</p>
+          <div class="pv-actions"><a routerLink="/college/register" class="pv-btn">Register your college</a></div>
+        </div>
+        <app-scene kind="howItWorks" />
       </div>
     </div>
   </section>
 
-  <!-- Connected Vertical Timeline -->
-  <section class="py-5 bg-light-blue position-relative overflow-hidden">
-    <div class="container-custom py-4 position-relative" style="z-index: 1;">
-
-      <div class="connected-timeline position-relative mx-auto" style="max-width: 1050px;">
-        <div class="timeline-line d-none d-md-block position-absolute"
-          style="left: 35px; top: 45px; bottom: 85px; width: 3px; border-left: 3px dashed #0057ff; opacity: 0.35; z-index: 0;"></div>
-
-        <div class="d-flex flex-column gap-5">
-          @for (s of steps; track s.title; let i = $index; let last = $last) {
-            <div class="timeline-item position-relative" style="z-index: 1;">
-              <div class="row align-items-start g-4">
-                <div class="col-md-auto text-center">
-                  <div class="rounded-circle text-white d-inline-flex align-items-center justify-content-center fw-extrabold fs-3 shadow"
-                    style="width: 70px; height: 70px;"
-                    [style.background]="last ? 'linear-gradient(135deg, #16a34a 0%, #0d9488 100%)' : 'linear-gradient(135deg, #0057ff 0%, #0a1b3f 100%)'">
-                    {{ i + 1 }}
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="card card-shadow border-0 p-4 p-md-5 rounded-4 bg-white">
-                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                      <span class="point-pill-btn point-pill-primary">STEP 0{{ i + 1 }} · {{ s.tag }}</span>
-                      <span class="fs-8 fw-semibold text-muted-custom"><i class="bi me-1" [class]="s.whoIcon" aria-hidden="true"></i>{{ s.who }}</span>
-                    </div>
-                    <h2 class="h4 fw-bold text-navy mb-3">{{ s.title }}</h2>
-                    <p class="text-muted-custom mb-4 fs-6 lh-base">{{ s.text }}</p>
-                    <div class="row g-3">
-                      @for (p of s.points; track p) {
-                        <div class="col-md-6 col-lg-4 d-flex align-items-start gap-2">
-                          <span class="rounded-circle bg-success bg-opacity-10 text-success d-inline-flex align-items-center justify-content-center p-1"
-                            style="width: 22px; height: 22px; flex-shrink: 0;" aria-hidden="true">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12" /></svg>
-                          </span>
-                          <span class="fw-medium fs-7 text-navy">{{ p }}</span>
-                        </div>
-                      }
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          }
+  <section class="pv-sec">
+    <div class="pv-wrap">
+      @for (s of steps; track s.title; let i = $index; let odd = $odd) {
+        <div class="pv-split" [class.flip]="odd">
+          <div class="pv-copy">
+            <span class="pv-num">{{ i + 1 }}</span>
+            <p class="pv-pill ms-2">{{ s.who }}</p>
+            <h2 class="pv-h2">{{ s.title }}</h2>
+            <p class="pv-lead">{{ s.text }}</p>
+            <ul class="pv-points">@for (p of s.points; track p) { <li>{{ p }}</li> }</ul>
+          </div>
+          <app-scene [kind]="pictures[i]" />
         </div>
-      </div>
-
-      <!-- CTA Card -->
-      <div class="card card-shadow border-0 text-center p-4 p-md-5 mt-5 text-white"
-        style="background: linear-gradient(135deg, #0a1b3f 0%, #0057ff 100%); border-radius: 24px;">
-        <h2 class="h3 fw-extrabold mb-2">Ready to Run Your Season on ProveYu?</h2>
-        <p class="fs-7 text-white mx-auto mb-4" style="max-width: 580px;">
-          Placement cells register in minutes. Students activate their account once their college is on board.
-        </p>
-        <div class="d-flex flex-wrap justify-content-center gap-3">
-          <a routerLink="/college/register" class="btn btn-light text-primary fw-bold px-4 py-2.5 rounded-pill fs-7 text-decoration-none shadow">Register your college &rarr;</a>
-          <a routerLink="/student/signup" class="btn btn-outline-light fw-bold px-4 py-2.5 rounded-pill fs-7 text-decoration-none">Activate student account &rarr;</a>
-        </div>
-      </div>
-
+      }
     </div>
   </section>
+
+  <app-public-cta heading="Ready to run your season on ProveYu?" />
 </div>

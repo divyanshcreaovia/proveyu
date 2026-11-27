@@ -1,3 +1,5 @@
+import { Scene } from '../../scene';
+import { PublicCta } from '../../cta';
 import { ScrollAnimate } from '../../scroll-animate';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -5,11 +7,13 @@ import { RouterModule } from '@angular/router';
 /** Public page: the placement season from setup to reports, across the placement cell, students and companies. */
 @Component({
   selector: 'app-how-it-works',
-  imports: [RouterModule, ScrollAnimate],
+  imports: [RouterModule, ScrollAnimate, Scene, PublicCta],
   templateUrl: './how-it-works.html',
-  styleUrl: './how-it-works.scss',
 })
 export class HowItWorks {
+  /** Picture for each step, in order. */
+  readonly pictures = ['import', 'student', 'eligibility', 'calendar', 'offers'] as const;
+
   readonly steps = [
     {
       tag: 'SET UP', who: 'Placement cell', whoIcon: 'bi-building',

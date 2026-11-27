@@ -1,66 +1,43 @@
-<div class="login-wrapper py-4 d-flex align-items-center justify-content-center position-relative overflow-hidden"
-  style="min-height: calc(100vh - 80px); background: radial-gradient(circle at 70% 20%, rgba(0, 87, 255, 0.08) 0%, transparent 60%), radial-gradient(circle at 20% 80%, rgba(10, 27, 63, 0.04) 0%, transparent 50%);">
+<div class="choose">
+  <span class="orb a" aria-hidden="true"></span><span class="orb b" aria-hidden="true"></span>
+  <div class="inner">
+    <a routerLink="/" class="brand"><img src="images/logo1.png" alt="ProveYu Logo"></a>
+    <br>
+    <p class="pill">Welcome back</p>
+    <h1>Sign <span>In</span></h1>
+    <p class="lead-x">Choose your portal to continue</p>
 
-  <!-- Top Decorative SVG Thread Line -->
-  <svg class="position-absolute top-0 end-0 d-none d-lg-block pe-none" width="220" height="220" viewBox="0 0 220 220"
-    fill="none" style="z-index: 10; margin-top: 10px; margin-right: 10px;">
-    <path d="M 205 15 Q 120 25 90 95 T 15 160" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none"
-      opacity="0.35" />
-    <polygon points="23,150 10,165 26,166" fill="#0057ff" opacity="0.6" />
-  </svg>
-
-  <div class="container-custom py-2 position-relative" style="z-index: 1;">
-    <div class="card card-shadow border-0 p-4 p-md-5 bg-white mx-auto rounded-4" style="max-width: 980px;">
-
-      <!-- Header -->
-      <div class="text-center mb-4">
-        <a routerLink="/" class="d-inline-block mb-2">
-          <img src="images/logo1.png" alt="ProveYu Logo" style="height: 48px; width: auto;">
-        </a>
-        <h1 class="h4 fw-extrabold text-navy mb-0">Sign In</h1>
-      </div>
-
-
-
-      <p class="text-center text-muted-custom fs-7 mb-4">Choose your portal to continue</p>
-      <div class="row g-3 mb-2">
-        <div class="col-md-4">
-          <a routerLink="/college/login" class="portal-card portal-college">
-            <span class="portal-icon"><i class="bi bi-building"></i></span>
-            <span class="portal-tag">FOR COLLEGES</span>
-            <span class="portal-title">College / Placement cell</span>
-            <span class="portal-text">TPOs, placement coordinators and team members</span>
-            <span class="portal-cta">College sign in &rarr;</span>
-          </a>
-        </div>
-        <div class="col-md-4">
-          <a routerLink="/student/login" class="portal-card portal-student">
-            <span class="portal-icon"><i class="bi bi-mortarboard"></i></span>
-            <span class="portal-tag">FOR STUDENTS</span>
-            <span class="portal-title">Student / Candidate</span>
-            <span class="portal-text">Campus drives, applications, interviews and offers</span>
-            <span class="portal-cta">Student sign in &rarr;</span>
-          </a>
-        </div>
-        <div class="col-md-4">
-          <a routerLink="/cxo/login" class="portal-card portal-cxo">
-            <span class="portal-icon"><i class="bi bi-bar-chart-line"></i></span>
-            <span class="portal-tag">FOR LEADERSHIP</span>
-            <span class="portal-title">College leadership</span>
-            <span class="portal-text">Principals, directors and management: live placement dashboards</span>
-            <span class="portal-cta">Leadership sign in &rarr;</span>
-          </a>
-        </div>
-      </div>
-
-
-      <div class="text-center fs-7 text-muted-custom mt-3">
-        Company HR or interview panel? <a routerLink="/company/login" class="text-primary fw-semibold text-decoration-none">Sign in to your Drive Room &rarr;</a>
-      </div>
-
-      <div class="text-center pt-3 fs-7 text-muted-custom border-top mt-4">
-        Don't have an account yet? <a routerLink="/select-role" class="text-primary fw-bold text-decoration-none">Create an account &rarr;</a>
-      </div>
+    <div class="cards">
+      <a routerLink="/college/login" class="tile">
+        <span class="shot"><img [src]="images.drive" alt="" width="1200" height="900"></span>
+        <span class="body">
+          <span class="cat">FOR COLLEGES</span>
+          <strong>College / Placement cell</strong>
+          <span class="text">TPOs, placement coordinators and team members</span>
+          <span class="go">College sign in <i aria-hidden="true">&rarr;</i></span>
+        </span>
+      </a>
+      <a routerLink="/student/login" class="tile">
+        <span class="shot"><img [src]="images.student" alt="" width="1200" height="900"></span>
+        <span class="body">
+          <span class="cat">FOR STUDENTS</span>
+          <strong>Student / Candidate</strong>
+          <span class="text">Campus drives, applications, interviews and offers</span>
+          <span class="go">Student sign in <i aria-hidden="true">&rarr;</i></span>
+        </span>
+      </a>
+      <a routerLink="/cxo/login" class="tile">
+        <span class="shot"><img [src]="images.leadership" alt="" width="1200" height="900"></span>
+        <span class="body">
+          <span class="cat">FOR LEADERSHIP</span>
+          <strong>College leadership</strong>
+          <span class="text">Principals, directors and management: live placement dashboards</span>
+          <span class="go">Leadership sign in <i aria-hidden="true">&rarr;</i></span>
+        </span>
+      </a>
     </div>
+
+    <p class="note">Company HR or interview panel? <a routerLink="/company/login">Sign in to your Drive Room &rarr;</a></p>
+    <p class="foot">Don't have an account yet? <a routerLink="/select-role">Create an account &rarr;</a></p>
   </div>
 </div>

@@ -1,78 +1,34 @@
-<div class="select-role-wrapper py-4 d-flex align-items-center justify-content-center position-relative overflow-hidden"
-  style="min-height: calc(100vh - 80px); background: radial-gradient(circle at 70% 20%, rgba(0, 87, 255, 0.08) 0%, transparent 60%), radial-gradient(circle at 20% 80%, rgba(10, 27, 63, 0.04) 0%, transparent 50%);">
+<div class="choose">
+  <span class="orb a" aria-hidden="true"></span><span class="orb b" aria-hidden="true"></span>
+  <div class="inner two">
+    <a routerLink="/" class="brand"><img src="images/logo1.png" alt="ProveYu home"></a>
+    <br>
+    <p class="pill">Get started</p>
+    <h1>Create your <span>account</span></h1>
+    <p class="lead-x">Are you a college placement cell or a student? Pick one to get started.</p>
 
-  <!-- Top-Right Decorative Thread Line -->
-  <svg class="position-absolute top-0 end-0 d-none d-lg-block pe-none" width="230" height="230" viewBox="0 0 230 230"
-    fill="none" style="z-index: 10;" aria-hidden="true">
-    <path d="M 215 15 Q 135 25 105 105 T 20 180" stroke="#0057ff" stroke-width="2.5" stroke-dasharray="6 6" fill="none"
-      opacity="0.4" />
-    <polygon points="27,170 16,183 31,184" fill="#0057ff" opacity="0.75" />
-  </svg>
-
-  <div class="container-custom py-2 position-relative" style="z-index: 1;">
-
-    <!-- Header Banner -->
-    <div class="text-center mb-4">
-      <a routerLink="/" class="d-inline-block mb-2">
-        <img src="images/logo1.png" alt="ProveYu home" style="height: 48px; width: auto;">
+    <div class="cards">
+      <a class="tile" routerLink="/college/register">
+        <span class="shot"><img [src]="images.drive" alt="" width="1200" height="900"></span>
+        <span class="body">
+          <span class="cat">FOR COLLEGES &amp; UNIVERSITIES</span>
+          <strong>College Placement Portal</strong>
+          <span class="text">Register your Training &amp; Placement cell. Manage students, companies, drives, rounds, interviews, offers and reports in one place.</span>
+          <span class="go">Register your college <i aria-hidden="true">&rarr;</i></span>
+        </span>
       </a>
-      <h1 class="h3 fw-bold text-navy mb-2">Create your account</h1>
-      <p class="text-muted-custom mx-auto fs-6 mb-0" style="max-width: 640px;">
-        Are you a college placement cell or a student? Pick one to get started.
-      </p>
+      <a class="tile" routerLink="/student/signup">
+        <span class="shot"><img [src]="images.student" alt="" width="1200" height="900"></span>
+        <span class="body">
+          <span class="cat">FOR STUDENTS</span>
+          <strong>Student Placement Portal</strong>
+          <span class="text">Activate your account with your college e-mail and roll number. Apply to campus drives, track rounds, interviews and offers, and practise with mock tests and AI interviews.</span>
+          <span class="go">Create student account <i aria-hidden="true">&rarr;</i></span>
+        </span>
+      </a>
     </div>
 
-    <div class="row g-4 justify-content-center mx-auto" style="max-width: 880px;">
-
-      <!-- College TPO Card -->
-      <div class="col-md-6">
-        <a class="card card-shadow border border-warning border-opacity-50 h-100 p-4 bg-white rounded-4 hover-lift text-center d-flex flex-column text-decoration-none"
-          routerLink="/college/register">
-
-          <span class="point-pill-btn bg-warning-subtle text-dark border border-warning-subtle mx-auto mb-3">FOR
-            COLLEGES & UNIVERSITIES</span>
-
-          <h2 class="h5 fw-bold text-navy mb-3">College Placement Portal</h2>
-          <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
-            Register your Training & Placement cell. Manage students, companies, drives, rounds, interviews, offers
-            and reports in one place.
-          </p>
-
-          <span class="btn btn-warning w-100 py-2.5 fw-bold text-dark mt-auto shadow-sm">
-            Register your college &rarr;
-          </span>
-        </a>
-      </div>
-
-      <!-- Student Card -->
-      <div class="col-md-6">
-        <a class="card card-shadow border border-primary border-opacity-25 h-100 p-4 bg-white rounded-4 hover-lift text-center d-flex flex-column text-decoration-none"
-          routerLink="/student/signup">
-
-          <span class="point-pill-btn point-pill-primary mx-auto mb-3">FOR STUDENTS</span>
-
-          <h2 class="h5 fw-bold text-navy mb-3">Student Placement Portal</h2>
-          <p class="text-muted-custom mb-4 fs-7 lh-base flex-fill">
-            Activate your account with your college e-mail and roll number. Apply to campus drives, track rounds,
-            interviews and offers, and practise with mock tests and AI interviews.
-          </p>
-
-          <span class="btn btn-primary-custom w-100 py-2.5 fw-bold text-white shadow mt-auto">
-            Create student account &rarr;
-          </span>
-        </a>
-      </div>
-    </div>
-
-    <!-- Recruiters join by invitation -->
-    <p class="text-center mt-4 mb-0 fs-7 text-muted-custom mx-auto" style="max-width: 640px;">
-      <i class="bi bi-briefcase me-1" aria-hidden="true"></i>Recruiting for a campus drive? Companies join by invitation from the
-      placement cell. <a routerLink="/company/login" class="text-primary fw-semibold text-decoration-none">Company sign in &rarr;</a>
-    </p>
-
-    <!-- Sign In Footer Link -->
-    <div class="text-center mt-3 pt-2 fs-7 text-muted-custom">
-      Already have an account? <a routerLink="/login" class="text-primary fw-bold text-decoration-none">Sign In Here &rarr;</a>
-    </div>
+    <p class="note">Recruiting for a campus drive? Companies join by invitation from the placement cell. <a routerLink="/company/login">Company sign in &rarr;</a></p>
+    <p class="foot">Already have an account? <a routerLink="/login">Sign In Here &rarr;</a></p>
   </div>
 </div>

@@ -1,0 +1,73 @@
+<section class="hero">
+  <div class="inner">
+    <div class="hero-text-col copy">
+      <p class="pill">Placement <i></i> Preparation <i></i> Analytics</p>
+      <h1>Your Complete<br><span>Placement</span>&nbsp;Platform.</h1>
+      <p class="lead">Prepare students, run placement drives and track every result, all on one platform.</p>
+      <div class="actions">
+        <a routerLink="/college/register" class="btn-main">Register your college <span aria-hidden="true">&rarr;</span></a>
+        <a routerLink="/how-it-works" class="btn-alt"><b aria-hidden="true"></b>See how it works</a>
+      </div>
+      <p class="student-link">Student? <a routerLink="/student/signup">Activate your account</a></p>
+      <dl class="stats">
+        <div><dt>20</dt><dd>Mock tests</dd></div>
+        <div><dt>74</dt><dd>Coding problems</dd></div>
+        <div><dt>7</dt><dd>Ready reports</dd></div>
+      </dl>
+    </div>
+
+    <div class="hero-visual-col art" role="img" aria-label="A student with examples of ProveYu: placement readiness, placement dashboard, an upcoming drive and an AI interview score. Sample data.">
+      <div class="stage" aria-hidden="true">
+        <div class="disc"></div>
+        <div class="ring"></div>
+        <img class="person" src="images/hero-student-cutout.webp" alt="" width="780" height="964" fetchpriority="high">
+
+        <div class="float readiness">
+          <strong>Placement Readiness</strong>
+          <div class="split">
+            <div class="donut"><span>3/4</span></div>
+            <ul>
+              @for (r of readiness; track r) { <li class="done">{{ r }}</li> }
+              <li>AI interview</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="float dashboard">
+          <div class="head"><strong>Placement Dashboard</strong><small>Sample data</small></div>
+          <div class="kpis">
+            <div><small>Drives</small><b>24</b></div>
+            <div><small>Placed</small><b>412</b></div>
+            <div><small>Avg CTC</small><b>6.9 LPA</b></div>
+          </div>
+          <svg viewBox="0 0 220 60" preserveAspectRatio="xMidYMid meet">
+            <path class="area" d="M4 50 L34 46 L64 47 L94 38 L124 39 L154 27 L184 22 L216 10 L216 60 L4 60 Z" />
+            <path class="line" d="M4 50 L34 46 L64 47 L94 38 L124 39 L154 27 L184 22 L216 10" />
+          </svg>
+        </div>
+
+        <div class="float drive">
+          <strong>Upcoming Drives</strong>
+          <div class="row-x">
+            <span class="logo">T</span>
+            <span class="who"><b>TechNova</b><small>On-campus drive</small></span>
+            <span class="tag">Apply now</span>
+          </div>
+        </div>
+
+        <div class="float interview">
+          <strong>AI Mock Interview</strong>
+          <div class="row-x">
+            <span class="score">86</span>
+            <span class="who"><b>Interview ready</b><small>Scored report</small></span>
+          </div>
+        </div>
+
+        <span class="spark s1"></span><span class="spark s2"></span>
+      </div>
+    </div>
+  </div>
+  <button type="button" class="scroll" (click)="scrollDown()" aria-label="Scroll to the next section">
+    <span>Scroll</span><i aria-hidden="true"></i>
+  </button>
+</section>

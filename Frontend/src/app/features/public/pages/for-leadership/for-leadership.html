@@ -1,0 +1,80 @@
+<div class="pv" appScrollAnimate>
+  <section class="pv-sec pv-grid-bg pv-hero">
+    <div class="pv-wrap">
+      <div class="pv-split">
+        <div class="pv-copy">
+          <p class="pv-pill">For principals, directors and management</p>
+          <h1 class="pv-title">Ask a question, get a <span>live dashboard.</span></h1>
+          <p class="pv-lead">Placement numbers in plain words, without waiting for someone to prepare a sheet.</p>
+          <div class="pv-actions">
+            <a routerLink="/pricing" class="pv-btn">Request a demo</a>
+            <a routerLink="/cxo/login" class="pv-btn alt">Leadership sign in</a>
+          </div>
+        </div>
+        <app-scene kind="leadership" />
+      </div>
+    </div>
+  </section>
+
+  <section class="pv-sec">
+    <div class="pv-wrap">
+      <div class="pv-head"><h2 class="pv-h2">Your leadership <span>portal</span></h2></div>
+      <div class="pv-cards">
+        @for (c of leadership; track c.title; let i = $index) {
+          <div class="pv-card"><span class="pv-num">{{ i + 1 }}</span><h3 class="pv-h3">{{ c.title }}</h3><p class="mb-0">{{ c.text }}</p></div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="pv-sec pv-grid-bg">
+    <div class="pv-wrap">
+      @for (s of stories; track s.pill; let odd = $odd) {
+        <div class="pv-split" [class.flip]="odd">
+          <div class="pv-copy">
+            <p class="pv-pill">{{ s.pill }}</p>
+            <h2 class="pv-h2">{{ s.title }} <span>{{ s.accent }}</span></h2>
+            <p class="pv-lead">{{ s.text }}</p>
+            <ul class="pv-points">@for (p of s.points; track p) { <li>{{ p }}</li> }</ul>
+          </div>
+          <app-scene [kind]="s.scene" />
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="pv-sec">
+    <div class="pv-wrap">
+      <div class="pv-head"><h2 class="pv-h2">Getting <span>started</span></h2></div>
+      <div class="pv-cards">
+        @for (s of access; track s.title; let i = $index) { <div class="pv-card"><span class="pv-num">{{ i + 1 }}</span><h3 class="pv-h3">{{ s.title }}</h3><p class="mb-0">{{ s.text }}</p></div> }
+      </div>
+    </div>
+  </section>
+
+  <section class="pv-sec pv-grid-bg">
+    <div class="pv-wrap">
+      <div class="pv-head"><h2 class="pv-h2">Questions we get <span>asked</span></h2></div>
+      <div class="pv-faq">
+        @for (f of faqs; track f.q) { <details><summary>{{ f.q }}</summary><p>{{ f.a }}</p></details> }
+      </div>
+    </div>
+  </section>
+
+  <section class="pv-sec">
+    <div class="pv-wrap">
+      <div class="pv-cta">
+        <span class="orb" aria-hidden="true"></span>
+        <div>
+          <h2 class="pv-h2">Give your leadership the numbers, live</h2>
+          <p class="mb-0">Talk to us about a demo for your college.</p>
+          <div class="pv-actions">
+            <a routerLink="/pricing" class="pv-btn">Request a demo</a>
+            <a routerLink="/cxo/login" class="pv-btn alt">Leadership sign in</a>
+          </div>
+        </div>
+        <div class="pops" aria-hidden="true"><span class="pop">Question asked</span><span class="pop">Dashboard saved</span><span class="pop">Board report ready</span></div>
+      </div>
+    </div>
+  </section>
+</div>

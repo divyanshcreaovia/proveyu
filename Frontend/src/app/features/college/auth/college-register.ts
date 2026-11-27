@@ -8,8 +8,8 @@ import { AuthShell } from './auth-shell';
 import { Stepper } from '../../../shared/ui/stepper';
 
 const domainMatch = (g: AbstractControl): ValidationErrors | null => {
-  const email = (g.get('tpoEmail')?.value ?? '').toLowerCase().trim();
-  const domain = (g.get('emailDomain')?.value ?? '').toLowerCase().trim();
+  const email = (g.get('tpo.tpoEmail')?.value ?? '').toLowerCase().trim();
+  const domain = (g.get('college.emailDomain')?.value ?? '').toLowerCase().trim();
   if (!email || !domain) return null;
   return email.endsWith('@' + domain) || email.endsWith('.' + domain) ? null : { domainMismatch: true };
 };
