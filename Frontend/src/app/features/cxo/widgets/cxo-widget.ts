@@ -23,8 +23,8 @@ function label(raw: string, dim: Dimension): string {
   return raw;
 }
 
-const MINT = '#2b59c3';  // the accent blue: the leading bar
-const LIME = '#2b59c3';  // trend line
+const MINT = '#a67c1e';  // the accent gold: the leading bar
+const LIME = '#a67c1e';  // trend line
 const TRACK = '#eef1f5';
 
 /**
@@ -101,14 +101,14 @@ const TRACK = '#eef1f5';
     .xk-click { cursor: pointer; }
     .xw-info { all: unset; cursor: pointer; margin-left: .45rem; width: 16px; height: 16px; border-radius: 50%; display: inline-grid; place-items: center; vertical-align: middle;
       font-size: .58rem; color: var(--x-muted); background: rgba(15, 23, 42, .06); transition: background-color .15s ease, color .15s ease; }
-    .xw-info:hover, .xw-info:focus-visible { color: #fff; background: var(--x-accent, #2b59c3); }
+    .xw-info:hover, .xw-info:focus-visible { color: #fff; background: var(--x-accent, #a67c1e); }
     .xw-info:focus-visible { outline: 2px solid var(--x-accent); outline-offset: 2px; }
     .xw-about { padding: .65rem .8rem; border-radius: 12px; background: var(--x-panel-2); font-size: .74rem; line-height: 1.5; color: var(--x-muted); text-align: left; font-weight: 400; letter-spacing: 0; text-transform: none; }
     .xw-float { position: fixed; z-index: 1040; width: 290px; pointer-events: none; background: #fff; border: 1px solid var(--x-line-2); box-shadow: 0 16px 40px -10px rgba(15, 23, 42, .28); animation: xwTip .14s ease backwards; }
     @keyframes xwTip { from { opacity: 0; transform: translateY(4px); } }
     .xw-about b { display: block; margin-bottom: .15rem; color: var(--x-text); font-size: .78rem; }
     .xw-chips { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .45rem; }
-    .xw-chips span { padding: .1rem .5rem; border-radius: 999px; font-size: .68rem; font-weight: 600; color: var(--x-accent, #2b59c3); background: var(--x-accent-soft, rgba(43, 89, 195, .1)); }
+    .xw-chips span { padding: .1rem .5rem; border-radius: 999px; font-size: .68rem; font-weight: 600; color: var(--x-accent, #a67c1e); background: var(--x-accent-soft, rgba(166,124,30,.1)); }
     .xk-drill, .xw-drill { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 9px; font-size: .8rem; color: var(--x-muted); background: rgba(15, 23, 42, .05); }
     .xk-drill { position: absolute; top: .85rem; right: 1rem; }
     .xk-hero .xk-drill { color: #fff; background: rgba(255, 255, 255, .18); }
@@ -326,7 +326,7 @@ export class CxoWidget {
         xAxis: { categories: cats, tickLength: 0, lineWidth: 0 },
         yAxis: { gridLineDashStyle: 'Dot', labels: { format: '{value}' + suffix } },
         plotOptions: { areaspline: { lineWidth: 2.5, color: LIME, threshold: null, marker: { enabled: false },
-          fillColor: { linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 }, stops: [[0, 'rgba(43,89,195,.16)'], [1, 'rgba(43,89,195,0)']] } } },
+          fillColor: { linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 }, stops: [[0, 'rgba(166,124,30,.16)'], [1, 'rgba(166,124,30,0)']] } } },
         series: [{ type: 'areaspline', name: s.title,
           connectNulls: true,
           // the latest point is marked; with only a few real points every point is marked so a lone month is still visible
@@ -339,7 +339,7 @@ export class CxoWidget {
     const horizontal = s.type === 'BAR';
     const type = horizontal ? 'bar' : 'column';
     const grad = horizontal ? { x1: 0, y1: 0, x2: 1, y2: 0 } : { x1: 0, y1: 1, x2: 0, y2: 0 };
-    const soft = '#b9c9ef';   // the rest: a light shade of the accent
+    const soft = '#ecd8a8';   // the rest: a light shade of the accent
     const strong = MINT;      // the leading bar
     return {
       chart: { type, animation: { duration: 900 } },
@@ -355,9 +355,9 @@ export class CxoWidget {
         { type, name: 'track', data: values.map(() => max || 1), color: TRACK, enableMouseTracking: false, states: { inactive: { opacity: 1 } }, animation: false },
         { type, name: s.title, data: values.map(y => ({ y, color: y === max && max > 0 ? strong : soft,
           // white figure on the dark leading bar, dark figure on the light ones
-          dataLabels: { style: { color: y === max && max > 0 ? '#ffffff' : '#1e2f5c' } } })),
+          dataLabels: { style: { color: y === max && max > 0 ? '#ffffff' : '#262a4a' } } })),
           dataLabels: { enabled: horizontal, align: 'right', inside: true, format: '{y}' + suffix,
-            style: { color: '#1e2f5c', textOutline: 'none', fontWeight: '700', fontSize: '11px' } } },
+            style: { color: '#262a4a', textOutline: 'none', fontWeight: '700', fontSize: '11px' } } },
       ] as SeriesOptionsType[],
     } as Options;
   });

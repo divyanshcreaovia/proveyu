@@ -56,7 +56,7 @@ const LIVE_EVERY_MS = 30_000;
     .xv-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--x-accent); animation: xvPulse 1.8s ease-out infinite; }
     .xv-actions { display: flex; gap: .45rem; flex-wrap: wrap; }
     .xv-on { color: var(--x-accent); border-color: var(--x-accent-line); background: var(--x-accent-soft); }
-    @keyframes xvPulse { 0% { box-shadow: 0 0 0 0 rgba(43,89,195,.45); } 100% { box-shadow: 0 0 0 7px rgba(43,89,195,0); } }
+    @keyframes xvPulse { 0% { box-shadow: 0 0 0 0 rgba(166,124,30,.45); } 100% { box-shadow: 0 0 0 7px rgba(166,124,30,0); } }
   `],
 })
 export class CxoDashboardView implements OnInit {

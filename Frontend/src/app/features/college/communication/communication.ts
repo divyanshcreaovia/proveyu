@@ -14,7 +14,7 @@ import { EmptyState } from '../../../shared/ui/states';
   imports: [FormsModule, DatePipe, EmptyState],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <ul class="nav nav-tabs small mb-3" role="tablist">
+    <ul class="nav nav-tabs small mb-3" role="tablist" [class.chat-hide]="tab() === 'chat' && !!peer()">
       <li class="nav-item"><button class="nav-link" role="tab" [class.active]="tab() === 'ann'" (click)="tab.set('ann')">Announcements</button></li>
       <li class="nav-item"><button class="nav-link" role="tab" [class.active]="tab() === 'chat'" (click)="openChat()">Chat
         @if (chat.totalUnread()) { <span class="chat-unread ms-1">{{ chat.totalUnread() }}</span> }</button></li>
@@ -60,7 +60,7 @@ import { EmptyState } from '../../../shared/ui/states';
         </section></div>
       </div>
     } @else {
-      <div class="pm-cm-chat">
+      <div class="pm-cm-chat" [class.chat-open]="!!peer()">
         <aside class="pm-cm-contacts">
           <input type="search" class="form-control form-control-sm mb-2" placeholder="Search people…" aria-label="Search contacts" [(ngModel)]="contactQ" (change)="loadContacts()" />
           <div class="small text-body-secondary mb-1">@if (chat.connected()) { <i class="bi bi-circle-fill text-success"></i> live } @else { <i class="bi bi-circle text-secondary"></i> offline (messages still send) }</div>
@@ -76,13 +76,14 @@ import { EmptyState } from '../../../shared/ui/states';
         <section class="pm-cm-thread">
           @if (!peer()) { <pm-empty-state icon="bi-chat-dots" title="Pick a conversation" text="Chat with students, linked recruiters and your team." /> }
           @else {
-            <header class="border-bottom pb-2 mb-2 fw-semibold small">{{ peer()!.name }} <span class="text-body-secondary fw-normal">({{ peer()!.type.toLowerCase() }})</span></header>
+            <header class="border-bottom pb-2 mb-2 fw-semibold small"><button type="button" class="chat-back" aria-label="Back to contacts" (click)="closeChat()"><i class="bi bi-arrow-left" aria-hidden="true"></i></button>{{ peer()!.name }} <span class="text-body-secondary fw-normal">({{ peer()!.type.toLowerCase() }})</span></header>
             <div #scroller class="pm-cm-msgs" aria-live="polite">
               @for (m of messages(); track m.id) {
+                @if ($index === 0 || (m.createdAt | date: 'yyyyMMdd') !== (messages()[$index - 1].createdAt | date: 'yyyyMMdd')) { <div class="chat-day">{{ m.createdAt | date: 'd MMM y' }}</div> }
                 <div class="pm-cm-msg" [class.pm-cm-mine]="m.senderId === college.me()?.userId">
                   @if (m.messageType === 'FILE') { <button class="btn btn-link btn-sm p-0" (click)="chat.openAttachment(m.id)"><i class="bi bi-paperclip"></i> {{ m.fileName }}</button> }
                   @if (m.message) { <div>{{ m.message }}</div> }
-                  <small class="opacity-75">{{ m.createdAt | date: 'short' }}</small>
+                  <small class="opacity-75"><span class="d-none d-lg-inline">{{ m.createdAt | date: 'short' }}</span><span class="d-lg-none">{{ m.createdAt | date: 'shortTime' }}</span></small>
                 </div>
               }
             </div>
@@ -180,6 +181,11 @@ export class Communication implements OnInit, OnDestroy {
       this.scrollDown();
       m.filter(x => x.receiverId === this.college.me()?.userId && x.status !== 'READ').forEach(x => this.chat.markRead(x.id).subscribe());
     });
+  }
+  /** Phones: back from the conversation to the contact list. */
+  closeChat(): void {
+    this.peer.set(null);
+    this.chat.activePeer.set(null); // new messages from this person count as unread again
   }
   sendMsg(): void {
     const t = this.text.trim();

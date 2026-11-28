@@ -1,13 +1,13 @@
 @if (showBanner() && banner(); as b) {
   <div class="announce-bar">
     <div class="announce">
-      <span class="tag"><i aria-hidden="true"></i>New</span>
+      <span class="tag">New</span>
       <span class="announce-text">{{ b.text }}</span>
       @if (b.link) {
         @if (external(b.link)) {
-          <a class="more" [href]="b.link" target="_blank" rel="noopener">See how <span aria-hidden="true">&rarr;</span></a>
+          <a class="more" [href]="b.link" target="_blank" rel="noopener">See how <span class="ui-arrow" aria-hidden="true"></span></a>
         } @else {
-          <a class="more" [routerLink]="path(b.link)" [fragment]="fragment(b.link)">See how <span aria-hidden="true">&rarr;</span></a>
+          <a class="more" [routerLink]="path(b.link)" [fragment]="fragment(b.link)">See how <span class="ui-arrow" aria-hidden="true"></span></a>
         }
       }
     </div>
@@ -50,7 +50,7 @@
 
       <div class="d-flex align-items-center gap-3 ms-lg-4 pb-3 pb-lg-0">
         <a routerLink="/login" class="btn nav-signin" (click)="open.set(false)">Sign in</a>
-        <a routerLink="/select-role" class="btn nav-start" (click)="open.set(false)">Get started <span aria-hidden="true">&rarr;</span></a>
+        <a routerLink="/select-role" class="btn nav-start" (click)="open.set(false)">Get started <span class="ui-arrow" aria-hidden="true"></span></a>
       </div>
     </div>
   </div>

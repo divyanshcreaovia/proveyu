@@ -58,11 +58,11 @@ const GAP = 14;
     .xb-ai { position: relative; overflow: hidden; height: 100%; min-height: 290px; display: flex; flex-direction: column; padding: 1.15rem 1.25rem; border-radius: var(--x-radius, 22px);
       border: 1px solid transparent;
       background: linear-gradient(var(--x-panel), var(--x-panel)) padding-box,
-                  linear-gradient(160deg, rgba(43,89,195,.35), rgba(15,23,42,.08) 45%) border-box;
+                  linear-gradient(160deg, rgba(166,124,30,.35), rgba(15,23,42,.08) 45%) border-box;
       box-shadow: var(--x-shadow);
       animation: xbIn .45s var(--x-ease) backwards; }
     .xb-ai-k { display: inline-flex; align-items: center; gap: .5rem; font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--x-accent); }
-    .xb-ai-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--x-accent); box-shadow: 0 0 0 4px rgba(43,89,195,.12); }
+    .xb-ai-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--x-accent); box-shadow: 0 0 0 4px rgba(166,124,30,.12); }
     .xb-ai-h { margin: .9rem 0 0; font-size: clamp(1rem, 1.05vw, 1.2rem); font-weight: 600; line-height: 1.4; letter-spacing: -.012em; color: var(--x-text); }
     .xb-ai ul { margin: auto 0 0; padding: .85rem 0 0; list-style: none; display: grid; gap: .5rem; border-top: 1px solid var(--x-line); overflow: auto; }
     .xb-ai li { position: relative; padding-left: .95rem; font-size: .8rem; line-height: 1.45; color: var(--x-muted); animation: xbIn .35s ease backwards; }

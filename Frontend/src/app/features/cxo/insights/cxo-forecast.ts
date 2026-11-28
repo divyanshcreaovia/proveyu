@@ -94,8 +94,8 @@ export class CxoForecast implements OnInit {
         label: { text: `Eligible: ${f.eligible}`, style: { color: '#64748b', fontSize: '10px' } } }] },
       tooltip: { shared: true, valueSuffix: ' students' },
       series: [
-        { type: 'line', name: 'Placed', data: f.series.map(p => p.placed), color: '#2b59c3', lineWidth: 3, marker: { enabled: false } },
-        { type: 'line', name: 'Likely', data: f.series.map((p, i) => join(p.base, i)), color: '#2b59c3', dashStyle: 'ShortDash', lineWidth: 2, marker: { enabled: false } },
+        { type: 'line', name: 'Placed', data: f.series.map(p => p.placed), color: '#a67c1e', lineWidth: 3, marker: { enabled: false } },
+        { type: 'line', name: 'Likely', data: f.series.map((p, i) => join(p.base, i)), color: '#a67c1e', dashStyle: 'ShortDash', lineWidth: 2, marker: { enabled: false } },
         { type: 'line', name: 'Slower pace', data: f.series.map((p, i) => join(p.low, i)), color: '#94a3b8', dashStyle: 'Dot', lineWidth: 1.5, marker: { enabled: false } },
         { type: 'line', name: 'Faster pace', data: f.series.map((p, i) => join(p.high, i)), color: '#94a3b8', dashStyle: 'Dot', lineWidth: 1.5, marker: { enabled: false } },
       ],

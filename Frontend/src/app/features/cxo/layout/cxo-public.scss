@@ -1,64 +1,107 @@
 /*
- * Leadership portal: the public website's look, and a layout that works on phones.
- * Loaded after cxo-theme.scss by the leadership shell and the shared-dashboard page. Pure CSS: no template, binding or logic changes.
+ * Leadership portal: the colours of the leadership sign-in page (deep navy with a gold accent), and a layout that works on phones.
+ * Loaded after cxo-theme.scss by the leadership shell and the shared-dashboard page. Pure CSS.
  */
 
+$navy: #111426;
+$navy-2: #262a4a;
+$night: #0a0c17;
+$gold: #8a6414;
+$gold-2: #f2c464;
+$gold-grad: linear-gradient(120deg, #8a6414, #b08a2a);
+$brand-dark: radial-gradient(90% 160% at 85% 0%, #262a4a 0%, #121528 55%, #0a0c17 100%);
+
 :host {
-  --x-bg: #fbfcff;
-  --x-panel-2: #f6f9ff;
-  --x-panel-3: #eef4ff;
-  --x-line: #e4ecfb;
-  --x-line-2: #d3e0f7;
-  --x-text: #0a1b3f;
-  --x-muted: #55647f;
-  --x-dim: #8b99b5;
-  --x-accent: #0057ff;
-  --x-accent-soft: rgba(0, 87, 255, .08);
-  --x-accent-line: rgba(0, 87, 255, .35);
-  --x-lime: #00a8ff;
-  --x-ink: #0a1b3f;
+  --x-bg: #fbfcfe;
+  --x-panel-2: #faf8f3;
+  --x-panel-3: #f6f0e2;
+  --x-line: #e8edf6;
+  --x-line-2: #dfe3ee;
+  --x-text: #111426;
+  --x-muted: #5b6178;
+  --x-dim: #9095a8;
+  --x-accent: #8a6414;
+  --x-accent-soft: rgba(138, 100, 20, .09);
+  --x-accent-line: rgba(176, 138, 42, .45);
+  --x-lime: #d9ab4a;
+  --x-ink: #111426;
   --x-radius: 20px;
   --x-radius-sm: 14px;
-  --x-shadow: 0 1px 2px rgba(10, 27, 63, .04), 0 22px 40px -32px rgba(10, 27, 63, .38);
+  --x-shadow: 0 1px 2px rgba(10, 27, 63, .04), 0 22px 40px -32px rgba(17, 20, 38, .42);
 }
 
+/* the sign-in page's form side: off-white with a warm glow */
 .x-app { background:
-    linear-gradient(rgba(0, 87, 255, .035) 1px, transparent 1px) 0 0 / 56px 56px,
-    linear-gradient(90deg, rgba(0, 87, 255, .035) 1px, transparent 1px) 0 0 / 56px 56px,
-    linear-gradient(150deg, #ffffff 40%, #eef4ff 100%); }
+    radial-gradient(40rem 26rem at 100% 0%, rgba(242, 196, 100, .16), transparent 70%),
+    radial-gradient(34rem 24rem at 0% 100%, rgba(138, 100, 20, .08), transparent 70%),
+    #fbfcfe;
+  background-attachment: fixed; }
 
-/* ---------- header ---------- */
-.x-top { height: 68px; background: rgba(255, 255, 255, .9); box-shadow: 0 14px 30px -28px rgba(10, 27, 63, .45); }
-.x-brand b { color: #0a1b3f; }
-.x-brand span { color: #0057ff; }
-.x-nav { background: #f4f7fe; }
-.x-nav a { font-weight: 600; }
-.x-nav a:hover { color: #0057ff; }
-.x-nav a.x-on { color: #fff; background: linear-gradient(120deg, #0057ff, #0a7bff); box-shadow: 0 12px 20px -12px rgba(0, 87, 255, .85); }
-.x-avatar { background: linear-gradient(135deg, #0057ff, #0a1b3f); }
-.x-user { border-color: #dbe6fb; box-shadow: 0 12px 22px -18px rgba(10, 27, 63, .45); }
-.x-user:hover { border-color: #0057ff; }
-.x-menu { background: #fff; border-radius: 18px; }
+/* ---------- header: the sign-in page's dark side, with its gold hairline ---------- */
+.x-top { height: 68px; background: $brand-dark; border-bottom: 0; backdrop-filter: none; box-shadow: 0 18px 30px -26px rgba(10, 12, 23, .8); }
+.x-top::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, transparent, $gold-2, transparent); }
+.x-brand { color: #fff; }
+.x-brand b { color: #fff; }
+.x-brand span { color: #ffd77a; border: 1px solid rgba(242, 196, 100, .45); background: rgba(242, 196, 100, .08); border-radius: 6px; padding: .16rem .45rem; }
+.x-nav { background: rgba(255, 255, 255, .05); border-color: rgba(242, 196, 100, .18); }
+.x-nav a { color: #c3c6d8; font-weight: 600; }
+.x-nav a:hover { color: #ffe3a8; }
+.x-nav a.x-on { color: #fff; background: $gold-grad; box-shadow: 0 12px 20px -12px rgba(242, 196, 100, .7); }
+.x-college { color: #b9bdd1; }
+.x-user { background: rgba(255, 255, 255, .06); border-color: rgba(242, 196, 100, .22); color: #fff; }
+.x-user:hover, .x-user:focus-visible { border-color: $gold-2; }
+.x-user-role { color: #b9bdd1; }
+.x-avatar { background: linear-gradient(135deg, #b08a2a, #8a6414); }
+.x-menu { background: #fff; border-radius: 18px; color: #111426; }
+
+/* ---------- phone menu: button and drawer (only below 768px) ---------- */
+.x-burger { all: unset; box-sizing: border-box; display: none; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 50%; cursor: pointer;
+  font-size: 1.35rem; color: #ffe3a8; background: rgba(255, 255, 255, .06); border: 1px solid rgba(242, 196, 100, .3); }
+.x-burger:focus-visible, .x-drawer a:focus-visible, .x-drawer button:focus-visible { outline: 2px solid $gold-2; outline-offset: 2px; }
+.x-scrim { position: fixed; inset: 0; z-index: 40; background: rgba(10, 12, 23, .6); animation: x-fade .2s ease backwards; }
+.x-drawer { position: fixed; inset: 0 auto 0 0; z-index: 41; width: min(300px, 86vw); display: flex; flex-direction: column; overflow-y: auto; padding: 1rem .85rem;
+  background: $brand-dark; color: #fff; border-right: 1px solid rgba(242, 196, 100, .25); box-shadow: 24px 0 50px -24px rgba(10, 12, 23, .8); animation: x-slide .25s ease backwards; }
+.x-drawer-head { display: flex; align-items: center; gap: .6rem; padding: .1rem .3rem 1.1rem; }
+.x-drawer-close { all: unset; box-sizing: border-box; margin-left: auto; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+  color: #ffe3a8; background: rgba(255, 255, 255, .07); }
+.x-drawer-links { display: flex; flex-direction: column; gap: .25rem; }
+.x-drawer-links a { display: flex; align-items: center; gap: .75rem; padding: .75rem .8rem; border-radius: 12px; font-size: .95rem; font-weight: 600; text-decoration: none; color: #d5d8e6; }
+.x-drawer-links a > i { font-size: 1.1rem; color: $gold-2; }
+.x-drawer-links a.x-on { color: #fff; background: $gold-grad; box-shadow: 0 14px 22px -14px rgba(242, 196, 100, .75); > i { color: #fff; } }
+.x-drawer-foot { margin-top: auto; padding: 1rem .35rem .2rem; border-top: 1px solid rgba(242, 196, 100, .2); }
+.x-drawer-me { display: flex; align-items: center; gap: .65rem; margin-bottom: .9rem; min-width: 0; }
+.x-drawer-me b { display: block; font-size: .9rem; }
+.x-drawer-me small { display: block; font-size: .72rem; line-height: 1.4; color: #b9bdd1; overflow-wrap: anywhere; }
+.x-drawer-out { all: unset; box-sizing: border-box; display: block; width: 100%; text-align: center; padding: .65rem; border-radius: 999px; cursor: pointer;
+  font-size: .88rem; font-weight: 700; color: #ffb4c0; border: 1px solid rgba(255, 140, 160, .4); }
+@media (min-width: 768px) { .x-scrim, .x-drawer { display: none; } }
+@keyframes x-fade { from { opacity: 0; } }
+@keyframes x-slide { from { transform: translateX(-102%); } }
 
 :host ::ng-deep {
   /* ---------- headings, cards, buttons ---------- */
   .x-app {
-    .xs-title, .xd-head h1, .xv-head h1, .ch-head h1, .fc-head h1, .bm-head h1 { font-size: 1.9rem; font-weight: 800; letter-spacing: -.035em; color: #0a1b3f; }
+    .xs-title, .xd-head h1, .xv-head h1, .ch-head h1, .fc-head h1, .bm-head h1 { font-size: 1.9rem; font-weight: 800; letter-spacing: -.035em; color: $navy; }
     .x-card { border: 1px solid var(--x-line); background: #fff; box-shadow: var(--x-shadow); }
-    .xd-card { border-radius: 20px; box-shadow: var(--x-shadow); }
-    .xd-card:hover { box-shadow: 0 30px 48px -28px rgba(0, 87, 255, .38); transform: translateY(-4px); }
+    .xd-card { border-radius: 20px; box-shadow: var(--x-shadow); border-top: 3px solid #c9a041; }
+    .xd-card:hover { box-shadow: 0 30px 48px -28px rgba(138, 100, 20, .45); transform: translateY(-4px); }
     .xk, .xb-ai { box-shadow: var(--x-shadow); }
-    .xk.xk-hero { background: radial-gradient(120% 120% at 100% 0%, rgba(0, 168, 255, .35), transparent 55%), linear-gradient(145deg, #0057ff, #0a1b3f 85%);
-      box-shadow: 0 24px 40px -22px rgba(0, 87, 255, .8); }
-    .x-btn { border-color: #dbe3ef; }
-    .x-btn:hover:not(:disabled) { border-color: #0057ff; color: #0057ff; background: #f5f8ff; }
-    .x-btn.x-btn-accent { color: #fff; border-color: transparent; background: linear-gradient(120deg, #0057ff, #0a7bff); box-shadow: 0 14px 22px -14px rgba(0, 87, 255, .85); }
-    .x-btn.x-btn-accent:hover:not(:disabled) { color: #fff; background: #0a1b3f; }
-    .xs-ask { border-color: #d3e0f7; box-shadow: 0 18px 30px -24px rgba(0, 87, 255, .55); }
-    .xs-ask-badge { background: linear-gradient(120deg, #0057ff, #0a1b3f); }
-    .xs-ask-on { box-shadow: 0 0 0 4px rgba(0, 87, 255, .12); }
+    .xk.xk-hero { background: $brand-dark; box-shadow: 0 24px 40px -22px rgba(17, 20, 38, .75), inset 0 3px 0 $gold-2; }
+    .xk-hero .xk-meter span { background: linear-gradient(90deg, #b08a2a, $gold-2); }
+    .x-btn { border-color: #dfe3ee; }
+    .x-btn:hover:not(:disabled) { border-color: $gold; color: $gold; background: #fbf7ec; }
+    .x-btn.x-btn-accent { color: #fff; border-color: transparent; background: $gold-grad; box-shadow: 0 14px 22px -14px rgba(138, 100, 20, .85); }
+    .x-btn.x-btn-accent:hover:not(:disabled) { color: #ffe3a8; background: linear-gradient(120deg, $navy, $navy-2); }
+    .xs-ask { border-color: #e6d9b6; box-shadow: 0 18px 30px -24px rgba(138, 100, 20, .55); }
+    .xs-ask-badge { color: #ffe3a8; background: linear-gradient(120deg, $navy, $navy-2); }
+    .xs-ask-on { box-shadow: 0 0 0 4px rgba(176, 138, 42, .16); }
+    .xs-note { color: #5f4509; background: #fbf5e6; border-color: #ecd9a6; }
+    .xb-ai-dot { box-shadow: 0 0 0 4px rgba(138, 100, 20, .14); }
     select, input[type='text'], input[type='email'], textarea { border-radius: 12px; }
     table thead th { letter-spacing: .08em; }
+
+    /* the big number card: its decorative arrow sat on top of the "students behind this number" button */
+    .xk-hero:has(.xk-drill) .xk-arrow { display: none; }
   }
 
   /* ---------- tablets and small laptops: the menu gets its own line ---------- */
@@ -72,9 +115,10 @@
   /* ---------- phones ---------- */
   @media (max-width: 767.98px) {
     .x-app .x-main { padding: .9rem .8rem 1.5rem; }
-    /* all five pages visible at once, no swiping */
-    .x-app .x-nav { flex-wrap: wrap; justify-content: center; border-radius: 18px; overflow: visible; }
-    .x-app .x-nav a { flex: 1 1 28%; padding: .48rem .5rem; }
+    /* the five pages move into the drawer behind the menu button */
+    .x-app .x-top { flex-wrap: nowrap; gap: .6rem; padding: .6rem .8rem; }
+    .x-app .x-nav { display: none; }
+    .x-app .x-burger { display: grid; }
     .x-app .x-user { padding: .2rem; }
     .x-app .x-menu { width: min(280px, calc(100vw - 1.5rem)); }
 

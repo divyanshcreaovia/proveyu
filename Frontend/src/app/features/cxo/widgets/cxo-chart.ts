@@ -3,7 +3,7 @@ import { HighchartsChartComponent } from 'highcharts-angular';
 import type { Chart, Options } from 'highcharts';
 
 /** Leadership palette: shades of one calm blue, then neutral slate and one warm tone for a rare extra category. */
-export const CXO_COLORS = ['#2b59c3', '#8fa9e6', '#1e2f5c', '#c9d6f4', '#64748b', '#b45309', '#cbd5e1'];
+export const CXO_COLORS = ['#a67c1e', '#e8c476', '#262a4a', '#f1e3bd', '#64748b', '#b45309', '#cbd5e1'];
 const TEXT = '#64748b';
 const GRID = 'rgba(15,23,42,0.07)';
 

@@ -48,7 +48,7 @@ import { DashboardSummary } from '../cxo.models';
       background: var(--x-panel); border: 1px solid var(--x-line); transition: border-color .2s ease, transform .25s var(--x-ease);
       animation: xdIn .4s var(--x-ease) backwards; }
     .xd-card:hover { border-color: var(--x-accent-line); transform: translateY(-2px); }
-    .xd-pinned { background: radial-gradient(120% 90% at 100% 0%, rgba(43,89,195,.06), transparent 60%), var(--x-panel); }
+    .xd-pinned { background: radial-gradient(120% 90% at 100% 0%, rgba(166,124,30,.06), transparent 60%), var(--x-panel); }
     .xd-link { position: absolute; inset: 0; border-radius: 20px; z-index: 1; }
     .xd-link:focus-visible { outline: 2px solid var(--x-accent); outline-offset: 2px; }
     .xd-top { display: flex; justify-content: space-between; align-items: center; }

@@ -14,7 +14,7 @@ import { EmptyState } from '../../../shared/ui/states';
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: '../student-pages.scss',
   template: `
-    <div class="st-chat">
+    <div class="st-chat" [class.chat-open]="!!peer()">
       <aside class="st-card p-2 overflow-auto">
         <div class="small st-muted px-2 mb-2">@if (chat.connected()) { <i class="bi bi-circle-fill text-success"></i> live } @else { <i class="bi bi-circle"></i> offline (messages still send) }</div>
         @for (c of contacts(); track c.userId) {
@@ -29,13 +29,14 @@ import { EmptyState } from '../../../shared/ui/states';
       <section class="st-card d-flex flex-column min-h-0">
         @if (!peer()) { <pm-empty-state icon="bi-chat-dots" title="Pick a conversation" text="Ask your TPO or coordinator about drives, documents or offers." /> }
         @else {
-          <header class="border-bottom pb-2 mb-2 fw-semibold small">{{ peer()!.name }} <span class="st-muted fw-normal">· {{ peer()!.subtitle }}</span></header>
+          <header class="border-bottom pb-2 mb-2 fw-semibold small"><button type="button" class="chat-back" aria-label="Back to contacts" (click)="closeChat()"><i class="bi bi-arrow-left" aria-hidden="true"></i></button>{{ peer()!.name }} <span class="st-muted fw-normal"><span class="d-none d-lg-inline">· </span>{{ peer()!.subtitle }}</span></header>
           <div #scroller class="st-msgs" aria-live="polite">
             @for (m of messages(); track m.id) {
+              @if ($index === 0 || (m.createdAt | date: 'yyyyMMdd') !== (messages()[$index - 1].createdAt | date: 'yyyyMMdd')) { <div class="chat-day">{{ m.createdAt | date: 'd MMM y' }}</div> }
               <div class="st-msg" [class.st-mine]="m.senderId === portal.me()?.userId">
                 @if (m.messageType === 'FILE') { <button class="btn btn-link btn-sm p-0" (click)="chat.openAttachment(m.id)"><i class="bi bi-paperclip"></i> {{ m.fileName }}</button> }
                 @if (m.message) { <div>{{ m.message }}</div> }
-                <small class="opacity-75">{{ m.createdAt | date: 'short' }}</small>
+                <small class="opacity-75"><span class="d-none d-lg-inline">{{ m.createdAt | date: 'short' }}</span><span class="d-lg-none">{{ m.createdAt | date: 'shortTime' }}</span></small>
               </div>
             } @empty { <p class="small st-muted text-center my-auto">No messages yet. Start the conversation.</p> }
           </div>
@@ -102,6 +103,11 @@ export class StudentChat implements OnInit, OnDestroy {
       this.scrollDown();
       m.filter(x => x.receiverId === this.portal.me()?.userId && x.status !== 'READ').forEach(x => this.chat.markRead(x.id).subscribe());
     });
+  }
+  /** Phones: back from the conversation to the contact list. */
+  closeChat(): void {
+    this.peer.set(null);
+    this.chat.activePeer.set(null); // new messages from this person count as unread again
   }
   send(): void {
     const t = this.text.trim();
